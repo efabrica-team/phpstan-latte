@@ -1,0 +1,23 @@
+{
+    "name": "efabrica/phpstan-latte",
+    "license": ["MIT"],
+    "require": {
+        "php": ">=7.4 <=8.2",
+        "phpstan/phpstan": "^1.6",
+        "latte/latte": "^2.4",
+        "nette/utils": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Efabrica\\PHPStanLatte\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Efabrica\\PHPStanLatte\\Tests\\": "tests/"
+        }
+    }
+}

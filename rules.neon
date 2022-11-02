@@ -1,0 +1,5 @@
+services:
+    -
+        factory: Efabrica\PHPStanLatte\Rule\LatteTemplatesRule
+        tags:
+            - phpstan.rules.rule
