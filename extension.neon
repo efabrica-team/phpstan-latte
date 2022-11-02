@@ -1,0 +1,32 @@
+parameters:
+    latte:
+        strictMode: false
+        globalVariables: []
+        filters:
+            translate: [Nette\Localization\Translator, translate]
+
+parametersSchema:
+    latte: structure([
+        strictMode: bool()
+        globalVariables: arrayOf(string(), string())
+        filters: arrayOf(anyOf(string(), arrayOf(string())), string())
+    ])
+
+services:
+    - Latte\Parser
+    - Latte\Compiler
+    - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%)
+
+    # Latte template resolvers
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
+
+    # Compiler post process Node visitors
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypeNodeVisitor(@variableCollectorStorage::collectVariables())
+
+    # Variable collectors
+    variableCollectorStorage:
+        factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage
+    - Efabrica\PHPStanLatte\VariableCollector\DefaultTemplateVariables
+    - Efabrica\PHPStanLatte\VariableCollector\GlobalTemplateVariables(%latte.globalVariables%)
+    - Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables(%latte.filters%)
