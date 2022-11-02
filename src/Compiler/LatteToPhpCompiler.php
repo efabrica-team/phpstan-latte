@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\Compiler;
 use Latte\Macros\BlockMacros;

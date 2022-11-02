@@ -1,0 +1,11 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            path: src/Analyser/FileAnalyserFactory.php
+        -
+            message: '#^Calling PHPStan\\Analyser\\FileAnalyser\:\:analyseFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            path: src/Rule/LatteTemplatesRule.php
+        -
+            message: '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getErrors\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            path: src/Rule/LatteTemplatesRule.php

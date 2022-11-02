@@ -17,7 +17,7 @@ final class GlobalTemplateVariablesTest extends AbstractCollectorTest
             'foo' => 'string',
             'bar' => 'int',
             'baz' => 'stdClass',
-            'qwe' => Variable::class
+            'qwe' => Variable::class,
         ], $this->createMock(TypeStringResolver::class));
     }
 

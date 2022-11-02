@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
@@ -113,7 +114,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         {
             private Scope $scope;
 
-            /** @var Variable[] */
+            /** @var TemplateVariable[] */
             private array $variables = [];
 
             public function __construct(Scope $scope)
@@ -121,7 +122,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                 $this->scope = $scope;
             }
 
-            public function enterNode(Node $node)
+            public function enterNode(Node $node): ?Node
             {
                 if (!$node instanceof Assign) {
                     return null;
@@ -137,13 +138,22 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                     return null;
                 }
 
+                if ($nameNode instanceof Expr) {
+                    return null;
+                }
+
                 if (!$this->scope->getType($var)->accepts(new ObjectType('Nette\Application\UI\Template'), true)->yes()) {
                     return null;
                 }
 
-                $this->variables[] = new TemplateVariable($nameNode->name, $this->scope->getType($node->expr));
+                $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
+                $this->variables[] = new TemplateVariable($variableName, $this->scope->getType($node->expr));
+                return null;
             }
 
+            /**
+             * @return TemplateVariable[]
+             */
             public function getVariables(): array
             {
                 return $this->variables;
@@ -151,7 +161,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         };
 
         $nodeTraverser->addVisitor($templateVariableFinder);
-        $nodeTraverser->traverse($classMethod->stmts);
+        $nodeTraverser->traverse((array)$classMethod->stmts);
 
         return $templateVariableFinder->getVariables();
     }
