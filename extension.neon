@@ -22,7 +22,8 @@ services:
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
 
     # Compiler post process Node visitors
-    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypeNodeVisitor(@variableCollectorStorage::collectVariables())
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
 
     # Variable collectors
     variableCollectorStorage:

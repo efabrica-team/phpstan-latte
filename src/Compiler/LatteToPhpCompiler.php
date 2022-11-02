@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypeNodeVisitor;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\Compiler;
 use Latte\Macros\BlockMacros;
@@ -87,7 +87,7 @@ final class LatteToPhpCompiler
 
         $nodeTraverser = new NodeTraverser();
 
-        $addVarTypeNodeVisitor = new AddVarTypeNodeVisitor($variables);
+        $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables);
         $nodeTraverser->addVisitor($addVarTypeNodeVisitor);
 
         foreach ($this->postCompileNodeVisitors as $postCompileNodeVisitor) {

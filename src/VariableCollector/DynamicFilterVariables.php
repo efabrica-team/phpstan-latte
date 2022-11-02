@@ -13,14 +13,14 @@ use ReflectionException;
 final class DynamicFilterVariables implements VariableCollectorInterface
 {
     /** @var array<string, (string | array{string, string})> */
-    private array $latteFilters;
+    private array $filters;
 
     /**
-     * @param array<string, string|array{string, string}> $latteFilters
+     * @param array<string, string|array{string, string}> $filters
      */
-    public function __construct(array $latteFilters)
+    public function __construct(array $filters)
     {
-        $this->latteFilters = $latteFilters;
+        $this->filters = $filters;
     }
 
     /**
@@ -29,14 +29,14 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     public function collect(): array
     {
         $variables = [];
-        foreach ($this->latteFilters as $latteFilter) {
-            if (is_string($latteFilter)) {
+        foreach ($this->filters as $filter) {
+            if (is_string($filter)) {
                 continue;
             }
 
             /** @var class-string $className */
-            $className = $latteFilter[0];
-            $methodName = $latteFilter[1];
+            $className = $filter[0];
+            $methodName = $filter[1];
 
             try {
                 $reflectionClass = new ReflectionClass($className);
@@ -46,6 +46,7 @@ final class DynamicFilterVariables implements VariableCollectorInterface
                     continue;
                 }
 
+                // TODO create helper
                 $variableName = Strings::firstLower(Strings::replace($className, '#\\\#', '')) . 'Filter';
                 $variables[$variableName] = new Variable($variableName, new ObjectType($className));
             } catch (ReflectionException $e) {

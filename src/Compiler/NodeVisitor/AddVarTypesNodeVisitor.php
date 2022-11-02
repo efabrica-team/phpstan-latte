@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 
-final class AddVarTypeNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
+final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
     /** @var TemplateVariable[] */
     private array $variables;
