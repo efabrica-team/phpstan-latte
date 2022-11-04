@@ -9,7 +9,9 @@
         "nette/utils": "^3.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "nette/application": "^3.0",
+        "nette/forms": "^3.0"
     },
     "autoload": {
         "psr-4": {

@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Compiler\LineMapper;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
+use Latte\CompileException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
@@ -71,7 +72,16 @@ final class LatteTemplatesRule implements Rule
 
             foreach ($templates as $template) {
                 $templatePath = $template->getPath();
-                $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables());
+
+                try {
+                    $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables());
+                } catch (CompileException $e) {
+                    $errors[] = RuleErrorBuilder::message($e->getMessage())
+                        ->file($templatePath)
+                        ->metadata(['context' => $scope->getFile()])
+                        ->build();
+                    continue;
+                }
                 $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
                 $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
 

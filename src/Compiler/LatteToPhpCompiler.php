@@ -8,12 +8,14 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Latte\CompileException;
 use Latte\Compiler;
 use Latte\Macros\BlockMacros;
 use Latte\Macros\CoreMacros;
 use Latte\Parser;
 use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
+use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
@@ -54,6 +56,7 @@ final class LatteToPhpCompiler
 
     /**
      * @param Variable[] $variables
+     * @throws CompileException
      */
     public function compile(string $templateContent, array $variables): string
     {
@@ -112,6 +115,9 @@ final class LatteToPhpCompiler
         return $this->printerStandard->prettyPrintFile($phpStmts);
     }
 
+    /**
+     * @return Stmt[]
+     */
     private function findNodes(string $phpContent): array
     {
         $parserFactory = new ParserFactory();

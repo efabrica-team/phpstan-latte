@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Compiler;
 
 final class LineMapper
 {
+    /** @var array<int, int> */
     private array $lines = [];
 
     public function add(int $original, int $latte): void
