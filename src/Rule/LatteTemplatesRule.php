@@ -31,6 +31,7 @@ final class LatteTemplatesRule implements Rule
     private RuleRegistry $rulesRegistry;
 
     private CollectorsRegistry $collectorsRegistry;
+
     private LineMapper $lineMapper;
 
     /**
@@ -42,7 +43,6 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         RuleRegistry $rulesRegistry,
         CollectorsRegistry $collectorsRegistry,
-
         LineMapper $lineMapper
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
