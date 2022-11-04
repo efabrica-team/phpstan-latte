@@ -17,6 +17,7 @@ services:
     - Latte\Compiler
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%)
+    - Efabrica\PHPStanLatte\Compiler\LineMapper
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
@@ -24,6 +25,9 @@ services:
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
+
+    # Other Node visitors
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
 
     # Variable collectors
     variableCollectorStorage:
