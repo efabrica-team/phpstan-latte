@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Latte\Runtime\Defaults;
 use Nette\Utils\Strings;
 use PhpParser\Node;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -15,6 +16,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
 use ReflectionException;
@@ -30,7 +32,9 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
     public function __construct(array $filters)
     {
         $defaults = new Defaults();
-        $this->filters = array_change_key_case($defaults->getFilters());
+        /** @var array<string, string|array{string, string}> $defaultFilters */
+        $defaultFilters = array_change_key_case($defaults->getFilters());
+        $this->filters = $defaultFilters;
 
         foreach ($filters as $filterName => $filter) {
             $this->filters[strtolower($filterName)] = $filter;
@@ -68,11 +72,17 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
             return null;
         }
 
+        if (!$dynamicName->name instanceof Identifier) {
+            return null;
+        }
 
         $filterName = strtolower($dynamicName->name->name);
-        return $this->createFilterCallNode($filterName, $node->args);
+        return $this->createFilterCallNode($filterName, $node->getArgs());
     }
 
+    /**
+     * @param Arg[]|VariadicPlaceholder[] $args
+     */
     private function createFilterCallNode(string $filterName, array $args): ?Node
     {
         $filter = $this->filters[$filterName] ?? null;
@@ -84,6 +94,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
             return new FuncCall(new FullyQualified($filter), $args);
         }
 
+        /** @var class-string $className */
         $className = $filter[0];
         $methodName = $filter[1];
 

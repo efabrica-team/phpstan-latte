@@ -19,6 +19,7 @@ use PHPStan\Rules\RuleErrorBuilder;
  */
 final class LatteTemplatesRule implements Rule
 {
+    /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
     private LatteToPhpCompiler $latteToPhpCompiler;
@@ -53,7 +54,7 @@ final class LatteTemplatesRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        $workingDir = getcwd();
+        $workingDir = getcwd() ?: '';
 
         $errors = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
@@ -65,7 +66,7 @@ final class LatteTemplatesRule implements Rule
 
             foreach ($templates as $template) {
                 $templatePath = $template->getPath();
-                $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath), $template->getVariables());
+                $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables());
                 $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
                 $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
 
@@ -96,7 +97,7 @@ final class LatteTemplatesRule implements Rule
                     }
                     $errors[] = RuleErrorBuilder::message($error->getMessage())
                         ->file($templatePath)
-                        ->line($error->getLine())   // TODO remap lines to latte lines
+                        ->line((int)$error->getLine())   // TODO remap lines to latte lines
                         ->metadata(['context' => $scope->getFile()])
                         ->build();
                 }

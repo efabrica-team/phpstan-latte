@@ -8,6 +8,7 @@ final class Template
 {
     private string $path;
 
+    /** @var Variable[] */
     private array $variables;
 
     /**
@@ -24,6 +25,9 @@ final class Template
         return $this->path;
     }
 
+    /**
+     * @return Variable[]
+     */
     public function getVariables(): array
     {
         return $this->variables;

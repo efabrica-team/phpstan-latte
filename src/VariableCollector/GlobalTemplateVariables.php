@@ -9,6 +9,7 @@ use PHPStan\PhpDoc\TypeStringResolver;
 
 final class GlobalTemplateVariables implements VariableCollectorInterface
 {
+    /** @var array<string, string> */
     private array $globalVariables;
 
     private TypeStringResolver $typeStringResolver;

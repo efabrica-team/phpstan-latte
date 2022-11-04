@@ -10,6 +10,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
@@ -34,7 +36,7 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
             return null;
         }
 
-        $statements = $node->stmts;
+        $statements = (array)$node->stmts;
         $newStatements = [];
         foreach ($statements as $statement) {
             $newStatements[] = $statement;
@@ -46,15 +48,19 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
                 continue;
             }
 
+            if (!$statement->expr->name instanceof Name) {
+                continue;
+            }
+
             if ($statement->expr->name->toString() !== 'extract') {
                 continue;
             }
 
-            if (!isset($statement->expr->args[0])) {
+            if (!isset($statement->expr->getArgs()[0])) {
                 continue;
             }
 
-            $argument = $statement->expr->args[0]->value;
+            $argument = $statement->expr->getArgs()[0]->value;
             if (!$argument instanceof PropertyFetch) {
                 continue;
             }
@@ -64,6 +70,10 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
             }
 
             if ($argument->var->name !== 'this') {
+                continue;
+            }
+
+            if (!$argument->name instanceof Identifier) {
                 continue;
             }
 
