@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\Compiler;
@@ -28,6 +29,8 @@ final class LatteToPhpCompiler
     /** @var PostCompileNodeVisitorInterface[] */
     private array $postCompileNodeVisitors;
 
+    private LineNumberNodeVisitor $lineNumberNodeVisitor;
+
     private Standard $printerStandard;
 
     /**
@@ -38,6 +41,7 @@ final class LatteToPhpCompiler
         Parser $parser,
         Compiler $compiler,
         array $postCompileNodeVisitors,
+        LineNumberNodeVisitor $lineNumberNodeVisitor,
         Standard $printerStandard
     ) {
         $this->strictMode = $strictMode;
@@ -45,6 +49,7 @@ final class LatteToPhpCompiler
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
         $this->printerStandard = $printerStandard;
+        $this->lineNumberNodeVisitor = $lineNumberNodeVisitor;
     }
 
     /**
@@ -57,7 +62,8 @@ final class LatteToPhpCompiler
         $this->installDefaultMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
 
-        return $this->explicitCalls($phpContent, $variables);
+        $phpContentWithExplicitCalls = $this->explicitCalls($phpContent, $variables);
+        return $this->remapLines($phpContentWithExplicitCalls);
     }
 
     private function installDefaultMacros(Compiler $compiler): void
@@ -80,10 +86,7 @@ final class LatteToPhpCompiler
      */
     private function explicitCalls(string $phpContent, array $variables): string
     {
-        $parserFactory = new ParserFactory();
-
-        $phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
-        $phpStmts = (array)$phpParser->parse($phpContent);
+        $phpStmts = $this->findNodes($phpContent);
 
         $nodeTraverser = new NodeTraverser();
 
@@ -95,7 +98,24 @@ final class LatteToPhpCompiler
         }
 
         $nodeTraverser->traverse($phpStmts);
+        return $this->printerStandard->prettyPrintFile($phpStmts);
+    }
+
+    private function remapLines(string $phpContent): string
+    {
+        $phpStmts = $this->findNodes($phpContent);
+
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor($this->lineNumberNodeVisitor);
+        $nodeTraverser->traverse($phpStmts);
 
         return $this->printerStandard->prettyPrintFile($phpStmts);
+    }
+
+    private function findNodes(string $phpContent): array
+    {
+        $parserFactory = new ParserFactory();
+        $phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        return (array)$phpParser->parse($phpContent);
     }
 }
