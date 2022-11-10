@@ -9,3 +9,6 @@ parameters:
         -
             message: '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getErrors\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
+        -
+            message: '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+            path: src/Rule/LatteTemplatesRule.php
