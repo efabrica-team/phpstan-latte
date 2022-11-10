@@ -6,15 +6,15 @@ namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
-use Efabrica\PHPStanLatte\Compiler\LineMapper;
+use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Latte\CompileException;
 use PhpParser\Node;
+use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * @implements Rule<Node>
@@ -32,7 +32,7 @@ final class LatteTemplatesRule implements Rule
 
     private CollectorsRegistry $collectorsRegistry;
 
-    private LineMapper $lineMapper;
+    private ErrorBuilder $errorBuilder;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
@@ -43,14 +43,14 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         RuleRegistry $rulesRegistry,
         CollectorsRegistry $collectorsRegistry,
-        LineMapper $lineMapper
+        ErrorBuilder $errorBuilder
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
         $this->fileAnalyserFactory = $fileAnalyserFactory;
         $this->rulesRegistry = $rulesRegistry;
         $this->collectorsRegistry = $collectorsRegistry;
-        $this->lineMapper = $lineMapper;
+        $this->errorBuilder = $errorBuilder;
     }
 
     public function getNodeType(): string
@@ -76,10 +76,7 @@ final class LatteTemplatesRule implements Rule
                 try {
                     $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables());
                 } catch (CompileException $e) {
-                    $errors[] = RuleErrorBuilder::message($e->getMessage())
-                        ->file($templatePath)
-                        ->metadata(['context' => $scope->getFile()])
-                        ->build();
+                    $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
                     continue;
                 }
                 $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
@@ -105,20 +102,7 @@ final class LatteTemplatesRule implements Rule
                     null
                 );
 
-                // TODO move to separate service
-
-                foreach ($fileAnalyserResult->getErrors() as $error) {
-                    // ignore all errors connected with name PHPStanLatteTemplate
-                    if (str_contains($error->getMessage(), 'PHPStanLatteTemplate')) {
-                        continue;
-                    }
-                    $errors[] = RuleErrorBuilder::message($error->getMessage()) // TODO remap messages not registered filters etc.
-                        ->file($templatePath)
-                        ->line($this->lineMapper->get((int)$error->getLine()))  // TODO remap lines to latte lines
-                        ->metadata(['context' => $scope->getFile()])
-                        ->build();
-                }
-                $this->lineMapper->reset();
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $scope));
             }
         }
         return $errors;
