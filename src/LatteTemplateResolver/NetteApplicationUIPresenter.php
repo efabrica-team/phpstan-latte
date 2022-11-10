@@ -20,7 +20,6 @@ use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
-use PHPStan\Type\VerbosityLevel;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
@@ -55,20 +54,33 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $shortClassName = (string)$class->name;
         $methods = $class->getMethods();
 
-        $templates = [];
-        // TODO merge renderSomething with actionSomething and also with startup
+        $startupVariables = [];
+        $actionsWithVariables = [];
         foreach ($methods as $method) {
             $methodName = (string)$method->name;
+
+            if ($methodName === 'startup') {
+                $startupVariables = $this->findVariables($method, $scope);
+            }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
                 continue;
             }
 
-            $template = $this->findTemplateFilePath($shortClassName, $methodName, $scope);
+            $actionName = lcfirst(str_replace(['action', 'render'], '', $methodName));
+            if (!isset($actionsWithVariables[$actionName])) {
+                $actionsWithVariables[$actionName] = [];
+            }
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->findVariables($method, $scope));
+        }
+
+        $templates = [];
+        foreach ($actionsWithVariables as $actionName => $actionVariables) {
+            $template = $this->findTemplateFilePath($shortClassName, $actionName, $scope);
             if ($template === null) {
                 continue;
             }
-            $variables = $this->findVariables($method, $scope);
+            $variables = array_merge($startupVariables, $actionVariables);
             $templates[] = new Template($template, $variables);
         }
 
@@ -83,13 +95,9 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         return [];
     }
 
-    private function findTemplateFilePath(string $shortClassName, string $methodName, Scope $scope): ?string
+    private function findTemplateFilePath(string $shortClassName, string $actionName, Scope $scope): ?string
     {
         $presenterName = str_replace('Presenter', '', $shortClassName);
-
-        $actionName = str_replace(['action', 'render'], '', $methodName);
-        $actionName = lcfirst($actionName);
-
         $dir = dirname($scope->getFile());
         $dir = is_dir($dir . '/templates') ? $dir : dirname($dir);
 
