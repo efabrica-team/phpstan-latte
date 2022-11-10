@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Assign;

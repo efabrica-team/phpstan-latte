@@ -90,6 +90,13 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
             return null;
         }
 
+        // Add FilterInfo for special filters
+        if (in_array($filterName, ['striphtml', 'striptags', 'strip', 'indent', 'repeat', 'replace', 'trim'], true)) {
+            $args = array_merge([
+                new Arg(new Variable('ʟ_fi')),
+            ], $args);
+        }
+
         if (is_string($filter)) {
             return new FuncCall(new FullyQualified($filter), $args);
         }
