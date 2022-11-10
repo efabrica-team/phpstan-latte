@@ -12,6 +12,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 
 final class ErrorBuilder
 {
+    /** @var string[] */
     private array $errorPatternsToIgnore = [
         '/PHPStanLatteTemplate/',
         '/Method Nette\\\Application\\\UI\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
@@ -19,6 +20,9 @@ final class ErrorBuilder
 
     private LineMapper $lineMapper;
 
+    /**
+     * @param string[] $errorPatternsToIgnore
+     */
     public function __construct(array $errorPatternsToIgnore, LineMapper $lineMapper)
     {
         $this->errorPatternsToIgnore += $errorPatternsToIgnore;
