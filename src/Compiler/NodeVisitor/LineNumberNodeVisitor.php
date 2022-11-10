@@ -26,6 +26,7 @@ final class LineNumberNodeVisitor extends NodeVisitorAbstract
             $comments[] = $docComment;
         }
 
+        // TODO check if lines are correct, it seems if, foreach etc. has comment inside of them
         foreach ($comments as $comment) {
             $commentText = $comment->getText();
 

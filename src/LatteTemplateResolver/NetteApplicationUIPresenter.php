@@ -18,6 +18,9 @@ use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
+use PHPStan\Type\VerbosityLevel;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
@@ -53,6 +56,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $methods = $class->getMethods();
 
         $templates = [];
+        // TODO merge renderSomething with actionSomething and also with startup
         foreach ($methods as $method) {
             $methodName = (string)$method->name;
 
@@ -64,7 +68,8 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if ($template === null) {
                 continue;
             }
-            $templates[] = new Template($template, $this->findVariables($method, $scope));
+            $variables = $this->findVariables($method, $scope);
+            $templates[] = new Template($template, $variables);
         }
 
         return $templates;
@@ -122,6 +127,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                 $this->scope = $scope;
             }
 
+            // TODO we need to go deeper - method calls, parent::methodCalls etc.
             public function enterNode(Node $node): ?Node
             {
                 if (!$node instanceof Assign) {
@@ -142,13 +148,28 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                     return null;
                 }
 
-                if (!$this->scope->getType($var)->accepts(new ObjectType('Nette\Application\UI\Template'), true)->yes()) {
+                $variableType = $this->scope->getType($var);
+                if (!$this->isTemplateType($variableType)) {
                     return null;
                 }
 
                 $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
                 $this->variables[] = new TemplateVariable($variableName, $this->scope->getType($node->expr));
                 return null;
+            }
+
+            private function isTemplateType(Type $variableType): bool
+            {
+                if ($variableType instanceof ObjectType) {
+                    return $variableType->isInstanceOf('Nette\Application\UI\Template')->yes();
+                } elseif ($variableType instanceof UnionType) {
+                    foreach ($variableType->getTypes() as $type) {
+                        if ($this->isTemplateType($type)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
             /**
