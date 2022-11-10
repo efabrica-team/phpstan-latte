@@ -64,9 +64,9 @@ final class LatteToPhpCompiler
 
         $this->installDefaultMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
-
-        $phpContentWithExplicitCalls = $this->explicitCalls($phpContent, $variables);
-        return $this->remapLines($phpContentWithExplicitCalls);
+        $phpContent = $this->fixLines($phpContent);
+        $phpContent = $this->explicitCalls($phpContent, $variables);
+        return $this->remapLines($phpContent);
     }
 
     private function installDefaultMacros(Compiler $compiler): void
@@ -102,6 +102,25 @@ final class LatteToPhpCompiler
 
         $nodeTraverser->traverse($phpStmts);
         return $this->printerStandard->prettyPrintFile($phpStmts);
+    }
+
+    private function fixLines(string $phpContent): string
+    {
+        $phpContentRows = explode("\n", $phpContent);
+        $newPhpContentRows = [];
+        foreach ($phpContentRows as $phpContentRow) {
+            $pattern = '#/\*(.*?)line (?<number>\d+)(.*?)\*/#';
+            preg_match($pattern, $phpContentRow, $matches);
+
+            $latteLine = isset($matches['number']) ? (int)$matches['number'] : null;
+            if ($latteLine === null) {
+                $newPhpContentRows[] = $phpContentRow;
+                continue;
+            }
+            $newPhpContentRows[] = '/* line ' . $latteLine . ' */';
+            $newPhpContentRows[] = preg_replace($pattern, '', $phpContentRow);
+        }
+        return implode("\n", array_filter($newPhpContentRows));
     }
 
     private function remapLines(string $phpContent): string
