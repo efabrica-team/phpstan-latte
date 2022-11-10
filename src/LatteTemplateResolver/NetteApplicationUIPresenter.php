@@ -18,6 +18,8 @@ use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
@@ -52,19 +54,34 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $shortClassName = (string)$class->name;
         $methods = $class->getMethods();
 
-        $templates = [];
+        $startupVariables = [];
+        $actionsWithVariables = [];
         foreach ($methods as $method) {
             $methodName = (string)$method->name;
+
+            if ($methodName === 'startup') {
+                $startupVariables = $this->findVariables($method, $scope);
+            }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
                 continue;
             }
 
-            $template = $this->findTemplateFilePath($shortClassName, $methodName, $scope);
+            $actionName = lcfirst(str_replace(['action', 'render'], '', $methodName));
+            if (!isset($actionsWithVariables[$actionName])) {
+                $actionsWithVariables[$actionName] = [];
+            }
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->findVariables($method, $scope));
+        }
+
+        $templates = [];
+        foreach ($actionsWithVariables as $actionName => $actionVariables) {
+            $template = $this->findTemplateFilePath($shortClassName, $actionName, $scope);
             if ($template === null) {
                 continue;
             }
-            $templates[] = new Template($template, $this->findVariables($method, $scope));
+            $variables = array_merge($startupVariables, $actionVariables);
+            $templates[] = new Template($template, $variables);
         }
 
         return $templates;
@@ -78,13 +95,9 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         return [];
     }
 
-    private function findTemplateFilePath(string $shortClassName, string $methodName, Scope $scope): ?string
+    private function findTemplateFilePath(string $shortClassName, string $actionName, Scope $scope): ?string
     {
         $presenterName = str_replace('Presenter', '', $shortClassName);
-
-        $actionName = str_replace(['action', 'render'], '', $methodName);
-        $actionName = lcfirst($actionName);
-
         $dir = dirname($scope->getFile());
         $dir = is_dir($dir . '/templates') ? $dir : dirname($dir);
 
@@ -122,6 +135,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                 $this->scope = $scope;
             }
 
+            // TODO we need to go deeper - method calls, parent::methodCalls etc.
             public function enterNode(Node $node): ?Node
             {
                 if (!$node instanceof Assign) {
@@ -142,13 +156,28 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                     return null;
                 }
 
-                if (!$this->scope->getType($var)->accepts(new ObjectType('Nette\Application\UI\Template'), true)->yes()) {
+                $variableType = $this->scope->getType($var);
+                if (!$this->isTemplateType($variableType)) {
                     return null;
                 }
 
                 $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
                 $this->variables[] = new TemplateVariable($variableName, $this->scope->getType($node->expr));
                 return null;
+            }
+
+            private function isTemplateType(Type $variableType): bool
+            {
+                if ($variableType instanceof ObjectType) {
+                    return $variableType->isInstanceOf('Nette\Application\UI\Template')->yes();
+                } elseif ($variableType instanceof UnionType) {
+                    foreach ($variableType->getTypes() as $type) {
+                        if ($this->isTemplateType($type)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
             /**
