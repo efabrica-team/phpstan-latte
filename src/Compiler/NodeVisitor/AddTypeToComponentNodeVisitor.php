@@ -79,7 +79,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $originalDocComment = $node->getDocComment();
         $originalDocCommentText = $originalDocComment ? $originalDocComment->getText() : '';
-        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $component->getTypeAsString() .' $_tmp */'));
+        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $component->getTypeAsString() . ' $_tmp */'));
         return $node;
     }
 

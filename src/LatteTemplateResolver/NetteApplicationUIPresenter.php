@@ -6,15 +6,12 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
-use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
-use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
-use ReflectionClass;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {

@@ -89,6 +89,7 @@ final class LatteToPhpCompiler
 
     /**
      * @param Variable[] $variables
+     * @param Component[] $components
      */
     private function explicitCalls(string $phpContent, array $variables, array $components): string
     {

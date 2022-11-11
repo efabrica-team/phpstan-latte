@@ -16,11 +16,16 @@ final class ComponentsFinder
      */
     public function find(Class_ $class, Scope $scope): array
     {
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection === null) {
+            return [];
+        }
+
+        /** @var class-string $className */
         $className = (string)$class->namespacedName;
         $reflectionClass = new ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods();
 
-        $classReflection = $scope->getClassReflection();
         $components = [];
         foreach ($reflectionMethods as $reflectionMethod) {
             $methodName = $reflectionMethod->name;
