@@ -53,7 +53,9 @@ final class TemplatePathFinderNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $this->path = $this->valueResolver->resolve($arg->value, $this->scope);
+        /** @var string $path */
+        $path = $this->valueResolver->resolve($arg->value, $this->scope);
+        $this->path = $path;
         return null;
     }
 

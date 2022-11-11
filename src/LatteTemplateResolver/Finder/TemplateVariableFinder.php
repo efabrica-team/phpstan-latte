@@ -7,8 +7,8 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver\Finder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\NodeVisitor\TemplateVariableFinderNodeVisitor;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
-use PhpParser\NodeTraverser;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\NodeTraverser;
 use PHPStan\Analyser\Scope;
 
 final class TemplateVariableFinder
