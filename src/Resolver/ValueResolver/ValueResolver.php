@@ -15,11 +15,11 @@ final class ValueResolver
     /**
      * @return mixed
      */
-    public function resolve(Expr $expr, Scope $scope)
+    public function resolve(Expr $expr, ?Scope $scope = null)
     {
         $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($scope) {
             if ($expr instanceof Dir) {
-                return dirname($scope->getFile());
+                return $scope ? dirname($scope->getFile()) : null;
             }
             return null;
         });

@@ -5,6 +5,7 @@ parameters:
         filters:
             translate: [Nette\Localization\Translator, translate]
         errorPatternsToIgnore: []
+        applicationMapping: []
 
 parametersSchema:
     latte: structure([
@@ -12,6 +13,7 @@ parametersSchema:
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
+        applicationMapping: arrayOf(string(), string())
     ])
 
 services:
@@ -20,6 +22,7 @@ services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
+    - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
@@ -36,13 +39,21 @@ services:
     # Value resolvers
     - Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver
 
+    # Name resolvers
+    - Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver
+
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
+
+    # Link processors
+    - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
+    - Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor
 
     # Variable collectors
     variableCollectorStorage:
