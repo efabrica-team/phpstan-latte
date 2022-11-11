@@ -34,7 +34,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 
     /**
      * @param Arg[] $linkParams
-     * @param array<string, mixed> $attributes
+     * @param array<string, Doc[]> $attributes
      * @return Expression[]
      */
     public function createLinkExpressions(string $targetName, array $linkParams, array $attributes): array
@@ -45,7 +45,6 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         $presenterName = implode('', $targetNameParts);
         $presenterVariableName = lcfirst($presenterName) . 'Presenter';
         $presenterFactory = $this->presenterFactoryFaker->getPresenterFactory();
-        $presenterClassName = null;
         try {
             $presenterClassName = $presenterFactory->getPresenterClass($presenterWithModule);
         } catch (InvalidPresenterException $e) {
@@ -58,10 +57,6 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
             }
             [$moduleName,] = explode(':', $actualPresenter, 2);
             return $this->createLinkExpressions($moduleName . ':' . $targetName, $linkParams, $attributes);
-        }
-
-        if ($presenterClassName === null) {
-            return [];
         }
 
         $variable = new Variable($presenterVariableName);
