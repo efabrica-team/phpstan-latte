@@ -28,6 +28,7 @@ services:
     # Latte template finder helpers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder
     - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder
 
     # Type resolvers
     - Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver

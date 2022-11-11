@@ -4,21 +4,30 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
+use ReflectionClass;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
     private TemplateVariableFinder $templateVariableFinder;
 
-    public function __construct(TemplateVariableFinder $templateVariableFinder)
-    {
+    private ComponentsFinder $componentsFinder;
+
+    public function __construct(
+        TemplateVariableFinder $templateVariableFinder,
+        ComponentsFinder $componentsFinder
+    ) {
         $this->templateVariableFinder = $templateVariableFinder;
+        $this->componentsFinder = $componentsFinder;
     }
 
     public function check(Node $node, Scope $scope): bool
@@ -90,7 +99,9 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
      */
     public function findComponents(Node $node, Scope $scope): array
     {
-        return [];
+        /** @var Class_ $class */
+        $class = $node->getOriginalNode();
+        return $this->componentsFinder->find($class, $scope);
     }
 
     private function findTemplateFilePath(string $shortClassName, string $actionName, Scope $scope): ?string
