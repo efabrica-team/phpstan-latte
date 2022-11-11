@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
-use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Node;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\Type;
-use PHPStan\Type\UnionType;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
+    private TemplateVariableFinder $templateVariableFinder;
+
+    public function __construct(TemplateVariableFinder $templateVariableFinder)
+    {
+        $this->templateVariableFinder = $templateVariableFinder;
+    }
+
     public function check(Node $node, Scope $scope): bool
     {
         if (!$node instanceof InClassNode) {
@@ -60,7 +58,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             $methodName = (string)$method->name;
 
             if ($methodName === 'startup') {
-                $startupVariables = $this->findVariables($method, $scope);
+                $startupVariables = $this->templateVariableFinder->find($method, $scope);
             }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
@@ -71,7 +69,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if (!isset($actionsWithVariables[$actionName])) {
                 $actionsWithVariables[$actionName] = [];
             }
-            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->findVariables($method, $scope));
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->templateVariableFinder->find($method, $scope));
         }
 
         $templates = [];
@@ -113,85 +111,5 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         }
 
         return null;
-    }
-
-    /**
-     * @return TemplateVariable[]
-     */
-    private function findVariables(ClassMethod $classMethod, Scope $scope): array
-    {
-        $nodeTraverser = new NodeTraverser();
-
-        // TODO create NodeVisitor class
-        $templateVariableFinder = new class($scope) extends NodeVisitorAbstract
-        {
-            private Scope $scope;
-
-            /** @var TemplateVariable[] */
-            private array $variables = [];
-
-            public function __construct(Scope $scope)
-            {
-                $this->scope = $scope;
-            }
-
-            // TODO we need to go deeper - method calls, parent::methodCalls etc.
-            public function enterNode(Node $node): ?Node
-            {
-                if (!$node instanceof Assign) {
-                    return null;
-                }
-
-                if ($node->var instanceof Variable) {
-                    $var = $node->var;
-                    $nameNode = $node->var->name;
-                } elseif ($node->var instanceof PropertyFetch) {
-                    $var = $node->var->var;
-                    $nameNode = $node->var->name;
-                } else {
-                    return null;
-                }
-
-                if ($nameNode instanceof Expr) {
-                    return null;
-                }
-
-                $variableType = $this->scope->getType($var);
-                if (!$this->isTemplateType($variableType)) {
-                    return null;
-                }
-
-                $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
-                $this->variables[] = new TemplateVariable($variableName, $this->scope->getType($node->expr));
-                return null;
-            }
-
-            private function isTemplateType(Type $variableType): bool
-            {
-                if ($variableType instanceof ObjectType) {
-                    return $variableType->isInstanceOf('Nette\Application\UI\Template')->yes();
-                } elseif ($variableType instanceof UnionType) {
-                    foreach ($variableType->getTypes() as $type) {
-                        if ($this->isTemplateType($type)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            /**
-             * @return TemplateVariable[]
-             */
-            public function getVariables(): array
-            {
-                return $this->variables;
-            }
-        };
-
-        $nodeTraverser->addVisitor($templateVariableFinder);
-        $nodeTraverser->traverse((array)$classMethod->stmts);
-
-        return $templateVariableFinder->getVariables();
     }
 }
