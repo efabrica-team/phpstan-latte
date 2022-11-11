@@ -23,6 +23,17 @@ services:
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIControl
+
+    # Latte template finder helpers
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder
+
+    # Type resolvers
+    - Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver
+
+    # Value resolvers
+    - Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver
 
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
