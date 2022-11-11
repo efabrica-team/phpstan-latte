@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
@@ -19,10 +20,16 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
 
     private TemplatePathFinder $templatePathFinder;
 
-    public function __construct(TemplateVariableFinder $templateVariableFinder, TemplatePathFinder $templatePathFinder)
-    {
+    private ComponentsFinder $componentsFinder;
+
+    public function __construct(
+        TemplateVariableFinder $templateVariableFinder,
+        TemplatePathFinder $templatePathFinder,
+        ComponentsFinder $componentsFinder
+    ) {
         $this->templateVariableFinder = $templateVariableFinder;
         $this->templatePathFinder = $templatePathFinder;
+        $this->componentsFinder = $componentsFinder;
     }
 
     public function check(Node $node, Scope $scope): bool
@@ -74,6 +81,8 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
      */
     public function findComponents(Node $node, Scope $scope): array
     {
-        return [];
+        /** @var Class_ $class */
+        $class = $node->getOriginalNode();
+        return $this->componentsFinder->find($class, $scope);
     }
 }

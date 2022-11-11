@@ -69,12 +69,13 @@ final class LatteTemplatesRule implements Rule
             }
 
             $templates = $latteTemplateResolver->findTemplatesWithParameters($node, $scope);
+            $components = $latteTemplateResolver->findComponents($node, $scope);
 
             foreach ($templates as $template) {
                 $templatePath = $template->getPath();
 
                 try {
-                    $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables());
+                    $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables(), $components);
                 } catch (CompileException $e) {
                     $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
                     continue;

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\CompileException;
 use Latte\Compiler;
@@ -56,16 +58,17 @@ final class LatteToPhpCompiler
 
     /**
      * @param Variable[] $variables
+     * @param Component[] $components
      * @throws CompileException
      */
-    public function compile(string $templateContent, array $variables): string
+    public function compile(string $templateContent, array $variables, array $components): string
     {
         $latteTokens = $this->parser->parse($templateContent);
 
         $this->installDefaultMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
         $phpContent = $this->fixLines($phpContent);
-        $phpContent = $this->explicitCalls($phpContent, $variables);
+        $phpContent = $this->explicitCalls($phpContent, $variables, $components);
         return $this->remapLines($phpContent);
     }
 
@@ -86,8 +89,9 @@ final class LatteToPhpCompiler
 
     /**
      * @param Variable[] $variables
+     * @param Component[] $components
      */
-    private function explicitCalls(string $phpContent, array $variables): string
+    private function explicitCalls(string $phpContent, array $variables, array $components): string
     {
         $phpStmts = $this->findNodes($phpContent);
 
@@ -95,6 +99,9 @@ final class LatteToPhpCompiler
 
         $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables);
         $nodeTraverser->addVisitor($addVarTypeNodeVisitor);
+
+        $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($components);
+        $nodeTraverser->addVisitor($addTypeToComponentNodeVisitor);
 
         foreach ($this->postCompileNodeVisitors as $postCompileNodeVisitor) {
             $nodeTraverser->addVisitor($postCompileNodeVisitor);
