@@ -7,10 +7,12 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
@@ -58,6 +60,13 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $shortClassName = (string)$class->name;
         $methods = $class->getMethods();
 
+        $classVariables = [];
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection instanceof ClassReflection) {
+            $objectType = new ObjectType($classReflection->getName());
+            $classVariables[] = new Variable('actualClass', $objectType);
+            $classVariables[] = new Variable('presenter', $objectType);
+        }
         $startupVariables = [];
         $actionsWithVariables = [];
         foreach ($methods as $method) {
@@ -84,7 +93,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if ($template === null) {
                 continue;
             }
-            $variables = array_merge($startupVariables, $actionVariables);
+            $variables = array_merge($startupVariables, $classVariables, $actionVariables);
             $templates[] = new Template($template, $variables);
         }
 

@@ -21,6 +21,7 @@ use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
+use PHPStan\Analyser\Scope;
 
 final class LatteToPhpCompiler
 {
@@ -61,14 +62,14 @@ final class LatteToPhpCompiler
      * @param Component[] $components
      * @throws CompileException
      */
-    public function compile(string $templateContent, array $variables, array $components): string
+    public function compile(Scope $scope, string $templateContent, array $variables, array $components): string
     {
         $latteTokens = $this->parser->parse($templateContent);
 
         $this->installDefaultMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
         $phpContent = $this->fixLines($phpContent);
-        $phpContent = $this->explicitCalls($phpContent, $variables, $components);
+        $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
         return $this->remapLines($phpContent);
     }
 
@@ -91,19 +92,21 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    private function explicitCalls(string $phpContent, array $variables, array $components): string
+    private function explicitCalls(Scope $scope, string $phpContent, array $variables, array $components): string
     {
         $phpStmts = $this->findNodes($phpContent);
 
         $nodeTraverser = new NodeTraverser();
 
         $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables);
+        $addVarTypeNodeVisitor->setScope($scope);
         $nodeTraverser->addVisitor($addVarTypeNodeVisitor);
 
         $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($components);
         $nodeTraverser->addVisitor($addTypeToComponentNodeVisitor);
 
         foreach ($this->postCompileNodeVisitors as $postCompileNodeVisitor) {
+            $postCompileNodeVisitor->setScope($scope);
             $nodeTraverser->addVisitor($postCompileNodeVisitor);
         }
 

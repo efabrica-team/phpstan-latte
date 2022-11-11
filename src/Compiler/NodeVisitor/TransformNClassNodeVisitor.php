@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Assign;
@@ -25,6 +26,8 @@ use PhpParser\NodeVisitorAbstract;
  */
 final class TransformNClassNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
+    use ScopedNodeVisitorBehavior;
+
     public function enterNode(Node $node): ?Node
     {
         if (!$node instanceof Ternary) {

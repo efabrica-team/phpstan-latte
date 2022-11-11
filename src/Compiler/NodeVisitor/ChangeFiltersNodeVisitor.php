@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
 use Latte\Runtime\Defaults;
 use Nette\Utils\Strings;
 use PhpParser\Node;
@@ -23,6 +24,8 @@ use ReflectionException;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
+    use ScopedNodeVisitorBehavior;
+
     /** @var array<string, string|array{string, string}> */
     private array $filters;
 

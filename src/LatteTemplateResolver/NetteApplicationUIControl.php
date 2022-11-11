@@ -8,10 +8,12 @@ use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 
 final class NetteApplicationUIControl implements LatteTemplateResolverInterface
@@ -69,6 +71,13 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         $template = $this->templatePathFinder->find($method, $scope);
         if ($template === null) {
             return [];
+        }
+
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection instanceof ClassReflection) {
+            $objectType = new ObjectType($classReflection->getName());
+            $variables[] = new Variable('actualClass', $objectType);
+            $variables[] = new Variable('control', $objectType);
         }
 
         return [

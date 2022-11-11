@@ -75,7 +75,7 @@ final class LatteTemplatesRule implements Rule
                 $templatePath = $template->getPath();
 
                 try {
-                    $phpContent = $this->latteToPhpCompiler->compile(file_get_contents($templatePath) ?: '', $template->getVariables(), $components);
+                    $phpContent = $this->latteToPhpCompiler->compile($scope, file_get_contents($templatePath) ?: '', $template->getVariables(), $components);
                 } catch (CompileException $e) {
                     $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
                     continue;
