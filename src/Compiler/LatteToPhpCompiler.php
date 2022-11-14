@@ -27,6 +27,9 @@ final class LatteToPhpCompiler
 {
     private bool $strictMode;
 
+    /** @var string[] */
+    private array $macros;
+
     private Parser $parser;
 
     private Compiler $compiler;
@@ -43,6 +46,7 @@ final class LatteToPhpCompiler
      */
     public function __construct(
         bool $strictMode,
+        array $macros,
         Parser $parser,
         Compiler $compiler,
         array $postCompileNodeVisitors,
@@ -50,6 +54,7 @@ final class LatteToPhpCompiler
         Standard $printerStandard
     ) {
         $this->strictMode = $strictMode;
+        $this->macros = $macros;
         $this->parser = $parser;
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
@@ -66,25 +71,20 @@ final class LatteToPhpCompiler
     {
         $latteTokens = $this->parser->parse($templateContent);
 
-        $this->installDefaultMacros($this->compiler);
+        $this->installMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
         return $this->remapLines($phpContent);
     }
 
-    private function installDefaultMacros(Compiler $compiler): void
+    private function installMacros(Compiler $compiler): void
     {
-        // make sure basic macros are installed
-        CoreMacros::install($compiler);
-        BlockMacros::install($compiler);
-
-        if (class_exists('Nette\Bridges\ApplicationLatte\UIMacros')) {
-            UIMacros::install($compiler);
-        }
-
-        if (class_exists('Nette\Bridges\FormsLatte\FormMacros')) {
-            FormMacros::install($compiler);
+        foreach ($this->macros as $macro) {
+            [$class, $method] = explode('::', $macro, 2);
+            if (class_exists($class) && method_exists($class, $method)) {
+                call_user_func([$class, $method], $compiler);
+            }
         }
     }
 
