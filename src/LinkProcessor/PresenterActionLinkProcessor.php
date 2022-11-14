@@ -60,7 +60,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         }
 
         $variable = new Variable($presenterVariableName);
-        $methodNames = $this->prepareMethodNames($presenterClassName, $actionName);
+        $methodNames = $this->prepareMethodNames($presenterClassName, $actionName, $linkParams);
 
         $attributes['comments'][] = new Doc(
             '/** @var ' . $presenterClassName . ' $' . $presenterVariableName . ' */'
@@ -76,17 +76,25 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
     }
 
     /**
+     * @param Arg[] $linkParams
      * @return string[]
      */
-    private function prepareMethodNames(string $presenterClassName, string $actionName): array
+    private function prepareMethodNames(string $presenterClassName, string $actionName, array $linkParams): array
     {
         $methodNames = [];
+        $methodExists = false;
         // both methods have to have same parameters, so we check them both if exist
         foreach (['action', 'render'] as $type) {
             $methodName = $type . ucfirst($actionName);
             if (method_exists($presenterClassName, $methodName)) {
+                $methodExists = true;
                 $methodNames[] = $methodName;
             }
+        }
+
+        // If methods not exist, but we pass parameters to links, we need to add method with fake name to find them in CallActionWithParametersMissingCorrespondingMethodErrorTransformer
+        if ($methodExists === false && $linkParams !== []) {
+            $methodNames[] = $actionName . 'WithParametersMissingCorrespondingMethod';
         }
 
         return $methodNames;

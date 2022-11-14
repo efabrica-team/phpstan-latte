@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Error;
 
 use Efabrica\PHPStanLatte\Compiler\LineMapper;
+use Efabrica\PHPStanLatte\Error\Error as LatteError;
+use Efabrica\PHPStanLatte\Error\Transformer\ErrorTransformerInterface;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleError;
@@ -18,14 +20,22 @@ final class ErrorBuilder
         '/Method Nette\\\Application\\\UI\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
     ];
 
+    /** @var ErrorTransformerInterface[] */
+    private array $errorTransformers;
+
     private LineMapper $lineMapper;
 
     /**
      * @param string[] $errorPatternsToIgnore
+     * @param ErrorTransformerInterface[] $errorTransformers
      */
-    public function __construct(array $errorPatternsToIgnore, LineMapper $lineMapper)
-    {
+    public function __construct(
+        array $errorPatternsToIgnore,
+        array $errorTransformers,
+        LineMapper $lineMapper
+    ) {
         $this->errorPatternsToIgnore += $errorPatternsToIgnore;
+        $this->errorTransformers = $errorTransformers;
         $this->lineMapper = $lineMapper;
     }
 
@@ -47,16 +57,20 @@ final class ErrorBuilder
         return $errors;
     }
 
-    public function buildError(Error $error, string $templatePath, Scope $scope): ?RuleError
+    public function buildError(Error $originalError, string $templatePath, Scope $scope): ?RuleError
     {
-        if ($this->shouldErrorBeIgnored($error)) {
+        if ($this->shouldErrorBeIgnored($originalError)) {
             return null;
         }
-        $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage()) // TODO remap messages not registered filters etc.
+
+        $error = new LatteError($originalError->getMessage(), $originalError->getTip());
+        $error = $this->transformError($error);
+
+        $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage())
             ->file($templatePath)
-            ->metadata(array_merge($error->getMetadata(), ['context' => $scope->getFile()]));
-        if ($error->getLine()) {
-            $ruleErrorBuilder->line($this->lineMapper->get($error->getLine()));
+            ->metadata(array_merge($originalError->getMetadata(), ['context' => $scope->getFile()]));
+        if ($originalError->getLine()) {
+            $ruleErrorBuilder->line($this->lineMapper->get($originalError->getLine()));
         }
         if ($error->getTip()) {
             $ruleErrorBuilder->tip($error->getTip());
@@ -72,5 +86,13 @@ final class ErrorBuilder
             }
         }
         return false;
+    }
+
+    private function transformError(LatteError $error): LatteError
+    {
+        foreach ($this->errorTransformers as $errorTransformer) {
+            $error = $errorTransformer->transform($error);
+        }
+        return $error;
     }
 }
