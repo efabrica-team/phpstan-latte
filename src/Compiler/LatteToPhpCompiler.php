@@ -12,11 +12,7 @@ use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\CompileException;
 use Latte\Compiler;
-use Latte\Macros\BlockMacros;
-use Latte\Macros\CoreMacros;
 use Latte\Parser;
-use Nette\Bridges\ApplicationLatte\UIMacros;
-use Nette\Bridges\FormsLatte\FormMacros;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -26,6 +22,9 @@ use PHPStan\Analyser\Scope;
 final class LatteToPhpCompiler
 {
     private bool $strictMode;
+
+    /** @var string[] */
+    private array $macros;
 
     private Parser $parser;
 
@@ -39,10 +38,12 @@ final class LatteToPhpCompiler
     private Standard $printerStandard;
 
     /**
+     * @param string[] $macros
      * @param PostCompileNodeVisitorInterface[] $postCompileNodeVisitors
      */
     public function __construct(
         bool $strictMode,
+        array $macros,
         Parser $parser,
         Compiler $compiler,
         array $postCompileNodeVisitors,
@@ -50,6 +51,7 @@ final class LatteToPhpCompiler
         Standard $printerStandard
     ) {
         $this->strictMode = $strictMode;
+        $this->macros = $macros;
         $this->parser = $parser;
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
@@ -66,25 +68,21 @@ final class LatteToPhpCompiler
     {
         $latteTokens = $this->parser->parse($templateContent);
 
-        $this->installDefaultMacros($this->compiler);
+        $this->installMacros($this->compiler);
         $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
         return $this->remapLines($phpContent);
     }
 
-    private function installDefaultMacros(Compiler $compiler): void
+    private function installMacros(Compiler $compiler): void
     {
-        // make sure basic macros are installed
-        CoreMacros::install($compiler);
-        BlockMacros::install($compiler);
-
-        if (class_exists('Nette\Bridges\ApplicationLatte\UIMacros')) {
-            UIMacros::install($compiler);
-        }
-
-        if (class_exists('Nette\Bridges\FormsLatte\FormMacros')) {
-            FormMacros::install($compiler);
+        foreach ($this->macros as $macro) {
+            [$class, $method] = explode('::', $macro, 2);
+            $callable = [$class, $method];
+            if (is_callable($callable)) {
+                call_user_func($callable, $compiler);
+            }
         }
     }
 

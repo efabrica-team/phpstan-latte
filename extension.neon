@@ -2,6 +2,11 @@ parameters:
     latte:
         strictMode: false
         globalVariables: []
+        macros:
+            - Latte\Macros\CoreMacros::install
+            - Latte\Macros\BlockMacros::install
+            - Nette\Bridges\ApplicationLatte\UIMacros::install
+            - Nette\Bridges\FormsLatte\FormMacros::install
         filters:
             translate: [Nette\Localization\Translator, translate]
         errorPatternsToIgnore: []
@@ -11,6 +16,7 @@ parametersSchema:
     latte: structure([
         strictMode: bool()
         globalVariables: arrayOf(string(), string())
+        macros: arrayOf(string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
@@ -20,7 +26,7 @@ services:
     - Latte\Parser
     - Latte\Compiler
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%)
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%, %latte.macros%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
@@ -67,4 +73,5 @@ services:
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
+    - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
