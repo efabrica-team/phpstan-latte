@@ -73,4 +73,5 @@ services:
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
+    - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer

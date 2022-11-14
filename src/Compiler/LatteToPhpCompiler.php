@@ -12,11 +12,7 @@ use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\CompileException;
 use Latte\Compiler;
-use Latte\Macros\BlockMacros;
-use Latte\Macros\CoreMacros;
 use Latte\Parser;
-use Nette\Bridges\ApplicationLatte\UIMacros;
-use Nette\Bridges\FormsLatte\FormMacros;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -42,6 +38,7 @@ final class LatteToPhpCompiler
     private Standard $printerStandard;
 
     /**
+     * @param string[] $macros
      * @param PostCompileNodeVisitorInterface[] $postCompileNodeVisitors
      */
     public function __construct(
@@ -82,8 +79,9 @@ final class LatteToPhpCompiler
     {
         foreach ($this->macros as $macro) {
             [$class, $method] = explode('::', $macro, 2);
-            if (class_exists($class) && method_exists($class, $method)) {
-                call_user_func([$class, $method], $compiler);
+            $callable = [$class, $method];
+            if (is_callable($callable)) {
+                call_user_func($callable, $compiler);
             }
         }
     }
