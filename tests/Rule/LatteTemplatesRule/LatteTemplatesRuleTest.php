@@ -34,7 +34,7 @@ final class LatteTemplatesRuleTest extends RuleTestCase
             ],
             [
                 'Undefined latte filter "nonExistingFilter".',
-                6,
+                7,
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#setup',
             ],
 

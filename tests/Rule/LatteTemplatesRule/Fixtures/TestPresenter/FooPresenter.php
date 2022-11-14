@@ -16,7 +16,6 @@ final class FooPresenter extends Presenter
 
     public function actionCreate(): void
     {
-
     }
 
     protected function createComponentForm(): Form
