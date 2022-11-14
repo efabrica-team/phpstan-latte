@@ -14,6 +14,13 @@ use PhpParser\Node\Stmt\Expression;
  */
 final class SignalLinkProcessor implements LinkProcessorInterface
 {
+    private ?string $actualClass = null;
+
+    public function setActualClass(string $actualClass): void
+    {
+        $this->actualClass = $actualClass;
+    }
+
     public function check(string $targetName): bool
     {
         return substr_compare($targetName, '!', -strlen('!')) === 0;
@@ -28,6 +35,9 @@ final class SignalLinkProcessor implements LinkProcessorInterface
     {
         $variable = new Variable('actualClass');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
-        return [new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes)];
+        if ($this->actualClass !== null && method_exists($this->actualClass, $methodName)) {
+            return [new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes)];
+        }
+        return [];
     }
 }

@@ -15,16 +15,16 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {
     private PresenterFactoryFaker $presenterFactoryFaker;
 
-    private ?string $actualPresenter = null;
+    private ?string $actualClass = null;
 
     public function __construct(PresenterFactoryFaker $presenterFactoryFaker)
     {
         $this->presenterFactoryFaker = $presenterFactoryFaker;
     }
 
-    public function setActualPresenter(string $actualPresenter): void
+    public function setActualClass(string $actualClass): void
     {
-        $this->actualPresenter = $actualPresenter;
+        $this->actualClass = $actualClass;
     }
 
     public function check(string $targetName): bool
@@ -48,14 +48,14 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         try {
             $presenterClassName = $presenterFactory->getPresenterClass($presenterWithModule);
         } catch (InvalidPresenterException $e) {
-            if ($this->actualPresenter === null) {
+            if ($this->actualClass === null) {
                 return [];
             }
-            $actualPresenter = @$presenterFactory->unformatPresenterClass($this->actualPresenter);
-            if ($actualPresenter === null) {
+            $actualClass = @$presenterFactory->unformatPresenterClass($this->actualClass);
+            if ($actualClass === null) {
                 return [];
             }
-            [$moduleName,] = explode(':', $actualPresenter, 2);
+            [$moduleName,] = explode(':', $actualClass, 2);
             return $this->createLinkExpressions($moduleName . ':' . $targetName, $linkParams, $attributes);
         }
 

@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
-use Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
@@ -28,8 +27,8 @@ use PhpParser\NodeVisitorAbstract;
  *
  * to:
  * <code>
- * $myPresenter->actionMyActiion($parameter1, $parameter2);
- * $myPresenter->renderMyActiion($parameter1, $parameter2);
+ * $myPresenter->actionMyAction($parameter1, $parameter2);
+ * $myPresenter->renderMyAction($parameter1, $parameter2);
  * </code>
  */
 final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
@@ -105,8 +104,8 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
             return null;
         }
 
-        if ($linkProcessor instanceof PresenterActionLinkProcessor && $this->scope->getClassReflection() !== null) {
-            $linkProcessor->setActualPresenter($this->scope->getClassReflection()->getName());
+        if ($this->scope->getClassReflection() !== null) {
+            $linkProcessor->setActualClass($this->scope->getClassReflection()->getName());
         }
 
         $targetParams = isset($linkArgs[1]) ? $linkArgs[1]->value : null;
