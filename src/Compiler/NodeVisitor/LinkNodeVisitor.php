@@ -105,8 +105,8 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
             return null;
         }
 
-        if ($linkProcessor instanceof PresenterActionLinkProcessor && $this->scope->getClassReflection() !== null) {
-            $linkProcessor->setActualPresenter($this->scope->getClassReflection()->getName());
+        if ($this->scope->getClassReflection() !== null) {
+            $linkProcessor->setActualClass($this->scope->getClassReflection()->getName());
         }
 
         $targetParams = isset($linkArgs[1]) ? $linkArgs[1]->value : null;

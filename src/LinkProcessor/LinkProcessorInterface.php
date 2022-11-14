@@ -20,4 +20,9 @@ interface LinkProcessorInterface
      * @return Expression[]
      */
     public function createLinkExpressions(string $targetName, array $linkParams, array $attributes): array;
+
+    /**
+     * adds actual class to link processor
+     */
+    public function setActualClass(string $actualClass): void;
 }

@@ -60,6 +60,7 @@ services:
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor
+    - Efabrica\PHPStanLatte\LinkProcessor\SignalLinkProcessor
 
     # Variable collectors
     variableCollectorStorage:
