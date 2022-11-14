@@ -24,11 +24,6 @@ final class Component
         return $this->name;
     }
 
-    public function getType(): Type
-    {
-        return $this->type;
-    }
-
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
