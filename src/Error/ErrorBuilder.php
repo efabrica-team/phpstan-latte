@@ -17,7 +17,8 @@ final class ErrorBuilder
     /** @var string[] */
     private array $errorPatternsToIgnore = [
         '/PHPStanLatteTemplate/',
-        '/Method Nette\\\Application\\\UI\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
+        '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
+        '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
     ];
 
     /** @var ErrorTransformerInterface[] */
