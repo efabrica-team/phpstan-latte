@@ -25,4 +25,4 @@ jobs:
         run: composer require efabrica/coding-standard --dev
 
       - name: Code sniffer
-        run: vendor/bin/phpcs src tests --standard=vendor/efabrica/coding-standard/eFabrica -n
+        run: vendor/bin/phpcs src tests --standard=vendor/efabrica/coding-standard/eFabrica --extensions="php" -n
