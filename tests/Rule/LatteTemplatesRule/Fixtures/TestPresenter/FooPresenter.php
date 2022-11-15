@@ -5,17 +5,24 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Fixtures\TestPresenter;
 
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Presenter;
 
-final class FooPresenter extends Presenter
+final class FooPresenter extends ParentPresenter
 {
     public function actionDefault(): void
     {
-        $this->template->foo = 'bar';
+        $this->template->foo = 'foo';
+        $this->bar();
+        $this->baz();
+        parent::actionDefault();
     }
 
     public function actionCreate(): void
     {
+    }
+
+    private function bar(): void
+    {
+        $this->template->variableFromOtherMethod = 'bar';
     }
 
     protected function createComponentForm(): Form

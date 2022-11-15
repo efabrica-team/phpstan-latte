@@ -27,7 +27,7 @@ final class TemplateVariableFinder
     {
         $nodeTraverser = new NodeTraverser();
 
-        $templateVariableFinderNodeVisitor = new TemplateVariableFinderNodeVisitor($scope, $this->templateTypeResolver);
+        $templateVariableFinderNodeVisitor = new TemplateVariableFinderNodeVisitor($scope, $this->templateTypeResolver, $this);
         $nodeTraverser->addVisitor($templateVariableFinderNodeVisitor);
         $nodeTraverser->traverse((array)$classMethod->stmts);
 
