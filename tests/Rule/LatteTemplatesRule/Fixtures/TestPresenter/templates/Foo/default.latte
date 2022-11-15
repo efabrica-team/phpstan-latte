@@ -1,0 +1,17 @@
+{block content}
+
+<h1>{$foo}</h1>
+
+<div n:foreach="$items as $item">
+    <a n:tag-if="$item->title">
+        {$item->id|existingFilter}
+        {$item->title|nonExistingFilter}
+    </a>
+</div>
+
+<a href="{link create}">Only create</a>
+<a href="{link Foo:create}">Create with presenter</a>
+<a href="{link create, 'extra-argument'}">Only create with extra argument</a>
+<a href="{link Foo:create, 'extra-argument'}">Create with presenter with extra argument</a>
+
+{control nonExistingControl}

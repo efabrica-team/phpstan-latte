@@ -72,14 +72,19 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $component = $this->findComponentByName($componentNameArgument->value->value);
-        if ($component === null) {
-            return null;
-        }
+        $componentName = $componentNameArgument->value->value;
 
         $originalDocComment = $node->getDocComment();
         $originalDocCommentText = $originalDocComment ? $originalDocComment->getText() : '';
-        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $component->getTypeAsString() . ' $_tmp */'));
+
+        $component = $this->findComponentByName($componentName);
+        if ($component === null) {
+            $componentType = 'ComponentWithName' . $componentName . 'DoesntExist';
+        } else {
+            $componentType = $component->getTypeAsString();
+        }
+
+        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' $_tmp */'));
         return $node;
     }
 

@@ -1,0 +1,6 @@
+parameters:
+    latte:
+        filters:
+            existingFilter: strlen
+        applicationMapping:
+            *: Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Fixtures\TestPresenter\*Presenter

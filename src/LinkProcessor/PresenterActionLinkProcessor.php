@@ -29,7 +29,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 
     public function check(string $targetName): bool
     {
-        return strpos($targetName, ':') !== false;
+        return strpos($targetName, '!') === false;
     }
 
     /**
@@ -39,6 +39,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
      */
     public function createLinkExpressions(string $targetName, array $linkParams, array $attributes): array
     {
+        $targetName = ltrim($targetName, '/:');
         $targetNameParts = explode(':', $targetName);
         $actionName = array_pop($targetNameParts);
         $presenterWithModule = implode(':', $targetNameParts);
@@ -55,8 +56,15 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
             if ($actualClass === null) {
                 return [];
             }
-            [$moduleName,] = explode(':', $actualClass, 2);
-            return $this->createLinkExpressions($moduleName . ':' . $targetName, $linkParams, $attributes);
+
+            if (count($targetNameParts) === 1) {
+                $newTarget = $actualClass . ':' . $targetName;
+            } else {
+                [$module,] = explode(':', $actualClass, 2);
+                $newTarget = $module . ':' . $targetName;
+            }
+
+            return $this->createLinkExpressions($newTarget, $linkParams, $attributes);
         }
 
         $variable = new Variable($presenterVariableName);
