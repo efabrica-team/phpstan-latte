@@ -8,6 +8,11 @@ use Nette\Application\UI\Presenter;
 
 class ParentPresenter extends Presenter
 {
+    public function actionDefault(): void
+    {
+        $this->template->variableFromParentCalledViaParent = 'barbaz';
+    }
+
     protected function baz(): void
     {
         $this->template->variableFromParent = 'baz';

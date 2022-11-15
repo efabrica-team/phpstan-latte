@@ -13,6 +13,7 @@ final class FooPresenter extends ParentPresenter
         $this->template->foo = 'foo';
         $this->bar();
         $this->baz();
+        parent::actionDefault();
     }
 
     public function actionCreate(): void

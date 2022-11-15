@@ -10,10 +10,13 @@ use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeVisitorAbstract;
@@ -45,7 +48,7 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): ?Node
     {
-        if ($node instanceof MethodCall) {
+        if ($node instanceof MethodCall || $node instanceof StaticCall) {
             $this->variables = array_merge($this->variables, $this->processMethodCall($node));
             return null;
         }
@@ -79,9 +82,10 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
     }
 
     /**
+     * @param MethodCall|StaticCall $methodCall
      * @return TemplateVariable[]
      */
-    private function processMethodCall(MethodCall $methodCall): array
+    private function processMethodCall(CallLike $methodCall): array
     {
         $classReflection = $this->scope->getClassReflection();
         if ($classReflection === null) {
@@ -94,8 +98,13 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 
         $calledMethodName = $methodCall->name->name;
 
+        $caller = $classReflection->getName();
+        if ($methodCall instanceof StaticCall && $methodCall->class instanceof Name && (string)$methodCall->class === 'parent' && $classReflection->getParentClass() !== null) {
+            $caller = $classReflection->getParentClass()->getName();
+        }
+
         try {
-            $reflectionMethod = new ReflectionMethod($classReflection->getName(), $calledMethodName);
+            $reflectionMethod = new ReflectionMethod($caller, $calledMethodName);
         } catch (ReflectionException $e) {
             return [];
         }
