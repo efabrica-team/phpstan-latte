@@ -16,9 +16,11 @@ final class ErrorBuilder
 {
     /** @var string[] */
     private array $errorPatternsToIgnore = [
-        '/PHPStanLatteTemplate/',
-        '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
-        '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',
+        '/PHPStanLatteTemplate/',   // errors connected with compiled template class
+        '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
+        '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',  // we will not test latte compiler itself
+        '/Call to method redrawControl\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./', // do not check fake classname created for non existing controls
+        '/Call to method render\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./',
     ];
 
     /** @var ErrorTransformerInterface[] */
@@ -35,7 +37,7 @@ final class ErrorBuilder
         array $errorTransformers,
         LineMapper $lineMapper
     ) {
-        $this->errorPatternsToIgnore += $errorPatternsToIgnore;
+        $this->errorPatternsToIgnore = array_merge($this->errorPatternsToIgnore, $errorPatternsToIgnore);
         $this->errorTransformers = $errorTransformers;
         $this->lineMapper = $lineMapper;
     }

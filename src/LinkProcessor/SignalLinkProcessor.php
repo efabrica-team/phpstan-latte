@@ -23,7 +23,7 @@ final class SignalLinkProcessor implements LinkProcessorInterface
 
     public function check(string $targetName): bool
     {
-        return substr_compare($targetName, '!', -strlen('!')) === 0;
+        return strpos($targetName, '!') !== false;
     }
 
     /**

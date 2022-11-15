@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Fixtures\TestPresenter\FooPresenter;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -15,7 +16,7 @@ final class LatteTemplatesRuleTest extends RuleTestCase
         return [
             __DIR__ . '/../../../extension.neon',
             __DIR__ . '/../../../rules.neon',
-
+            __DIR__ . '/Fixtures/config.neon',
             // TODO add config - mappings, filters etc.
         ];
     }
@@ -34,13 +35,21 @@ final class LatteTemplatesRuleTest extends RuleTestCase
             ],
             [
                 'Undefined latte filter "nonExistingFilter".',
-                7,
+                8,
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
             ],
-
-            // TODO line 11 - extra argument in link
-
-            // TODO line 13 - nonExistingControl
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                14,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                15,
+            ],
+            [
+                'Component with name "nonExistingControl" probably doesn\'t exist.',
+                17,
+            ],
         ]);
     }
 }
