@@ -22,12 +22,14 @@ use PhpParser\NodeFinder;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use PHPStan\Analyser\Scope;
-use ReflectionException;
-use ReflectionMethod;
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
 
 final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 {
     private Scope $scope;
+
+    private ClassReflection $classReflection;
 
     private TemplateTypeResolver $templateTypeResolver;
 
@@ -38,10 +40,12 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 
     public function __construct(
         Scope $scope,
+        ClassReflection $classReflection,
         TemplateTypeResolver $templateTypeResolver,
         TemplateVariableFinder $templateVariableFinder
     ) {
         $this->scope = $scope;
+        $this->classReflection = $classReflection;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->templateVariableFinder = $templateVariableFinder;
     }
@@ -49,7 +53,7 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof MethodCall || $node instanceof StaticCall) {
-            $this->variables = array_merge($this->variables, $this->processMethodCall($node));
+            $this->variables = array_merge($this->variables, $this->processMethodCall($node, $this->classReflection));
             return null;
         }
 
@@ -85,32 +89,33 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
      * @param MethodCall|StaticCall $methodCall
      * @return TemplateVariable[]
      */
-    private function processMethodCall(CallLike $methodCall): array
+    private function processMethodCall(CallLike $methodCall, ClassReflection $classReflection): array
     {
-        $classReflection = $this->scope->getClassReflection();
-        if ($classReflection === null) {
-            return [];
-        }
-
         if (!$methodCall->name instanceof Identifier) {
             return [];
         }
 
         $calledMethodName = $methodCall->name->name;
-
-        $caller = $classReflection->getName();
         if ($methodCall instanceof StaticCall && $methodCall->class instanceof Name && (string)$methodCall->class === 'parent' && $classReflection->getParentClass() !== null) {
-            $caller = $classReflection->getParentClass()->getName();
-        }
-
-        try {
-            $reflectionMethod = new ReflectionMethod($caller, $calledMethodName);
-        } catch (ReflectionException $e) {
+            $classReflection = $classReflection->getParentClass();
+        } elseif (!($methodCall instanceof MethodCall && $methodCall->var instanceof Variable && is_string($methodCall->var->name) && $methodCall->var->name === 'this')) {
             return [];
         }
 
-        $methodFileName = $reflectionMethod->getFileName();
-        if ($methodFileName === false) {
+        try {
+            $methodReflection = $classReflection->getMethod($calledMethodName, $this->scope);
+        } catch (MissingMethodFromReflectionException $e) {
+            return [];
+        }
+        $declaringClass = $methodReflection->getDeclaringClass();
+
+        // Do not find template variables in nette classes
+        if (in_array($declaringClass->getName(), ['Nette\Application\UI\Presenter', 'Nette\Application\UI\Control', 'Nette\Application\UI\Component'], true)) {
+            return [];
+        }
+
+        $methodFileName = $declaringClass->getFileName();
+        if ($methodFileName === null) {
             return [];
         }
 
@@ -130,7 +135,7 @@ final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 
         $variables = [];
         foreach ($classMethods as $classMethod) {
-            $variables = array_merge($variables, $this->templateVariableFinder->find($classMethod, $this->scope));
+            $variables = array_merge($variables, $this->templateVariableFinder->find($classMethod, $this->scope, $classReflection));
         }
         return $variables;
     }

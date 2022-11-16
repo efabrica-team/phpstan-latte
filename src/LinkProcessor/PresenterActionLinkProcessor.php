@@ -41,6 +41,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
     {
         $targetName = ltrim($targetName, '/:');
         $targetNameParts = explode(':', $targetName);
+        $targetNamePartsCount = count($targetNameParts);
         $actionName = array_pop($targetNameParts);
         $presenterWithModule = implode(':', $targetNameParts);
         $presenterName = implode('', $targetNameParts);
@@ -57,7 +58,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
                 return [];
             }
 
-            if (count($targetNameParts) === 1) {
+            if ($targetNamePartsCount === 1) {
                 $newTarget = $actualClass . ':' . $targetName;
             } else {
                 [$module,] = explode(':', $actualClass, 2);

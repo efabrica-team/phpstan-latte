@@ -8,6 +8,11 @@ use Nette\Application\UI\Form;
 
 final class FooPresenter extends ParentPresenter
 {
+    protected function startup()
+    {
+        parent::startup();
+    }
+
     public function actionDefault(): void
     {
         $this->template->foo = 'foo';

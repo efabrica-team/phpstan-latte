@@ -59,6 +59,10 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
      */
     public function findTemplatesWithParameters(Node $node, Scope $scope): array
     {
+        if ($scope->getClassReflection() === null) {
+            return [];
+        }
+
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
         $method = $class->getMethod('render');
@@ -67,7 +71,7 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
             return [];
         }
 
-        $variables = $this->templateVariableFinder->find($method, $scope);
+        $variables = $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection());
         $template = $this->templatePathFinder->find($method, $scope);
         if ($template === null) {
             return [];

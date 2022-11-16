@@ -55,6 +55,10 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
      */
     public function findTemplatesWithParameters(Node $node, Scope $scope): array
     {
+        if ($scope->getClassReflection() === null) {
+            return [];
+        }
+
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
         $shortClassName = (string)$class->name;
@@ -71,9 +75,8 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $actionsWithVariables = [];
         foreach ($methods as $method) {
             $methodName = (string)$method->name;
-
             if ($methodName === 'startup') {
-                $startupVariables = $this->templateVariableFinder->find($method, $scope);
+                $startupVariables = $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection());
             }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
@@ -84,7 +87,8 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if (!isset($actionsWithVariables[$actionName])) {
                 $actionsWithVariables[$actionName] = [];
             }
-            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->templateVariableFinder->find($method, $scope));
+
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection()));
         }
 
         $templates = [];
