@@ -67,7 +67,7 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
             return [];
         }
 
-        $variables = $this->templateVariableFinder->find($method, $scope);
+        $variables = $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection());
         $template = $this->templatePathFinder->find($method, $scope);
         if ($template === null) {
             return [];

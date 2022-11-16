@@ -10,6 +10,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeTraverser;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ClassReflection;
 
 final class TemplateVariableFinder
 {
@@ -23,11 +24,11 @@ final class TemplateVariableFinder
     /**
      * @return Variable[]
      */
-    public function find(ClassMethod $classMethod, Scope $scope): array
+    public function find(ClassMethod $classMethod, Scope $scope, ClassReflection $classReflection): array
     {
         $nodeTraverser = new NodeTraverser();
 
-        $templateVariableFinderNodeVisitor = new TemplateVariableFinderNodeVisitor($scope, $this->templateTypeResolver, $this);
+        $templateVariableFinderNodeVisitor = new TemplateVariableFinderNodeVisitor($scope, $classReflection, $this->templateTypeResolver, $this);
         $nodeTraverser->addVisitor($templateVariableFinderNodeVisitor);
         $nodeTraverser->traverse((array)$classMethod->stmts);
 
