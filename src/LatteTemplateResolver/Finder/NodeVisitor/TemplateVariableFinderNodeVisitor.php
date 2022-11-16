@@ -24,8 +24,6 @@ use PhpParser\ParserFactory;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
-use ReflectionException;
-use ReflectionMethod;
 
 final class TemplateVariableFinderNodeVisitor extends NodeVisitorAbstract
 {

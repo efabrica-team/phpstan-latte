@@ -59,6 +59,10 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
      */
     public function findTemplatesWithParameters(Node $node, Scope $scope): array
     {
+        if ($scope->getClassReflection() === null) {
+            return [];
+        }
+
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
         $method = $class->getMethod('render');

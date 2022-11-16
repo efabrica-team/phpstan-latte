@@ -55,6 +55,10 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
      */
     public function findTemplatesWithParameters(Node $node, Scope $scope): array
     {
+        if ($scope->getClassReflection() === null) {
+            return [];
+        }
+
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
         $shortClassName = (string)$class->name;
