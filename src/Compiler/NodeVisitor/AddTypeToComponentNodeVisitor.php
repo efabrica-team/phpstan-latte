@@ -79,7 +79,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $component = $this->findComponentByName($componentName);
         if ($component === null) {
-            $componentType = 'ComponentWithName' . $componentName . 'DoesntExist';
+            $componentType = 'ComponentWithName' . str_replace('-', '___', $componentName) . 'DoesntExist';
         } else {
             $componentType = $component->getTypeAsString();
         }

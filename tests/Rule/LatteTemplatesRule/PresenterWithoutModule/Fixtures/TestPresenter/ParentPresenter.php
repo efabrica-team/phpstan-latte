@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Fixtures\TestPresenter;
+namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\TestPresenter;
 
 use Nette\Application\UI\Presenter;
 

@@ -15,7 +15,7 @@ final class ComponentDoesntExist implements ErrorTransformerInterface
     {
         preg_match(self::COMPONENT_WITH_NAME_DOESNT_EXIST_REGEX, $error->getMessage(), $match);
         if (isset($match['component_name'])) {
-            $error->setMessage('Component with name "' . $match['component_name'] . '" probably doesn\'t exist.');
+            $error->setMessage('Component with name "' . str_replace('___', '-', $match['component_name']) . '" probably doesn\'t exist.');
             $error->setTip(null);   // TODO create some tip
         }
         return $error;

@@ -57,7 +57,7 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
     /**
      * @param InClassNode $node
      */
-    public function findTemplatesWithParameters(Node $node, Scope $scope): array
+    public function findTemplates(Node $node, Scope $scope): array
     {
         if ($scope->getClassReflection() === null) {
             return [];
@@ -85,17 +85,14 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         }
 
         return [
-            new Template($template, $variables),
+            new Template($template, $variables, $this->findComponents($node, $scope)),
         ];
     }
 
-    /**
-     * @param InClassNode $node
-     */
-    public function findComponents(Node $node, Scope $scope): array
+    private function findComponents(InClassNode $node, Scope $scope): array
     {
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
-        return $this->componentsFinder->find($class, $scope);
+        return $this->componentsFinder->findForClass($class, $scope);
     }
 }

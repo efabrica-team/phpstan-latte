@@ -4,17 +4,34 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver\Finder;
 
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Component;
+use PhpParser\Node;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
 use ReflectionClass;
 
 final class ComponentsFinder
 {
+    private NameResolver $nameResolver;
+
+    private ValueResolver $valueResolver;
+
+    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver)
+    {
+        $this->nameResolver = $nameResolver;
+        $this->valueResolver = $valueResolver;
+    }
+
     /**
      * @return Component[]
      */
-    public function find(Class_ $class, Scope $scope): array
+    public function findForClass(Class_ $class, Scope $scope): array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -45,5 +62,71 @@ final class ComponentsFinder
         }
 
         return $components;
+    }
+
+    /**
+     * @return Component[]
+     */
+    public function findForMethod(ClassMethod $classMethod, Scope $scope): array
+    {
+        $nodeTraverser = new NodeTraverser();
+
+        $componentsNodeVisitor = new class($scope, $this->nameResolver, $this->valueResolver) extends NodeVisitorAbstract
+        {
+            private Scope $scope;
+
+            private NameResolver $nameResolver;
+
+            private ValueResolver $valueResolver;
+
+            /** @var Component[] */
+            private array $components = [];
+
+            public function __construct(Scope $scope, NameResolver $nameResolver, ValueResolver $valueResolver)
+            {
+                $this->scope = $scope;
+                $this->nameResolver = $nameResolver;
+                $this->valueResolver = $valueResolver;
+            }
+
+            public function enterNode(Node $node): ?Node
+            {
+                if (!$node instanceof MethodCall) {
+                    return null;
+                }
+
+                if ($this->nameResolver->resolve($node->name) !== 'addComponent') {
+                    return null;
+                }
+
+                if (count($node->getArgs()) < 2) {
+                    return null;
+                }
+
+                $componentArg = $node->getArgs()[0]->value;
+                $componentNameArg = $node->getArgs()[1]->value;
+
+                $componentName = $this->valueResolver->resolve($componentNameArg, $this->scope);
+                if (!is_string($componentName)) {
+                    return null;
+                }
+                $componentArgType = $this->scope->getType($componentArg);
+
+                $this->components[] = new Component($componentName, $componentArgType);
+                return null;
+            }
+
+            /**
+             * @return Component[]
+             */
+            public function getComponents(): array
+            {
+                return $this->components;
+            }
+        };
+        $nodeTraverser->addVisitor($componentsNodeVisitor);
+        $nodeTraverser->traverse((array)$classMethod->stmts);
+
+        return $componentsNodeVisitor->getComponents();
     }
 }

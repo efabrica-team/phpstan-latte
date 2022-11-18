@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -17,10 +16,5 @@ interface LatteTemplateResolverInterface
     /**
      * @return Template[]
      */
-    public function findTemplatesWithParameters(Node $node, Scope $scope): array;
-
-    /**
-     * @return Component[]
-     */
-    public function findComponents(Node $node, Scope $scope): array;
+    public function findTemplates(Node $node, Scope $scope): array;
 }

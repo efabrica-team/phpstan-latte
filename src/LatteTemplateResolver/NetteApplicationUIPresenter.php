@@ -53,7 +53,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
     /**
      * @param InClassNode $node
      */
-    public function findTemplatesWithParameters(Node $node, Scope $scope): array
+    public function findTemplates(Node $node, Scope $scope): array
     {
         if ($scope->getClassReflection() === null) {
             return [];
@@ -72,11 +72,14 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             $classVariables[] = new Variable('presenter', $objectType);
         }
         $startupVariables = [];
+        $startupComponents = [];
         $actionsWithVariables = [];
+        $actionsWithComponents = [];
         foreach ($methods as $method) {
             $methodName = (string)$method->name;
             if ($methodName === 'startup') {
                 $startupVariables = $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection());
+                $startupComponents = $this->componentsFinder->findForMethod($method, $scope);
             }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
@@ -87,9 +90,15 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if (!isset($actionsWithVariables[$actionName])) {
                 $actionsWithVariables[$actionName] = [];
             }
-
             $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection()));
+
+            if (!isset($actionsWithComponents[$actionName])) {
+                $actionsWithComponents[$actionName] = [];
+            }
+            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $this->componentsFinder->findForMethod($method, $scope));
         }
+
+        $globalComponents = $this->findComponents($node, $scope);
 
         $templates = [];
         foreach ($actionsWithVariables as $actionName => $actionVariables) {
@@ -98,20 +107,18 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
                 continue;
             }
             $variables = array_merge($startupVariables, $classVariables, $actionVariables);
-            $templates[] = new Template($template, $variables);
+            $components = array_merge($globalComponents, $startupComponents, $actionsWithComponents[$actionName] ?? []);
+            $templates[] = new Template($template, $variables, $components);
         }
 
         return $templates;
     }
 
-    /**
-     * @param InClassNode $node
-     */
-    public function findComponents(Node $node, Scope $scope): array
+    private function findComponents(InClassNode $node, Scope $scope): array
     {
         /** @var Class_ $class */
         $class = $node->getOriginalNode();
-        return $this->componentsFinder->find($class, $scope);
+        return $this->componentsFinder->findForClass($class, $scope);
     }
 
     private function findTemplateFilePath(string $shortClassName, string $actionName, Scope $scope): ?string
