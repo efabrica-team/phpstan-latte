@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Fixtures\TestPresenter\FooPresenter;
+use Latte\Engine;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -15,6 +16,7 @@ final class LatteTemplatesRuleTest extends RuleTestCase
     {
         return [
             __DIR__ . '/../../../extension.neon',
+            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../../latte2.neon' : __DIR__ . '/../../../latte3.neon',
             __DIR__ . '/../../../rules.neon',
             __DIR__ . '/Fixtures/config.neon',
             // TODO add config - mappings, filters etc.

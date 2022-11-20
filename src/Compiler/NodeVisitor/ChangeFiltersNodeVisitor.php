@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
-use Latte\Runtime\Defaults;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -32,12 +32,9 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
     /**
      * @param array<string, string|array{string, string}> $filters
      */
-    public function __construct(array $filters)
+    public function __construct(array $filters, CompilerInterface $compiler)
     {
-        $defaults = new Defaults();
-        /** @var array<string, string|array{string, string}> $defaultFilters */
-        $defaultFilters = array_change_key_case($defaults->getFilters());
-        $this->filters = $defaultFilters;
+        $this->filters = $compiler->getDefaultFilters();
 
         foreach ($filters as $filterName => $filter) {
             $this->filters[strtolower($filterName)] = $filter;

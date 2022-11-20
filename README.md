@@ -13,6 +13,8 @@ includes:
     - vendor/efabrica/phpstan-latte/rules.neon
 ```
 
+Also add one of files `vendor/efabrica/phpstan-latte/latte2.neon` or `vendor/efabrica/phpstan-latte/latte3.neon` depending on which version of latte you use. 
+
 ## Setup
 You can also add some parameters for phpstan-latte extension. All of them are under `latte` key in `parameters` section.
 
