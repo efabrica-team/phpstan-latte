@@ -2,11 +2,6 @@ parameters:
     latte:
         strictMode: false
         globalVariables: []
-        macros:
-            - Latte\Macros\CoreMacros::install
-            - Latte\Macros\BlockMacros::install
-            - Nette\Bridges\ApplicationLatte\UIMacros::install
-            - Nette\Bridges\FormsLatte\FormMacros::install
         filters:
             translate: [Nette\Localization\Translator, translate]
         errorPatternsToIgnore: []
@@ -16,17 +11,14 @@ parametersSchema:
     latte: structure([
         strictMode: bool()
         globalVariables: arrayOf(string(), string())
-        macros: arrayOf(string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
     ])
 
 services:
-    - Latte\Parser
-    - Latte\Compiler
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.strictMode%, %latte.macros%)
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
@@ -53,6 +45,8 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
