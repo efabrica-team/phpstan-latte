@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler;
 
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
@@ -50,8 +51,8 @@ final class LatteToPhpCompiler
     public function compile(Scope $scope, string $templateContent, array $variables, array $components): string
     {
         $phpContent = $this->compiler->compile($templateContent);
-        $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
+        $phpContent = $this->addExtractParams($phpContent);
         return $this->remapLines($phpContent);
     }
 
@@ -81,23 +82,15 @@ final class LatteToPhpCompiler
         return $this->printerStandard->prettyPrintFile($phpStmts);
     }
 
-    private function fixLines(string $phpContent): string
+    private function addExtractParams(string $phpContent): string
     {
-        $phpContentRows = explode("\n", $phpContent);
-        $newPhpContentRows = [];
-        foreach ($phpContentRows as $phpContentRow) {
-            $pattern = '#/\*(.*?)line (?<number>\d+)(.*?)\*/#';
-            preg_match($pattern, $phpContentRow, $matches);
+        $phpStmts = $this->findNodes($phpContent);
 
-            $latteLine = isset($matches['number']) ? (int)$matches['number'] : null;
-            if ($latteLine === null) {
-                $newPhpContentRows[] = $phpContentRow;
-                continue;
-            }
-            $newPhpContentRows[] = '/* line ' . $latteLine . ' */';
-            $newPhpContentRows[] = preg_replace($pattern, '', $phpContentRow);
-        }
-        return implode("\n", array_filter($newPhpContentRows));
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor(new AddExtractParamsToTopNodeVisitor());
+        $nodeTraverser->traverse($phpStmts);
+
+        return $this->printerStandard->prettyPrintFile($phpStmts);
     }
 
     private function remapLines(string $phpContent): string

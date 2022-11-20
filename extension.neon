@@ -45,6 +45,8 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor

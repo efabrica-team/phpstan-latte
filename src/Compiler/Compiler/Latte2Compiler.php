@@ -38,7 +38,16 @@ final class Latte2Compiler implements CompilerInterface
     {
         $latteTokens = $this->parser->parse($templateContent);
         $this->installMacros($this->compiler);
-        return $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
+        $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
+        return $this->fixLines($phpContent);
+    }
+
+    public function getDefaultFilters(): array
+    {
+        $defaults = new Defaults();
+        /** @var array<string, string|array{string, string}> $defaultFilters */
+        $defaultFilters = array_change_key_case($defaults->getFilters());
+        return $defaultFilters;
     }
 
     private function installMacros(Compiler $compiler): void
@@ -52,11 +61,12 @@ final class Latte2Compiler implements CompilerInterface
         }
     }
 
-    public function getDefaultFilters(): array
+    private function fixLines(string $phpContent): string
     {
-        $defaults = new Defaults();
-        /** @var array<string, string|array{string, string}> $defaultFilters */
-        $defaultFilters = array_change_key_case($defaults->getFilters());
-        return $defaultFilters;
+//        return $phpContent;
+
+        // fix lines at the end of lines
+        $pattern = '/(.*?) (?<line>\/\*(.*?)line (?<number>\d+)(.*?)\*\/)/';
+        return preg_replace($pattern, '${2}${1}', $phpContent);
     }
 }

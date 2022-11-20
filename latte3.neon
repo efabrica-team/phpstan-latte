@@ -1,13 +1,14 @@
 parameters:
     latte3compiler:
-        extensions:
-            - Latte\Essential\RawPhpExtension()
+        extensions: []
+        engineBootstrap: null
 
 parametersSchema:
     latte3compiler: structure([
         extensions: arrayOf(object())
+        engineBootstrap: schema(string(), nullable())
     ])
 
 services:
     - Latte\Engine
-    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte3Compiler(%latte.strictMode%, %latte3compiler.extensions%)
+    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte3Compiler(%latte.strictMode%, %latte3compiler.extensions%, %latte3compiler.engineBootstrap%)

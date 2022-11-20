@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
+use InvalidArgumentException;
 use Latte\Compiler\TemplateGenerator;
 use Latte\Engine;
+use Latte\Essential\RawPhpExtension;
 use Latte\Extension;
 use Nette\Bridges\ApplicationLatte\UIExtension;
 use Nette\Bridges\FormsLatte\FormsExtension;
@@ -22,17 +24,28 @@ final class Latte3Compiler implements CompilerInterface
     public function __construct(
         bool $strictMode,
         array $extensions,
-        Engine $engine
+        ?string $engineBootstrap = null
     ) {
         $this->strictMode = $strictMode;
-        if (class_exists(UIExtension::class)) {
-            $extensions[] = new UIExtension(null);
-        }
-        if (class_exists(FormsExtension::class)) {
-            $extensions[] = new FormsExtension();
-        }
+        if ($engineBootstrap !== null) {
+            $engine = require $engineBootstrap;
+            if (!$engine instanceof Engine) {
+                throw new InvalidArgumentException('engineBootstrap must return Engine');
+            }
+        } else {
+            $engine = new Engine();
+            if (class_exists(RawPhpExtension::class)) {
+                $extensions[] = new RawPhpExtension();
+            }
+            if (class_exists(UIExtension::class)) {
+                $extensions[] = new UIExtension(null);
+            }
+            if (class_exists(FormsExtension::class)) {
+                $extensions[] = new FormsExtension();
+            }
 
-        $this->installExtensions($engine, $extensions);
+            $this->installExtensions($engine, $extensions);
+        }
         $this->engine = $engine;
     }
 
@@ -41,7 +54,17 @@ final class Latte3Compiler implements CompilerInterface
         $templateNode = $this->engine->parse($templateContent);
         $this->engine->applyPasses($templateNode);
         $templateGenerator = new TemplateGenerator();
-        return $templateGenerator->generate($templateNode, 'PHPStanLatteTemplate', null, $this->strictMode);
+        $phpContent = $templateGenerator->generate($templateNode, 'PHPStanLatteTemplate', null, $this->strictMode);
+        return $this->fixLines($phpContent);
+    }
+
+    public function getDefaultFilters(): array
+    {
+        $defaultFilters = [];
+        foreach ($this->engine->getExtensions() as $extension) {
+            $defaultFilters = array_merge($defaultFilters, $extension->getFilters());
+        }
+        return $defaultFilters;
     }
 
     /**
@@ -54,12 +77,14 @@ final class Latte3Compiler implements CompilerInterface
         }
     }
 
-    public function getDefaultFilters(): array
+    private function fixLines(string $phpContent): string
     {
-        $defaultFilters = [];
-        foreach ($this->engine->getExtensions() as $extension) {
-            $defaultFilters = array_merge($defaultFilters, $extension->getFilters());
-        }
-        return $defaultFilters;
+        // fix lines after $component->render()
+        $pattern = '/\$ʟ_tmp = \$this->global->uiControl->getComponent(.*?)\$ʟ_tmp->render\((.*?)\) (?<line>(.*?)\/\*(.*?)line (?<number>\d+)(.*?)\*\/);/s';
+        $phpContent = preg_replace($pattern, '${3}' . "\n\t\t" . '$ʟ_tmp = $this->global->uiControl->getComponent${1}$ʟ_tmp->render(${2});', $phpContent);
+
+        // fix lines at the end of lines
+        $pattern = '/(.*?) (?<line>\/\*(.*?)line (?<number>\d+)(.*?)\*\/)/';
+        return preg_replace($pattern, '${2}${1}', $phpContent);
     }
 }
