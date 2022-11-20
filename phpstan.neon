@@ -1,4 +1,6 @@
 parameters:
+    # turn of report unmatched ignored errors because of latte2/latte3 compiler issues
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         -
             message: '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
@@ -12,3 +14,59 @@ parameters:
         -
             message: '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
+
+        # Errors cause by multiple latte compiler engines
+        -
+            message: '#^Property Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:\$parser has unknown class Latte\\Parser as its type\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Property Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:\$compiler has unknown class Latte\\Compiler as its type\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Parameter \$parser of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:__construct\(\) has invalid type Latte\\Parser\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:__construct\(\) has invalid type Latte\\Compiler\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Call to method compile\(\) on an unknown class Latte\\Compiler\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Instantiated class Latte\\Runtime\\Defaults not found\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Call to method getFilters\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:installMacros\(\) has invalid type Latte\\Compiler\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+        -
+            message: '#^Parameter \$extensions of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte3Compiler\:\:__construct\(\) has invalid type Latte\\Extension\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Parameter \#2 \$extensions of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte3Compiler\:\:installExtensions\(\) expects array\<Latte\\Extension\>, array\<Latte\\Essential\\RawPhpExtension\|Latte\\Extension\|Nette\\Bridges\\ApplicationLatte\\UIExtension\|Nette\\Bridges\\FormsLatte\\FormsExtension\> given\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Call to an undefined method Latte\\Engine\:\:parse\(\)\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Call to an undefined method Latte\\Engine\:\:applyPasses\(\)\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Instantiated class Latte\\Compiler\\TemplateGenerator not found\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Call to method generate\(\) on an unknown class Latte\\Compiler\\TemplateGenerator\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Call to an undefined method Latte\\Engine\:\:getExtensions\(\)\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Parameter \$extensions of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte3Compiler\:\:installExtensions\(\) has invalid type Latte\\Extension\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php
+        -
+            message: '#^Call to an undefined method Latte\\Engine\:\:addExtension\(\)\.$#'
+            path: src/Compiler/Compiler/Latte3Compiler.php

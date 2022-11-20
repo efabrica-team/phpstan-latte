@@ -20,7 +20,7 @@ final class ErrorBuilder
         '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
         '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',  // we will not test latte compiler itself
         '/Call to method redrawControl\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./', // do not check fake classname created for non existing controls
-        '/Call to method render\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./',
+        '/Call to method render\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./', // do not check fake classname created for non existing controls
     ];
 
     /** @var ErrorTransformerInterface[] */

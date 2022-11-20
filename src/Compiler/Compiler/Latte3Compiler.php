@@ -62,6 +62,7 @@ final class Latte3Compiler implements CompilerInterface
     {
         $defaultFilters = [];
         foreach ($this->engine->getExtensions() as $extension) {
+            /** @var array<string, array{string, string}|string> $defaultFilters */
             $defaultFilters = array_merge($defaultFilters, $extension->getFilters());
         }
         return $defaultFilters;
@@ -81,10 +82,10 @@ final class Latte3Compiler implements CompilerInterface
     {
         // fix lines after $component->render()
         $pattern = '/\$ʟ_tmp = \$this->global->uiControl->getComponent(.*?)\$ʟ_tmp->render\((.*?)\) (?<line>(.*?)\/\*(.*?)line (?<number>\d+)(.*?)\*\/);/s';
-        $phpContent = preg_replace($pattern, '${3}' . "\n\t\t" . '$ʟ_tmp = $this->global->uiControl->getComponent${1}$ʟ_tmp->render(${2});', $phpContent);
+        $phpContent = preg_replace($pattern, '${3}' . "\n\t\t" . '$ʟ_tmp = $this->global->uiControl->getComponent${1}$ʟ_tmp->render(${2});', $phpContent) ?: '';
 
         // fix lines at the end of lines
         $pattern = '/(.*?) (?<line>\/\*(.*?)line (?<number>\d+)(.*?)\*\/)/';
-        return preg_replace($pattern, '${2}${1}', $phpContent);
+        return preg_replace($pattern, '${2}${1}', $phpContent) ?: '';
     }
 }
