@@ -19,6 +19,9 @@ final class Latte2Compiler implements CompilerInterface
 
     private Compiler $compiler;
 
+    /**
+     * @param string[] $macros
+     */
     public function __construct(
         bool $strictMode,
         array $macros,

@@ -1,9 +1,13 @@
+parameters:
+    latte3compiler:
+        extensions:
+            - Latte\Essential\RawPhpExtension()
+
+parametersSchema:
+    latte3compiler: structure([
+        extensions: arrayOf(object())
+    ])
+
 services:
     - Latte\Engine
-
-    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte3Compiler(%latte.strictMode%)
-
-    # Extensions
-    - Latte\Essential\RawPhpExtension
-    - Nette\Bridges\ApplicationLatte\UIExtension
-    - Nette\Bridges\FormsLatte\FormsExtension
+    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte3Compiler(%latte.strictMode%, %latte3compiler.extensions%)

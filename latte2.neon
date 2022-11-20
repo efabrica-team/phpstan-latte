@@ -14,5 +14,4 @@ parametersSchema:
 services:
     - Latte\Parser
     - Latte\Compiler
-
     - Efabrica\PHPStanLatte\Compiler\Compiler\Latte2Compiler(%latte.strictMode%, %latte2compiler.macros%)

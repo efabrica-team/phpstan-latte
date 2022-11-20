@@ -16,7 +16,7 @@ final class LatteTemplatesRuleTest extends RuleTestCase
     {
         return [
             __DIR__ . '/../../../extension.neon',
-            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../../latte2.neon' :  __DIR__ . '/../../../latte3.neon',
+            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../../latte2.neon' : __DIR__ . '/../../../latte3.neon',
             __DIR__ . '/../../../rules.neon',
             __DIR__ . '/Fixtures/config.neon',
             // TODO add config - mappings, filters etc.
