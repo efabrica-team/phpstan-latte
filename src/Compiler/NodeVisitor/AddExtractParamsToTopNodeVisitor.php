@@ -25,8 +25,10 @@ final class AddExtractParamsToTopNodeVisitor extends NodeVisitorAbstract
 
         $extractParams = new Expression(
             new FuncCall(
-                new Name('extract'), [
-                    new Arg(new Variable('this->params'))]
+                new Name('extract'),
+                [
+                    new Arg(new Variable('this->params')),
+                ]
             )
         );
 

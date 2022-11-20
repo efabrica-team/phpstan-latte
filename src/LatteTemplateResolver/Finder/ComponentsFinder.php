@@ -91,28 +91,7 @@ final class ComponentsFinder
 
             public function enterNode(Node $node): ?Node
             {
-                if (!$node instanceof MethodCall) {
-                    return null;
-                }
-
-                if ($this->nameResolver->resolve($node->name) !== 'addComponent') {
-                    return null;
-                }
-
-                if (count($node->getArgs()) < 2) {
-                    return null;
-                }
-
-                $componentArg = $node->getArgs()[0]->value;
-                $componentNameArg = $node->getArgs()[1]->value;
-
-                $componentName = $this->valueResolver->resolve($componentNameArg, $this->scope);
-                if (!is_string($componentName)) {
-                    return null;
-                }
-                $componentArgType = $this->scope->getType($componentArg);
-
-                $this->components[] = new Component($componentName, $componentArgType);
+                $this->findAddComponent($node);
                 return null;
             }
 
@@ -122,6 +101,32 @@ final class ComponentsFinder
             public function getComponents(): array
             {
                 return $this->components;
+            }
+
+            private function findAddComponent(Node $node): void
+            {
+                if (!$node instanceof MethodCall) {
+                    return;
+                }
+
+                if ($this->nameResolver->resolve($node->name) !== 'addComponent') {
+                    return;
+                }
+
+                if (count($node->getArgs()) < 2) {
+                    return;
+                }
+
+                $componentArg = $node->getArgs()[0]->value;
+                $componentNameArg = $node->getArgs()[1]->value;
+
+                $componentName = $this->valueResolver->resolve($componentNameArg, $this->scope);
+                if (!is_string($componentName)) {
+                    return;
+                }
+                $componentArgType = $this->scope->getType($componentArg);
+
+                $this->components[] = new Component($componentName, $componentArgType);
             }
         };
         $nodeTraverser->addVisitor($componentsNodeVisitor);

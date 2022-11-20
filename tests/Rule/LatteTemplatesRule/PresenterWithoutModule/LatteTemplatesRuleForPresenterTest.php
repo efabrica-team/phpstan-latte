@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\TestPresenter\FooPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\TestPresenter\FooPresenter;
 use Latte\Engine;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
@@ -44,10 +44,10 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
                 17,
             ],
-            [
-                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
-                28,
-            ],
+//            [
+//                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
+//                28,
+//            ],
         ]);
     }
 }

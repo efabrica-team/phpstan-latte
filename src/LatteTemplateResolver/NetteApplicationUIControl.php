@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
@@ -89,6 +90,9 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         ];
     }
 
+    /**
+     * @return Component[]
+     */
     private function findComponents(InClassNode $node, Scope $scope): array
     {
         /** @var Class_ $class */

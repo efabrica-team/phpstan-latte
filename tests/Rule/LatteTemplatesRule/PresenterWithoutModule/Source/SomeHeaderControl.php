@@ -8,5 +8,7 @@ use Nette\Application\UI\Control;
 
 final class SomeHeaderControl extends Control
 {
-
+    public function render(): void
+    {
+    }
 }

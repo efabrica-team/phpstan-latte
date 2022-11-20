@@ -19,10 +19,10 @@ final class FooPresenter extends ParentPresenter
 
     public function actionDefault(): void
     {
+        parent::actionDefault();
         $this->template->foo = 'foo';
         $this->bar();
         $this->baz();
-        parent::actionDefault();
         $this->controlRegistrator->register($this);
     }
 

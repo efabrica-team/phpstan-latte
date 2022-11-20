@@ -15,6 +15,10 @@ final class SomeControl extends Control
         $this['footer'] = new SomeFooterControl();
     }
 
+    public function render(): void
+    {
+    }
+
     protected function createComponentBody(): SomeBodyControl
     {
         return new SomeBodyControl();

@@ -63,10 +63,8 @@ final class Latte2Compiler implements CompilerInterface
 
     private function fixLines(string $phpContent): string
     {
-//        return $phpContent;
-
         // fix lines at the end of lines
         $pattern = '/(.*?) (?<line>\/\*(.*?)line (?<number>\d+)(.*?)\*\/)/';
-        return preg_replace($pattern, '${2}${1}', $phpContent);
+        return preg_replace($pattern, '${2}${1}', $phpContent) ?: '';
     }
 }
