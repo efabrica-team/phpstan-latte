@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Compiler;
 
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
+use Latte\Engine;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Testing\PHPStanTestCase;
 
@@ -14,6 +15,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
     {
         return [
             __DIR__ . '/../../extension.neon',
+            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../latte2.neon' :  __DIR__ . '/../../latte3.neon',
         ];
     }
 

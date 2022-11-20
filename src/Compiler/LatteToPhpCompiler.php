@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
+use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Latte\CompileException;
-use Latte\Compiler;
-use Latte\Parser;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -21,14 +19,7 @@ use PHPStan\Analyser\Scope;
 
 final class LatteToPhpCompiler
 {
-    private bool $strictMode;
-
-    /** @var string[] */
-    private array $macros;
-
-    private Parser $parser;
-
-    private Compiler $compiler;
+    private CompilerInterface $compiler;
 
     /** @var PostCompileNodeVisitorInterface[] */
     private array $postCompileNodeVisitors;
@@ -38,21 +29,14 @@ final class LatteToPhpCompiler
     private Standard $printerStandard;
 
     /**
-     * @param string[] $macros
      * @param PostCompileNodeVisitorInterface[] $postCompileNodeVisitors
      */
     public function __construct(
-        bool $strictMode,
-        array $macros,
-        Parser $parser,
-        Compiler $compiler,
+        CompilerInterface $compiler,
         array $postCompileNodeVisitors,
         LineNumberNodeVisitor $lineNumberNodeVisitor,
         Standard $printerStandard
     ) {
-        $this->strictMode = $strictMode;
-        $this->macros = $macros;
-        $this->parser = $parser;
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
         $this->printerStandard = $printerStandard;
@@ -62,28 +46,13 @@ final class LatteToPhpCompiler
     /**
      * @param Variable[] $variables
      * @param Component[] $components
-     * @throws CompileException
      */
     public function compile(Scope $scope, string $templateContent, array $variables, array $components): string
     {
-        $latteTokens = $this->parser->parse($templateContent);
-
-        $this->installMacros($this->compiler);
-        $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
+        $phpContent = $this->compiler->compile($templateContent);
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
         return $this->remapLines($phpContent);
-    }
-
-    private function installMacros(Compiler $compiler): void
-    {
-        foreach ($this->macros as $macro) {
-            [$class, $method] = explode('::', $macro, 2);
-            $callable = [$class, $method];
-            if (is_callable($callable)) {
-                call_user_func($callable, $compiler);
-            }
-        }
     }
 
     /**

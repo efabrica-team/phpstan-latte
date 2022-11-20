@@ -1,0 +1,9 @@
+services:
+    - Latte\Engine
+
+    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte3Compiler(%latte.strictMode%)
+
+    # Extensions
+    - Latte\Essential\RawPhpExtension
+    - Nette\Bridges\ApplicationLatte\UIExtension
+    - Nette\Bridges\FormsLatte\FormsExtension

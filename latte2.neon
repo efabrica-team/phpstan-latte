@@ -1,0 +1,18 @@
+parameters:
+    latte2compiler:
+        macros:
+            - Latte\Macros\CoreMacros::install
+            - Latte\Macros\BlockMacros::install
+            - Nette\Bridges\ApplicationLatte\UIMacros::install
+            - Nette\Bridges\FormsLatte\FormMacros::install
+
+parametersSchema:
+    latte2compiler: structure([
+        macros: arrayOf(string())
+    ])
+
+services:
+    - Latte\Parser
+    - Latte\Compiler
+
+    - Efabrica\PHPStanLatte\Compiler\Compiler\Latte2Compiler(%latte.strictMode%, %latte2compiler.macros%)
