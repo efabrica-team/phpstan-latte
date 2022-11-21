@@ -24,6 +24,7 @@ final class FooPresenter extends ParentPresenter
         $this->bar();
         $this->baz();
         $this->controlRegistrator->register($this);
+        $this->getTemplate()->foobar = 'foobar';
     }
 
     public function actionCreate(): void
