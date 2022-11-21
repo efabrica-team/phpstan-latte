@@ -1,0 +1,5 @@
+<?php
+
+__DIR__ . '/abcd';
+-----
+{$dir}/abcd

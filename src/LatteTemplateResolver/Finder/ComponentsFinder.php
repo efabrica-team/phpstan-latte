@@ -120,7 +120,7 @@ final class ComponentsFinder
                 $componentArg = $node->getArgs()[0]->value;
                 $componentNameArg = $node->getArgs()[1]->value;
 
-                $componentName = $this->valueResolver->resolve($componentNameArg, $this->scope);
+                $componentName = $this->valueResolver->resolve($componentNameArg, $this->scope->getFile());
                 if (!is_string($componentName)) {
                     return;
                 }

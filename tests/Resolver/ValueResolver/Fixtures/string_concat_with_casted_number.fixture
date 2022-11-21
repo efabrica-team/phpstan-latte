@@ -1,0 +1,5 @@
+<?php
+
+'abcd' . (string)123;
+-----
+abcd123
