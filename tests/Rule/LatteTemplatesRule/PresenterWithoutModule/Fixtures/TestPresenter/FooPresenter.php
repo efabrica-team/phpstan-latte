@@ -32,6 +32,10 @@ final class FooPresenter extends ParentPresenter
         $this->addComponent(new Form(), 'onlyCreateForm');
     }
 
+    public function actionEdit(string $id, int $sorting = 100): void
+    {
+    }
+
     private function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';
