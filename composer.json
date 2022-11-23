@@ -12,7 +12,8 @@
         "phpunit/phpunit": "^9.5",
         "nette/application": "^3.1.2",
         "nette/forms": "^3.0",
-        "symfony/finder": "^5.4 | ^6.0"
+        "symfony/finder": "^5.4 | ^6.0",
+        "efabrica/coding-standard": "*"
     },
     "autoload": {
         "psr-4": {
@@ -22,6 +23,11 @@
     "autoload-dev": {
         "psr-4": {
             "Efabrica\\PHPStanLatte\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

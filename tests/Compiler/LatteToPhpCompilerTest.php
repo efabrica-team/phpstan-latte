@@ -33,7 +33,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
 
         $output = $compiler->compile($scope, $latteContent, [], []);
         $compiledPhpContent = Engine::VERSION_ID < 30000 ? $compiledPhpContentLatte2 : $compiledPhpContentLatte3;
-        $this->assertSame($compiledPhpContent, $output);
+        $this->assertStringMatchesFormat($compiledPhpContent, $output);
     }
 
     public function dataProvider(): iterable
