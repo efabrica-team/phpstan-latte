@@ -16,9 +16,12 @@ final class ErrorBuilder
 {
     /** @var string[] */
     private array $errorPatternsToIgnore = [
-        '/PHPStanLatteTemplate/',   // errors connected with compiled template class
+        '/PHPStanLatteTemplate/', // errors connected with compiled template class
         '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
-        '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./',  // we will not test latte compiler itself
+        '/Method Nette\\\\Application\\\\UI\\\\IRenderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
+        '/Access to private property \$blocks of parent class Latte\\\\Runtime\\\\Template\./', // we will not test latte compiler itself
+        '/Parameter \#1 \$array of function extract is passed by reference, so it expects variables only\./', // we will not test latte compiler itself
+        '/Parameter \#1 \$var_array of function extract is passed by reference, so it expects variables only\./', // we will not test latte compiler itself
         '/Call to method redrawControl\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./', // do not check fake classname created for non existing controls
         '/Call to method render\(\) on an unknown class ComponentWithName(.*?)DoesntExist\./', // do not check fake classname created for non existing controls
     ];
