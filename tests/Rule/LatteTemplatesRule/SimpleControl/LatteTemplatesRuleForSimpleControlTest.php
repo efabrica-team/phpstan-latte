@@ -24,6 +24,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Variable $c might not be defined.',
                 3,
+                'default.latte',
             ],
         ]);
 
@@ -31,6 +32,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Variable $c might not be defined.',
                 3,
+                'default.latte',
             ],
         ]);
 
