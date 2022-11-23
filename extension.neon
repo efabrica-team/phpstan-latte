@@ -57,6 +57,12 @@ services:
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor
     - Efabrica\PHPStanLatte\LinkProcessor\SignalLinkProcessor
 
+    # Collectors
+    -
+        factory: Efabrica\PHPStanLatte\Collector\AssignVariableToTemplateCollector
+        tags:
+            - phpstan.collector
+
     # Variable collectors
     variableCollectorStorage:
         factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage

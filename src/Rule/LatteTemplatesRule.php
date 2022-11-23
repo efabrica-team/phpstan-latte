@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
+use Efabrica\PHPStanLatte\Collector\AssignVariableToTemplateCollector;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
@@ -13,6 +14,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
+use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 
@@ -60,6 +62,10 @@ final class LatteTemplatesRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
+        $xxx = $this->collectorsRegistry->getCollectors(AssignVariableToTemplateCollector::class);
+        print_R($xxx);
+//        exit;
+
         $workingDir = getcwd() ?: '';
 
         $errors = [];

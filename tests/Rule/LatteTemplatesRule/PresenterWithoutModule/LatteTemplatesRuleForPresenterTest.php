@@ -22,7 +22,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testVariables(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             [
                 'Variable $items might not be defined.',
                 5,
@@ -56,7 +56,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
         // TODO https://github.com/efabrica-team/phpstan-latte/issues/39
 
-        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             [
                 'Component with name "onlyCreateForm" probably doesn\'t exist.',
                 9,
@@ -82,7 +82,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testFilters(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             [
                 'Undefined latte filter "nonExistingFilter".',
                 2,
@@ -94,7 +94,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testLinks(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             [
                 'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
                 7,
