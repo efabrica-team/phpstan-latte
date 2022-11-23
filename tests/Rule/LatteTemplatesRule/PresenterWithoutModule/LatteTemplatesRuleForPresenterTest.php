@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\TestPresenter\FooPresenter;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 use Latte\Engine;
+use PHPStan\Analyser\Error;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 {
@@ -16,87 +17,180 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             __DIR__ . '/../../../../extension.neon',
             Engine::VERSION_ID < 30000 ? __DIR__ . '/../../../../latte2.neon' : __DIR__ . '/../../../../latte3.neon',
             __DIR__ . '/../../../../rules.neon',
-            __DIR__ . '/Fixtures/config.neon',
+            __DIR__ . '/config.neon',
         ];
     }
 
-    public function test(): void
+    public function testVariables(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/TestPresenter/FooPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php'], [
             [
                 'Variable $items might not be defined.',
                 5,
+                'default.latte',
             ],
             [
-                'Undefined latte filter "nonExistingFilter".',
-                8,
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
+                'Variable $nonExistingVariable might not be defined.',
+                18,
+                'default.latte',
             ],
             [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                16,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                17,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                'Variable $fromOtherAction might not be defined.',
                 19,
+                'default.latte',
             ],
             [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                20,
+                'Variable $fromRenderDefault might not be defined.',
+                4,
+                'other.latte',
             ],
             [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                22,
+                'Variable $nonExistingVariable might not be defined.',
+                5,
+                'other.latte',
             ],
-            [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                23,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                25,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                26,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
-                29,
-            ],
-            [
-                'Method ' . FooPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
-                30,
-            ],
-            [
-                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, string> given.',
-                35,
-            ],
-            [
-                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, string> given.',
-                36,
-            ],
-            [
-                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
-                47,
-            ],
-            [
-                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
-                48,
-            ],
+        ]);
+    }
 
+    public function testComponents(): void
+    {
+        // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
+        // TODO https://github.com/efabrica-team/phpstan-latte/issues/39
+
+        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php'], [
+            [
+                'Component with name "onlyCreateForm" probably doesn\'t exist.',
+                9,
+                'default.latte',
+            ],
             [
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
-                66,
+                11,
+                'default.latte',
             ],
-//            [
-//                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
-//                28,
-//            ],
+            [
+                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
+                7,
+                'create.latte',
+            ],
+            [
+                'Component with name "nonExistingControl" probably doesn\'t exist.',
+                11,
+                'create.latte',
+            ],
         ]);
+    }
+
+    public function testFilters(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
+            [
+                'Undefined latte filter "nonExistingFilter".',
+                2,
+                'default.latte',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
+            ],
+        ]);
+    }
+
+    public function testLinks(): void
+    {
+        // TODO https://github.com/efabrica-team/phpstan-latte/issues/36
+
+        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], [
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                7,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                8,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                10,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                11,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                13,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                14,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                16,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                17,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                20,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                21,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, string> given.',
+                26,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, string> given.',
+                27,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
+                38,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
+                39,
+                'default.latte',
+            ],
+        ]);
+    }
+
+    public function analyse(array $files, array $expectedErrors) : void
+    {
+        $actualErrors = $this->gatherAnalyserErrors($files);
+        $strictlyTypedSprintf = static function (int $line, string $message, string $file, ?string $tip) : string {
+            $message = $file . "\n" . sprintf('%02d: %s', $line, $message);
+            if ($tip !== null) {
+                $message .= "\n    💡 " . $tip;
+            }
+            return $message;
+        };
+        $expectedErrors = array_map(static function (array $error) use($strictlyTypedSprintf) : string {
+            return $strictlyTypedSprintf($error[1], $error[0], $error[2], $error[3] ?? null);
+        }, $expectedErrors);
+        $actualErrors = array_map(static function (Error $error) use($strictlyTypedSprintf) : string {
+            $line = $error->getLine();
+            if ($line === null) {
+                $line = -1;
+            }
+            return $strictlyTypedSprintf($line, $error->getMessage(), pathinfo($error->getFile(), PATHINFO_BASENAME), $error->getTip());
+        }, $actualErrors);
+        $this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
     }
 }

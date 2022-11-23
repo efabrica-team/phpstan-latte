@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\TestPresenter;
+namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\ControlRegistrator;
 use Nette\Application\UI\Form;
 
-final class FooPresenter extends ParentPresenter
+final class ComponentsPresenter extends ParentPresenter
 {
     /** @inject */
     public ControlRegistrator $controlRegistrator;
@@ -20,25 +20,12 @@ final class FooPresenter extends ParentPresenter
     public function actionDefault(): void
     {
         parent::actionDefault();
-        $this->template->foo = 'foo';
-        $this->bar();
-        $this->baz();
         $this->controlRegistrator->register($this);
-        $this->getTemplate()->foobar = 'foobar';
     }
 
     public function actionCreate(): void
     {
         $this->addComponent(new Form(), 'onlyCreateForm');
-    }
-
-    public function actionEdit(string $id, int $sorting = 100): void
-    {
-    }
-
-    private function bar(): void
-    {
-        $this->template->variableFromOtherMethod = 'bar';
     }
 
     protected function createComponentForm(): Form
