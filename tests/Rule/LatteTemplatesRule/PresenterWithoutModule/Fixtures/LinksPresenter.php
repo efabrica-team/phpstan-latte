@@ -17,4 +17,8 @@ final class LinksPresenter extends ParentPresenter
     public function actionEdit(string $id, int $sorting = 100): void
     {
     }
+
+    public function actionPublish(string $id, int $sorting = 100, bool $isActive = true): void
+    {
+    }
 }
