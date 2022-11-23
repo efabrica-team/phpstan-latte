@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LinkProcessor;
 
 use InvalidArgumentException;
+use LogicException;
 use PhpParser\BuilderHelpers;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
@@ -60,7 +61,10 @@ final class LinkParamsProcessor
             } elseif (array_key_exists($name, $transferredParams)) {
                 continue;
             } elseif ($param->isDefaultValueAvailable()) {
-                $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue($param->getDefaultValue()));
+                try {
+                    $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue($param->getDefaultValue()));
+                } catch (LogicException $e) {
+                }
             }
         }
 

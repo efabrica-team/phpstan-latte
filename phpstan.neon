@@ -14,6 +14,9 @@ parameters:
         -
             message: '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
+        -
+            message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects array\|bool\|float\|int\|PhpParser\\Node\\Expr\|string\|null, mixed given\.$#'
+            path: src/LinkProcessor/LinkParamsProcessor.php
 
         # Errors cause by multiple latte compiler engines
         -
