@@ -19,8 +19,8 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
-use ReflectionClass;
-use ReflectionException;
+use PHPStan\Broker\ClassNotFoundException;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
@@ -29,16 +29,20 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
     /** @var array<string, string|array{string, string}> */
     private array $filters;
 
+    private ReflectionProvider $reflectionProvider;
+
     /**
      * @param array<string, string|array{string, string}> $filters
      */
-    public function __construct(array $filters, CompilerInterface $compiler)
+    public function __construct(array $filters, CompilerInterface $compiler, ReflectionProvider $reflectionProvider)
     {
         $this->filters = $compiler->getDefaultFilters();
 
         foreach ($filters as $filterName => $filter) {
             $this->filters[strtolower($filterName)] = $filter;
         }
+
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function enterNode(Node $node): ?Node
@@ -106,9 +110,9 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
         $methodName = $filter[1];
 
         try {
-            $reflectionClass = new ReflectionClass($className);
-            $reflectionMethod = $reflectionClass->getMethod($methodName);
-        } catch (ReflectionException $exception) {
+            $reflectionClass = $this->reflectionProvider->getClass($className);
+            $reflectionMethod = $reflectionClass->getMethod($methodName, $this->scope);
+        } catch (ClassNotFoundException $exception) {
             return null;
         }
 
