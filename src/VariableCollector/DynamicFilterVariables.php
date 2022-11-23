@@ -6,9 +6,9 @@ namespace Efabrica\PHPStanLatte\VariableCollector;
 
 use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Utils\Strings;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\Type\ObjectType;
-use ReflectionClass;
-use ReflectionException;
 
 final class DynamicFilterVariables implements VariableCollectorInterface
 {
@@ -38,18 +38,22 @@ final class DynamicFilterVariables implements VariableCollectorInterface
             $className = $filter[0];
             $methodName = $filter[1];
 
+            if ($methodName === '') {
+                continue;
+            }
+
             try {
-                $reflectionClass = new ReflectionClass($className);
+                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
                 $reflectionMethod = $reflectionClass->getMethod($methodName);
 
-                if ($reflectionMethod->isStatic()) {
+                if ($reflectionMethod === null || $reflectionMethod->isStatic()) {
                     continue;
                 }
 
                 // TODO create helper
                 $variableName = Strings::firstLower(Strings::replace($className, '#\\\#', '')) . 'Filter';
                 $variables[$variableName] = new Variable($variableName, new ObjectType($className));
-            } catch (ReflectionException $e) {
+            } catch (ClassNotFoundException $e) {
                 continue;
             }
         }

@@ -14,7 +14,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
-use ReflectionClass;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class ComponentsFinder
 {
@@ -22,10 +22,13 @@ final class ComponentsFinder
 
     private ValueResolver $valueResolver;
 
-    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver)
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
     {
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     /**
@@ -40,8 +43,8 @@ final class ComponentsFinder
 
         /** @var class-string $className */
         $className = (string)$class->namespacedName;
-        $reflectionClass = new ReflectionClass($className);
-        $reflectionMethods = $reflectionClass->getMethods();
+        $reflectionClass = $this->reflectionProvider->getClass($className);
+        $reflectionMethods = $reflectionClass->getNativeReflection()->getMethods();
 
         $components = [];
         foreach ($reflectionMethods as $reflectionMethod) {
