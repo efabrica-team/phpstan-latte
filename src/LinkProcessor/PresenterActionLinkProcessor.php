@@ -15,11 +15,14 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {
     private PresenterFactoryFaker $presenterFactoryFaker;
 
+    private LinkParamsProcessor $linkParamsProcessor;
+
     private ?string $actualClass = null;
 
-    public function __construct(PresenterFactoryFaker $presenterFactoryFaker)
+    public function __construct(PresenterFactoryFaker $presenterFactoryFaker, LinkParamsProcessor $linkParamsProcessor)
     {
         $this->presenterFactoryFaker = $presenterFactoryFaker;
+        $this->linkParamsProcessor = $linkParamsProcessor;
     }
 
     public function setActualClass(string $actualClass): void
@@ -77,6 +80,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 
         $expressions = [];
         foreach ($methodNames as $methodName) {
+            $linkParams = $this->linkParamsProcessor->process($presenterClassName, $methodName, $linkParams);
             $expressions[] = new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes);
             $attributes = [];   // reset attributes, we want to print them only with first expression
         }

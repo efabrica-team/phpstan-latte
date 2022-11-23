@@ -34,15 +34,64 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                14,
+                16,
             ],
             [
                 'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                15,
+                17,
             ],
             [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                19,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                20,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                22,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                23,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                25,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                26,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                29,
+            ],
+            [
+                'Method ' . FooPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                30,
+            ],
+            [
+                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, string> given.',
+                35,
+            ],
+            [
+                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, string> given.',
+                36,
+            ],
+            [
+                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
+                47,
+            ],
+            [
+                'Parameter #1 $id of method ' . FooPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
+                48,
+            ],
+
+            [
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
-                17,
+                66,
             ],
 //            [
 //                'Component with name "someControl-nonexisting" probably doesn\'t exist.',

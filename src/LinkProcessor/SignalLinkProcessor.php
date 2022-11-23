@@ -14,7 +14,14 @@ use PhpParser\Node\Stmt\Expression;
  */
 final class SignalLinkProcessor implements LinkProcessorInterface
 {
+    private LinkParamsProcessor $linkParamsProcessor;
+
     private ?string $actualClass = null;
+
+    public function __construct(LinkParamsProcessor $linkParamsProcessor)
+    {
+        $this->linkParamsProcessor = $linkParamsProcessor;
+    }
 
     public function setActualClass(string $actualClass): void
     {
@@ -36,6 +43,7 @@ final class SignalLinkProcessor implements LinkProcessorInterface
         $variable = new Variable('actualClass');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
         if ($this->actualClass !== null && method_exists($this->actualClass, $methodName)) {
+            $linkParams = $this->linkParamsProcessor->process($this->actualClass, $methodName, $linkParams);
             return [new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes)];
         }
         return [];

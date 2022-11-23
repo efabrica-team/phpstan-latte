@@ -10,9 +10,6 @@ use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
-use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
@@ -108,9 +105,7 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
             $linkProcessor->setActualClass($this->scope->getClassReflection()->getName());
         }
 
-        $targetParams = isset($linkArgs[1]) ? $linkArgs[1]->value : null;
-        $linkParams = $targetParams instanceof Array_ ? $this->createLinkParams($targetParams) : [];
-
+        $linkParams = array_slice($linkArgs, 1);
         $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
         if ($expressions === []) {
             return null;
@@ -133,22 +128,5 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
 
         $propertyFetchName = $this->nameResolver->resolve($propertyFetch->name);
         return in_array($propertyFetchName, ['uiControl', 'uiPresenter'], true);
-    }
-
-    /**
-     * @return Arg[]
-     */
-    private function createLinkParams(Array_ $array): array
-    {
-        $linkParams = [];
-        foreach ($array->items as $arrayItem) {
-            if (!$arrayItem instanceof ArrayItem) {
-                continue;
-            }
-
-            $linkParams[] = new Arg($arrayItem);
-        }
-
-        return $linkParams;
     }
 }
