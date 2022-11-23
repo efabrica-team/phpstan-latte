@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 use Latte\Engine;
-use PHPStan\Analyser\Error;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 {
@@ -95,8 +94,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testLinks(): void
     {
-        // TODO https://github.com/efabrica-team/phpstan-latte/issues/36
-
         $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], [
             [
                 'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
@@ -168,29 +165,27 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 39,
                 'default.latte',
             ],
-        ]);
-    }
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
+                56,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
+                57,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
+                59,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
+                60,
+                'default.latte',
+            ],
 
-    public function analyse(array $files, array $expectedErrors) : void
-    {
-        $actualErrors = $this->gatherAnalyserErrors($files);
-        $strictlyTypedSprintf = static function (int $line, string $message, string $file, ?string $tip) : string {
-            $message = $file . "\n" . sprintf('%02d: %s', $line, $message);
-            if ($tip !== null) {
-                $message .= "\n    💡 " . $tip;
-            }
-            return $message;
-        };
-        $expectedErrors = array_map(static function (array $error) use($strictlyTypedSprintf) : string {
-            return $strictlyTypedSprintf($error[1], $error[0], $error[2], $error[3] ?? null);
-        }, $expectedErrors);
-        $actualErrors = array_map(static function (Error $error) use($strictlyTypedSprintf) : string {
-            $line = $error->getLine();
-            if ($line === null) {
-                $line = -1;
-            }
-            return $strictlyTypedSprintf($line, $error->getMessage(), pathinfo($error->getFile(), PATHINFO_BASENAME), $error->getTip());
-        }, $actualErrors);
-        $this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
+        ]);
     }
 }

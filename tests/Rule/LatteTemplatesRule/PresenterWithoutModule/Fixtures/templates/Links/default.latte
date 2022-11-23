@@ -47,9 +47,14 @@
 <a href="{link edit, id: my-id, sorting: 100}">Only edit with named arguments</a>
 <a href="{link Links:edit, id: my-id, sorting: 100}">Edit with presenter with named arguments</a>
 
-{* https://github.com/efabrica-team/phpstan-latte/issues/36 *}
-{*<a href="{link edit, sorting => 100, id => argument}">Only edit with switched two arguments as array without [ ] and '</a>*}
-{*<a href="{link Links:edit, sorting => 100, id => argument}">Edit with presenter with switched two arguments as array without [ ] and '</a>*}
+<a href="{link edit, sorting => 100, id => my-id}">Only edit with switched two arguments as array without [ ] and '</a>
+<a href="{link Links:edit, sorting => 100, id => my-id}">Edit with presenter with switched two arguments as array without [ ] and '</a>
 
-{*<a href="{link edit, sorting => 100, id => argument}">Only edit with switched named arguments</a>*}
-{*<a href="{link Links:edit, sorting => 100, id => argument}">Edit with switched named arguments</a>*}
+<a href="{link edit, sorting: 100, id: my-id}">Only edit with switched named arguments</a>
+<a href="{link Links:edit, sorting: 100, id: my-id}">Edit with switched named arguments</a>
+
+<a href="{link edit, sorting => 100, extra => extraArgument, id => my-id}">Only edit with switched two arguments as array without [ ] and ' and extra argument in the middle</a>
+<a href="{link Links:edit, sorting => 100, extra => extraArgument, id => my-id}">Edit with presenter with switched two arguments as array without [ ] and ' and extra argument in the middle</a>
+
+<a href="{link edit, sorting: 100, extra: extraArgument, id: my-id}">Only edit with switched named arguments and extra argument in the middle</a>
+<a href="{link Links:edit, sorting: 100, extra: extraArgument, id: my-id}">Edit with switched named arguments and extra argument in the middle</a>

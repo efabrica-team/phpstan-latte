@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Scalar\String_;
+use ReflectionMethod;
 
 final class LinkParamsProcessor
 {
@@ -35,13 +37,30 @@ final class LinkParamsProcessor
             if (!$arrayItem instanceof ArrayItem) {
                 continue;
             }
-
-            if ($arrayItem->key !== null) {  // ignore key for now
+            $key = $arrayItem->key;
+            if ($key instanceof String_) {  // ignore key for now
                 $arrayItem = new ArrayItem($arrayItem->value, null, $arrayItem->byRef, $arrayItem->getAttributes());
+                $transferredParams[$key->value] = new Arg($arrayItem);
+                continue;
             }
             $transferredParams[] = new Arg($arrayItem);
         }
 
-        return $transferredParams;
+        $i = 0;
+        $reflectionMethod = new ReflectionMethod($class, $method);
+        $methodParameters = [];
+        foreach ($reflectionMethod->getParameters() as $param) {
+            $name = $param->getName();
+            $methodParameters[] = $name;
+            if (array_key_exists($i, $transferredParams)) {
+                $transferredParams[$name] = $transferredParams[$i];
+                unset($transferredParams[$i]);
+                $i++;
+            }
+        }
+
+        return array_filter(array_replace(array_flip($methodParameters), $transferredParams), function ($param) {
+            return $param instanceof Arg;
+        });
     }
 }
