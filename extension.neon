@@ -59,7 +59,22 @@ services:
 
     # Collectors
     -
-        factory: Efabrica\PHPStanLatte\Collector\AssignVariableToTemplateCollector
+        factory: Efabrica\PHPStanLatte\Collector\ResolvedClassCollector
+        tags:
+            - phpstan.collector
+
+    -
+        factory: Efabrica\PHPStanLatte\Collector\VariableCollector
+        tags:
+            - phpstan.collector
+
+    -
+        factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
+        tags:
+            - phpstan.collector
+
+    -
+        factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
         tags:
             - phpstan.collector
 

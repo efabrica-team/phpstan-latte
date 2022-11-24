@@ -13,6 +13,8 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Node\CollectedDataNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
@@ -55,16 +57,16 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         return $objectType->isInstanceOf('Nette\Application\UI\Control')->yes();
     }
 
-    /**
-     * @param InClassNode $node
-     */
-    public function findTemplates(Node $node, Scope $scope): array
+    public function findTemplates(string $className, CollectedDataNode $collectedDataNode): array
     {
-        if ($scope->getClassReflection() === null) {
-            return [];
-        }
+        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+        $reflectionMethods = $reflectionClass->getMethods();
 
-        /** @var Class_ $class */
+        foreach ($reflectionMethods as $reflectionMethod) {
+            var_dump($reflectionMethod->getDeclaringClass()->getName());
+            var_dump($reflectionMethod->getName());
+        }
+        exit;
         $class = $node->getOriginalNode();
         $method = $class->getMethod('render');
 

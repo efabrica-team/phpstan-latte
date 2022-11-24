@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
-use Efabrica\PHPStanLatte\Collector\AssignVariableToTemplateCollector;
+use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
+use Efabrica\PHPStanLatte\Collector\VariableCollector;
+use Efabrica\PHPStanLatte\Collector\ComponentCollector;
+use Efabrica\PHPStanLatte\Collector\ResolvedClassCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
@@ -19,7 +22,12 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
 
     protected function getCollectors(): array
     {
-        return [$this->getContainer()->getByType(AssignVariableToTemplateCollector::class)];
+        return [
+            $this->getContainer()->getByType(ResolvedClassCollector::class),
+            $this->getContainer()->getByType(VariableCollector::class),
+            $this->getContainer()->getByType(ComponentCollector::class),
+            $this->getContainer()->getByType(MethodCallCollector::class),
+        ];
     }
 
     public function analyse(array $files, array $expectedErrors): void

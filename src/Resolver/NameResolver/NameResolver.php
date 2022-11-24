@@ -11,8 +11,11 @@ use PhpParser\Node\Name;
 
 final class NameResolver
 {
-    public function resolve(Node $node): ?string
+    public function resolve(?Node $node): ?string
     {
+        if ($node === null) {
+            return null;
+        }
         if ($node instanceof Name || $node instanceof Identifier) {
             return (string)$node;
         }
