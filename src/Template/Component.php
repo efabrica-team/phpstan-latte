@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use JsonSerializable;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
-final class Component
+final class Component implements JsonSerializable
 {
     private string $name;
 
@@ -27,5 +28,16 @@ final class Component
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+          'name' => $this->name,
+          'type' => $this->getTypeAsString(),
+        ];
     }
 }

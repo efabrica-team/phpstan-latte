@@ -1,0 +1,3 @@
+parameters:
+    latte:
+        tmpDir: %rootDir%/../../../tmp/phpstan-latte
