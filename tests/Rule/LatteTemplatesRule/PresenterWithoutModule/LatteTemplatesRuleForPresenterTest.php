@@ -52,35 +52,33 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         ]);
     }
 
-//
-//    public function testComponents(): void
-//    {
-//        // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
-//        // TODO https://github.com/efabrica-team/phpstan-latte/issues/39
-//
-//        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
-//            [
-//                'Component with name "onlyCreateForm" probably doesn\'t exist.',
-//                9,
-//                'default.latte',
-//            ],
-//            [
-//                'Component with name "nonExistingControl" probably doesn\'t exist.',
-//                11,
-//                'default.latte',
-//            ],
-//            [
-//                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
-//                7,
-//                'create.latte',
-//            ],
-//            [
-//                'Component with name "nonExistingControl" probably doesn\'t exist.',
-//                11,
-//                'create.latte',
-//            ],
-//        ]);
-//    }
+    public function testComponents(): void
+    {
+        // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
+
+        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+            [
+                'Component with name "onlyCreateForm" probably doesn\'t exist.',
+                9,
+                'default.latte',
+            ],
+            [
+                'Component with name "nonExistingControl" probably doesn\'t exist.',
+                11,
+                'default.latte',
+            ],
+            [
+                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
+                7,
+                'create.latte',
+            ],
+            [
+                'Component with name "nonExistingControl" probably doesn\'t exist.',
+                11,
+                'create.latte',
+            ],
+        ]);
+    }
 
     public function testFilters(): void
     {

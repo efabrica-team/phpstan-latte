@@ -44,7 +44,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
     {
         $methodCallFinder = new MethodCallFinder($collectedDataNode);
         $variableFinder = new VariableFinder($collectedDataNode, $methodCallFinder);
-        $componentFinder = new ComponentFinder($collectedDataNode);
+        $componentFinder = new ComponentFinder($collectedDataNode, $methodCallFinder);
 
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
 

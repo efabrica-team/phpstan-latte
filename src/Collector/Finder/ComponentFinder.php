@@ -16,7 +16,9 @@ final class ComponentFinder
      */
     private array $collectedComponents;
 
-    public function __construct(CollectedDataNode $collectedDataNode)
+    private MethodCallFinder $methodCallFinder;
+
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
     {
         /** @var CollectedComponent[] $collectedComponents */
         $collectedComponents = array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)));
@@ -28,6 +30,7 @@ final class ComponentFinder
             }
             $this->collectedComponents[$className][$methodName][] = $collectedComponent->getComponent();
         }
+        $this->methodCallFinder = $methodCallFinder;
     }
 
     /**
@@ -35,6 +38,18 @@ final class ComponentFinder
      */
     public function find(string $className, string $methodName): array
     {
-        return $this->collectedComponents[$className][$methodName] ?? [];
+        $collectedComponents = [
+            $this->collectedComponents[$className][$methodName] ?? [],
+        ];
+
+        $methodCalls = $this->methodCallFinder->find($className, $methodName);
+        foreach ($methodCalls as $calledClassName => $calledMethods) {
+            $collectedComponents[] = $this->find($calledClassName, '');
+            foreach ($calledMethods as $calledMethod) {
+                $collectedComponents[] = $this->find($calledClassName, $calledMethod);
+            }
+        }
+
+        return array_merge(...$collectedComponents);
     }
 }
