@@ -61,11 +61,13 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
                 return [];
             }
 
-            if ($targetNamePartsCount === 1) {
+            if ($targetNamePartsCount === 1) { // action
                 $newTarget = $actualClass . ':' . $targetName;
-            } else {
+            } elseif ($targetNamePartsCount === 2) { // presenter:action
                 [$module,] = explode(':', $actualClass, 2);
                 $newTarget = $module . ':' . $targetName;
+            } else {
+                throw $e;
             }
 
             return $this->createLinkExpressions($newTarget, $linkParams, $attributes);
