@@ -12,6 +12,9 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
+/**
+ * @implements Collector<Node, ?CollectedComponent>
+ */
 final class ComponentCollector implements Collector
 {
     private NameResolver $nameResolver;
@@ -40,7 +43,7 @@ final class ComponentCollector implements Collector
         }
 
         $methodName = $this->nameResolver->resolve($node->name);
-        if (!str_starts_with($methodName, 'createComponent') || $methodName === 'createComponent') {
+        if ($methodName === null || !str_starts_with($methodName, 'createComponent') || $methodName === 'createComponent') {
             return null;
         }
 

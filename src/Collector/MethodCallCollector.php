@@ -15,6 +15,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 
+/**
+ * @implements Collector<CallLike, ?CollectedMethodCall>
+ */
 final class MethodCallCollector implements Collector
 {
     private NameResolver $nameResolver;
@@ -38,6 +41,12 @@ final class MethodCallCollector implements Collector
         if ($classReflection === null) {
             return null;
         }
+
+        $functionName = $scope->getFunctionName();
+        if ($functionName === null) {
+            return null;
+        }
+
         $actualClassName = $classReflection->getName();
 
         if (!$node instanceof MethodCall && !$node instanceof StaticCall) {
@@ -49,6 +58,9 @@ final class MethodCallCollector implements Collector
             $calledClassName = $this->nameResolver->resolve($node->class);
             if ($calledClassName === 'parent') {
                 $classReflection = $classReflection->getParentClass();
+                if ($classReflection === null) {
+                    return null;
+                }
                 $calledClassName = $classReflection->getName();
             }
         } elseif ($node->var instanceof Variable && is_string($node->var->name) && $node->var->name === 'this') {
@@ -81,7 +93,7 @@ final class MethodCallCollector implements Collector
 
         return new CollectedMethodCall(
             $actualClassName,
-            $scope->getFunctionName(),
+            $functionName,
             $calledClassName,
             $calledMethodName
         );

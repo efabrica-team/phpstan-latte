@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
-use Efabrica\PHPStanLatte\Collector\VariableCollector;
-use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
@@ -22,18 +19,6 @@ use PHPStan\Type\ObjectType;
 
 final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
 {
-    private TemplateVariableFinder $templateVariableFinder;
-
-    private ComponentsFinder $componentsFinder;
-
-    public function __construct(
-        TemplateVariableFinder $templateVariableFinder,
-        ComponentsFinder $componentsFinder
-    ) {
-        $this->templateVariableFinder = $templateVariableFinder;
-        $this->componentsFinder = $componentsFinder;
-    }
-
     public function check(Node $node, Scope $scope): bool
     {
         if (!$node instanceof InClassNode) {
@@ -62,6 +47,12 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         $componentFinder = new ComponentFinder($collectedDataNode);
 
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+
+        $fileName = $reflectionClass->getFileName();
+        if ($fileName === null) {
+            return [];
+        }
+
         $reflectionMethods = $reflectionClass->getMethods();
 
         $classVariables = [];
@@ -100,7 +91,7 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         }
 
         $shortClassName = $reflectionClass->getShortName();
-        $dir = dirname($reflectionClass->getFileName());
+        $dir = dirname($fileName);
 
         $globalComponents = $componentFinder->find($className, '');
 

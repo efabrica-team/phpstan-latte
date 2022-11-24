@@ -15,6 +15,9 @@ use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
+/**
+ * @implements Collector<Node, ?CollectedVariable>
+ */
 final class VariableCollector implements Collector
 {
     private TemplateTypeResolver $templateTypeResolver;
@@ -31,6 +34,16 @@ final class VariableCollector implements Collector
 
     public function processNode(Node $node, Scope $scope): ?CollectedVariable
     {
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection === null) {
+            return null;
+        }
+
+        $functionName = $scope->getFunctionName();
+        if ($functionName === null) {
+            return null;
+        }
+
         // TODO add other variable assign resolvers - $template->setParameters(), $template->render(path, parameters) etc.
 
         if (!$node instanceof Assign) {
@@ -58,8 +71,8 @@ final class VariableCollector implements Collector
 
         $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
         return new CollectedVariable(
-            $scope->getClassReflection()->getName(),
-            $scope->getFunctionName(),
+            $classReflection->getName(),
+            $functionName,
             new TemplateVariable($variableName, $scope->getType($node->expr))
         );
     }

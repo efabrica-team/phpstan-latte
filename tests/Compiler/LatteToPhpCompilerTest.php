@@ -16,6 +16,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
         return [
             __DIR__ . '/../../extension.neon',
             Engine::VERSION_ID < 30000 ? __DIR__ . '/../../latte2.neon' : __DIR__ . '/../../latte3.neon',
+            __DIR__ . '/../config.neon',
         ];
     }
 
@@ -31,7 +32,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
 
         [$latteContent, $compiledPhpContentLatte2, $compiledPhpContentLatte3] = array_map('trim', explode('-----', file_get_contents($path) ?: '', 3));
 
-        $output = $compiler->compile($scope, $latteContent, [], []);
+        $output = $compiler->compile('', $latteContent, [], []);
         $compiledPhpContent = Engine::VERSION_ID < 30000 ? $compiledPhpContentLatte2 : $compiledPhpContentLatte3;
         $this->assertStringMatchesFormat($compiledPhpContent, $output);
     }

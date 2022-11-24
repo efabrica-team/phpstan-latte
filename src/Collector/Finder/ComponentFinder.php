@@ -12,7 +12,7 @@ use PHPStan\Node\CollectedDataNode;
 final class ComponentFinder
 {
     /**
-     * @var array<string, array<string, Component[]>
+     * @var array<string, array<string, Component[]>>
      */
     private array $collectedComponents;
 
@@ -30,6 +30,9 @@ final class ComponentFinder
         }
     }
 
+    /**
+     * @return Component[]
+     */
     public function find(string $className, string $methodName): array
     {
         return $this->collectedComponents[$className][$methodName] ?? [];

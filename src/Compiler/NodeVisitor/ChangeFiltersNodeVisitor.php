@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -19,30 +19,25 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\Broker\ClassNotFoundException;
-use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\BetterReflection\BetterReflection;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
-    use ScopedNodeVisitorBehavior;
+    use ActualClassNodeVisitorBehavior;
 
     /** @var array<string, string|array{string, string}> */
     private array $filters;
 
-    private ReflectionProvider $reflectionProvider;
-
     /**
      * @param array<string, string|array{string, string}> $filters
      */
-    public function __construct(array $filters, CompilerInterface $compiler, ReflectionProvider $reflectionProvider)
+    public function __construct(array $filters, CompilerInterface $compiler)
     {
         $this->filters = $compiler->getDefaultFilters();
 
         foreach ($filters as $filterName => $filter) {
             $this->filters[strtolower($filterName)] = $filter;
         }
-
-        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function enterNode(Node $node): ?Node
@@ -107,12 +102,13 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
 
         /** @var class-string $className */
         $className = $filter[0];
+        /** @var non-empty-string $methodName */
         $methodName = $filter[1];
 
-        try {
-            $reflectionClass = $this->reflectionProvider->getClass($className);
-            $reflectionMethod = $reflectionClass->getMethod($methodName, $this->scope);
-        } catch (ClassNotFoundException $exception) {
+        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+        $reflectionMethod = $reflectionClass->getMethod($methodName);
+
+        if ($reflectionMethod === null) {
             return null;
         }
 

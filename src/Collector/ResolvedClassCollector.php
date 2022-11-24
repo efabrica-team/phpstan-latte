@@ -10,6 +10,9 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
+/**
+ * @implements Collector<Node, ?CollectedResolvedClass>
+ */
 final class ResolvedClassCollector implements Collector
 {
     /** @var LatteTemplateResolverInterface[] */
@@ -30,11 +33,16 @@ final class ResolvedClassCollector implements Collector
 
     public function processNode(Node $node, Scope $scope): ?CollectedResolvedClass
     {
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection === null) {
+            return null;
+        }
+
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             if (!$latteTemplateResolver->check($node, $scope)) {
                 continue;
             }
-            return new CollectedResolvedClass(get_class($latteTemplateResolver), $scope->getClassReflection()->getName());
+            return new CollectedResolvedClass(get_class($latteTemplateResolver), $classReflection->getName());
         }
         return null;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
@@ -14,7 +14,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RemoveExtractParamsNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
-    use ScopedNodeVisitorBehavior;
+    use ActualClassNodeVisitorBehavior;
 
     public function leaveNode(Node $node): ?int
     {

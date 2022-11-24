@@ -1,6 +1,7 @@
 parameters:
     latte:
         strictMode: false
+        tmpDir: null
         globalVariables: []
         filters:
             translate: [Nette\Localization\Translator, translate]
@@ -10,6 +11,7 @@ parameters:
 parametersSchema:
     latte: structure([
         strictMode: bool()
+        tmpDir: schema(string(), nullable())
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
@@ -18,18 +20,13 @@ parametersSchema:
 
 services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIControl
-
-    # Latte template finder helpers
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplatePathFinder
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder
 
     # Type resolvers
     - Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver
@@ -75,6 +72,11 @@ services:
 
     -
         factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
+        tags:
+            - phpstan.collector
+
+    -
+        factory: Efabrica\PHPStanLatte\Collector\TemplatePathCollector
         tags:
             - phpstan.collector
 

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
 use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
 use PHPStan\Node\CollectedDataNode;
 
 final class MethodCallFinder
 {
     /**
-     * @var array<string, array<string, array<string, string[]>>
+     * @var array<string, array<string, array<string, string[]>>>
      */
     private array $collectedMethodCalls;
 
@@ -30,6 +30,9 @@ final class MethodCallFinder
         }
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public function find(string $className, string $methodName): array
     {
         return $this->collectedMethodCalls[$className][$methodName] ?? [];

@@ -12,7 +12,7 @@ use PHPStan\Node\CollectedDataNode;
 final class VariableFinder
 {
     /**
-     * @var array<string, array<string, Variable[]>
+     * @var array<string, array<string, Variable[]>>
      */
     private array $collectedVariables;
 
@@ -33,6 +33,9 @@ final class VariableFinder
         $this->methodCallFinder = $methodCallFinder;
     }
 
+    /**
+     * @return Variable[]
+     */
     public function find(string $className, string $methodName): array
     {
         $collectedVariables = [

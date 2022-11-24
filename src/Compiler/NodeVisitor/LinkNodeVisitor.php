@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Nette\Application\InvalidPresenterException;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -30,7 +31,7 @@ use PhpParser\NodeVisitorAbstract;
  */
 final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
-    use ScopedNodeVisitorBehavior;
+    use ActualClassNodeVisitorBehavior;
 
     private NameResolver $nameResolver;
 
@@ -101,12 +102,14 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
             return null;
         }
 
-        if ($this->scope->getClassReflection() !== null) {
-            $linkProcessor->setActualClass($this->scope->getClassReflection()->getName());
-        }
+        $linkProcessor->setActualClass($this->actualClass);
 
         $linkParams = array_slice($linkArgs, 1);
-        $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
+        try {
+            $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
+        } catch (InvalidPresenterException $e) {
+            return null;
+        }
         if ($expressions === []) {
             return null;
         }

@@ -28,6 +28,9 @@ final class ResolvedClassFinder
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function find(string $resolver): array
     {
         return $this->collectedResolvedClasses[$resolver] ?? [];
