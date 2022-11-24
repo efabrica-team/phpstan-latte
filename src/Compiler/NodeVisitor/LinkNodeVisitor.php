@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Nette\Application\InvalidPresenterException;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -106,7 +107,11 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
         }
 
         $linkParams = array_slice($linkArgs, 1);
-        $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
+        try {
+            $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
+        } catch (InvalidPresenterException $e) {
+            return null;
+        }
         if ($expressions === []) {
             return null;
         }
