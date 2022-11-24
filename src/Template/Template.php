@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
-final class Template
+use JsonSerializable;
+
+final class Template implements JsonSerializable
 {
     private string $path;
 
@@ -44,5 +46,17 @@ final class Template
     public function getComponents(): array
     {
         return $this->components;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+          'path' => $this->path,
+          'variables' => $this->variables,
+          'components' => $this->components,
+        ];
     }
 }

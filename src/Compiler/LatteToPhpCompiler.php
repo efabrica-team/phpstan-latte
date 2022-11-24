@@ -20,6 +20,8 @@ use PHPStan\Analyser\Scope;
 
 final class LatteToPhpCompiler
 {
+    private string $tmpDir;
+
     private CompilerInterface $compiler;
 
     /** @var PostCompileNodeVisitorInterface[] */
@@ -33,11 +35,13 @@ final class LatteToPhpCompiler
      * @param PostCompileNodeVisitorInterface[] $postCompileNodeVisitors
      */
     public function __construct(
+        ?string $tmpDir,
         CompilerInterface $compiler,
         array $postCompileNodeVisitors,
         LineNumberNodeVisitor $lineNumberNodeVisitor,
         Standard $printerStandard
     ) {
+        $this->tmpDir = $tmpDir ?? sys_get_temp_dir() . '/phpstan-latte';
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
         $this->printerStandard = $printerStandard;
@@ -54,6 +58,37 @@ final class LatteToPhpCompiler
         $phpContent = $this->explicitCalls($scope, $phpContent, $variables, $components);
         $phpContent = $this->addExtractParams($phpContent);
         return $this->remapLines($phpContent);
+    }
+
+    /**
+     * @param Variable[] $variables
+     * @param Component[] $components
+     */
+    public function compileFile(Scope $scope, string $templatePath, array $variables, array $components): string
+    {
+        $templateContent = file_get_contents($templatePath) ?: '';
+        $phpContent = $this->compile($scope, $templateContent, $variables, $components);
+        $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
+        $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
+        $contextHash = md5(
+            $scope->getFile() .
+            $scope->getFunctionName() .
+            json_encode($variables) .
+            json_encode($components)
+        );
+
+        $replacedPath = getcwd() ?: '';
+        if (strpos($templateDir, $replacedPath) === 0) {
+            $templateDir = substr($templateDir, strlen($replacedPath));
+        }
+
+        $compileDir = $this->tmpDir . '/' . $templateDir;
+        if (!file_exists($compileDir)) {
+            mkdir($compileDir, 0777, true);
+        }
+        $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
+        file_put_contents($compileFilePath, $phpContent);
+        return $compileFilePath;
     }
 
     /**

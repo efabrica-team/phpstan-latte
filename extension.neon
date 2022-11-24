@@ -1,6 +1,7 @@
 parameters:
     latte:
         strictMode: false
+        tmpDir: null
         globalVariables: []
         filters:
             translate: [Nette\Localization\Translator, translate]
@@ -10,6 +11,7 @@ parameters:
 parametersSchema:
     latte: structure([
         strictMode: bool()
+        tmpDir: schema(string(), nullable())
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
@@ -18,7 +20,7 @@ parametersSchema:
 
 services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
