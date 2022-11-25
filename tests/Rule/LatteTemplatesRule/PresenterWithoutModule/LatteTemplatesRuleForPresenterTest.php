@@ -56,7 +56,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
 
-        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php', __DIR__ . '/Source/ControlRegistrator.php'], [
             [
                 'Component with name "onlyCreateForm" probably doesn\'t exist.',
                 9,

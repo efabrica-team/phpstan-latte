@@ -12,8 +12,11 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Collectors\Collector;
-use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\VerbosityLevel;
 
 /**
  * @implements Collector<CallLike, ?CollectedMethodCall>
@@ -53,7 +56,6 @@ final class MethodCallCollector implements Collector
             return null;
         }
 
-        $calledClassName = null;
         if ($node instanceof StaticCall) {
             $calledClassName = $this->nameResolver->resolve($node->class);
             if ($calledClassName === 'parent') {
@@ -65,20 +67,28 @@ final class MethodCallCollector implements Collector
             }
         } elseif ($node->var instanceof Variable && is_string($node->var->name) && $node->var->name === 'this') {
             $calledClassName = $classReflection->getName();
+        } else {
+            $callerType = $scope->getType($node->var);
+            $calledClassName = $callerType instanceof ObjectType ? $callerType->describe(VerbosityLevel::typeOnly()) : null;
         }
 
         $calledMethodName = $this->nameResolver->resolve($node->name);
-
         if ($calledClassName === null || $calledMethodName === null) {
             return null;
         }
 
         try {
-            $methodReflection = $classReflection->getMethod($calledMethodName, $scope);
-        } catch (MissingMethodFromReflectionException $e) {
+            $reflectionClass = (new BetterReflection())->reflector()->reflectClass($calledClassName);
+        } catch (IdentifierNotFound $e) {
             return null;
         }
-        $calledClassName = $methodReflection->getDeclaringClass()->getName();
+
+        $reflectionMethod = $reflectionClass->getMethod($calledMethodName);
+        if ($reflectionMethod === null) {
+            return null;
+        }
+
+        $calledClassName = $reflectionMethod->getDeclaringClass()->getName();
 
         // Do not find template variables in nette classes
         if (in_array($calledClassName, [
