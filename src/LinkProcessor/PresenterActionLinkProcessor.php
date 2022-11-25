@@ -110,6 +110,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         // If methods not exist, but we pass parameters to links, we need to add method with fake name to find them in CallActionWithParametersMissingCorrespondingMethodErrorTransformer
         if ($methodExists === false && $linkParams !== []) {
             $methodNames[] = $actionName . 'WithParametersMissingCorrespondingMethod';
+            throw new LinkProcessorException();
         }
 
         return $methodNames;
