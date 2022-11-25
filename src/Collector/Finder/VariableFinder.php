@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Template\Variable;
