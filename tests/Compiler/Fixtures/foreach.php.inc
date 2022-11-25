@@ -49,7 +49,7 @@ final class PHPStanLatteTemplate extends Latte\Runtime\Template
         /** @var Nette\Application\UI\Control $control */
         /** @var array<stdClass> $flashes */
         /** @var Nette\Localization\Translator $netteLocalizationTranslatorFilter */
-        if (!$this->getReferringTemplate() || $this->getReferenceType() === "extends") {
+        if ($this->getReferringTemplate() === null || $this->getReferenceType() === "extends") {
             foreach (array_intersect_key(['item' => '2'], $this->params) as $ʟ_v => $ʟ_l) {
                 trigger_error("Variable \${$ʟ_v} overwritten in foreach on line {$ʟ_l}");
             }
@@ -103,7 +103,7 @@ final class PHPStanLatteTemplate extends Latte\Runtime\Template
         /** @var Nette\Application\UI\Control $control */
         /** @var array<stdClass> $flashes */
         /** @var Nette\Localization\Translator $netteLocalizationTranslatorFilter */
-        if (!$this->getReferringTemplate() || $this->getReferenceType() === 'extends') {
+        if ($this->getReferringTemplate() === null || $this->getReferenceType() === 'extends') {
             foreach (array_intersect_key(['item' => '2'], $this->params) as $ʟ_v => $ʟ_l) {
                 trigger_error("Variable \${$ʟ_v} overwritten in foreach on line {$ʟ_l}");
             }
