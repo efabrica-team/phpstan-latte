@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Template\Component;
+use Latte\Engine;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
@@ -84,7 +85,8 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
             $componentType = $component->getTypeAsString();
         }
 
-        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' $_tmp */'));
+        $tmpVarName = Engine::VERSION_ID < 30000 ? '$_tmp' : '$ʟ_tmp';
+        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' ' . $tmpVarName . ' */'));
         return $node;
     }
 
