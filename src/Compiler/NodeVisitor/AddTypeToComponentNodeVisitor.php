@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\Template\Component;
+use Latte\Engine;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
@@ -39,7 +41,10 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
         $this->components = $components;
     }
 
-    public function enterNode(Node $node): ?Node
+  /**
+   * @return Node[]
+   */
+    public function leaveNode(Node $node): ?array
     {
         if (!$node instanceof Expression) {
             return null;
@@ -77,15 +82,20 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
         $originalDocComment = $node->getDocComment();
         $originalDocCommentText = $originalDocComment ? $originalDocComment->getText() : '';
 
+        $tmpVarName = Engine::VERSION_ID < 30000 ? '$_tmp' : '$ʟ_tmp';
+
         $component = $this->findComponentByName($componentName);
+        $componentType = $component !== null ? $component->getTypeAsString() : '\Nette\ComponentModel\IComponent';
+        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' ' . $tmpVarName . ' */'));
+
         if ($component === null) {
-            $componentType = 'ComponentWithName' . str_replace('-', '___', $componentName) . 'DoesntExist';
-        } else {
-            $componentType = $component->getTypeAsString();
+            return [
+                $node,
+                (new Error('Component with name "' . $componentName . '" probably doesn\'t exist.'))->toNode(),
+            ];
         }
 
-        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' $_tmp */'));
-        return $node;
+        return [$node];
     }
 
     private function findComponentByName(string $componentName): ?Component
