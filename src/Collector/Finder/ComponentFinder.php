@@ -44,6 +44,8 @@ final class ComponentFinder
             $this->collectedComponents[$className][$methodName] ?? [],
         ];
 
+        // TODO check not only called method but also all parents
+
         $methodCalls = $this->methodCallFinder->find($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
             $collectedComponents[] = $this->find($calledClassName, '');

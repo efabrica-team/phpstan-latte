@@ -50,6 +50,8 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
         $reflectionMethod = $reflectionClass->getMethod('render');
 
+        // TODO check all render* methods
+
         if ($reflectionMethod === null) {
             return [];
         }

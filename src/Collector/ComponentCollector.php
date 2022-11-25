@@ -50,7 +50,7 @@ final class ComponentCollector implements Collector
             return $this->findAddComponent($node, $scope, $classReflection);
         }
 
-        // TODO add other components registrations - call $this->>addComponent() and also calls on Control $this['something'] = new SomeSubcomponent()
+        // TODO add other components registrations - calls on Control $this['something'] = new SomeSubcomponent(), traits
 
         return null;
     }

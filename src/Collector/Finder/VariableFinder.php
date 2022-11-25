@@ -49,6 +49,8 @@ final class VariableFinder
             }
         }
 
+        // TODO merge types of collected variables
+
         return array_merge(...$collectedVariables);
     }
 }
