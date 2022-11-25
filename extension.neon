@@ -18,6 +18,9 @@ parametersSchema:
         applicationMapping: arrayOf(string(), string())
     ])
 
+rules:
+    - Efabrica\PHPStanLatte\Rule\LatteCompileErrorsRule
+
 services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
@@ -44,6 +47,7 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
@@ -88,10 +92,9 @@ services:
     - Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables(%latte.filters%)
 
     # Error builder
-    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%)
+    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.applicationMapping%)
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
-    - Efabrica\PHPStanLatte\Error\Transformer\ComponentDoesntExist

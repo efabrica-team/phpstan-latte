@@ -191,7 +191,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 60,
                 'default.latte',
             ],
-
+            [
+                'Cannot load presenter \'Links:Invalid\', class \'Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksModule\InvalidPresenter\' was not found.',
+                63,
+                'default.latte',
+                'Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte#applicationmapping',
+            ],
         ]);
     }
 }
