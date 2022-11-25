@@ -39,27 +39,29 @@ final class NetteApplicationUIControl extends AbstractTemplateResolver
     protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array
     {
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-        $reflectionMethod = $reflectionClass->getMethod('render');
 
-        // TODO check all render* methods
-
-        if ($reflectionMethod === null) {
-            return [];
-        }
-        $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-        $variables = $this->variableFinder->find($declaringClassName, $reflectionMethod->getName());
-        $objectType = new ObjectType($className);
-        $variables[] = new Variable('actualClass', $objectType);
-        $variables[] = new Variable('control', $objectType);
-
+        $reflectionMethods = $reflectionClass->getMethods();
         $globalComponents = $this->componentFinder->find($className, '');
-        $methodComponents = $this->componentFinder->find($declaringClassName, $reflectionMethod->getName());
-        $components = array_merge($globalComponents, $methodComponents);
-        $templatePaths = $this->templatePathFinder->find($declaringClassName, $reflectionMethod->getName());
 
         $templates = [];
-        foreach ($templatePaths as $templatePath) {
-            $templates[] = new Template($templatePath, $variables, $components);
+        foreach ($reflectionMethods as $reflectionMethod) {
+            $methodName = $reflectionMethod->getName();
+            if (!str_starts_with($methodName, 'render')) {
+                continue;
+            }
+            $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
+            $variables = $this->variableFinder->find($declaringClassName, $methodName);
+            $objectType = new ObjectType($className);
+            $variables[] = new Variable('actualClass', $objectType);
+            $variables[] = new Variable('control', $objectType);
+
+            $methodComponents = $this->componentFinder->find($declaringClassName, $methodName);
+            $components = array_merge($globalComponents, $methodComponents);
+            $templatePaths = $this->templatePathFinder->find($declaringClassName, $methodName);
+
+            foreach ($templatePaths as $templatePath) {
+                $templates[] = new Template($templatePath, $variables, $components);
+            }
         }
         return $templates;
     }
