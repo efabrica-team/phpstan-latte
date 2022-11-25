@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopedNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
@@ -14,7 +14,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
-    use ScopedNodeVisitorBehavior;
+    use ActualClassNodeVisitorBehavior;
 
     /** @var TemplateVariable[] */
     private array $variables;

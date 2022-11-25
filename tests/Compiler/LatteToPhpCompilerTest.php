@@ -32,7 +32,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
 
         [$latteContent, $compiledPhpContentLatte2, $compiledPhpContentLatte3] = array_map('trim', explode('-----', file_get_contents($path) ?: '', 3));
 
-        $output = $compiler->compile($scope, $latteContent, [], []);
+        $output = $compiler->compile('', $latteContent, [], []);
         $compiledPhpContent = Engine::VERSION_ID < 30000 ? $compiledPhpContentLatte2 : $compiledPhpContentLatte3;
         $this->assertStringMatchesFormat($compiledPhpContent, $output);
     }

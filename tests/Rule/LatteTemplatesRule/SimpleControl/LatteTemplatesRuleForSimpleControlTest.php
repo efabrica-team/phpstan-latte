@@ -37,12 +37,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
 
-//        $template = $this->template not working
-//        $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
-//            [
-//                'Variable $c might not be defined.',
-//                3,
-//            ],
-//        ]);
+        $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
+            [
+                'Variable $c might not be defined.',
+                3,
+                'default.latte',
+            ],
+        ]);
     }
 }

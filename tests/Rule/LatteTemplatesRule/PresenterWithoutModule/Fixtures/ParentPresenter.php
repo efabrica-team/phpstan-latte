@@ -24,6 +24,8 @@ abstract class ParentPresenter extends Presenter
     protected function baz(): void
     {
         $this->template->variableFromParent = 'baz';
+        $var = 'xxx';
+        $this->template->varFromVariable = $var;
     }
 
     protected function createComponentParentForm(): Form

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Template;
 
 use JsonSerializable;
+use ReturnTypeWillChange;
 
 final class Template implements JsonSerializable
 {
@@ -48,10 +49,8 @@ final class Template implements JsonSerializable
         return $this->components;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function jsonSerialize(): array
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return [
           'path' => $this->path,

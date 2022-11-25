@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
+use Efabrica\PHPStanLatte\Collector\Finder\ResolvedClassFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
@@ -13,11 +14,12 @@ use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
+use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 
 /**
- * @implements Rule<Node>
+ * @implements Rule<CollectedDataNode>
  */
 final class LatteTemplatesRule implements Rule
 {
@@ -55,37 +57,40 @@ final class LatteTemplatesRule implements Rule
 
     public function getNodeType(): string
     {
-        return Node::class;
+        return CollectedDataNode::class;
     }
 
-    public function processNode(Node $node, Scope $scope): array
+    /**
+     * @param CollectedDataNode $collectedDataNode
+     */
+    public function processNode(Node $collectedDataNode, Scope $scope): array
     {
+        $resolvedClassFinder = new ResolvedClassFinder($collectedDataNode);
+
         $errors = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
-            if (!$latteTemplateResolver->check($node, $scope)) {
-                continue;
-            }
+            foreach ($resolvedClassFinder->find(get_class($latteTemplateResolver)) as $className) {
+                $templates = $latteTemplateResolver->findTemplates($className, $collectedDataNode);
+                foreach ($templates as $template) {
+                    $templatePath = $template->getPath();
 
-            $templates = $latteTemplateResolver->findTemplates($node, $scope);
-            foreach ($templates as $template) {
-                $templatePath = $template->getPath();
+                    try {
+                        $compileFilePath = $this->latteToPhpCompiler->compileFile($className, $templatePath, $template->getVariables(), $template->getComponents());
+                    } catch (CompileException $e) { // TODO change to PHPStanLatteCompilerExceptioin
+                        $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
+                        continue;
+                    }
 
-                try {
-                    $compileFilePath = $this->latteToPhpCompiler->compileFile($scope, $templatePath, $template->getVariables(), $template->getComponents());
-                } catch (CompileException $e) { // TODO change to PHPStanLatteCompilerExceptioin
-                    $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
-                    continue;
+                    $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
+                        $compileFilePath,
+                        [],
+                        $this->rulesRegistry,
+                        $this->collectorsRegistry,
+                        null
+                    );
+
+                    $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $scope));
                 }
-
-                $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
-                    $compileFilePath,
-                    [],
-                    $this->rulesRegistry,
-                    $this->collectorsRegistry,
-                    null
-                );
-
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $scope));
             }
         }
         return $errors;

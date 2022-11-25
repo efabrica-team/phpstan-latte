@@ -4,32 +4,18 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\ComponentsFinder;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\Finder\TemplateVariableFinder;
-use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Node\CollectedDataNode;
 use PHPStan\Node\InClassNode;
-use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 
-final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
+final class NetteApplicationUIPresenter extends AbstractTemplateResolver
 {
-    private TemplateVariableFinder $templateVariableFinder;
-
-    private ComponentsFinder $componentsFinder;
-
-    public function __construct(
-        TemplateVariableFinder $templateVariableFinder,
-        ComponentsFinder $componentsFinder
-    ) {
-        $this->templateVariableFinder = $templateVariableFinder;
-        $this->componentsFinder = $componentsFinder;
-    }
-
     public function check(Node $node, Scope $scope): bool
     {
         if (!$node instanceof InClassNode) {
@@ -51,36 +37,34 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             ->yes();
     }
 
-    /**
-     * @param InClassNode $node
-     */
-    public function findTemplates(Node $node, Scope $scope): array
+    protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array
     {
-        if ($scope->getClassReflection() === null) {
+        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+
+        $fileName = $reflectionClass->getFileName();
+        if ($fileName === null) {
             return [];
         }
 
-        /** @var Class_ $class */
-        $class = $node->getOriginalNode();
-        $shortClassName = (string)$class->name;
-        $methods = $class->getMethods();
+        $reflectionMethods = $reflectionClass->getMethods();
 
         $classVariables = [];
-        $classReflection = $scope->getClassReflection();
-        if ($classReflection instanceof ClassReflection) {
-            $objectType = new ObjectType($classReflection->getName());
-            $classVariables[] = new Variable('actualClass', $objectType);
-            $classVariables[] = new Variable('presenter', $objectType);
-        }
+        $presenterType = new ObjectType($className);
+        $classVariables[] = new Variable('actualClass', $presenterType);
+        $classVariables[] = new Variable('presenter', $presenterType);
+
         $startupVariables = [];
         $startupComponents = [];
         $actionsWithVariables = [];
         $actionsWithComponents = [];
-        foreach ($methods as $method) {
-            $methodName = (string)$method->name;
+
+        foreach ($reflectionMethods as $reflectionMethod) {
+            $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
+            $methodName = $reflectionMethod->getName();
+
             if ($methodName === 'startup') {
-                $startupVariables = $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection());
-                $startupComponents = $this->componentsFinder->findForMethod($method, $scope);
+                $startupVariables = $this->variableFinder->find($declaringClassName, $methodName);
+                $startupComponents = $this->componentFinder->find($declaringClassName, $methodName);
             }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
@@ -91,19 +75,22 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if (!isset($actionsWithVariables[$actionName])) {
                 $actionsWithVariables[$actionName] = [];
             }
-            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->templateVariableFinder->find($method, $scope, $scope->getClassReflection()));
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->variableFinder->find($declaringClassName, $methodName));
 
             if (!isset($actionsWithComponents[$actionName])) {
                 $actionsWithComponents[$actionName] = [];
             }
-            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $this->componentsFinder->findForMethod($method, $scope));
+            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $this->componentFinder->find($declaringClassName, $methodName));
         }
 
-        $globalComponents = $this->findComponents($node, $scope);
+        $shortClassName = $reflectionClass->getShortName();
+        $dir = dirname($fileName);
+
+        $globalComponents = $this->componentFinder->find($className, '');
 
         $templates = [];
         foreach ($actionsWithVariables as $actionName => $actionVariables) {
-            $template = $this->findTemplateFilePath($shortClassName, $actionName, $scope);
+            $template = $this->findTemplateFilePath($shortClassName, $actionName, $dir);
             if ($template === null) {
                 continue;
             }
@@ -115,20 +102,9 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
         return $templates;
     }
 
-    /**
-     * @return Component[]
-     */
-    private function findComponents(InClassNode $node, Scope $scope): array
-    {
-        /** @var Class_ $class */
-        $class = $node->getOriginalNode();
-        return $this->componentsFinder->findForClass($class, $scope);
-    }
-
-    private function findTemplateFilePath(string $shortClassName, string $actionName, Scope $scope): ?string
+    private function findTemplateFilePath(string $shortClassName, string $actionName, string $dir): ?string
     {
         $presenterName = str_replace('Presenter', '', $shortClassName);
-        $dir = dirname($scope->getFile());
         $dir = is_dir($dir . '/templates') ? $dir : dirname($dir);
 
         $templateFileCandidates = [

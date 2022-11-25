@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\CollectedDataNode;
 
 interface LatteTemplateResolverInterface
 {
@@ -16,5 +17,5 @@ interface LatteTemplateResolverInterface
     /**
      * @return Template[]
      */
-    public function findTemplates(Node $node, Scope $scope): array;
+    public function findTemplates(string $className, CollectedDataNode $collectedDataNode): array;
 }
