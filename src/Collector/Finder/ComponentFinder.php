@@ -31,6 +31,8 @@ final class ComponentFinder
             $this->collectedComponents[$className][$methodName][] = $collectedComponent->getComponent();
         }
         $this->methodCallFinder = $methodCallFinder;
+
+        // TODO update subcomponents of components
     }
 
     /**

@@ -73,7 +73,7 @@ final class MethodCallCollector implements Collector
         }
 
         $calledMethodName = $this->nameResolver->resolve($node->name);
-        if ($calledClassName === null || $calledMethodName === null) {
+        if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
             return null;
         }
 

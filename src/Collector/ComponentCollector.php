@@ -57,6 +57,8 @@ final class ComponentCollector implements Collector
 
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?CollectedComponent
     {
+        // TODO check if actual class is control / presenter
+
         $methodName = $this->nameResolver->resolve($node->name);
         if ($methodName === null || !str_starts_with($methodName, 'createComponent') || $methodName === 'createComponent') {
             return null;
@@ -78,6 +80,8 @@ final class ComponentCollector implements Collector
 
     private function findAddComponent(MethodCall $node, Scope $scope, ClassReflection $classReflection): ?CollectedComponent
     {
+        // TODO check if caller class is control / presenter
+
         if ($this->nameResolver->resolve($node->name) !== 'addComponent') {
             return null;
         }
