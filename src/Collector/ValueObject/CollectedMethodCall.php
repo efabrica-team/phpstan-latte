@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-final class CollectedMethodCall
+use JsonSerializable;
+use ReturnTypeWillChange;
+
+final class CollectedMethodCall implements JsonSerializable
 {
     private string $callerClassName;
 
@@ -41,5 +44,16 @@ final class CollectedMethodCall
     public function getCalledMethodName(): string
     {
         return $this->calledMethodName;
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'callerClassName' => $this->callerClassName,
+            'callerMethodName' => $this->callerMethodName,
+            'calledClassName' => $this->calledClassName,
+            'calledMethodName' => $this->calledMethodName,
+        ];
     }
 }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Component;
+use JsonSerializable;
+use ReturnTypeWillChange;
 
-final class CollectedComponent
+final class CollectedComponent implements JsonSerializable
 {
     private string $className;
 
@@ -34,5 +36,15 @@ final class CollectedComponent
     public function getComponent(): Component
     {
         return $this->component;
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'component' => $this->component,
+        ];
     }
 }

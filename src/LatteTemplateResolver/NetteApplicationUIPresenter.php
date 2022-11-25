@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
@@ -17,7 +14,7 @@ use PHPStan\Node\CollectedDataNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
-final class NetteApplicationUIPresenter implements LatteTemplateResolverInterface
+final class NetteApplicationUIPresenter extends AbstractTemplateResolver
 {
     public function check(Node $node, Scope $scope): bool
     {
@@ -40,12 +37,8 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             ->yes();
     }
 
-    public function findTemplates(string $className, CollectedDataNode $collectedDataNode): array
+    protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array
     {
-        $methodCallFinder = new MethodCallFinder($collectedDataNode);
-        $variableFinder = new VariableFinder($collectedDataNode, $methodCallFinder);
-        $componentFinder = new ComponentFinder($collectedDataNode, $methodCallFinder);
-
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
 
         $fileName = $reflectionClass->getFileName();
@@ -70,8 +63,8 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             $methodName = $reflectionMethod->getName();
 
             if ($methodName === 'startup') {
-                $startupVariables = $variableFinder->find($declaringClassName, $methodName);
-                $startupComponents = $componentFinder->find($declaringClassName, $methodName);
+                $startupVariables = $this->variableFinder->find($declaringClassName, $methodName);
+                $startupComponents = $this->componentFinder->find($declaringClassName, $methodName);
             }
 
             if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
@@ -82,18 +75,18 @@ final class NetteApplicationUIPresenter implements LatteTemplateResolverInterfac
             if (!isset($actionsWithVariables[$actionName])) {
                 $actionsWithVariables[$actionName] = [];
             }
-            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $variableFinder->find($declaringClassName, $methodName));
+            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->variableFinder->find($declaringClassName, $methodName));
 
             if (!isset($actionsWithComponents[$actionName])) {
                 $actionsWithComponents[$actionName] = [];
             }
-            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $componentFinder->find($declaringClassName, $methodName));
+            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $this->componentFinder->find($declaringClassName, $methodName));
         }
 
         $shortClassName = $reflectionClass->getShortName();
         $dir = dirname($fileName);
 
-        $globalComponents = $componentFinder->find($className, '');
+        $globalComponents = $this->componentFinder->find($className, '');
 
         $templates = [];
         foreach ($actionsWithVariables as $actionName => $actionVariables) {

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-final class CollectedResolvedClass
+use JsonSerializable;
+use ReturnTypeWillChange;
+
+final class CollectedResolvedClass implements JsonSerializable
 {
     private string $resolver;
 
@@ -24,5 +27,14 @@ final class CollectedResolvedClass
     public function getClassName(): string
     {
         return $this->className;
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'resolver' => $this->resolver,
+            'className' => $this->className,
+        ];
     }
 }

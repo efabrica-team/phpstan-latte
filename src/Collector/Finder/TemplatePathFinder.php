@@ -17,8 +17,7 @@ final class TemplatePathFinder
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {
-        /** @var CollectedTemplatePath[] $collectedTemplatePaths */
-        $collectedTemplatePaths = array_merge(...array_values($collectedDataNode->get(TemplatePathCollector::class)));
+        $collectedTemplatePaths = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(TemplatePathCollector::class)))));
         foreach ($collectedTemplatePaths as $collectedTemplatePath) {
             $className = $collectedTemplatePath->getClassName();
             $methodName = $collectedTemplatePath->getMethodName();
@@ -35,5 +34,21 @@ final class TemplatePathFinder
     public function find(string $className, string $methodName): array
     {
         return $this->collectedTemplatePaths[$className][$methodName] ?? [];
+    }
+
+    /**
+     * @param array<CollectedTemplatePath|array{className: string, methodName: string, templatePath: string}> $data
+     * @return CollectedTemplatePath[]
+     */
+    private function buildData(array $data): array
+    {
+        $collectedTemplatePaths = [];
+        foreach ($data as $item) {
+            if (!$item instanceof CollectedTemplatePath) {
+                $item = new CollectedTemplatePath(...array_values($item));
+            }
+            $collectedTemplatePaths[] = $item;
+        }
+        return $collectedTemplatePaths;
     }
 }

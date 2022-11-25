@@ -17,8 +17,7 @@ final class MethodCallFinder
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {
-        /** @var CollectedMethodCall[] $collectedMethodCalls */
-        $collectedMethodCalls = array_merge(...array_values($collectedDataNode->get(MethodCallCollector::class)));
+        $collectedMethodCalls = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(MethodCallCollector::class)))));
         foreach ($collectedMethodCalls as $collectedMethodCall) {
             $callerClassName = $collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
@@ -36,5 +35,21 @@ final class MethodCallFinder
     public function find(string $className, string $methodName): array
     {
         return $this->collectedMethodCalls[$className][$methodName] ?? [];
+    }
+
+    /**
+     * @param array<CollectedMethodCall|array{callerClassName: string, callerMethodName: string, calledClassName: string, calledMethodName: string}> $data
+     * @return CollectedMethodCall[]
+     */
+    private function buildData(array $data): array
+    {
+        $collectedMethodCalls = [];
+        foreach ($data as $item) {
+            if (!$item instanceof CollectedMethodCall) {
+                $item = new CollectedMethodCall(...array_values($item));
+            }
+            $collectedMethodCalls[] = $item;
+        }
+        return $collectedMethodCalls;
     }
 }

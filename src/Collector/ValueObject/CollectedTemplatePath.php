@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-final class CollectedTemplatePath
+use JsonSerializable;
+use ReturnTypeWillChange;
+
+final class CollectedTemplatePath implements JsonSerializable
 {
     private string $className;
 
@@ -32,5 +35,15 @@ final class CollectedTemplatePath
     public function getTemplatePath(): string
     {
         return $this->templatePath;
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'templatePath' => $this->templatePath,
+        ];
     }
 }

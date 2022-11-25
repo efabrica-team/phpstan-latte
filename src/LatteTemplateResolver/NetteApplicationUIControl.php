@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\TemplatePathFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
@@ -18,7 +14,7 @@ use PHPStan\Node\CollectedDataNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
-final class NetteApplicationUIControl implements LatteTemplateResolverInterface
+final class NetteApplicationUIControl extends AbstractTemplateResolver
 {
     public function check(Node $node, Scope $scope): bool
     {
@@ -40,13 +36,8 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
         return $objectType->isInstanceOf('Nette\Application\UI\Control')->yes();
     }
 
-    public function findTemplates(string $className, CollectedDataNode $collectedDataNode): array
+    protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array
     {
-        $methodCallFinder = new MethodCallFinder($collectedDataNode);
-        $variableFinder = new VariableFinder($collectedDataNode, $methodCallFinder);
-        $componentFinder = new ComponentFinder($collectedDataNode, $methodCallFinder);
-        $templatePathFinder = new TemplatePathFinder($collectedDataNode);
-
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
         $reflectionMethod = $reflectionClass->getMethod('render');
 
@@ -56,15 +47,15 @@ final class NetteApplicationUIControl implements LatteTemplateResolverInterface
             return [];
         }
         $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-        $variables = $variableFinder->find($declaringClassName, $reflectionMethod->getName());
+        $variables = $this->variableFinder->find($declaringClassName, $reflectionMethod->getName());
         $objectType = new ObjectType($className);
         $variables[] = new Variable('actualClass', $objectType);
         $variables[] = new Variable('control', $objectType);
 
-        $globalComponents = $componentFinder->find($className, '');
-        $methodComponents = $componentFinder->find($declaringClassName, $reflectionMethod->getName());
+        $globalComponents = $this->componentFinder->find($className, '');
+        $methodComponents = $this->componentFinder->find($declaringClassName, $reflectionMethod->getName());
         $components = array_merge($globalComponents, $methodComponents);
-        $templatePaths = $templatePathFinder->find($declaringClassName, $reflectionMethod->getName());
+        $templatePaths = $this->templatePathFinder->find($declaringClassName, $reflectionMethod->getName());
 
         $templates = [];
         foreach ($templatePaths as $templatePath) {

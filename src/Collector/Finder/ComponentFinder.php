@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\ComponentCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
 use PHPStan\Node\CollectedDataNode;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class ComponentFinder
 {
@@ -18,10 +19,14 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
+    private TypeStringResolver $typeStringResolver;
+
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TypeStringResolver $typeStringResolver)
     {
-        /** @var CollectedComponent[] $collectedComponents */
-        $collectedComponents = array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)));
+        $this->methodCallFinder = $methodCallFinder;
+        $this->typeStringResolver = $typeStringResolver;
+
+        $collectedComponents = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)))));
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
             $methodName = $collectedComponent->getMethodName();
@@ -30,7 +35,6 @@ final class ComponentFinder
             }
             $this->collectedComponents[$className][$methodName][] = $collectedComponent->getComponent();
         }
-        $this->methodCallFinder = $methodCallFinder;
 
         // TODO update subcomponents of components
     }
@@ -55,5 +59,22 @@ final class ComponentFinder
         }
 
         return array_merge(...$collectedComponents);
+    }
+
+    /**
+     * @param array<CollectedComponent|array{className: string, methodName: string, component: array{name: string, type: string}}> $data
+     * @return CollectedComponent[]
+     */
+    private function buildData(array $data): array
+    {
+        $collectedVariables = [];
+        foreach ($data as $item) {
+            if (!$item instanceof CollectedComponent) {
+                $item['component'] = new Component($item['component']['name'], $this->typeStringResolver->resolve($item['component']['type']));
+                $item = new CollectedComponent(...array_values($item));
+            }
+            $collectedVariables[] = $item;
+        }
+        return $collectedVariables;
     }
 }

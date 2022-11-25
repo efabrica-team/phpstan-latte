@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Template;
 use JsonSerializable;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use ReturnTypeWillChange;
 
 final class Component implements JsonSerializable
 {
@@ -30,10 +31,8 @@ final class Component implements JsonSerializable
         return $this->type->describe(VerbosityLevel::typeOnly());
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function jsonSerialize(): array
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
     {
         return [
           'name' => $this->name,

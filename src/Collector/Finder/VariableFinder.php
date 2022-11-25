@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\Node\CollectedDataNode;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class VariableFinder
 {
@@ -18,10 +20,14 @@ final class VariableFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
+    private TypeStringResolver $typeStringResolver;
+
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TypeStringResolver $typeStringResolver)
     {
-        /** @var CollectedVariable[] $collectedVariables */
-        $collectedVariables = array_merge(...array_values($collectedDataNode->get(VariableCollector::class)));
+        $this->methodCallFinder = $methodCallFinder;
+        $this->typeStringResolver = $typeStringResolver;
+
+        $collectedVariables = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(VariableCollector::class)))));
         foreach ($collectedVariables as $collectedVariable) {
             $className = $collectedVariable->getClassName();
             $methodName = $collectedVariable->getMethodName();
@@ -30,7 +36,6 @@ final class VariableFinder
             }
             $this->collectedVariables[$className][$methodName][] = $collectedVariable->getVariable();
         }
-        $this->methodCallFinder = $methodCallFinder;
     }
 
     /**
@@ -52,5 +57,22 @@ final class VariableFinder
         // TODO merge types of collected variables
 
         return array_merge(...$collectedVariables);
+    }
+
+    /**
+     * @param array<CollectedVariable|array{className: string, methodName: string, variable: array{name: string, type: string}}> $data
+     * @return CollectedVariable[]
+     */
+    private function buildData(array $data): array
+    {
+        $collectedVariables = [];
+        foreach ($data as $item) {
+            if (!$item instanceof CollectedVariable) {
+                $item['variable'] = new Variable($item['variable']['name'], $this->typeStringResolver->resolve($item['variable']['type']));
+                $item = new CollectedVariable(...array_values($item));
+            }
+            $collectedVariables[] = $item;
+        }
+        return $collectedVariables;
     }
 }
