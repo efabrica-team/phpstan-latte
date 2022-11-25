@@ -12,6 +12,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
+use InvalidArgumentException;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -65,6 +66,9 @@ final class LatteToPhpCompiler
      */
     public function compileFile(string $actualClass, string $templatePath, array $variables, array $components): string
     {
+        if (!file_exists($templatePath)) {
+            throw new InvalidArgumentException('Template file "' . $templatePath . '" doesn\'t exist.');
+        }
         $templateContent = file_get_contents($templatePath) ?: '';
         $phpContent = $this->compile($actualClass, $templateContent, $variables, $components);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);

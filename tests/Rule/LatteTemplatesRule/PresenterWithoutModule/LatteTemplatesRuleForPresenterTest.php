@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\SomeControl;
 use Latte\Engine;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
@@ -65,6 +66,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
                 11,
+                'default.latte',
+            ],
+            [
+                'Call to an undefined method ' . SomeControl::class . '::renderNonExistingRender().',
+                17,
                 'default.latte',
             ],
             [

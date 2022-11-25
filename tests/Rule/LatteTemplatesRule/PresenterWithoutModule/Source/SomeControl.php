@@ -19,6 +19,10 @@ final class SomeControl extends Control
     {
     }
 
+    public function renderOtherRender(): void
+    {
+    }
+
     protected function createComponentBody(): SomeBodyControl
     {
         return new SomeBodyControl();

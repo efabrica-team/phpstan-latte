@@ -41,9 +41,9 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
         $this->components = $components;
     }
 
-  /**
-   * @return Node[]
-   */
+    /**
+     * @return Node[]
+     */
     public function leaveNode(Node $node): ?array
     {
         if (!$node instanceof Expression) {

@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\Collector\Finder\ResolvedClassFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
-use Latte\CompileException;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
@@ -17,6 +16,7 @@ use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
+use Throwable;
 
 /**
  * @implements Rule<CollectedDataNode>
@@ -76,7 +76,7 @@ final class LatteTemplatesRule implements Rule
 
                     try {
                         $compileFilePath = $this->latteToPhpCompiler->compileFile($className, $templatePath, $template->getVariables(), $template->getComponents());
-                    } catch (CompileException $e) { // TODO change to PHPStanLatteCompilerExceptioin
+                    } catch (Throwable $e) {
                         $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
                         continue;
                     }
