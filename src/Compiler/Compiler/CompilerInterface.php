@@ -10,7 +10,7 @@ interface CompilerInterface
      * @param string $templateContent latte content
      * @return string php content
      */
-    public function compile(string $templateContent): string;
+    public function compile(string $templateContent, ?string $actualClass): string;
 
     /**
      * @return array<string, string|array{string, string}>

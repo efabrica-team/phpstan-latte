@@ -24,6 +24,8 @@ final class ErrorBuilder
         '/Parameter \#1 \$array of function extract is passed by reference, so it expects variables only\./', // we will not test latte compiler itself
         '/Parameter \#1 \$var_array of function extract is passed by reference, so it expects variables only\./', // we will not test latte compiler itself
         '/Call to an undefined method Nette\\\\ComponentModel\\\\IComponent::render\(\)\./', # rendering of unknown components
+        '/Parameter #1 \$blocks of method Nette\\\\Bridges\\\\ApplicationLatte\\\\SnippetDriver::renderSnippets\(\) expects .*/', # nette internal error
+        '/Parameter #3 \$blocks of static method Nette\\\\Bridges\\\\ApplicationLatte\\\\UIRuntime::initialize\(\) expects .*/', # nette internal error
     ];
 
     /** @var ErrorTransformerInterface[] */

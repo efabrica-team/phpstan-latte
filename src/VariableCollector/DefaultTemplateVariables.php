@@ -21,6 +21,7 @@ final class DefaultTemplateVariables implements VariableCollectorInterface
         $variables[] = new Variable('baseUrl', new StringType());
         $variables[] = new Variable('basePath', new StringType());
         $variables[] = new Variable('ʟ_fi', new ObjectType('Latte\Runtime\FilterInfo'));
+        $variables[] = new Variable('ʟ_tag', new ArrayType(new MixedType(), new StringType()));
 
         // nette\security bridge
         $variables[] = new Variable('user', new ObjectType('Nette\Security\User'));

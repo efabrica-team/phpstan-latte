@@ -54,7 +54,7 @@ final class LatteToPhpCompiler
      */
     public function compile(?string $actualClass, string $templateContent, array $variables, array $components): string
     {
-        $phpContent = $this->compiler->compile($templateContent);
+        $phpContent = $this->compiler->compile($templateContent, $actualClass);
         $phpContent = $this->explicitCalls($actualClass, $phpContent, $variables, $components);
         $phpContent = $this->addExtractParams($phpContent);
         return $this->remapLines($phpContent);
