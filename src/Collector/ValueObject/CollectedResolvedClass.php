@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use JsonSerializable;
-use ReturnTypeWillChange;
-
-final class CollectedResolvedClass implements JsonSerializable
+/**
+ * @phpstan-type CollectedResolvedClassArray array{resolver: string, className: string}
+ */
+final class CollectedResolvedClass
 {
     private string $resolver;
 
@@ -29,8 +29,10 @@ final class CollectedResolvedClass implements JsonSerializable
         return $this->className;
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    /**
+     * @phpstan-return CollectedResolvedClassArray
+     */
+    public function toArray()
     {
         return [
             'resolver' => $this->resolver,

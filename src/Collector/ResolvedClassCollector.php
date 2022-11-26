@@ -11,7 +11,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<Node, ?CollectedResolvedClass>
+ * @implements Collector<Node, ?CollectedResolvedClassArray>
+ * @phpstan-import-type CollectedResolvedClassArray from CollectedResolvedClass
  */
 final class ResolvedClassCollector implements Collector
 {
@@ -31,7 +32,10 @@ final class ResolvedClassCollector implements Collector
         return Node::class;
     }
 
-    public function processNode(Node $node, Scope $scope): ?CollectedResolvedClass
+    /**
+     * @phpstan-return null|CollectedResolvedClassArray
+     */
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -42,7 +46,7 @@ final class ResolvedClassCollector implements Collector
             if (!$latteTemplateResolver->check($node, $scope)) {
                 continue;
             }
-            return new CollectedResolvedClass(get_class($latteTemplateResolver), $classReflection->getName());
+            return (new CollectedResolvedClass(get_class($latteTemplateResolver), $classReflection->getName()))->toArray();
         }
         return null;
     }

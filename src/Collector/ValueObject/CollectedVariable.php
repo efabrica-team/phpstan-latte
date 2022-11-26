@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
-use JsonSerializable;
-use ReturnTypeWillChange;
 
-final class CollectedVariable implements JsonSerializable
+/**
+ * @phpstan-type CollectedVariableArray array{className: string, methodName: string, variableName: string, variableType: string}
+ */
+final class CollectedVariable
 {
     private string $className;
 
@@ -33,18 +34,31 @@ final class CollectedVariable implements JsonSerializable
         return $this->methodName;
     }
 
+    public function getVariableName(): string
+    {
+        return $this->variable->getName();
+    }
+
+    public function getVariableType(): string
+    {
+        return $this->variable->getTypeAsString();
+    }
+
     public function getVariable(): Variable
     {
         return $this->variable;
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    /**
+     * @phpstan-return CollectedVariableArray
+     */
+    public function toArray()
     {
         return [
             'className' => $this->className,
             'methodName' => $this->methodName,
-            'variable' => $this->variable,
+            'variableName' => $this->getVariableName(),
+            'variableType' => $this->getVariableType(),
         ];
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use JsonSerializable;
-use ReturnTypeWillChange;
-
-final class CollectedTemplatePath implements JsonSerializable
+/**
+ * @phpstan-type CollectedTemplatePathArray array{className: string, methodName: string, templatePath: string}
+ */
+final class CollectedTemplatePath
 {
     private string $className;
 
@@ -37,8 +37,10 @@ final class CollectedTemplatePath implements JsonSerializable
         return $this->templatePath;
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    /**
+     * @phpstan-return CollectedTemplatePathArray
+     */
+    public function toArray()
     {
         return [
             'className' => $this->className,

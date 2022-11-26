@@ -10,6 +10,9 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
 
+/**
+ * @phpstan-import-type CollectedVariableArray from CollectedVariable
+ */
 final class VariableFinder
 {
     /**
@@ -59,17 +62,15 @@ final class VariableFinder
     }
 
     /**
-     * @param array<CollectedVariable|array{className: string, methodName: string, variable: array{name: string, type: string}}> $data
+     * @phpstan-param array<CollectedVariableArray> $data
      * @return CollectedVariable[]
      */
     private function buildData(array $data): array
     {
         $collectedVariables = [];
         foreach ($data as $item) {
-            if (!$item instanceof CollectedVariable) {
-                $item['variable'] = new Variable($item['variable']['name'], $this->typeStringResolver->resolve($item['variable']['type']));
-                $item = new CollectedVariable(...array_values($item));
-            }
+            $variable = new Variable($item['variableName'], $this->typeStringResolver->resolve($item['variableType']));
+            $item = new CollectedVariable($item['className'], $item['methodName'], $variable);
             $collectedVariables[] = $item;
         }
         return $collectedVariables;

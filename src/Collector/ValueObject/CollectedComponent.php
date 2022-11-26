@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Component;
-use JsonSerializable;
-use ReturnTypeWillChange;
 
-final class CollectedComponent implements JsonSerializable
+/**
+ * @phpstan-type CollectedComponentArray array{className: string, methodName: string, componentName: string, componentType: string}
+ */
+final class CollectedComponent
 {
     private string $className;
 
@@ -33,18 +34,31 @@ final class CollectedComponent implements JsonSerializable
         return $this->methodName;
     }
 
+    public function getComponentName(): string
+    {
+        return $this->component->getName();
+    }
+
+    public function getComponentType(): string
+    {
+        return $this->component->getTypeAsString();
+    }
+
     public function getComponent(): Component
     {
         return $this->component;
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    /**
+     * @phpstan-return CollectedComponentArray
+     */
+    public function toArray()
     {
         return [
             'className' => $this->className,
             'methodName' => $this->methodName,
-            'component' => $this->component,
+            'componentName' => $this->getComponentName(),
+            'componentType' => $this->getComponentType(),
         ];
     }
 }

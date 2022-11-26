@@ -8,6 +8,9 @@ use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
 use PHPStan\Node\CollectedDataNode;
 
+/**
+ * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
+ */
 final class TemplatePathFinder
 {
     /**
@@ -37,16 +40,14 @@ final class TemplatePathFinder
     }
 
     /**
-     * @param array<CollectedTemplatePath|array{className: string, methodName: string, templatePath: string}> $data
+     * @phpstan-param array<CollectedTemplatePathArray> $data
      * @return CollectedTemplatePath[]
      */
     private function buildData(array $data): array
     {
         $collectedTemplatePaths = [];
         foreach ($data as $item) {
-            if (!$item instanceof CollectedTemplatePath) {
-                $item = new CollectedTemplatePath(...array_values($item));
-            }
+            $item = new CollectedTemplatePath($item['className'], $item['methodName'], $item['templatePath']);
             $collectedTemplatePaths[] = $item;
         }
         return $collectedTemplatePaths;
