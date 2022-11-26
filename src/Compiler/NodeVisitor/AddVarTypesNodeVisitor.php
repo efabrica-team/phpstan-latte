@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -18,11 +17,11 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
 {
     use ActualClassNodeVisitorBehavior;
 
-    /** @var TemplateVariable[] */
+    /** @var Variable[] */
     private array $variables;
 
     /**
-     * @param TemplateVariable[] $variables
+     * @param Variable[] $variables
      */
     public function __construct(array $variables)
     {
