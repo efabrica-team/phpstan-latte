@@ -18,6 +18,7 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->title = 'foo';
         $this->bar();
         $this->baz();
+        $this->recursion(5);
         $this->getTemplate()->viaGetTemplate = 'foobar';
     }
 
@@ -34,5 +35,13 @@ final class VariablesPresenter extends ParentPresenter
     private function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';
+    }
+
+    private function recursion(int $counter): void
+    {
+        $this->template->variableFromRecursionMethod = 'bar';
+        if ($counter > 0) {
+            $this->recursion($counter - 1);
+        }
     }
 }
