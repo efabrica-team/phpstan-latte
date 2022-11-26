@@ -19,7 +19,8 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
- * @implements Collector<CallLike, ?CollectedMethodCall>
+ * @implements Collector<CallLike, ?CollectedMethodCallArray>
+ * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
  */
 final class MethodCallCollector implements Collector
 {
@@ -37,8 +38,9 @@ final class MethodCallCollector implements Collector
 
     /**
      * @param CallLike $node
+     * @phpstan-return null|CollectedMethodCallArray
      */
-    public function processNode(Node $node, Scope $scope): ?CollectedMethodCall
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -101,11 +103,11 @@ final class MethodCallCollector implements Collector
             return null;
         }
 
-        return new CollectedMethodCall(
+        return (new CollectedMethodCall(
             $actualClassName,
             $functionName,
             $calledClassName,
             $calledMethodName
-        );
+        ))->toArray();
     }
 }

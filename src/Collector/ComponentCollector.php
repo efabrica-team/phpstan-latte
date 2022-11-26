@@ -16,7 +16,8 @@ use PHPStan\Collectors\Collector;
 use PHPStan\Reflection\ClassReflection;
 
 /**
- * @implements Collector<Node, ?CollectedComponent>
+ * @implements Collector<Node, ?CollectedComponentArray>
+ * @phpstan-import-type CollectedComponentArray from CollectedComponent
  */
 final class ComponentCollector implements Collector
 {
@@ -35,7 +36,10 @@ final class ComponentCollector implements Collector
         return Node::class;
     }
 
-    public function processNode(Node $node, Scope $scope): ?CollectedComponent
+    /**
+     * @phpstan-return null|CollectedComponentArray
+     */
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -55,7 +59,10 @@ final class ComponentCollector implements Collector
         return null;
     }
 
-    private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?CollectedComponent
+    /**
+     * @phpstan-return null|CollectedComponentArray
+     */
+    private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?array
     {
         // TODO check if actual class is control / presenter
 
@@ -71,14 +78,17 @@ final class ComponentCollector implements Collector
         }
 
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
-        return new CollectedComponent(
+        return (new CollectedComponent(
             $classReflection->getName(),
             '',
             new Component($componentName, $parametersAcceptor->getReturnType())
-        );
+        ))->toArray();
     }
 
-    private function findAddComponent(MethodCall $node, Scope $scope, ClassReflection $classReflection): ?CollectedComponent
+    /**
+     * @phpstan-return null|CollectedComponentArray
+     */
+    private function findAddComponent(MethodCall $node, Scope $scope, ClassReflection $classReflection): ?array
     {
         // TODO check if caller class is control / presenter
 
@@ -99,10 +109,10 @@ final class ComponentCollector implements Collector
         }
         $componentArgType = $scope->getType($componentArg);
 
-        return new CollectedComponent(
+        return (new CollectedComponent(
             $classReflection->getName(),
             $scope->getFunctionName() ?: '',
             new Component($componentName, $componentArgType)
-        );
+        ))->toArray();
     }
 }

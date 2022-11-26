@@ -16,7 +16,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<Node, ?CollectedVariable>
+ * @implements Collector<Node, ?CollectedVariableArray>
+ * @phpstan-import-type CollectedVariableArray from CollectedVariable
  */
 final class VariableCollector implements Collector
 {
@@ -32,7 +33,10 @@ final class VariableCollector implements Collector
         return Node::class;
     }
 
-    public function processNode(Node $node, Scope $scope): ?CollectedVariable
+    /**
+     * @phpstan-return null|CollectedVariableArray
+     */
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -70,10 +74,10 @@ final class VariableCollector implements Collector
         }
 
         $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
-        return new CollectedVariable(
+        return (new CollectedVariable(
             $classReflection->getName(),
             $functionName,
             new TemplateVariable($variableName, $scope->getType($node->expr))
-        );
+        ))->toArray();
     }
 }

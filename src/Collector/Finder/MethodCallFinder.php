@@ -8,6 +8,9 @@ use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
 use PHPStan\Node\CollectedDataNode;
 
+/**
+ * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
+ */
 final class MethodCallFinder
 {
     /**
@@ -38,16 +41,14 @@ final class MethodCallFinder
     }
 
     /**
-     * @param array<CollectedMethodCall|array{callerClassName: string, callerMethodName: string, calledClassName: string, calledMethodName: string}> $data
+     * @phpstan-param array<CollectedMethodCallArray> $data
      * @return CollectedMethodCall[]
      */
     private function buildData(array $data): array
     {
         $collectedMethodCalls = [];
         foreach ($data as $item) {
-            if (!$item instanceof CollectedMethodCall) {
-                $item = new CollectedMethodCall(...array_values($item));
-            }
+            $item = new CollectedMethodCall($item['callerClassName'], $item['callerMethodName'], $item['calledClassName'], $item['calledMethodName']);
             $collectedMethodCalls[] = $item;
         }
         return $collectedMethodCalls;

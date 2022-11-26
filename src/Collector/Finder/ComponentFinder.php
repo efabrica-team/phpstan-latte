@@ -10,6 +10,9 @@ use Efabrica\PHPStanLatte\Template\Component;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
 
+/**
+ * @phpstan-import-type CollectedComponentArray from CollectedComponent
+ */
 final class ComponentFinder
 {
     /**
@@ -62,17 +65,15 @@ final class ComponentFinder
     }
 
     /**
-     * @param array<CollectedComponent|array{className: string, methodName: string, component: array{name: string, type: string}}> $data
+     * @phpstan-param array<CollectedComponentArray> $data
      * @return CollectedComponent[]
      */
     private function buildData(array $data): array
     {
         $collectedVariables = [];
         foreach ($data as $item) {
-            if (!$item instanceof CollectedComponent) {
-                $item['component'] = new Component($item['component']['name'], $this->typeStringResolver->resolve($item['component']['type']));
-                $item = new CollectedComponent(...array_values($item));
-            }
+            $component = new Component($item['componentName'], $this->typeStringResolver->resolve($item['componentType']));
+            $item = new CollectedComponent($item['className'], $item['methodName'], $component);
             $collectedVariables[] = $item;
         }
         return $collectedVariables;

@@ -14,7 +14,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<MethodCall, ?CollectedTemplatePath>
+ * @implements Collector<MethodCall, ?CollectedTemplatePathArray>
+ * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
  */
 final class TemplatePathCollector implements Collector
 {
@@ -41,8 +42,9 @@ final class TemplatePathCollector implements Collector
 
     /**
      * @param MethodCall $node
+     * @phpstan-return null|CollectedTemplatePathArray
      */
-    public function processNode(Node $node, Scope $scope): ?CollectedTemplatePath
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -76,6 +78,6 @@ final class TemplatePathCollector implements Collector
         if ($path === null) {
             return null;
         }
-        return new CollectedTemplatePath($actualClassName, $functionName, $path);
+        return (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();
     }
 }

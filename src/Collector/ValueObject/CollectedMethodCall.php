@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use JsonSerializable;
-use ReturnTypeWillChange;
-
-final class CollectedMethodCall implements JsonSerializable
+/**
+ * @phpstan-type CollectedMethodCallArray array{callerClassName: string, callerMethodName: string, calledClassName: string, calledMethodName: string}
+ */
+final class CollectedMethodCall
 {
     private string $callerClassName;
 
@@ -46,8 +46,10 @@ final class CollectedMethodCall implements JsonSerializable
         return $this->calledMethodName;
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    /**
+     * @phpstan-return CollectedMethodCallArray
+     */
+    public function toArray()
     {
         return [
             'callerClassName' => $this->callerClassName,

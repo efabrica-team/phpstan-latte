@@ -8,6 +8,9 @@ use Efabrica\PHPStanLatte\Collector\ResolvedClassCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedClass;
 use PHPStan\Node\CollectedDataNode;
 
+/**
+ * @phpstan-import-type CollectedResolvedClassArray from CollectedResolvedClass
+ */
 final class ResolvedClassFinder
 {
     /**
@@ -36,16 +39,14 @@ final class ResolvedClassFinder
     }
 
     /**
-     * @param array<CollectedResolvedClass|array{resolver: string, className: string}> $data
+     * @phpstan-param array<CollectedResolvedClassArray> $data
      * @return CollectedResolvedClass[]
      */
     private function buildData(array $data): array
     {
         $collectedResolvedClasses = [];
         foreach ($data as $item) {
-            if (!$item instanceof CollectedResolvedClass) {
-                $item = new CollectedResolvedClass(...array_values($item));
-            }
+            $item = new CollectedResolvedClass($item['resolver'], $item['className']);
             $collectedResolvedClasses[] = $item;
         }
         return $collectedResolvedClasses;
