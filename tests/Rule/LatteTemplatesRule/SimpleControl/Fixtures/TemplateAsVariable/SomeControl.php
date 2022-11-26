@@ -12,6 +12,7 @@ final class SomeControl extends Control
     {
         $template = $this->template;
 
+        $template->a = null;
         $template->a = 'a';
         $template->b = 'b';
 

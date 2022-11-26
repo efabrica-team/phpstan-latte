@@ -23,9 +23,24 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisTemplate/SomeControl.php'], [
             [
-                'Variable $c might not be defined.',
-                3,
-                'default.latte',
+              'Dumped type: string|null',
+              1,
+              'default.latte',
+            ],
+            [
+                    'Dumped type: string',
+                    2,
+                    'default.latte',
+            ],
+            [
+              'Dumped type: mixed',
+              3,
+              'default.latte',
+            ],
+            [
+              'Variable $c might not be defined.',
+              3,
+              'default.latte',
             ],
         ]);
     }
@@ -33,6 +48,21 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     public function testThisGetTemplate(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisGetTemplate/SomeControl.php'], [
+            [
+                'Dumped type: string|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: string',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                3,
+                'default.latte',
+            ],
             [
                 'Variable $c might not be defined.',
                 3,
@@ -44,6 +74,21 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     public function testTemplateAsVariable(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
+            [
+                'Dumped type: string|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: string',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                3,
+                'default.latte',
+            ],
             [
                 'Variable $c might not be defined.',
                 3,

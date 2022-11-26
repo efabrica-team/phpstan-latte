@@ -10,6 +10,7 @@ final class SomeControl extends Control
 {
     public function render(): void
     {
+        $this->getTemplate()->a = null;
         $this->getTemplate()->a = 'a';
         $this->getTemplate()->b = 'b';
 
