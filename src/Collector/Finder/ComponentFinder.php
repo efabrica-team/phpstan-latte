@@ -47,17 +47,32 @@ final class ComponentFinder
      */
     public function find(string $className, string $methodName): array
     {
+        return $this->findMethodCalls($className, $methodName);
+    }
+
+    /**
+     * @param array<string, array<string, true>> $alreadyFound
+     * @return Component[]
+     */
+    private function findMethodCalls(string $className, string $methodName, &$alreadyFound = []): array
+    {
+        if (isset($alreadyFound[$className][$methodName])) {
+            return []; // stop recursion
+        } else {
+            $alreadyFound[$className][$methodName] = true;
+        }
+
+        // TODO check not only called method but also all parents
+
         $collectedComponents = [
             $this->collectedComponents[$className][$methodName] ?? [],
         ];
 
-        // TODO check not only called method but also all parents
-
         $methodCalls = $this->methodCallFinder->find($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
-            $collectedComponents[] = $this->find($calledClassName, '');
+            $collectedComponents[] = $this->findMethodCalls($calledClassName, '', $alreadyFound);
             foreach ($calledMethods as $calledMethod) {
-                $collectedComponents[] = $this->find($calledClassName, $calledMethod);
+                $collectedComponents[] = $this->findMethodCalls($calledClassName, $calledMethod, $alreadyFound);
             }
         }
 
