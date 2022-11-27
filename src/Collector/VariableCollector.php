@@ -16,8 +16,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<Node, ?CollectedVariableArray>
  * @phpstan-import-type CollectedVariableArray from CollectedVariable
+ * @implements Collector<Node, ?CollectedVariableArray>
  */
 final class VariableCollector implements Collector
 {

@@ -9,15 +9,20 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Component;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Type\ObjectType;
 
 /**
- * @implements Collector<Node, ?CollectedComponentArray>
  * @phpstan-import-type CollectedComponentArray from CollectedComponent
+ * @implements Collector<Node, ?CollectedComponentArray>
  */
 final class ComponentCollector implements Collector
 {
@@ -54,7 +59,11 @@ final class ComponentCollector implements Collector
             return $this->findAddComponent($node, $scope, $classReflection);
         }
 
-        // TODO add other components registrations - calls on Control $this['something'] = new SomeSubcomponent(), traits
+        if ($node instanceof Assign) {
+            return $this->findAssignToThis($node, $scope, $classReflection);
+        }
+
+        // TODO add other components registrations - traits
 
         return null;
     }
@@ -113,6 +122,43 @@ final class ComponentCollector implements Collector
             $classReflection->getName(),
             $scope->getFunctionName() ?: '',
             new Component($componentName, $componentArgType)
+        ))->toArray();
+    }
+
+    /**
+     * @phpstan-return null|CollectedComponentArray
+     */
+    private function findAssignToThis(Assign $node, Scope $scope, ClassReflection $classReflection): ?array
+    {
+        // TODO check if actual class is control / presenter
+
+        if (!$node->var instanceof ArrayDimFetch) {
+            return null;
+        }
+        if (!$node->var->var instanceof Variable) {
+            return null;
+        }
+        if ($node->var->var->name !== 'this') {
+            return null;
+        }
+
+        $exprType = $scope->getType($node->expr);
+        if (!($exprType instanceof ObjectType && $exprType->isInstanceOf('Nette\ComponentModel\IComponent')->yes())) {
+            return null;
+        }
+        if (!$node->var->dim instanceof Expr) {
+            return null;
+        }
+
+        $componentName = $this->valueResolver->resolve($node->var->dim);
+        if (!is_string($componentName)) {
+            return null;
+        }
+
+        return (new CollectedComponent(
+            $classReflection->getName(),
+            $scope->getFunctionName() ?: '',
+            new Component($componentName, $exprType)
         ))->toArray();
     }
 }

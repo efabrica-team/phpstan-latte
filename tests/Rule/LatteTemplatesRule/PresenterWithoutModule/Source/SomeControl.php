@@ -8,17 +8,17 @@ use Nette\Application\UI\Control;
 
 final class SomeControl extends Control
 {
+    public function __construct()
+    {
+        $this['header'] = new SomeHeaderControl();
+    }
+
     public function render(): void
     {
     }
 
     public function renderOtherRender(): void
     {
-    }
-
-    protected function createComponentHeader(): SomeHeaderControl
-    {
-        return new SomeHeaderControl();
     }
 
     protected function createComponentBody(): SomeBodyControl

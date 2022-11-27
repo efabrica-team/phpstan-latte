@@ -14,8 +14,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<MethodCall, ?CollectedTemplatePathArray>
  * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
+ * @implements Collector<MethodCall, ?CollectedTemplatePathArray>
  */
 final class TemplatePathCollector implements Collector
 {
