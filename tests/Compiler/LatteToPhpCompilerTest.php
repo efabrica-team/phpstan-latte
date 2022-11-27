@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Compiler;
 
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
-use Latte\Engine;
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Testing\PHPStanTestCase;
 
@@ -15,7 +15,6 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
     {
         return [
             __DIR__ . '/../../extension.neon',
-            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../latte2.neon' : __DIR__ . '/../../latte3.neon',
             __DIR__ . '/../config.neon',
         ];
     }
@@ -33,7 +32,7 @@ final class LatteToPhpCompilerTest extends PHPStanTestCase
         [$latteContent, $compiledPhpContentLatte2, $compiledPhpContentLatte3] = array_map('trim', explode('-----', file_get_contents($path) ?: '', 3));
 
         $output = $compiler->compile('', $latteContent, [], []);
-        $compiledPhpContent = Engine::VERSION_ID < 30000 ? $compiledPhpContentLatte2 : $compiledPhpContentLatte3;
+        $compiledPhpContent = LatteVersion::isLatte2() ? $compiledPhpContentLatte2 : $compiledPhpContentLatte3;
         $this->assertStringMatchesFormat($compiledPhpContent, $output);
     }
 

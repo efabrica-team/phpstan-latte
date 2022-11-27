@@ -7,15 +7,12 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\SomeControl;
-use Latte\Engine;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 {
     public static function getAdditionalConfigFiles(): array
     {
         return [
-            __DIR__ . '/../../../../extension.neon',
-            Engine::VERSION_ID < 30000 ? __DIR__ . '/../../../../latte2.neon' : __DIR__ . '/../../../../latte3.neon',
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
             __DIR__ . '/config.neon',

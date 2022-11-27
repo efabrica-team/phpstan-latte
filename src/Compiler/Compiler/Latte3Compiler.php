@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
-use InvalidArgumentException;
 use Latte\Compiler\TemplateGenerator;
 use Latte\Engine;
 use Latte\Essential\RawPhpExtension;
@@ -12,41 +11,33 @@ use Latte\Extension;
 use Nette\Bridges\ApplicationLatte\UIExtension;
 use Nette\Bridges\FormsLatte\FormsExtension;
 
-final class Latte3Compiler implements CompilerInterface
+final class Latte3Compiler extends AbstractCompiler
 {
-    private bool $strictMode;
-
-    private Engine $engine;
-
     /**
      * @param Extension[] $extensions
      */
     public function __construct(
-        bool $strictMode,
-        array $extensions,
-        ?string $engineBootstrap = null
+        ?Engine $engine = null,
+        bool $strictMode = false,
+        array $extensions = []
     ) {
-        $this->strictMode = $strictMode;
-        if ($engineBootstrap !== null) {
-            $engine = require $engineBootstrap;
-            if (!$engine instanceof Engine) {
-                throw new InvalidArgumentException('engineBootstrap must return Engine');
-            }
-        } else {
-            $engine = new Engine();
-            if (class_exists(RawPhpExtension::class)) {
-                $extensions[] = new RawPhpExtension();
-            }
-            if (class_exists(UIExtension::class)) {
-                $extensions[] = new UIExtension(null);
-            }
-            if (class_exists(FormsExtension::class)) {
-                $extensions[] = new FormsExtension();
-            }
+        parent::__construct($engine, $strictMode);
+        $this->installExtensions($extensions);
+    }
 
-            $this->installExtensions($engine, $extensions);
+    protected function createDefaultEngine(): Engine
+    {
+        $engine = new Engine();
+        if (class_exists(RawPhpExtension::class)) {
+            $engine->addExtension(new RawPhpExtension());
         }
-        $this->engine = $engine;
+        if (class_exists(UIExtension::class)) {
+            $engine->addExtension(new UIExtension(null));
+        }
+        if (class_exists(FormsExtension::class)) {
+            $engine->addExtension(new FormsExtension());
+        }
+        return $engine;
     }
 
     public function compile(string $templateContent): string
@@ -58,23 +49,23 @@ final class Latte3Compiler implements CompilerInterface
         return $this->fixLines($phpContent);
     }
 
-    public function getDefaultFilters(): array
+    public function getFilters(): array
     {
-        $defaultFilters = [];
+        $filters = [];
         foreach ($this->engine->getExtensions() as $extension) {
-            /** @var array<string, array{string, string}|string> $defaultFilters */
-            $defaultFilters = array_merge($defaultFilters, $extension->getFilters());
+            /** @var array<string, array{string, string}|string> $filters */
+            $filters = array_merge($filters, $extension->getFilters());
         }
-        return $defaultFilters;
+        return $filters;
     }
 
     /**
      * @param Extension[] $extensions
      */
-    private function installExtensions(Engine $engine, array $extensions): void
+    private function installExtensions(array $extensions): void
     {
         foreach ($extensions as $extension) {
-            $engine->addExtension($extension);
+            $this->engine->addExtension($extension);
         }
     }
 

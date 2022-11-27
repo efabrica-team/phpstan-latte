@@ -7,6 +7,9 @@ parameters:
             translate: [Nette\Localization\Translator, translate]
         errorPatternsToIgnore: []
         applicationMapping: []
+        engineBootstrap: null
+        macros: []
+        extensions: []
 
 parametersSchema:
     latte: structure([
@@ -16,12 +19,27 @@ parametersSchema:
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
+        engineBootstrap: schema(string(), nullable())
+        macros: arrayOf(string())
+        extensions: arrayOf(object())
     ])
 
 rules:
     - Efabrica\PHPStanLatte\Rule\LatteCompileErrorsRule
 
 services:
+    -
+        class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface
+        factory: @Efabrica\PHPStanLatte\Compiler\Compiler\CompilerFactory::create
+
+    -
+        class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerFactory
+        arguments:
+            engineBootstrap: %latte.engineBootstrap%
+            strictMode: %latte.strictMode%
+            macros: %latte.macros%
+            extensions: %latte.extensions%
+
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper

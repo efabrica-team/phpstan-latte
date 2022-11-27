@@ -33,7 +33,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
      */
     public function __construct(array $filters, CompilerInterface $compiler)
     {
-        $this->filters = $compiler->getDefaultFilters();
+        $this->filters = $compiler->getFilters();
 
         foreach ($filters as $filterName => $filter) {
             $this->filters[strtolower($filterName)] = $filter;

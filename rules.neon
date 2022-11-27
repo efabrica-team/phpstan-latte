@@ -1,3 +1,6 @@
+includes:
+    - ./extension.neon
+
 services:
     -
         factory: Efabrica\PHPStanLatte\Rule\LatteTemplatesRule
