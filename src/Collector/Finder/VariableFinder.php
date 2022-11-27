@@ -52,7 +52,7 @@ final class VariableFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return Variable[]
      */
-    private function findMethodCalls(string $className, string $methodName, &$alreadyFound = []): array
+    private function findMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
         if (isset($alreadyFound[$className][$methodName])) {
             return []; // stop recursion

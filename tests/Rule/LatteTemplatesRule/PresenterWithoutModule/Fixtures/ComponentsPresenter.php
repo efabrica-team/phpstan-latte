@@ -25,7 +25,8 @@ final class ComponentsPresenter extends ParentPresenter
 
     public function actionCreate(): void
     {
-        $this->addComponent(new Form(), 'onlyCreateForm');
+        $form = new Form();
+        $this->addComponent($form, 'onlyCreateForm');
     }
 
     protected function createComponentForm(): Form

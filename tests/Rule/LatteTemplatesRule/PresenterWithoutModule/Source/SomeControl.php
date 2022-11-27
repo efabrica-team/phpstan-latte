@@ -8,13 +8,6 @@ use Nette\Application\UI\Control;
 
 final class SomeControl extends Control
 {
-    public function __construct()
-    {
-        $this['header'] = new SomeHeaderControl();
-        $this['table'] = new SomeTableControl();
-        $this['footer'] = new SomeFooterControl();
-    }
-
     public function render(): void
     {
     }
@@ -23,8 +16,18 @@ final class SomeControl extends Control
     {
     }
 
+    protected function createComponentHeader(): SomeHeaderControl
+    {
+        return new SomeHeaderControl();
+    }
+
     protected function createComponentBody(): SomeBodyControl
     {
         return new SomeBodyControl();
+    }
+
+    protected function createComponentFooter(): SomeFooterControl
+    {
+        return new SomeFooterControl();
     }
 }

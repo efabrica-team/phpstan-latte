@@ -52,9 +52,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testComponents(): void
     {
-        // TODO https://github.com/efabrica-team/phpstan-latte/issues/24
-
-        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php', __DIR__ . '/Source/ControlRegistrator.php'], [
+        $this->analyse([
+            __DIR__ . '/Fixtures/ComponentsPresenter.php',
+            __DIR__ . '/Fixtures/ParentPresenter.php',
+            __DIR__ . '/Source/ControlRegistrator.php',
+            __DIR__ . '/Source/SomeBodyControl.php',
+            __DIR__ . '/Source/SomeControl.php',
+            __DIR__ . '/Source/SomeFooterControl.php',
+            __DIR__ . '/Source/SomeHeaderControl.php',
+            __DIR__ . '/Source/SomeTableControl.php',
+        ], [
             [
                 'Component with name "onlyCreateForm" probably doesn\'t exist.',
                 9,
@@ -71,6 +78,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
+                23,
+                'default.latte',
+            ],
+            [
                 'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
                 7,
                 'create.latte',
@@ -78,6 +90,36 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
                 11,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl" probably doesn\'t exist.',
+                13,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl-header" probably doesn\'t exist.',
+                14,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl-body" probably doesn\'t exist.',
+                15,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl-body-table" probably doesn\'t exist.',
+                16,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl-footer" probably doesn\'t exist.',
+                17,
+                'create.latte',
+            ],
+            [
+                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
+                18,
                 'create.latte',
             ],
         ]);

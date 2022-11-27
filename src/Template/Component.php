@@ -15,6 +15,9 @@ final class Component implements JsonSerializable
 
     private Type $type;
 
+    /** @var Component[] */
+    private array $subcomponents = [];
+
     public function __construct(string $name, Type $type)
     {
         $this->name = $name;
@@ -29,6 +32,22 @@ final class Component implements JsonSerializable
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
+    }
+
+    /**
+     * @param Component[] $subcomponents
+     */
+    public function setSubcomponents(array $subcomponents): void
+    {
+        $this->subcomponents = $subcomponents;
+    }
+
+    /**
+     * @return Component[]
+     */
+    public function getSubcomponents(): array
+    {
+        return $this->subcomponents;
     }
 
     #[ReturnTypeWillChange]
