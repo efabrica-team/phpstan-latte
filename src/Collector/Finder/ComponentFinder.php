@@ -46,7 +46,7 @@ final class ComponentFinder
         }
 
         foreach ($componentsWithTypes as $componentType => $components) {
-            $subcomponents = $this->collectedComponents[$componentType][''] ?? [];
+            $subcomponents = array_merge($this->collectedComponents[$componentType][''] ?? [], $this->collectedComponents[$componentType]['__construct'] ?? []);
             foreach ($components as $component) {
                 $component->setSubcomponents($subcomponents);
             }

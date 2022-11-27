@@ -11,8 +11,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @implements Collector<Node, ?CollectedResolvedClassArray>
  * @phpstan-import-type CollectedResolvedClassArray from CollectedResolvedClass
+ * @implements Collector<Node, ?CollectedResolvedClassArray>
  */
 final class ResolvedClassCollector implements Collector
 {

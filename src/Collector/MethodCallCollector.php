@@ -19,8 +19,8 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
- * @implements Collector<CallLike, ?CollectedMethodCallArray>
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
+ * @implements Collector<CallLike, ?CollectedMethodCallArray>
  */
 final class MethodCallCollector implements Collector
 {
