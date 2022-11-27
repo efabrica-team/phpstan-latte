@@ -101,6 +101,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
     /**
      * @param Component[] $components
+     * @param string[] $componentNameParts
      */
     private function findComponentByName(array $components, array $componentNameParts): ?Component
     {
@@ -112,7 +113,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
             if (count($componentNameParts) === 0) {
                 return $component;
             }
-            return $this->findComponentByName($component->getSubcomponents() ?: [],$componentNameParts);
+            return $this->findComponentByName($component->getSubcomponents() ?: [], $componentNameParts);
         }
         return null;
     }
