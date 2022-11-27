@@ -84,7 +84,8 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $tmpVarName = LatteVersion::isLatte2() ? '$_tmp' : '$ʟ_tmp';
 
-        $component = $this->findComponentByName($this->components, $componentName);
+        $componentNameParts = explode('-', $componentName);
+        $component = $this->findComponentByName($this->components, $componentNameParts);
         $componentType = $component !== null ? $component->getTypeAsString() : '\Nette\ComponentModel\IComponent';
         $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' ' . $tmpVarName . ' */'));
 
@@ -101,9 +102,8 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
     /**
      * @param Component[] $components
      */
-    private function findComponentByName(array $components, string $componentName): ?Component
+    private function findComponentByName(array $components, array $componentNameParts): ?Component
     {
-        $componentNameParts = explode('-', $componentName);
         $componentNamePart = array_shift($componentNameParts);
         foreach ($components as $component) {
             if ($component->getName() !== $componentNamePart) {
@@ -112,7 +112,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
             if (count($componentNameParts) === 0) {
                 return $component;
             }
-            return $this->findComponentByName($component->getSubcomponents() ?: [], implode('-', $componentNameParts));
+            return $this->findComponentByName($component->getSubcomponents() ?: [],$componentNameParts);
         }
         return null;
     }
