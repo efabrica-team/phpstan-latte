@@ -29,6 +29,7 @@ final class ComponentFinder
         $this->methodCallFinder = $methodCallFinder;
         $this->typeStringResolver = $typeStringResolver;
 
+        $componentsWithTypes = [];
         $collectedComponents = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)))));
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
@@ -36,10 +37,20 @@ final class ComponentFinder
             if (!isset($this->collectedComponents[$className][$methodName])) {
                 $this->collectedComponents[$className][$methodName] = [];
             }
+            if (!isset($componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()])) {
+                $componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()] = [];
+            }
+            $componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()][] = $collectedComponent->getComponent();
+
             $this->collectedComponents[$className][$methodName][] = $collectedComponent->getComponent();
         }
 
-        // TODO update subcomponents of components
+        foreach ($componentsWithTypes as $componentType => $components) {
+            $subcomponents = $this->collectedComponents[$componentType][''] ?? [];
+            foreach ($components as $component) {
+                $component->setSubcomponents($subcomponents);
+            }
+        }
     }
 
     /**
@@ -54,7 +65,7 @@ final class ComponentFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return Component[]
      */
-    private function findMethodCalls(string $className, string $methodName, &$alreadyFound = []): array
+    private function findMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
         if (isset($alreadyFound[$className][$methodName])) {
             return []; // stop recursion
@@ -85,12 +96,12 @@ final class ComponentFinder
      */
     private function buildData(array $data): array
     {
-        $collectedVariables = [];
+        $collectedComponents = [];
         foreach ($data as $item) {
             $component = new Component($item['componentName'], $this->typeStringResolver->resolve($item['componentType']));
             $item = new CollectedComponent($item['className'], $item['methodName'], $component);
-            $collectedVariables[] = $item;
+            $collectedComponents[] = $item;
         }
-        return $collectedVariables;
+        return $collectedComponents;
     }
 }
