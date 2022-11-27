@@ -4,45 +4,45 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
-use Latte\Compiler;
-use Latte\Parser;
+use Latte\Engine;
 use Latte\Runtime\Defaults;
+use Nette\Bridges\ApplicationLatte\UIMacros;
+use Nette\Bridges\FormsLatte\FormMacros;
 
-final class Latte2Compiler implements CompilerInterface
+final class Latte2Compiler extends AbstractCompiler
 {
-    private bool $strictMode;
-
-    /** @var string[] */
-    private array $macros;
-
-    private Parser $parser;
-
-    private Compiler $compiler;
-
     /**
      * @param string[] $macros
      */
     public function __construct(
-        bool $strictMode,
-        array $macros,
-        Parser $parser,
-        Compiler $compiler
+        ?Engine $engine = null,
+        bool $strictMode = false,
+        array $macros = []
     ) {
-        $this->strictMode = $strictMode;
-        $this->macros = $macros;
-        $this->parser = $parser;
-        $this->compiler = $compiler;
+        parent::__construct($engine, $strictMode);
+        $this->installMacros($macros);
+    }
+
+    protected function createDefaultEngine(): Engine
+    {
+        $engine = new Engine();
+        if (class_exists(UIMacros::class)) {
+            UIMacros::install($engine->getCompiler());
+        }
+        if (class_exists(FormMacros::class)) {
+            FormMacros::install($engine->getCompiler());
+        }
+        return $engine;
     }
 
     public function compile(string $templateContent): string
     {
-        $latteTokens = $this->parser->parse($templateContent);
-        $this->installMacros($this->compiler);
-        $phpContent = $this->compiler->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
+        $latteTokens = $this->engine->getParser()->parse($templateContent);
+        $phpContent = $this->engine->getCompiler()->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
         return $this->fixLines($phpContent);
     }
 
-    public function getDefaultFilters(): array
+    public function getFilters(): array
     {
         $defaults = new Defaults();
         /** @var array<string, string|array{string, string}> $defaultFilters */
@@ -50,13 +50,16 @@ final class Latte2Compiler implements CompilerInterface
         return $defaultFilters;
     }
 
-    private function installMacros(Compiler $compiler): void
+    /**
+     * @param string[] $macros
+     */
+    private function installMacros(array $macros): void
     {
-        foreach ($this->macros as $macro) {
+        foreach ($macros as $macro) {
             [$class, $method] = explode('::', $macro, 2);
             $callable = [$class, $method];
             if (is_callable($callable)) {
-                call_user_func($callable, $compiler);
+                call_user_func($callable, $this->engine->getCompiler());
             }
         }
     }

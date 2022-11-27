@@ -7,14 +7,11 @@ It is based on Tomas Votruba's [blog series](https://tomasvotruba.com/blog/stamp
 composer require efabrica/phpstan-latte --dev
 ```
 
-Add these lines to your phpstan.neon:
+Add this line to your phpstan.neon:
 ```neon
 includes:
-    - vendor/efabrica/phpstan-latte/extension.neon
     - vendor/efabrica/phpstan-latte/rules.neon
 ```
-
-Also add one of files `vendor/efabrica/phpstan-latte/latte2.neon` or `vendor/efabrica/phpstan-latte/latte3.neon` depending on which version of latte you use. 
 
 ## Setup
 You can also add some parameters for phpstan-latte extension. All of them are under `latte` key in `parameters` section.
@@ -38,21 +35,55 @@ parameters:
         strictMode: true
 ```
 
-### macros
+### engineBootstrap
+Type: `string`
+
+If provided this return value of this php file is used as Latte Engine.
+
+If not provided default Latte Engine is used.
+
+Example:
+```neon
+parameters:
+    latte:
+        engineBootstrap: latte.engine.php
+```
+
+Example `latte.engine.php`:
+
+```php
+<?php
+
+$engine = new \Latte\Engine();
+// ...
+return $engine;
+```
+
+Example `latte.engine.php` for loading configured Engine from Nette application container:
+
+```php
+<?php
+
+return App\Bootstrap::boot()->createContainer()->getService("latte.templateFactory")->createTemplate()->getLatte();
+```
+
+### macros (Latte 2 only)
 Type: `array`
 
 List of methods to register macros in format `Class::method`.
 
-Default:
+Example:
 ```neon
 parameters:
     latte:
         macros:
-            - Latte\Macros\CoreMacros::install
-            - Latte\Macros\BlockMacros::install
-            - Nette\Bridges\ApplicationLatte\UIMacros::install
-            - Nette\Bridges\FormsLatte\FormMacros::install
+            - MyMacro::install
 ```
+
+### extensions (Latte 3 only)
+Type: `array`
+
+List of Latte extension classes
 
 Example:
 ```neon
@@ -66,6 +97,10 @@ parameters:
 Type: `array`
 
 List of filters used in your apps. Name of filter is used as key, callback or function name is value.
+
+For Latte 2 only default filters are added by default.
+
+For Latte 3 default filters and filters from all extensions are added by default.
 
 Default:
 ```neon
@@ -129,6 +164,8 @@ parameters:
 Type: `array`
 
 Application mapping should be the same as the mapping used in application. It is used for transforming links to correct method calls (`link SomePresenter:create` is transformed to `SomePresenter->actionCreate()` if mapping and method exists).
+
+If not set link calls are not checked.
 
 Default:
 ```neon

@@ -15,13 +15,17 @@ parameters:
 
         # Latte version conditions
         -
-            message: '#Comparison operation "(<|>)" between [0-9]{5} and [0-9]{5} is always (true|false).#'
-        -
-            message: '#Else branch is unreachable because ternary operator condition is always (true|false).#'
-            path: src/Compiler/NodeVisitor/AddTypeToComponentNodeVisitor.php
-            reportUnmatched: false
+            message: '#Comparison operation "(<|>|<=|>=)" between [0-9]{5} and [0-9]{5} is always (true|false).#'
+            path: src/Compiler/LatteVersion.php
 
         # Errors cause by multiple latte compiler engines
+        -
+            messages:
+                - '#^Property Efabrica\\PHPStanLatte\\Compiler\\Compiler\\CompilerFactory\:\:\$extensions has unknown class Latte\\Extension as its type\.$#'
+                - '#^Parameter \$extensions of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\CompilerFactory\:\:__construct\(\) has invalid type Latte\\Extension\.$#'
+            path: src/Compiler/Compiler/CompilerFactory.php
+            reportUnmatched: false
+
         -
             messages:
                 - '#^Property Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:\$parser has unknown class Latte\\Parser as its type\.$#'
@@ -30,8 +34,12 @@ parameters:
                 - '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:__construct\(\) has invalid type Latte\\Compiler\.$#'
                 - '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
                 - '#^Call to method compile\(\) on an unknown class Latte\\Compiler\.$#'
+                - '#^Call to an undefined method Latte\\Engine::getCompiler\(\).$#'
+                - '#^Call to an undefined method Latte\\Engine::getParser\(\).$#'
+                - '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
                 - '#^Instantiated class Latte\\Runtime\\Defaults not found\.$#'
                 - '#^Call to method getFilters\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
+                - '#^Method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler::getFilters\(\) should return array<string, array\{string, string\}\|string> but returns array<callable\(\): mixed>.#'
                 - '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:installMacros\(\) has invalid type Latte\\Compiler\.$#'
             path: src/Compiler/Compiler/Latte2Compiler.php
             reportUnmatched: false

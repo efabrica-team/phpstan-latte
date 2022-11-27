@@ -15,5 +15,5 @@ interface CompilerInterface
     /**
      * @return array<string, string|array{string, string}>
      */
-    public function getDefaultFilters(): array;
+    public function getFilters(): array;
 }
