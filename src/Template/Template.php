@@ -11,6 +11,9 @@ final class Template implements JsonSerializable
 {
     private string $path;
 
+    /** @var ?class-string */
+    private ?string $actualClass;
+
     /** @var Variable[] */
     private array $variables;
 
@@ -18,12 +21,14 @@ final class Template implements JsonSerializable
     private array $components;
 
     /**
+     * @param ?class-string $actualClass
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function __construct(string $path, array $variables, array $components)
+    public function __construct(string $path, ?string $actualClass, array $variables, array $components)
     {
         $this->path = $path;
+        $this->actualClass = $actualClass;
         $this->variables = $variables;
         $this->components = $components;
     }
@@ -31,6 +36,14 @@ final class Template implements JsonSerializable
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return ?class-string
+     */
+    public function getActualClass(): ?string
+    {
+        return $this->actualClass;
     }
 
     /**

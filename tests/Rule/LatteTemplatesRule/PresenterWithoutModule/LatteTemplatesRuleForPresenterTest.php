@@ -47,6 +47,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 5,
                 'other.latte',
             ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                5,
+                'empty.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                4,
+                'parent.latte',
+            ],
         ]);
     }
 
@@ -121,6 +131,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Component with name "someControl-nonexisting" probably doesn\'t exist.',
                 18,
                 'create.latte',
+            ],
+            [
+                'Component with name "nonExistingControl" probably doesn\'t exist.',
+                3,
+                'parent.latte',
             ],
         ]);
     }

@@ -40,12 +40,20 @@ final class CollectedTemplatePath
     /**
      * @phpstan-return CollectedTemplatePathArray
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'className' => $this->className,
             'methodName' => $this->methodName,
             'templatePath' => $this->templatePath,
         ];
+    }
+
+    /**
+     * @param CollectedTemplatePathArray $item
+     */
+    public static function fromArray(array $item): self
+    {
+        return new CollectedTemplatePath($item['className'], $item['methodName'], $item['templatePath']);
     }
 }

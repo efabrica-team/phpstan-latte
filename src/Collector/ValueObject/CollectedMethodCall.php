@@ -49,7 +49,7 @@ final class CollectedMethodCall
     /**
      * @phpstan-return CollectedMethodCallArray
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'callerClassName' => $this->callerClassName,
@@ -57,5 +57,13 @@ final class CollectedMethodCall
             'calledClassName' => $this->calledClassName,
             'calledMethodName' => $this->calledMethodName,
         ];
+    }
+
+    /**
+     * @param CollectedMethodCallArray $item
+     */
+    public static function fromArray(array $item): self
+    {
+        return new CollectedMethodCall($item['callerClassName'], $item['callerMethodName'], $item['calledClassName'], $item['calledMethodName']);
     }
 }

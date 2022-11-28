@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\ComponentCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
 
@@ -62,6 +63,14 @@ final class ComponentFinder
     }
 
     /**
+     * @return Component[]
+     */
+    public function findByMethod(ReflectionMethod $method): array
+    {
+        return $this->findMethodCalls($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
      * @param array<string, array<string, true>> $alreadyFound
      * @return Component[]
      */
@@ -98,9 +107,7 @@ final class ComponentFinder
     {
         $collectedComponents = [];
         foreach ($data as $item) {
-            $component = new Component($item['componentName'], $this->typeStringResolver->resolve($item['componentType']));
-            $item = new CollectedComponent($item['className'], $item['methodName'], $component);
-            $collectedComponents[] = $item;
+            $collectedComponents[] = CollectedComponent::fromArray($item, $this->typeStringResolver);
         }
         return $collectedComponents;
     }

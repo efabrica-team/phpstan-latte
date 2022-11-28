@@ -48,8 +48,7 @@ final class MethodCallFinder
     {
         $collectedMethodCalls = [];
         foreach ($data as $item) {
-            $item = new CollectedMethodCall($item['callerClassName'], $item['callerMethodName'], $item['calledClassName'], $item['calledMethodName']);
-            $collectedMethodCalls[] = $item;
+            $collectedMethodCalls[] = CollectedMethodCall::fromArray($item);
         }
         return $collectedMethodCalls;
     }

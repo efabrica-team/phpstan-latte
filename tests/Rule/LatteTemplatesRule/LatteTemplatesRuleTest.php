@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Collector\ComponentCollector;
 use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
-use Efabrica\PHPStanLatte\Collector\ResolvedClassCollector;
+use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
@@ -25,7 +25,7 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
     {
         $container = $this->getContainer();
         return [
-            $container->getByType(ResolvedClassCollector::class),
+            $container->getByType(ResolvedNodeCollector::class),
             $container->getByType(VariableCollector::class),
             $container->getByType(ComponentCollector::class),
             $container->getByType(MethodCallCollector::class),

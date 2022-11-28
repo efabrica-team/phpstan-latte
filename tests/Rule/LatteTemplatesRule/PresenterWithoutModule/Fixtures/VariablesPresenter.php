@@ -32,6 +32,10 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->fromOtherAction = 'from other action';
     }
 
+    public function actionEmpty(): void
+    {
+    }
+
     private function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';
