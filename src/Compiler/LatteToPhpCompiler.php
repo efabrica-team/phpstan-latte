@@ -52,7 +52,7 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function compile(string $actualClass, string $templateContent, array $variables, array $components): string
+    public function compile(?string $actualClass, string $templateContent, array $variables, array $components): string
     {
         $phpContent = $this->compiler->compile($templateContent);
         $phpContent = $this->explicitCalls($actualClass, $phpContent, $variables, $components);
@@ -64,7 +64,7 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function compileFile(string $actualClass, string $templatePath, array $variables, array $components): string
+    public function compileFile(?string $actualClass, string $templatePath, array $variables, array $components): string
     {
         if (!file_exists($templatePath)) {
             throw new InvalidArgumentException('Template file "' . $templatePath . '" doesn\'t exist.');
@@ -97,7 +97,7 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    private function explicitCalls(string $actualClass, string $phpContent, array $variables, array $components): string
+    private function explicitCalls(?string $actualClass, string $phpContent, array $variables, array $components): string
     {
         $phpStmts = $this->findNodes($phpContent);
 

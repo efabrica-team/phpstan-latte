@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 
 /**
@@ -40,6 +41,14 @@ final class TemplatePathFinder
     }
 
     /**
+     * @return string[]
+     */
+    public function findByMethod(ReflectionMethod $method): array
+    {
+        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
      * @phpstan-param array<CollectedTemplatePathArray> $data
      * @return CollectedTemplatePath[]
      */
@@ -47,8 +56,7 @@ final class TemplatePathFinder
     {
         $collectedTemplatePaths = [];
         foreach ($data as $item) {
-            $item = new CollectedTemplatePath($item['className'], $item['methodName'], $item['templatePath']);
-            $collectedTemplatePaths[] = $item;
+            $collectedTemplatePaths[] = CollectedTemplatePath::fromArray($item);
         }
         return $collectedTemplatePaths;
     }

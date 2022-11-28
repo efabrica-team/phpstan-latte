@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Component;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 /**
  * @phpstan-type CollectedComponentArray array{className: string, methodName: string, componentName: string, componentType: string}
@@ -52,7 +53,7 @@ final class CollectedComponent
     /**
      * @phpstan-return CollectedComponentArray
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'className' => $this->className,
@@ -60,5 +61,14 @@ final class CollectedComponent
             'componentName' => $this->getComponentName(),
             'componentType' => $this->getComponentType(),
         ];
+    }
+
+    /**
+     * @param CollectedComponentArray $item
+     */
+    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    {
+        $component = new Component($item['componentName'], $typeStringResolver->resolve($item['componentType']));
+        return new CollectedComponent($item['className'], $item['methodName'], $component);
     }
 }

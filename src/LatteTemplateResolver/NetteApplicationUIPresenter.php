@@ -6,104 +6,71 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
-use PhpParser\Node;
-use PhpParser\Node\Stmt\Class_;
-use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
-final class NetteApplicationUIPresenter extends AbstractTemplateResolver
+final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 {
-    public function check(Node $node, Scope $scope): bool
+    public function getSupportedClasses(): array
     {
-        if (!$node instanceof InClassNode) {
-            return false;
-        }
-
-        $class = $node->getOriginalNode();
-        if (!$class instanceof Class_) {
-            return false;
-        }
-
-        $className = (string)$class->namespacedName;
-        if (!$className) {
-            return false;
-        }
-
-        $objectType = new ObjectType($className);
-        return $objectType->isInstanceOf('Nette\Application\UI\Presenter')
-            ->yes();
+        return ['Nette\Application\UI\Presenter'];
     }
 
-    protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array
+    protected function getClassTemplates(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): array
     {
-        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-
-        $fileName = $reflectionClass->getFileName();
-        if ($fileName === null) {
-            return [];
-        }
-
-        $reflectionMethods = $reflectionClass->getMethods();
-
-        $classVariables = [];
+        $className = $reflectionClass->getName();
         $presenterType = new ObjectType($className);
-        $classVariables[] = new Variable('actualClass', $presenterType);
-        $classVariables[] = new Variable('presenter', $presenterType);
 
-        $startupVariables = [];
-        $startupComponents = [];
-        $actionsWithVariables = [];
-        $actionsWithComponents = [];
+        $globalVariables = array_merge(
+            $this->variableFinder->find($className, 'startup'),
+            $this->variableFinder->find($className, 'beforeRender'),
+            [
+                new Variable('actualClass', $presenterType),
+                new Variable('presenter', $presenterType),
+            ]
+        );
 
-        foreach ($reflectionMethods as $reflectionMethod) {
-            $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-            $methodName = $reflectionMethod->getName();
+        $globalComponents = array_merge(
+            $this->componentFinder->find($className, ''),
+            $this->componentFinder->find($className, 'startup'),
+            $this->componentFinder->find($className, 'beforeRender')
+        );
 
-            if ($methodName === 'startup') {
-                $startupVariables = $this->variableFinder->find($declaringClassName, $methodName);
-                $startupComponents = $this->componentFinder->find($declaringClassName, $methodName);
+        $actions = [];
+
+        foreach ($this->getMethodsMatching($reflectionClass, '/(action|render).*/') as $reflectionMethod) {
+            $actionName = lcfirst(str_replace(['action', 'render'], '', $reflectionMethod->getName()));
+
+            if (!isset($actions[$actionName])) {
+                $actions[$actionName] = ['variables' => $globalVariables, 'components' => $globalComponents];
             }
 
-            if (!str_starts_with($methodName, 'render') && !str_starts_with($methodName, 'action')) {
-                continue;
-            }
-
-            $actionName = lcfirst(str_replace(['action', 'render'], '', $methodName));
-            if (!isset($actionsWithVariables[$actionName])) {
-                $actionsWithVariables[$actionName] = [];
-            }
-            $actionsWithVariables[$actionName] = array_merge($actionsWithVariables[$actionName], $this->variableFinder->find($declaringClassName, $methodName));
-
-            if (!isset($actionsWithComponents[$actionName])) {
-                $actionsWithComponents[$actionName] = [];
-            }
-            $actionsWithComponents[$actionName] = array_merge($actionsWithComponents[$actionName], $this->componentFinder->find($declaringClassName, $methodName));
+            $actions[$actionName]['variables'] = array_merge($actions[$actionName]['variables'], $this->variableFinder->findByMethod($reflectionMethod));
+            $actions[$actionName]['components'] = array_merge($actions[$actionName]['components'], $this->componentFinder->findByMethod($reflectionMethod));
         }
-
-        $shortClassName = $reflectionClass->getShortName();
-        $dir = dirname($fileName);
-
-        $globalComponents = $this->componentFinder->find($className, '');
 
         $templates = [];
-        foreach ($actionsWithVariables as $actionName => $actionVariables) {
-            $template = $this->findTemplateFilePath($shortClassName, $actionName, $dir);
+        foreach ($actions as $actionName => $actionDefinition) {
+            $template = $this->findTemplateFilePath($reflectionClass, $actionName);
             if ($template === null) {
                 continue;
             }
-            $variables = array_merge($startupVariables, $classVariables, $actionVariables);
-            $components = array_merge($globalComponents, $startupComponents, $actionsWithComponents[$actionName] ?? []);
-            $templates[] = new Template($template, $variables, $components);
+            $templates[] = new Template($template, $className, $actionDefinition['variables'], $actionDefinition['components']);
         }
 
         return $templates;
     }
 
-    private function findTemplateFilePath(string $shortClassName, string $actionName, string $dir): ?string
+    private function findTemplateFilePath(ReflectionClass $reflectionClass, string $actionName): ?string
     {
+        $shortClassName = $reflectionClass->getShortName();
+        $fileName = $reflectionClass->getFileName();
+        if ($fileName === null) {
+            return null;
+        }
+        $dir = dirname($fileName);
+
         $presenterName = str_replace('Presenter', '', $shortClassName);
         $dir = is_dir($dir . '/templates') ? $dir : dirname($dir);
 

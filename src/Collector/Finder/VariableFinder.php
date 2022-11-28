@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Template\Variable;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
 
@@ -49,6 +50,14 @@ final class VariableFinder
     }
 
     /**
+     * @return Variable[]
+     */
+    public function findByMethod(ReflectionMethod $method): array
+    {
+        return $this->findMethodCalls($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
      * @param array<string, array<string, true>> $alreadyFound
      * @return Variable[]
      */
@@ -85,9 +94,7 @@ final class VariableFinder
     {
         $collectedVariables = [];
         foreach ($data as $item) {
-            $variable = new Variable($item['variableName'], $this->typeStringResolver->resolve($item['variableType']));
-            $item = new CollectedVariable($item['className'], $item['methodName'], $variable);
-            $collectedVariables[] = $item;
+            $collectedVariables[] = CollectedVariable::fromArray($item, $this->typeStringResolver);
         }
         return $collectedVariables;
     }

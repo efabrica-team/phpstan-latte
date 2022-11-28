@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Template\Template;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -29,7 +30,7 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->typeStringResolver = $typeStringResolver;
     }
 
-    public function findTemplates(string $className, CollectedDataNode $collectedDataNode): array
+    public function findTemplates(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): array
     {
         // TODO create factories?
         $this->methodCallFinder = new MethodCallFinder($collectedDataNode);
@@ -37,11 +38,11 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->componentFinder = new ComponentFinder($collectedDataNode, $this->methodCallFinder, $this->typeStringResolver);
         $this->templatePathFinder = new TemplatePathFinder($collectedDataNode);
 
-        return $this->getTemplates($className, $collectedDataNode);
+        return $this->getTemplates($resolvedNode, $collectedDataNode);
     }
 
     /**
      * @return Template[]
      */
-    abstract protected function getTemplates(string $className, CollectedDataNode $collectedDataNode): array;
+    abstract protected function getTemplates(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): array;
 }

@@ -21,6 +21,12 @@ abstract class ParentPresenter extends Presenter
         $this->addComponent(new Form(), 'onlyParentDefaultForm');
     }
 
+    public function actionParent(): void
+    {
+        $this->template->variableFromParentAction = 'barbaz';
+        $this->addComponent(new Form(), 'parentDefaultForm');
+    }
+
     protected function baz(): void
     {
         $this->template->variableFromParent = 'baz';

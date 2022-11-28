@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedClass;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * @phpstan-import-type CollectedResolvedClassArray from CollectedResolvedClass
- * @implements Collector<Node, ?CollectedResolvedClassArray>
+ * @phpstan-import-type CollectedResolvedNodeArray from CollectedResolvedNode
+ * @implements Collector<Node, ?CollectedResolvedNodeArray[]>
  */
-final class ResolvedClassCollector implements Collector
+final class ResolvedNodeCollector implements Collector
 {
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
@@ -33,21 +33,17 @@ final class ResolvedClassCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedResolvedClassArray
+     * @phpstan-return null|CollectedResolvedNodeArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
-        $classReflection = $scope->getClassReflection();
-        if ($classReflection === null) {
-            return null;
-        }
-
+        $resolvedNodes = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
-            if (!$latteTemplateResolver->check($node, $scope)) {
-                continue;
+            $resolvedNode = $latteTemplateResolver->collect($node, $scope);
+            if ($resolvedNode !== null) {
+                $resolvedNodes[] = $resolvedNode->toArray();
             }
-            return (new CollectedResolvedClass(get_class($latteTemplateResolver), $classReflection->getName()))->toArray();
         }
-        return null;
+        return count($resolvedNodes) > 0 ? $resolvedNodes : null;
     }
 }

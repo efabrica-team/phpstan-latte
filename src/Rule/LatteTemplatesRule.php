@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
-use Efabrica\PHPStanLatte\Collector\Finder\ResolvedClassFinder;
+use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
@@ -65,17 +65,17 @@ final class LatteTemplatesRule implements Rule
      */
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
-        $resolvedClassFinder = new ResolvedClassFinder($collectedDataNode);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
 
         $errors = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
-            foreach ($resolvedClassFinder->find(get_class($latteTemplateResolver)) as $className) {
-                $templates = $latteTemplateResolver->findTemplates($className, $collectedDataNode);
+            foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
+                $templates = $latteTemplateResolver->findTemplates($collectedResolvedNode, $collectedDataNode);
                 foreach ($templates as $template) {
                     $templatePath = $template->getPath();
 
                     try {
-                        $compileFilePath = $this->latteToPhpCompiler->compileFile($className, $templatePath, $template->getVariables(), $template->getComponents());
+                        $compileFilePath = $this->latteToPhpCompiler->compileFile($template->getActualClass(), $templatePath, $template->getVariables(), $template->getComponents());
                     } catch (Throwable $e) {
                         $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
                         continue;

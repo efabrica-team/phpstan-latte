@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 /**
  * @phpstan-type CollectedVariableArray array{className: string, methodName: string, variableName: string, variableType: string}
@@ -52,7 +53,7 @@ final class CollectedVariable
     /**
      * @phpstan-return CollectedVariableArray
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'className' => $this->className,
@@ -60,5 +61,14 @@ final class CollectedVariable
             'variableName' => $this->getVariableName(),
             'variableType' => $this->getVariableType(),
         ];
+    }
+
+    /**
+     * @param CollectedVariableArray $item
+     */
+    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    {
+        $variable = new Variable($item['variableName'], $typeStringResolver->resolve($item['variableType']));
+        return new CollectedVariable($item['className'], $item['methodName'], $variable);
     }
 }

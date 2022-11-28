@@ -25,7 +25,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         $this->linkParamsProcessor = $linkParamsProcessor;
     }
 
-    public function setActualClass(string $actualClass): void
+    public function setActualClass(?string $actualClass): void
     {
         $this->actualClass = $actualClass;
     }

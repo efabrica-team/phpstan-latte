@@ -8,5 +8,5 @@ use PhpParser\NodeVisitor;
 
 interface PostCompileNodeVisitorInterface extends NodeVisitor
 {
-    public function setActualClass(string $actualClass): void;
+    public function setActualClass(?string $actualClass): void;
 }

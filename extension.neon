@@ -78,7 +78,7 @@ services:
 
     # Collectors
     -
-        factory: Efabrica\PHPStanLatte\Collector\ResolvedClassCollector
+        factory: Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector
         tags:
             - phpstan.collector
 

@@ -24,5 +24,5 @@ interface LinkProcessorInterface
     /**
      * adds actual class to link processor
      */
-    public function setActualClass(string $actualClass): void;
+    public function setActualClass(?string $actualClass): void;
 }
