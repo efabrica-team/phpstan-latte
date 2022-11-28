@@ -7,7 +7,10 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedIncludePath;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
@@ -76,6 +79,24 @@ final class IncludePathCollector implements Collector
         if (!is_string($includeTemplatePath)) {
             return null;
         }
-        return (new CollectedIncludePath($includeTemplatePath, []))->toArray();
+
+        $variables = [];
+        $includeTemplateParamsArgument = $node->getArgs()[1] ?? null;
+        if ($includeTemplateParamsArgument !== null && $includeTemplateParamsArgument->value instanceof Plus && $includeTemplateParamsArgument->value->left instanceof Array_) {
+            foreach ($includeTemplateParamsArgument->value->left->items as $item) {
+                if ($item === null || $item->key === null) {
+                    continue;
+                }
+                $paramName = $this->valueResolver->resolve($item->key);
+                if (!is_string($paramName)) {
+                    continue;
+                }
+                $paramType = $scope->getType($item->value);
+
+                $variables[] = new Variable($paramName, $paramType);
+            }
+        }
+
+        return (new CollectedIncludePath($includeTemplatePath, $variables))->toArray();
     }
 }
