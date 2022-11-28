@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Type\ObjectType;
+use Symfony\Component\Finder\Finder;
 
 final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 {
@@ -51,12 +52,19 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         }
 
         $templates = [];
+        $nonStandaloneTemplates = [];
         foreach ($actions as $actionName => $actionDefinition) {
             $template = $this->findTemplateFilePath($reflectionClass, $actionName);
             if ($template === null) {
                 continue;
             }
+            $nonStandaloneTemplates[] = $template;
             $templates[] = new Template($template, $className, $actionDefinition['variables'], $actionDefinition['components']);
+        }
+
+        $standaloneTemplates = $this->findStandaloneTemplates($reflectionClass, $nonStandaloneTemplates);
+        foreach ($standaloneTemplates as $standaloneTemplate) {
+            $templates[] = new Template($standaloneTemplate, $className, $globalVariables, $globalComponents);
         }
 
         return $templates;
@@ -65,14 +73,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
     private function findTemplateFilePath(ReflectionClass $reflectionClass, string $actionName): ?string
     {
         $shortClassName = $reflectionClass->getShortName();
-        $fileName = $reflectionClass->getFileName();
-        if ($fileName === null) {
+        $presenterName = str_replace('Presenter', '', $shortClassName);
+        $dir = $this->findTemplateDir($reflectionClass);
+        if ($dir === null) {
             return null;
         }
-        $dir = dirname($fileName);
-
-        $presenterName = str_replace('Presenter', '', $shortClassName);
-        $dir = is_dir($dir . '/templates') ? $dir : dirname($dir);
 
         $templateFileCandidates = [
             $dir . '/templates/' . $presenterName . '/' . $actionName . '.latte',
@@ -86,5 +91,44 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         }
 
         return null;
+    }
+
+    /**
+     * @param string[] $nonStandaloneTemplates
+     * @return string[]
+     */
+    private function findStandaloneTemplates(ReflectionClass $reflectionClass, array $nonStandaloneTemplates): array
+    {
+        $shortClassName = $reflectionClass->getShortName();
+        $presenterName = str_replace('Presenter', '', $shortClassName);
+        $dir = $this->findTemplateDir($reflectionClass);
+        if ($dir === null) {
+            return [];
+        }
+
+        $pattern = '#' . $dir . '/templates/' . $presenterName . '/(.*?).latte|' . $dir . '/templates/' . $presenterName . '\.(.*?).latte#';
+
+        $standaloneTemplates = [];
+        foreach (Finder::create()->in($dir)->name('*.latte') as $file) {
+            $file = (string)$file;
+            if (in_array($file, $nonStandaloneTemplates)) {
+                continue;
+            }
+            if (preg_match($pattern, $file)) {
+                $standaloneTemplates[] = $file;
+            }
+        }
+
+        return $standaloneTemplates;
+    }
+
+    private function findTemplateDir(ReflectionClass $reflectionClass): ?string
+    {
+        $fileName = $reflectionClass->getFileName();
+        if ($fileName === null) {
+            return null;
+        }
+        $dir = dirname($fileName);
+        return is_dir($dir . '/templates') ? $dir : dirname($dir);
     }
 }
