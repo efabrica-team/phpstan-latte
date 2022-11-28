@@ -40,7 +40,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
         $actions = [];
 
-        foreach ($this->getMethodsMatching($reflectionClass, '/(action|render).*/') as $reflectionMethod) {
+        foreach ($this->getMethodsMatching($reflectionClass, '/^(action|render).*/') as $reflectionMethod) {
             $actionName = lcfirst(str_replace(['action', 'render'], '', $reflectionMethod->getName()));
 
             if (!isset($actions[$actionName])) {

@@ -74,7 +74,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     {
         $methods = [];
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
-            if (preg_match($pattern, $reflectionMethod->getName()) !== false) {
+            if (preg_match($pattern, $reflectionMethod->getName()) === 1) {
                 $methods[] = $reflectionMethod;
             }
         }
