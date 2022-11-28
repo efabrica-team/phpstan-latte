@@ -19,7 +19,6 @@ final class CollectedMethodCall
 
     public function __construct(string $callerClassName, string $callerMethodName, string $calledClassName, string $calledMethodName)
     {
-
         $this->callerClassName = $callerClassName;
         $this->callerMethodName = $callerMethodName;
         $this->calledClassName = $calledClassName;
@@ -60,7 +59,7 @@ final class CollectedMethodCall
     }
 
     /**
-     * @param CollectedMethodCallArray $item
+     * @phpstan-param CollectedMethodCallArray $item
      */
     public static function fromArray(array $item): self
     {

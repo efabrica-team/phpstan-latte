@@ -7,7 +7,9 @@ parameters:
             messages:
                 - '#^Calling PHPStan\\Analyser\\FileAnalyser\:\:analyseFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
                 - '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getErrors\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                -  '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Collectors\\Registry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getCollectedData\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
         -
             message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects array\|bool\|float\|int\|PhpParser\\Node\\Expr\|string\|null, mixed given\.$#'

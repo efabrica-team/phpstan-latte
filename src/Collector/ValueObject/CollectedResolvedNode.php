@@ -16,10 +16,9 @@ final class CollectedResolvedNode
     /** @var array<string, string> */
     protected array $params;
 
-  /**
-   * @param string $resolver
-   * @param array<string, string> $params
-   */
+   /**
+    * @param array<string, string> $params
+    */
     final public function __construct(string $resolver, array $params)
     {
         $this->resolver = $resolver;
@@ -59,7 +58,7 @@ final class CollectedResolvedNode
     }
 
     /**
-     * @param CollectedResolvedNodeArray $item
+     * @phpstan-param CollectedResolvedNodeArray $item
      */
     public static function fromArray(array $item): self
     {

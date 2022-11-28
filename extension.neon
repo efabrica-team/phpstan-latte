@@ -102,6 +102,11 @@ services:
         tags:
             - phpstan.collector
 
+    -
+        factory: Efabrica\PHPStanLatte\Collector\IncludePathCollector
+        tags:
+            - phpstan.collector
+
     # Variable collectors
     variableCollectorStorage:
         factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage

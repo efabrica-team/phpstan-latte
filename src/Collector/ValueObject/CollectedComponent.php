@@ -64,7 +64,7 @@ final class CollectedComponent
     }
 
     /**
-     * @param CollectedComponentArray $item
+     * @phpstan-param CollectedComponentArray $item
      */
     public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
     {
