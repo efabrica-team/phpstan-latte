@@ -37,9 +37,9 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
     {
         $actualErrors = $this->gatherAnalyserErrors($files);
         $strictlyTypedSprintf = static function (int $line, string $message, string $file, ?string $tip): string {
-            $message = $file . "\n" . sprintf('%02d: %s', $line, $message);
+            $message = $file . ':' . sprintf('%02d: %s', $line, $message);
             if ($tip !== null) {
-                $message .= "\n    💡 " . $tip;
+                $message .= ' | ' . $tip;
             }
             return $message;
         };
@@ -53,6 +53,8 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
             }
             return $strictlyTypedSprintf($line, $error->getMessage(), pathinfo($error->getFile(), PATHINFO_BASENAME), $error->getTip());
         }, $actualErrors);
+        sort($actualErrors);
+        sort($expectedErrors);
         $this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
     }
 }
