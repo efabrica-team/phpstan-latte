@@ -16,7 +16,12 @@ final class MethodCallFinder
     /**
      * @var array<string, array<string, array<string, string[]>>>
      */
-    private array $collectedMethodCalls;
+    private array $collectedMethodCalled;
+
+    /**
+     * @var array<string, array<string, array<string, string[]>>>
+     */
+    private array $collectedMethodCallers;
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {
@@ -25,19 +30,32 @@ final class MethodCallFinder
             $callerClassName = $collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
             $calledClassName = $collectedMethodCall->getCalledClassName();
-            if (!isset($this->collectedMethodCalls[$callerClassName][$callerMethodName][$calledClassName])) {
-                $this->collectedMethodCalls[$callerClassName][$callerMethodName][$calledClassName] = [];
+            $calledMethodName = $collectedMethodCall->getCalledMethodName();
+            if (!isset($this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName])) {
+                $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName] = [];
             }
-            $this->collectedMethodCalls[$callerClassName][$callerMethodName][$calledClassName][] = $collectedMethodCall->getCalledMethodName();
+            $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName][] = $calledMethodName;
+            if (!isset($this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName])) {
+                $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName] = [];
+            }
+            $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName][] = $callerMethodName;
         }
     }
 
     /**
      * @return array<string, string[]>
      */
-    public function find(string $className, string $methodName): array
+    public function findCalled(string $className, string $methodName): array
     {
-        return $this->collectedMethodCalls[$className][$methodName] ?? [];
+        return $this->collectedMethodCalled[$className][$methodName] ?? [];
+    }
+
+    /**
+     * @return array<string, string[]>
+     */
+    public function findCallers(string $className, string $methodName): array
+    {
+        return $this->collectedMethodCallers[$className][$methodName] ?? [];
     }
 
     /**
