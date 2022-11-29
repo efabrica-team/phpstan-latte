@@ -108,12 +108,7 @@ final class LatteTemplatesRule implements Rule
             }
 
             $actualClass = $template->getActualClass();
-            $actualClassFile = null;
-            try {
-                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($actualClass);
-                $actualClassFile = $reflectionClass->getFileName();
-            } catch (IdentifierNotFound $e) {
-            }
+            $actualClassFile = $this->getActualClassFile($actualClass);
 
             try {
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents());
@@ -142,7 +137,7 @@ final class LatteTemplatesRule implements Rule
                 $data = $collectedData->getData();
                 $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
                 $includeTemplates[] = new Template(
-                    realpath($dir . '/' . $collectedIncludedPath->getPath()),
+                    realpath($dir . '/' . $collectedIncludedPath->getPath()) ?: '',
                     $actualClass,
                     array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
                     $template->getComponents()
@@ -150,5 +145,19 @@ final class LatteTemplatesRule implements Rule
             }
             $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
         }
+    }
+
+    private function getActualClassFile(?string $actualClass): ?string
+    {
+        if ($actualClass === null) {
+            return null;
+        }
+        $actualClassFile = null;
+        try {
+            $reflectionClass = (new BetterReflection())->reflector()->reflectClass($actualClass);
+            $actualClassFile = $reflectionClass->getFileName();
+        } catch (IdentifierNotFound $e) {
+        }
+        return $actualClassFile;
     }
 }

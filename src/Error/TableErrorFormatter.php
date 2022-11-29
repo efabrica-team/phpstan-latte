@@ -64,8 +64,9 @@ final class TableErrorFormatter implements ErrorFormatter
         $fileErrors = [];
         foreach ($analysisResult->getFileSpecificErrors() as $fileSpecificError) {
             $key = $this->relativePathHelper->getRelativePath($fileSpecificError->getFile());
+            /** @var string|null $context */
             $context = $fileSpecificError->getMetadata()['context'] ?? null;
-            if ($context) {
+            if ($context !== null) {
                 $key .= ' rendered from ' . $this->relativePathHelper->getRelativePath($context);
             }
             if (!isset($fileErrors[$key])) {
@@ -94,14 +95,14 @@ final class TableErrorFormatter implements ErrorFormatter
         }
 
         if (count($analysisResult->getNotFileSpecificErrors()) > 0) {
-            $style->table(['', 'Error'], array_map(static function (string $error) : array {
+            $style->table(['', 'Error'], array_map(static function (string $error): array {
                 return ['', $error];
             }, $analysisResult->getNotFileSpecificErrors()));
         }
 
         $warningsCount = count($analysisResult->getWarnings());
         if ($warningsCount > 0) {
-            $style->table(['', 'Warning'], array_map(static function (string $warning) : array {
+            $style->table(['', 'Warning'], array_map(static function (string $warning): array {
                 return ['', $warning];
             }, $analysisResult->getWarnings()));
         }
@@ -119,7 +120,7 @@ final class TableErrorFormatter implements ErrorFormatter
         return $analysisResult->getTotalErrorsCount() > 0 ? 1 : 0;
     }
 
-    private function formatLineNumber(?int $lineNumber) : string
+    private function formatLineNumber(?int $lineNumber): string
     {
         if ($lineNumber === null) {
             return '';
