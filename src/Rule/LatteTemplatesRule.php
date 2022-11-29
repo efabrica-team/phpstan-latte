@@ -15,6 +15,8 @@ use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -105,11 +107,19 @@ final class LatteTemplatesRule implements Rule
                 continue; // stop recursion when template is analysed more than 3 times in include chain
             }
 
+            $actualClass = $template->getActualClass();
+            $actualClassFile = null;
             try {
-                $compileFilePath = $this->latteToPhpCompiler->compileFile($template->getActualClass(), $templatePath, $template->getVariables(), $template->getComponents());
+                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($actualClass);
+                $actualClassFile = $reflectionClass->getFileName();
+            } catch (IdentifierNotFound $e) {
+            }
+
+            try {
+                $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents());
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $scope));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $actualClassFile));
                 continue;
             }
 
@@ -121,7 +131,7 @@ final class LatteTemplatesRule implements Rule
                 null
             );
 
-            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $scope));
+            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $actualClassFile));
 
             $dir = dirname($templatePath);
 
@@ -131,7 +141,12 @@ final class LatteTemplatesRule implements Rule
                 /** @phpstan-var CollectedIncludePathArray $data */
                 $data = $collectedData->getData();
                 $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
-                $includeTemplates[] = new Template($dir . '/' . $collectedIncludedPath->getPath(), $template->getActualClass(), array_merge($collectedIncludedPath->getVariables(), $template->getVariables()), $template->getComponents());
+                $includeTemplates[] = new Template(
+                    realpath($dir . '/' . $collectedIncludedPath->getPath()),
+                    $actualClass,
+                    array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
+                    $template->getComponents()
+                );
             }
             $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
         }
