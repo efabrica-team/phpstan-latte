@@ -64,7 +64,7 @@ final class CollectedIncludePath
     {
         $variables = [];
         foreach ($item['variables'] as $variable) {
-            $variables[] = new Variable($variable['variableName'], $typeStringResolver->resolve($variable['variableType']));
+            $variables[] = Variable::fromArray($variable, $typeStringResolver);
         }
         return new CollectedIncludePath($item['path'], $variables);
     }

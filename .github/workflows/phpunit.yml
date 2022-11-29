@@ -30,3 +30,11 @@ jobs:
 
       - name: PHPunit
         run: vendor/bin/phpunit --coverage-text
+
+      - name: Debugging artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: compiled-templates-php${{ matrix.php }}
+          path: |
+            tmp/phpstan-latte

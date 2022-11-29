@@ -28,6 +28,26 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Argument of an invalid type mixed supplied for foreach, only iterables are supported.',
+                5,
+                'default.latte',
+            ],
+            [
+                'Cannot access property $title on mixed.',
+                6,
+                'default.latte',
+            ],
+            [
+                'Cannot access property $id on mixed.',
+                7,
+                'default.latte',
+            ],
+            [
+                'Cannot access property $title on mixed.',
+                7,
+                'default.latte',
+            ],
+            [
                 'Variable $nonExistingVariable might not be defined.',
                 18,
                 'default.latte',
@@ -183,6 +203,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     public function testFilters(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+            [
+                'Trying to invoke mixed but it\'s not a callable.',
+                2,
+                'default.latte',
+            ],
             [
                 'Undefined latte filter "nonExistingFilter".',
                 2,

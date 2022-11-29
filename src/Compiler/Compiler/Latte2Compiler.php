@@ -35,11 +35,19 @@ final class Latte2Compiler extends AbstractCompiler
         return $engine;
     }
 
-    public function compile(string $templateContent): string
+    public function compile(string $templateContent, ?string $actualClass): string
     {
         $latteTokens = $this->engine->getParser()->parse($templateContent);
-        $phpContent = $this->engine->getCompiler()->compile($latteTokens, 'PHPStanLatteTemplate', null, $this->strictMode);
-        return $this->fixLines($phpContent);
+        $className = $this->generateClassName();
+        $phpContent = $this->engine->getCompiler()->compile(
+            $latteTokens,
+            $className,
+            $this->generateClassComment($className),
+            $this->strictMode
+        );
+        $phpContent = $this->fixLines($phpContent);
+        $phpContent = $this->addTypes($phpContent, $className, $actualClass);
+        return $phpContent;
     }
 
     public function getFilters(): array
