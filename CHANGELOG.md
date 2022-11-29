@@ -2,6 +2,22 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- Used collectors to find all variables, components, method calls and templates to analyse
+- LatteTemplateRule changed to CollectedDataNode
+
+### Added
+- LatteCompileErrorsRule to cover more errors in generated template code
+- Added support for latte 3.x
+- Added checks of included templates in context of parent template
+- Check all render* methods in components ({`control component:subrender}`)
+- Check subcomponents ({`control component-subcomponent}`)
+- Support for more template path definitions (simple string, concatenation, `__DIR__`, `__FILE__`, but also simple function calls like str_replace etc.)
+
+### Fixed
+- Link params processing
+- Merged variable types if more variables with same name are assigned to template
+
 ## [0.1.0] - 2022-11-18
 ### Added
 - Latte template rule which checks latte template in context of presenter / control
