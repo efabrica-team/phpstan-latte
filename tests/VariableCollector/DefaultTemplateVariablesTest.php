@@ -16,6 +16,6 @@ final class DefaultTemplateVariablesTest extends AbstractCollectorTest
 
     protected function variablesCount(): int
     {
-        return 8;
+        return 12;
     }
 }

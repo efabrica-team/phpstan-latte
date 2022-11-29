@@ -54,7 +54,7 @@ abstract class AbstractCompiler implements CompilerInterface
             $phpCode .= "* @property-read {$type} \${$name}\n";
         }
         $phpCode .= "*/\n";
-        $phpCode .= "class {$className} { }\n";
+        $phpCode .= "class {$className} extends \\stdClass { }\n";
         return $phpCode;
     }
 
