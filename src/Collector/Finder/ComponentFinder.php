@@ -88,7 +88,7 @@ final class ComponentFinder
             $this->collectedComponents[$className][$methodName] ?? [],
         ];
 
-        $methodCalls = $this->methodCallFinder->find($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
             $collectedComponents[] = $this->findMethodCalls($calledClassName, '', $alreadyFound);
             foreach ($calledMethods as $calledMethod) {

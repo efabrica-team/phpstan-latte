@@ -75,7 +75,7 @@ final class VariableFinder
             $this->collectedVariables[$className][$methodName] ?? [],
         ];
 
-        $methodCalls = $this->methodCallFinder->find($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
             $collectedVariables[] = $this->findMethodCalls($calledClassName, '', $alreadyFound);
             foreach ($calledMethods as $calledMethod) {
