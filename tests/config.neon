@@ -3,3 +3,6 @@ parameters:
         tmpDir: %rootDir%/../../../tmp/phpstan-latte
     checkExplicitMixed: true
     checkImplicitMixed: true
+
+rules:
+    - Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultRule
