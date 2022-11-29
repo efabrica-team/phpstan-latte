@@ -90,11 +90,20 @@ final class LatteTemplatesRule implements Rule
     /**
      * @param Template[] $templates
      * @param RuleError[] $errors
+     * @param array<string, int> $alreadyAnalysed
      */
-    private function analyseTemplates(array $templates, Scope $scope, array &$errors): void
+    private function analyseTemplates(array $templates, Scope $scope, array &$errors, array &$alreadyAnalysed = []): void
     {
         foreach ($templates as $template) {
             $templatePath = $template->getPath();
+
+            if (!array_key_exists($templatePath, $alreadyAnalysed)) {
+                $alreadyAnalysed[$templatePath] = 1;
+            } elseif ($alreadyAnalysed[$templatePath] <= 3) {
+                $alreadyAnalysed[$templatePath]++;
+            } else {
+                continue; // stop recursion when template is analysed more than 3 times in include chain
+            }
 
             try {
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template->getActualClass(), $templatePath, $template->getVariables(), $template->getComponents());
@@ -124,7 +133,7 @@ final class LatteTemplatesRule implements Rule
                 $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
                 $includeTemplates[] = new Template($dir . '/' . $collectedIncludedPath->getPath(), $template->getActualClass(), array_merge($collectedIncludedPath->getVariables(), $template->getVariables()), $template->getComponents());
             }
-            $this->analyseTemplates($includeTemplates, $scope, $errors);
+            $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
         }
     }
 }

@@ -318,4 +318,9 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
         ]);
     }
+
+    public function testRecursion(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], []);
+    }
 }
