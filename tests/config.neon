@@ -1,3 +1,5 @@
 parameters:
     latte:
         tmpDir: %rootDir%/../../../tmp/phpstan-latte
+    checkExplicitMixed: true
+    checkImplicitMixed: true

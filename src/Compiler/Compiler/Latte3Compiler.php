@@ -40,13 +40,21 @@ final class Latte3Compiler extends AbstractCompiler
         return $engine;
     }
 
-    public function compile(string $templateContent): string
+    public function compile(string $templateContent, ?string $actualClass): string
     {
         $templateNode = $this->engine->parse($templateContent);
         $this->engine->applyPasses($templateNode);
+        $className = $this->generateClassName();
         $templateGenerator = new TemplateGenerator();
-        $phpContent = $templateGenerator->generate($templateNode, 'PHPStanLatteTemplate', null, $this->strictMode);
-        return $this->fixLines($phpContent);
+        $phpContent = $templateGenerator->generate(
+            $templateNode,
+            $className,
+            $this->generateClassComment($className),
+            $this->strictMode
+        );
+        $phpContent = $this->fixLines($phpContent);
+        $phpContent = $this->addTypes($phpContent, $className, $actualClass);
+        return $phpContent;
     }
 
     public function getFilters(): array
