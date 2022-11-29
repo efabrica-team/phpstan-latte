@@ -121,7 +121,7 @@ final class LatteTemplatesRule implements Rule
                 /** @phpstan-var CollectedIncludePathArray $data */
                 $data = $collectedData->getData();
                 $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
-                $includeTemplates[] = new Template($dir . '/' . $collectedIncludedPath->getPath(), $template->getActualClass(), $collectedIncludedPath->getVariables() + $template->getVariables(), $template->getComponents());
+                $includeTemplates[] = new Template($dir . '/' . $collectedIncludedPath->getPath(), $template->getActualClass(), array_merge($collectedIncludedPath->getVariables(), $template->getVariables()), $template->getComponents());
             }
             $this->analyseTemplates($includeTemplates, $scope, $errors);
         }
