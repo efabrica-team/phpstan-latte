@@ -321,6 +321,47 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testRecursion(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], []);
+        $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+            [
+                'Dumped type: int',
+                1,
+                'recursion.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursion.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursion.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursion.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursionB.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursionB.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursionB.latte',
+            ],
+            [
+                'Dumped type: int',
+                1,
+                'recursionB.latte',
+            ],
+        ]);
     }
 }
