@@ -50,7 +50,7 @@ final class CollectedTemplatePath
     }
 
     /**
-     * @param CollectedTemplatePathArray $item
+     * @phpstan-param CollectedTemplatePathArray $item
      */
     public static function fromArray(array $item): self
     {

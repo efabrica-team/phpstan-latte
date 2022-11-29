@@ -64,7 +64,7 @@ final class CollectedVariable
     }
 
     /**
-     * @param CollectedVariableArray $item
+     * @phpstan-param CollectedVariableArray $item
      */
     public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
     {

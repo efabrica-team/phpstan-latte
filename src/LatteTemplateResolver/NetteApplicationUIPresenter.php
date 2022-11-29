@@ -111,6 +111,9 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $standaloneTemplates = [];
         foreach (Finder::create()->in($dir)->name('*.latte') as $file) {
             $file = (string)$file;
+            if (str_contains($file, '@')) {
+                continue;
+            }
             if (in_array($file, $nonStandaloneTemplates)) {
                 continue;
             }
