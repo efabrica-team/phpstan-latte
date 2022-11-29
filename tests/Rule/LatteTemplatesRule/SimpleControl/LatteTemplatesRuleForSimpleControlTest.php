@@ -119,4 +119,40 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testConditionalRender(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/ConditionalRender/SomeControl.php'], [
+            [
+                'Variable $c might not be defined.',
+                3,
+                'default1.latte',
+            ],
+            [
+                'Variable $c might not be defined.',
+                3,
+                'default2.latte',
+            ],
+            [
+                'Variable $c might not be defined.',
+                3,
+                'var1.latte',
+            ],
+            [
+                'Variable $c might not be defined.',
+                3,
+                'var2.latte',
+            ],
+            [
+                'Template file "' . __DIR__ . '/Fixtures/ConditionalRender/invalid_file1.latte" doesn\'t exist.',
+                -1,
+                'invalid_file1.latte',
+            ],
+            [
+                'Template file "' . __DIR__ . '/Fixtures/ConditionalRender/invalid_file2.latte" doesn\'t exist.',
+                -1,
+                'invalid_file2.latte',
+            ],
+        ]);
+    }
 }
