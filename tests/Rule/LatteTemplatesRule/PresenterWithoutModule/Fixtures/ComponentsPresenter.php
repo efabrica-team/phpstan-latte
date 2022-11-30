@@ -38,4 +38,10 @@ final class ComponentsPresenter extends ParentPresenter
         };
         return $form;
     }
+
+    protected function createComponentNoType()
+    {
+        $form = new Form();
+        return $form;
+    }
 }

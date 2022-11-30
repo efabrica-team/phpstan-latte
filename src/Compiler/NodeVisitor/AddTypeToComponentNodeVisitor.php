@@ -86,14 +86,22 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $componentNameParts = explode('-', $componentName);
         $component = $this->findComponentByName($this->components, $componentNameParts);
-        $componentType = $component !== null ? $component->getTypeAsString() : '\Nette\ComponentModel\IComponent';
-        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $componentType . ' ' . $tmpVarName . ' */'));
+        $componentType = $component !== null ? $component->getTypeAsString() : 'mixed';
+        $safeComponentType = $componentType !== 'mixed' ? $componentType : '\Nette\ComponentModel\IComponent';
+        $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $safeComponentType . ' ' . $tmpVarName . ' */'));
 
         if ($component === null) {
-            return [
-                $node,
-                (new Error('Component with name "' . $componentName . '" probably doesn\'t exist.'))->toNode(),
-            ];
+            $error = new Error('Component with name "' . $componentName . '" probably doesn\'t exist.');
+            return [$node, $error->toNode()];
+        }
+
+        if ($componentType === 'mixed') {
+            $createComponentMethod = 'createComponent' . ucfirst($componentName);
+            $error = new Error(
+                'Component with name "' . $componentName . '" have no type specified.',
+                'Define return type of ' . $createComponentMethod . ' method.'
+            );
+            return [$node, $error->toNode()];
         }
 
         return [$node];
