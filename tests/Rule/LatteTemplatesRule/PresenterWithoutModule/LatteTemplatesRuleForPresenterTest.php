@@ -345,22 +345,22 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
         ]);
     }

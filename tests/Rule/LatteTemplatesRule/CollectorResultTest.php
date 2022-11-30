@@ -20,6 +20,8 @@ abstract class CollectorResultTest extends LatteTemplatesRuleTest
         $actualErrors = array_map(static function (Error $error): string {
             return $error->getMessage();
         }, $actualErrors);
+        sort($actualErrors);
+        sort($expectedErrors);
         $this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
     }
 }
