@@ -73,9 +73,8 @@ final class TemplatePathCollector implements Collector
             return null;
         }
 
-        $path = $this->pathResolver->resolve($arg->value, $scope->getFile());
-        if ($path === null || $path[0] !== '/') {
-            return null;
+        $path = $this->pathResolver->resolve($arg->value, $scope->getFile()); if ($path === null) {
+            return (new CollectedTemplatePath($actualClassName, $functionName, null))->toArray();
         }
         return (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();
     }

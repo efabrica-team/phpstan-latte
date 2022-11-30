@@ -10,6 +10,7 @@ final class SomeBodyControl extends Control
 {
     public function render(): void
     {
+        $this->template->render(__DIR__ . '/control.latte');
     }
 
     protected function createComponentTable(): SomeTableControl

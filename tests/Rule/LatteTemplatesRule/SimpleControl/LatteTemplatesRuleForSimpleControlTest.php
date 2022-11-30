@@ -129,4 +129,25 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testResolveError(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/ResolveError/SomeControl.php'], [
+            [
+                'Cannot resolve latte template for SomeControl::render().',
+                11,
+                'SomeControl.php',
+            ],
+            [
+                'Cannot resolve latte template for SomeControl::renderNotEvaluated().',
+                15,
+                'SomeControl.php',
+            ],
+            [
+                'Cannot automatically resolve latte template from expression inside SomeControl::renderNotEvaluatedVar().',
+                20,
+                'SomeControl.php',
+            ],
+        ]);
+    }
 }

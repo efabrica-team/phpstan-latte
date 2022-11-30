@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
-use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\CollectedDataNode;
@@ -16,7 +15,7 @@ interface LatteTemplateResolverInterface
     public function collect(Node $node, Scope $scope): ?CollectedResolvedNode;
 
     /**
-     * @return Template[]
+     * @return LatteTemplateResolverResult
      */
-    public function findTemplates(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): array;
+    public function resolve(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult;
 }

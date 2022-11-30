@@ -31,9 +31,9 @@ abstract class AbstractCompiler implements CompilerInterface
         return 'PHPStanLatteTemplate_' . md5(uniqid());
     }
 
-    public function generateClassComment(string $className): string
+    public function generateClassComment(string $className, string $context): string
     {
-        $comment = "\n";
+        $comment = "\n* $context\n";
         $comment .= "* @property {$className}_global \$global\n";
         $comment .= "\n";
         return $comment;

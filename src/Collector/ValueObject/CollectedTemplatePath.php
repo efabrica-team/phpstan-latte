@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 /**
- * @phpstan-type CollectedTemplatePathArray array{className: string, methodName: string, templatePath: string}
+ * @phpstan-type CollectedTemplatePathArray array{className: string, methodName: string, templatePath: ?string}
  */
 final class CollectedTemplatePath
 {
@@ -13,9 +13,9 @@ final class CollectedTemplatePath
 
     private string $methodName;
 
-    private string $templatePath;
+    private ?string $templatePath;
 
-    public function __construct(string $className, string $methodName, string $templatePath)
+    public function __construct(string $className, string $methodName, ?string $templatePath)
     {
         $this->className = $className;
         $this->methodName = $methodName;
@@ -32,7 +32,7 @@ final class CollectedTemplatePath
         return $this->methodName;
     }
 
-    public function getTemplatePath(): string
+    public function getTemplatePath(): ?string
     {
         return $this->templatePath;
     }

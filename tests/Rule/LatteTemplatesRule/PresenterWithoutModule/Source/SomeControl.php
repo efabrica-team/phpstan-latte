@@ -15,10 +15,17 @@ final class SomeControl extends Control
 
     public function render(): void
     {
+        $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
     public function renderOtherRender(): void
     {
+        $this->render();
+    }
+
+    public function renderAnotherRender(): void
+    {
+        $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
     protected function createComponentBody(): SomeBodyControl
