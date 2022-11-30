@@ -2,4 +2,4 @@
 
 str_replace('.fixture', '.abcd', pathinfo(__FILE__, PATHINFO_BASENAME));
 -----
-replace_in_file_with_pathinfo_constant.abcd
+path.replace_in_file_with_pathinfo_constant.abcd

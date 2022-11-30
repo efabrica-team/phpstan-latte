@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
-use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -23,16 +23,16 @@ final class TemplatePathCollector implements Collector
 
     private TemplateTypeResolver $templateTypeResolver;
 
-    private ValueResolver $valueResolver;
+    private PathResolver $pathResolver;
 
     public function __construct(
         NameResolver $nameResolver,
         TemplateTypeResolver $templateTypeResolver,
-        ValueResolver $valueResolver
+        PathResolver $pathResolver
     ) {
         $this->nameResolver = $nameResolver;
         $this->templateTypeResolver = $templateTypeResolver;
-        $this->valueResolver = $valueResolver;
+        $this->pathResolver = $pathResolver;
     }
 
     public function getNodeType(): string
@@ -73,9 +73,8 @@ final class TemplatePathCollector implements Collector
             return null;
         }
 
-        /** @var string|null $path */
-        $path = $this->valueResolver->resolve($arg->value, $scope->getFile());
-        if ($path === null) {
+        $path = $this->pathResolver->resolve($arg->value, $scope->getFile());
+        if ($path === null || $path[0] !== '/') {
             return null;
         }
         return (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();

@@ -1,5 +1,0 @@
-<?php
-
-__FILE__ . '.xyz';
------
-{$dir}/file_concat_simple_string.fixture.xyz

@@ -10,6 +10,7 @@ parameters:
         engineBootstrap: null
         macros: []
         extensions: []
+        resolveAllPossiblePaths: false
         reportUnanalysedTemplates: false
 
 parametersSchema:
@@ -23,6 +24,7 @@ parametersSchema:
         engineBootstrap: schema(string(), nullable())
         macros: arrayOf(string())
         extensions: arrayOf(object())
+        resolveAllPossiblePaths: bool()
         reportUnanalysedTemplates: bool()
     ])
 
@@ -57,7 +59,8 @@ services:
     - Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver
 
     # Value resolvers
-    - Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver
+    - Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver()
+    - Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver(%latte.resolveAllPossiblePaths%)
 
     # Name resolvers
     - Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver

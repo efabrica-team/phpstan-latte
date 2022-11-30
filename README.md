@@ -183,6 +183,20 @@ parameters:
             Foo: Foo\Bar\Presenters\*Presenter
 ```
 
+### resolveAllPossiblePaths
+Type: `bool`
+
+When expression containing variables is used as template path it is not resolved becase we do not know value of variable. 
+
+With this option set to true we will search for all potentional templates that could match given expression. May lead to false positives.
+
+Example:
+```neon
+parameters:
+    latte:
+        resolveAllPossiblePaths: true
+```
+
 ### reportUnanalysedTemplates
 Type: `bool`
 
