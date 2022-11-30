@@ -21,14 +21,14 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\VariablesPresenter"}',
-            'TEMPLATE default.latte VariablesPresenter ["startup","startupParent","actualClass","presenter","title","viaGetTemplate","variableFromParentCalledViaParent","variableFromParent","varFromVariable","variableFromOtherMethod","variableFromRecursionMethod","fromRenderDefault"] ["parentForm","parentForm","onlyParentDefaultForm"]',
-            'TEMPLATE other.latte VariablesPresenter ["startup","startupParent","actualClass","presenter","fromOtherAction"] ["parentForm"]',
-            'TEMPLATE empty.latte VariablesPresenter ["startup","startupParent","actualClass","presenter"] ["parentForm"]',
-            'TEMPLATE parent.latte VariablesPresenter ["startup","startupParent","actualClass","presenter","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
-            'TEMPLATE noAction.latte VariablesPresenter ["startup","startupParent","actualClass","presenter"] ["parentForm"]',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\VariablesPresenter"}',
+            'TEMPLATE default.latte VariablesPresenter ["startup","startupParent","presenter","title","viaGetTemplate","variableFromParentCalledViaParent","variableFromParent","varFromVariable","variableFromOtherMethod","variableFromRecursionMethod","fromRenderDefault"] ["parentForm","parentForm","onlyParentDefaultForm"]',
+            'TEMPLATE other.latte VariablesPresenter ["startup","startupParent","presenter","fromOtherAction"] ["parentForm"]',
+            'TEMPLATE empty.latte VariablesPresenter ["startup","startupParent","presenter"] ["parentForm"]',
+            'TEMPLATE parent.latte VariablesPresenter ["startup","startupParent","presenter","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
+            'TEMPLATE noAction.latte VariablesPresenter ["startup","startupParent","presenter"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\VariablesPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
         ]);
     }
 
@@ -45,13 +45,13 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             __DIR__ . '/Source/SomeTableControl.php',
         ], [
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ComponentsPresenter"}',
-            'TEMPLATE default.latte ComponentsPresenter ["startupParent","actualClass","presenter","variableFromParentCalledViaParent"] ["form","parentForm","parentForm","onlyParentDefaultForm","someControl"]',
-            'TEMPLATE create.latte ComponentsPresenter ["startupParent","actualClass","presenter"] ["form","parentForm","onlyCreateForm"]',
-            'TEMPLATE parent.latte ComponentsPresenter ["startupParent","actualClass","presenter","variableFromParentAction"] ["form","parentForm","parentDefaultForm"]',
-            'TEMPLATE noAction.latte ComponentsPresenter ["startupParent","actualClass","presenter"] ["form","parentForm"]',
+            'TEMPLATE default.latte ComponentsPresenter ["startupParent","presenter","variableFromParentCalledViaParent"] ["form","parentForm","parentForm","onlyParentDefaultForm","someControl"]',
+            'TEMPLATE create.latte ComponentsPresenter ["startupParent","presenter"] ["form","parentForm","onlyCreateForm"]',
+            'TEMPLATE parent.latte ComponentsPresenter ["startupParent","presenter","variableFromParentAction"] ["form","parentForm","parentDefaultForm"]',
+            'TEMPLATE noAction.latte ComponentsPresenter ["startupParent","presenter"] ["form","parentForm"]',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ComponentsPresenter"}',
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\ComponentsPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
             'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Source\SomeBodyControl"}',
             'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Source\SomeControl"}',
             'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Source\SomeFooterControl"}',
@@ -64,10 +64,10 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\FiltersPresenter"}',
-            'TEMPLATE default.latte FiltersPresenter ["actualClass","presenter","title"] []',
+            'TEMPLATE default.latte FiltersPresenter ["presenter","title"] []',
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\FiltersPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\FiltersPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
         ]);
     }
 
@@ -75,10 +75,10 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\LinksPresenter"}',
-            'TEMPLATE default.latte LinksPresenter ["actualClass","presenter"] []',
+            'TEMPLATE default.latte LinksPresenter ["presenter"] []',
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\LinksPresenter"}',
-            'NODE NetteApplicationUIControl {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\LinksPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
         ]);
     }
 }
