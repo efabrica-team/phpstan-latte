@@ -17,6 +17,7 @@ trait NetteApplicationUIPresenterGlobals
             $this->variableFinder->find($className, 'beforeRender'),
             [
                 new Variable('presenter', $presenterType),
+                new Variable('control', $presenterType),
             ]
         );
     }
