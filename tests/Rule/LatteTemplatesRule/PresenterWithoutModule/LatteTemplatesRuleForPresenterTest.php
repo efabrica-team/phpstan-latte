@@ -138,6 +138,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Component with name "noType" have no type specified.',
+                25,
+                'default.latte',
+                'Define return type of createComponentNoType method.',
+            ],
+            [
                 'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
                 7,
                 'create.latte',
@@ -345,22 +351,22 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
             [
                 'Dumped type: int',
                 1,
-                'recursionB.latte',
+                '@recursionB.latte',
             ],
         ]);
     }

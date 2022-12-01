@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
@@ -42,6 +44,13 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
         }
 
         $objectType = new ObjectType($className);
+
+        foreach ($this->getIgnoredClasses() as $ignoredClass) {
+            if ($objectType->isInstanceOf($ignoredClass)->yes()) {
+                return null;
+            }
+        }
+
         foreach ($this->getSupportedClasses() as $supportedClass) {
             if ($objectType->isInstanceOf($supportedClass)->yes()) {
                 return new CollectedResolvedNode(static::class, [self::PARAM_CLASS_NAME => $className]);
@@ -74,17 +83,44 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     {
         $methods = [];
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
-            if (preg_match($pattern, $reflectionMethod->getName()) === 1) {
+            if (preg_match($pattern . 'i', $reflectionMethod->getName()) === 1) {
                 $methods[] = $reflectionMethod;
             }
         }
         return $methods;
     }
 
+    protected function getClassDir(ReflectionClass $reflectionClass): ?string
+    {
+        $fileName = $reflectionClass->getFileName();
+        if ($fileName === null) {
+            return null;
+        }
+        return dirname($fileName);
+    }
+
     /**
      * @return class-string[]
      */
     abstract protected function getSupportedClasses(): array;
+
+    /**
+     * @return class-string[]
+     */
+    protected function getIgnoredClasses(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return Variable[]
+     */
+    abstract protected function getClassGlobalVariables(ReflectionClass $reflectionClass): array;
+
+    /**
+     * @return Component[]
+     */
+    abstract protected function getClassGlobalComponents(ReflectionClass $reflectionClass): array;
 
     /**
      * @return Template[]
