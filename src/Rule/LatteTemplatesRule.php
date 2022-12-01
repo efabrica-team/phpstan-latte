@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Rule;
 
+use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Collector\IncludePathCollector;
@@ -21,6 +22,7 @@ use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
 
 /**
@@ -35,6 +37,8 @@ final class LatteTemplatesRule implements Rule
     private LatteToPhpCompiler $latteToPhpCompiler;
 
     private FileAnalyserFactory $fileAnalyserFactory;
+
+    private AnalysedTemplatesRegistry $analysedTemplatesRegistry;
 
     private RuleRegistry $rulesRegistry;
 
@@ -51,6 +55,7 @@ final class LatteTemplatesRule implements Rule
         array $latteTemplateResolvers,
         LatteToPhpCompiler $latteToPhpCompiler,
         FileAnalyserFactory $fileAnalyserFactory,
+        AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
         IncludePathCollector $includePathCollector,
         ErrorBuilder $errorBuilder,
@@ -59,6 +64,7 @@ final class LatteTemplatesRule implements Rule
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
         $this->fileAnalyserFactory = $fileAnalyserFactory;
+        $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
         $this->includePathCollector = $includePathCollector;
         $this->errorBuilder = $errorBuilder;
@@ -84,6 +90,13 @@ final class LatteTemplatesRule implements Rule
                 $this->analyseTemplates($templates, $scope, $errors);
             }
         }
+
+        foreach ($this->analysedTemplatesRegistry->getReportedUnanalysedTemplates() as $templatePath) {
+            $errors[] = RuleErrorBuilder::message('Latte template ' . pathinfo($templatePath, PATHINFO_BASENAME) . ' was not analysed.')
+                ->file($templatePath)
+                ->build();
+        }
+
         return $errors;
     }
 
@@ -120,6 +133,7 @@ final class LatteTemplatesRule implements Rule
                 new CollectorsRegistry([$this->includePathCollector]),
                 null
             );
+            $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
 
             $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $scope));
 

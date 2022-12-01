@@ -182,3 +182,15 @@ parameters:
             *: App\*\Presenters\*Presenter
             Foo: Foo\Bar\Presenters\*Presenter
 ```
+
+### reportUnanalysedTemplates
+Type: `bool`
+
+When set to true all *.latte files in analysed paths that were not checked (because no render call of them was resolved) are reported as errors.
+
+Example:
+```neon
+parameters:
+    latte:
+        reportUnanalysedTemplates: true
+```
