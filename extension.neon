@@ -10,6 +10,7 @@ parameters:
         engineBootstrap: null
         macros: []
         extensions: []
+        reportUnanalysedTemplates: false
 
 parametersSchema:
     latte: structure([
@@ -22,6 +23,7 @@ parametersSchema:
         engineBootstrap: schema(string(), nullable())
         macros: arrayOf(string())
         extensions: arrayOf(object())
+        reportUnanalysedTemplates: bool()
     ])
 
 rules:
@@ -41,6 +43,7 @@ services:
             extensions: %latte.extensions%
 
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
+    - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
