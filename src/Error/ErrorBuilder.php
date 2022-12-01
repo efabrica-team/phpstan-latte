@@ -8,7 +8,6 @@ use Efabrica\PHPStanLatte\Compiler\LineMapper;
 use Efabrica\PHPStanLatte\Error\Error as LatteError;
 use Efabrica\PHPStanLatte\Error\Transformer\ErrorTransformerInterface;
 use PHPStan\Analyser\Error;
-use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -56,11 +55,11 @@ final class ErrorBuilder
      * @param Error[] $originalErrors
      * @return RuleError[]
      */
-    public function buildErrors(array $originalErrors, string $templatePath, Scope $scope): array
+    public function buildErrors(array $originalErrors, string $templatePath, ?string $context = null): array
     {
         $errors = [];
         foreach ($originalErrors as $originalError) {
-            $error = $this->buildError($originalError, $templatePath, $scope);
+            $error = $this->buildError($originalError, $templatePath, $context);
             if ($error === null) {
                 continue;
             }
@@ -70,7 +69,7 @@ final class ErrorBuilder
         return $errors;
     }
 
-    public function buildError(Error $originalError, string $templatePath, Scope $scope): ?RuleError
+    public function buildError(Error $originalError, string $templatePath, ?string $context = null): ?RuleError
     {
         if ($this->shouldErrorBeIgnored($originalError)) {
             return null;
@@ -81,7 +80,7 @@ final class ErrorBuilder
 
         $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage())
             ->file($templatePath)
-            ->metadata(array_merge($originalError->getMetadata(), ['context' => $scope->getFile()]));
+            ->metadata(array_merge($originalError->getMetadata(), ['context' => $context === '' ? null : $context]));
         if ($originalError->getLine()) {
             $ruleErrorBuilder->line($this->lineMapper->get($originalError->getLine()));
         }

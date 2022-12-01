@@ -22,7 +22,7 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
 
             $templatePaths = $this->templatePathFinder->findByMethod($reflectionMethod);
             foreach ($templatePaths as $templatePath) {
-                $templates[] = new Template($templatePath, $reflectionClass->getName(), $variables, $components);
+                $templates[] = new Template($templatePath, $reflectionClass->getName(), $reflectionMethod->getName(), $variables, $components);
             }
         }
         return $templates;

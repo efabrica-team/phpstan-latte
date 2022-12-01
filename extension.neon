@@ -122,3 +122,10 @@ services:
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
+
+    errorFormatter.table!:
+        class: Efabrica\PHPStanLatte\Error\TableErrorFormatter
+        arguments:
+            simpleRelativePathHelper: @simpleRelativePathHelper
+            showTipsOfTheDay: %tipsOfTheDay%
+            editorUrl: %editorUrl%
