@@ -23,8 +23,8 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
         $dir = is_dir("$dir/templates") ? $dir : dirname($dir);
 
         return [
-             $dir . '/templates/' . $presenterName . '/(.*?).latte',
-             $dir . '/templates/' . $presenterName . '\.(.*?).latte',
+             $dir . '/templates/' . $presenterName . '/([a-zA-Z0-9_]*?).latte',
+             $dir . '/templates/' . $presenterName . '\.([a-zA-Z0-9_]?).latte',
         ];
     }
 
