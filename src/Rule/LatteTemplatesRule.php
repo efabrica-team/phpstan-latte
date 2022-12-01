@@ -141,7 +141,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents());
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $context));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $scope->getFile())], $templatePath, $context));
                 continue;
             }
 

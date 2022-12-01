@@ -62,4 +62,21 @@
 <a href="{link publish, isActive => false, id => my-id}">Only publish with switched two arguments as array without [ ] and ' and skipped sorting argument</a>
 <a href="{link Links:publish, isActive => false, id => my-id}">Publish with presenter with switched two arguments as array without [ ] and ' and skipped sorting argument</a>
 
+<a href="{link edit, sorting: 100}">Only edit with named arguments missing required argument</a>
+<a href="{link Links:edit, ['sorting' => 100]}">Only edit with array arguments missing required argument</a>
+<a href="{link Links:edit, sorting => 100}">Only edit with array arguments missing [] missing required argument</a>
+
+<a href="{link edit, sorting: 'str'}">Only edit with named arguments missing required argument</a>
+<a href="{link Links:edit, ['sorting' => 'str']}">Only edit with array arguments missing required argument</a>
+<a href="{link Links:edit, sorting => 'str'}">Only edit with array arguments missing [] missing required argument</a>
+
 <a href="{link Invalid:link}">Invalid link check</a>
+
+<a href="{link Links:paramsMismatch param1 => test}">Invalid link check</a>
+
+<a href="{link Links:arrayParam}">Missing array argument</a>
+<a href="{link Links:arrayParam option: true}">Missing array argument</a>
+<a href="{link Links:arrayParam option => true}">Missing array argument</a>
+<a href="{link Links:arrayParam [1, 2, 3]}">Array argument</a>
+<a href="{link Links:arrayParam option: true, ids: [1, 2, 3]}">Array argument</a>
+<a href="{link Links:arrayParam option => true, ids => [1, 2, 3]}">Array argument</a>

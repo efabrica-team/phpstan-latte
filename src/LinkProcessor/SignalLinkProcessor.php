@@ -8,6 +8,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
+use PHPStan\BetterReflection\BetterReflection;
 
 /**
  * not working as expected because in handle methods you don't have to pass parameters if they are same as in actual request
@@ -40,11 +41,15 @@ final class SignalLinkProcessor implements LinkProcessorInterface
      */
     public function createLinkExpressions(string $targetName, array $linkParams, array $attributes): array
     {
+        if ($this->actualClass === null) {
+            return [];
+        }
+        $classReflection = (new BetterReflection())->reflector()->reflectClass($this->actualClass);
         $variable = new Variable('control');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
-        if ($this->actualClass !== null && method_exists($this->actualClass, $methodName)) {
-            $linkParams = $this->linkParamsProcessor->process($this->actualClass, $methodName, $linkParams);
-            return [new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes)];
+        if ($this->actualClass !== null && $classReflection->hasMethod($methodName)) {
+            $methodLinkParams = $this->linkParamsProcessor->process($this->actualClass, $methodName, $linkParams);
+            return [new Expression(new MethodCall($variable, $methodName, $methodLinkParams), $attributes)];
         }
         return [];
     }

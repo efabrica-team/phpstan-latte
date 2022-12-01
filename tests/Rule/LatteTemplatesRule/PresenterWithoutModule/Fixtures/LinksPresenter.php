@@ -21,4 +21,16 @@ final class LinksPresenter extends ParentPresenter
     public function actionPublish(string $id, int $sorting = 100, bool $isActive = true): void
     {
     }
+
+    public function actionParamsMismatch(string $param1)
+    {
+    }
+
+    public function renderParamsMismatch(string $param1, string $param2)
+    {
+    }
+
+    public function actionArrayParam(array $ids, bool $option = false): void
+    {
+    }
 }
