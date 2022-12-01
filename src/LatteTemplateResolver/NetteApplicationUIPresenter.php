@@ -40,7 +40,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             if ($template === null) {
                 continue;
             }
-            $templates[] = new Template($template, $reflectionClass->getName(), $actionDefinition['variables'], $actionDefinition['components']);
+            $templates[] = new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['variables'], $actionDefinition['components']);
         }
 
         return $templates;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Error;
 
-use _PHPStan_582a9cb8b\Symfony\Component\Console\Formatter\OutputFormatter;
 use PHPStan\Analyser\Error;
 use PHPStan\Command\AnalyseCommand;
 use PHPStan\Command\AnalysisResult;
@@ -67,7 +66,7 @@ final class TableErrorFormatter implements ErrorFormatter
             /** @var string|null $context */
             $context = $fileSpecificError->getMetadata()['context'] ?? null;
             if ($context !== null) {
-                $key .= ' rendered from ' . $this->relativePathHelper->getRelativePath($context);
+                $key .= ' rendered from ' . $context;
             }
             if (!isset($fileErrors[$key])) {
                 $fileErrors[$key] = [];
@@ -87,7 +86,7 @@ final class TableErrorFormatter implements ErrorFormatter
                 if (is_string($this->editorUrl)) {
                     $editorFile = $error->getTraitFilePath() ?? $error->getFilePath();
                     $url = str_replace(['%file%', '%relFile%', '%line%'], [$editorFile, $this->simpleRelativePathHelper->getRelativePath($editorFile), (string) $error->getLine()], $this->editorUrl);
-                    $message .= "\n✏️  <href=" . OutputFormatter::escape($url) . '>' . $this->relativePathHelper->getRelativePath($editorFile) . '</>';
+                    $message .= "\n✏️  <href=" . $url . '>' . $this->relativePathHelper->getRelativePath($editorFile) . '</>';
                 }
                 $rows[] = [$this->formatLineNumber($error->getLine()), $message];
             }

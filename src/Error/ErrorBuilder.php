@@ -55,11 +55,11 @@ final class ErrorBuilder
      * @param Error[] $originalErrors
      * @return RuleError[]
      */
-    public function buildErrors(array $originalErrors, string $templatePath, ?string $actualClassFile = null): array
+    public function buildErrors(array $originalErrors, string $templatePath, ?string $context = null): array
     {
         $errors = [];
         foreach ($originalErrors as $originalError) {
-            $error = $this->buildError($originalError, $templatePath, $actualClassFile);
+            $error = $this->buildError($originalError, $templatePath, $context);
             if ($error === null) {
                 continue;
             }
@@ -69,7 +69,7 @@ final class ErrorBuilder
         return $errors;
     }
 
-    public function buildError(Error $originalError, string $templatePath, ?string $actualClassFile = null): ?RuleError
+    public function buildError(Error $originalError, string $templatePath, ?string $context = null): ?RuleError
     {
         if ($this->shouldErrorBeIgnored($originalError)) {
             return null;
@@ -80,7 +80,7 @@ final class ErrorBuilder
 
         $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage())
             ->file($templatePath)
-            ->metadata(array_merge($originalError->getMetadata(), ['context' => $actualClassFile]));
+            ->metadata(array_merge($originalError->getMetadata(), ['context' => $context === '' ? null : $context]));
         if ($originalError->getLine()) {
             $ruleErrorBuilder->line($this->lineMapper->get($originalError->getLine()));
         }

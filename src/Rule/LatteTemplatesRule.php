@@ -15,9 +15,8 @@ use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
+use PHPStan\File\RelativePathHelper;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\Registry as RuleRegistry;
@@ -46,6 +45,8 @@ final class LatteTemplatesRule implements Rule
 
     private TypeStringResolver $typeStringResolver;
 
+    private RelativePathHelper $relativePathHelper;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
@@ -56,7 +57,8 @@ final class LatteTemplatesRule implements Rule
         RuleRegistry $rulesRegistry,
         IncludePathCollector $includePathCollector,
         ErrorBuilder $errorBuilder,
-        TypeStringResolver $typeStringResolver
+        TypeStringResolver $typeStringResolver,
+        RelativePathHelper $relativePathHelper
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -65,6 +67,7 @@ final class LatteTemplatesRule implements Rule
         $this->includePathCollector = $includePathCollector;
         $this->errorBuilder = $errorBuilder;
         $this->typeStringResolver = $typeStringResolver;
+        $this->relativePathHelper = $relativePathHelper;
     }
 
     public function getNodeType(): string
@@ -107,14 +110,25 @@ final class LatteTemplatesRule implements Rule
                 continue; // stop recursion when template is analysed more than 3 times in include chain
             }
 
+            $context = '';
             $actualClass = $template->getActualClass();
-            $actualClassFile = $this->getActualClassFile($actualClass);
+            if ($actualClass !== null) {
+                $context .= $actualClass;
+            }
+            $actualAction = $template->getActualAction();
+            if ($actualAction !== null) {
+                $context .= '::' . $actualAction;
+            }
+            $parentTemplatePath = $template->getParentTemplatePath();
+            if ($parentTemplatePath !== null) {
+                $context .= ' included in ' . $this->relativePathHelper->getRelativePath($parentTemplatePath);
+            }
 
             try {
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents());
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $actualClassFile));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage(), $scope->getFile())], $templatePath, $context));
                 continue;
             }
 
@@ -126,7 +140,7 @@ final class LatteTemplatesRule implements Rule
                 null
             );
 
-            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $actualClassFile));
+            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $context));
 
             $dir = dirname($templatePath);
 
@@ -139,25 +153,13 @@ final class LatteTemplatesRule implements Rule
                 $includeTemplates[] = new Template(
                     realpath($dir . '/' . $collectedIncludedPath->getPath()) ?: '',
                     $actualClass,
+                    $actualAction,
                     array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
-                    $template->getComponents()
+                    $template->getComponents(),
+                    $template->getPath()
                 );
             }
             $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
         }
-    }
-
-    private function getActualClassFile(?string $actualClass): ?string
-    {
-        if ($actualClass === null) {
-            return null;
-        }
-        $actualClassFile = null;
-        try {
-            $reflectionClass = (new BetterReflection())->reflector()->reflectClass($actualClass);
-            $actualClassFile = $reflectionClass->getFileName();
-        } catch (IdentifierNotFound $e) {
-        }
-        return $actualClassFile;
     }
 }
