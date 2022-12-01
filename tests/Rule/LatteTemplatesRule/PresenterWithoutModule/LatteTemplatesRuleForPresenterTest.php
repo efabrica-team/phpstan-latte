@@ -267,12 +267,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
                 20,
                 'default.latte',
             ],
             [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 0 parameters, 1-2 required.',
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
                 21,
                 'default.latte',
             ],
@@ -317,10 +317,55 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
+                65,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, int> given.',
+                66,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
+                67,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
+                69,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $sorting of method ' . LinksPresenter::class . '::actionEdit() expects int, string given.',
+                69,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, string> given.',
+                70,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
+                71,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $sorting of method ' . LinksPresenter::class . '::actionEdit() expects int, string given.',
+                71,
+                'default.latte',
+            ],
+            [
                 'Cannot load presenter \'Links:Invalid\', class \'Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksModule\InvalidPresenter\' was not found.',
-                63,
+                73,
                 'default.latte',
                 'Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte#applicationmapping',
+            ],
+            [
+                'Parameter #2 $param2 of method ' . LinksPresenter::class . '::renderParamsMismatch() expects string, null given.',
+                75,
+                'default.latte',
             ],
         ]);
     }

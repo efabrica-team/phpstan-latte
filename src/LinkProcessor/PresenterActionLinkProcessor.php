@@ -10,6 +10,8 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 
 final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {
@@ -50,27 +52,33 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         $presenterName = implode('', $targetNameParts);
         $presenterVariableName = lcfirst($presenterName) . 'Presenter';
         $presenterFactory = $this->presenterFactoryFaker->getPresenterFactory();
+
         try {
             $presenterClassName = $presenterFactory->getPresenterClass($presenterWithModule);
         } catch (InvalidPresenterException $e) {
-            if ($this->actualClass === null) {
-                return [];
-            }
-            $actualClass = @$presenterFactory->unformatPresenterClass($this->actualClass);
-            if ($actualClass === null) {
-                return [];
-            }
+            $presenterClassName = $presenterFactory->formatPresenterClass($presenterWithModule);
+            try {
+                (new BetterReflection())->reflector()->reflectClass($presenterClassName);
+            } catch (IdentifierNotFound $notFoundException) {
+                if ($this->actualClass === null) {
+                    return [];
+                }
+                $actualClass = @$presenterFactory->unformatPresenterClass($this->actualClass);
+                if ($actualClass === null) {
+                    return [];
+                }
 
-            if ($targetNamePartsCount === 1) { // action
-                $newTarget = $actualClass . ':' . $targetName;
-            } elseif ($targetNamePartsCount === 2) { // presenter:action
-                [$module,] = explode(':', $actualClass, 2);
-                $newTarget = $module . ':' . $targetName;
-            } else {
-                throw $e;
-            }
+                if ($targetNamePartsCount === 1) { // action
+                    $newTarget = $actualClass . ':' . $targetName;
+                } elseif ($targetNamePartsCount === 2) { // presenter:action
+                    [$module,] = explode(':', $actualClass, 2);
+                    $newTarget = $module . ':' . $targetName;
+                } else {
+                    throw $e;
+                }
 
-            return $this->createLinkExpressions($newTarget, $linkParams, $attributes);
+                return $this->createLinkExpressions($newTarget, $linkParams, $attributes);
+            }
         }
 
         $variable = new Variable($presenterVariableName);
@@ -82,8 +90,8 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
 
         $expressions = [];
         foreach ($methodNames as $methodName) {
-            $linkParams = $this->linkParamsProcessor->process($presenterClassName, $methodName, $linkParams);
-            $expressions[] = new Expression(new MethodCall($variable, $methodName, $linkParams), $attributes);
+            $methodLinkParams = $this->linkParamsProcessor->process($presenterClassName, $methodName, $linkParams);
+            $expressions[] = new Expression(new MethodCall($variable, $methodName, $methodLinkParams), $attributes);
             $attributes = [];   // reset attributes, we want to print them only with first expression
         }
 
@@ -96,12 +104,14 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
      */
     private function prepareMethodNames(string $presenterClassName, string $actionName, array $linkParams): array
     {
+        $presenterClassreflection = (new BetterReflection())->reflector()->reflectClass($presenterClassName);
+
         $methodNames = [];
         $methodExists = false;
         // both methods have to have same parameters, so we check them both if exist
         foreach (['action', 'render'] as $type) {
             $methodName = $type . ucfirst($actionName);
-            if (method_exists($presenterClassName, $methodName)) {
+            if ($presenterClassreflection->hasMethod($methodName)) {
                 $methodExists = true;
                 $methodNames[] = $methodName;
             }
@@ -110,7 +120,6 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         // If methods not exist, but we pass parameters to links, we need to add method with fake name to find them in CallActionWithParametersMissingCorrespondingMethodErrorTransformer
         if ($methodExists === false && $linkParams !== []) {
             $methodNames[] = $actionName . 'WithParametersMissingCorrespondingMethod';
-            throw new LinkProcessorException();
         }
 
         return $methodNames;

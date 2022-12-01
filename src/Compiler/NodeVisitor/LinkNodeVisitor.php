@@ -109,11 +109,11 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
         try {
             $expressions = $linkProcessor->createLinkExpressions($targetName, $linkParams, $attributes);
         } catch (InvalidPresenterException $e) {
-            return [
-                (new Error($e->getMessage()))
-                    ->setTip('Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte#applicationmapping')
-                    ->toNode(),
-            ];
+            $errorNode = (new Error($e->getMessage()))
+                ->setTip('Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte#applicationmapping')
+                ->toNode();
+            $errorNode->setAttributes($attributes);
+            return [$errorNode];
         }
         if ($expressions === []) {
             return null;
