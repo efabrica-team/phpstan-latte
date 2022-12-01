@@ -40,7 +40,7 @@ final class SignalLinkProcessor implements LinkProcessorInterface
      */
     public function createLinkExpressions(string $targetName, array $linkParams, array $attributes): array
     {
-        $variable = new Variable('actualClass');
+        $variable = new Variable('control');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
         if ($this->actualClass !== null && method_exists($this->actualClass, $methodName)) {
             $linkParams = $this->linkParamsProcessor->process($this->actualClass, $methodName, $linkParams);
