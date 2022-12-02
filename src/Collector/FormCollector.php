@@ -86,6 +86,7 @@ final class FormCollector implements Collector
             return null;
         }
 
+        // TODO find real form class and use it (e.g. $form = new Form())
         $formClassReflection = (new BetterReflection())->reflector()->reflectClass('Nette\Forms\Form');
 
         $formFields = [];

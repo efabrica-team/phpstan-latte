@@ -140,6 +140,10 @@ final class LatteToPhpCompiler
             $comment = '@return ' . $componentType;
             foreach ($form->getFormFields() as $formField) {
                 $comment = str_replace($componentType, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getType() . ' : ' . $componentType . ')', $comment);
+
+                // TODO node visitor
+                $phpContent = str_replace('end($this->global->formsStack)["' . $formField->getName() . '"]', '$form["' . $formField->getName() . '"]', $phpContent);
+
             }
             $method->setDocComment('/** ' . $comment . ' */');
             $className = ucfirst($formName) . '_' . md5(uniqid());
@@ -149,10 +153,16 @@ final class LatteToPhpCompiler
 
             // TODO node visitor
             $phpContent = str_replace('$form = $this->global->formsStack[] = $this->global->uiControl["' . $formName . '"]', '$form = new ' . $className . '()', $phpContent);
-
-            // TODO node visitor
-            $phpContent = str_replace('end($this->global->formsStack)', '$form', $phpContent);
         }
+
+        // TODO node visitor
+        $phpContent = preg_replace('#echo end\(\$this->global->formsStack\)\["(.*?)"\](.*?);#', '__latteCompileError(\'Form field with name "$1" probably does not exist.\');', $phpContent);
+
+        // TODO node visitor
+        $phpContent = str_replace('array_pop($this->global->formsStack)', '$form', $phpContent);
+
+//        echo $phpContent;
+
         return $phpContent;
     }
 
