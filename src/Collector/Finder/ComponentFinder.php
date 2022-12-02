@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\ComponentCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
+use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -19,7 +20,7 @@ final class ComponentFinder
     /**
      * @var array<string, array<string, Component[]>>
      */
-    private array $collectedComponents;
+    private array $collectedComponents = [];
 
     private MethodCallFinder $methodCallFinder;
 
@@ -59,7 +60,12 @@ final class ComponentFinder
      */
     public function find(string $className, string $methodName): array
     {
-        return $this->findMethodCalls($className, $methodName);
+        return array_merge(
+            $this->collectedComponents[$className][''] ?? [],
+            $this->findInParents($className),
+            $this->findInMethodCalls($className, '__construct'),
+            $this->findInMethodCalls($className, $methodName),
+        );
     }
 
     /**
@@ -67,14 +73,31 @@ final class ComponentFinder
      */
     public function findByMethod(ReflectionMethod $method): array
     {
-        return $this->findMethodCalls($method->getDeclaringClass()->getName(), $method->getName());
+        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
+     * @return Component[]
+     */
+    private function findInParents(string $className)
+    {
+        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+
+        $collectedComponents = [];
+        foreach ($classReflection->getParentClassNames() as $parentClass) {
+            $collectedComponents = array_merge(
+                $this->collectedComponents[$parentClass][''] ?? [],
+                $collectedComponents
+            );
+        }
+        return $collectedComponents;
     }
 
     /**
      * @param array<string, array<string, true>> $alreadyFound
      * @return Component[]
      */
-    private function findMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
         if (isset($alreadyFound[$className][$methodName])) {
             return []; // stop recursion
@@ -82,17 +105,14 @@ final class ComponentFinder
             $alreadyFound[$className][$methodName] = true;
         }
 
-        // TODO check not only called method but also all parents
-
         $collectedComponents = [
             $this->collectedComponents[$className][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
-            $collectedComponents[] = $this->findMethodCalls($calledClassName, '', $alreadyFound);
             foreach ($calledMethods as $calledMethod) {
-                $collectedComponents[] = $this->findMethodCalls($calledClassName, $calledMethod, $alreadyFound);
+                $collectedComponents[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
             }
         }
 

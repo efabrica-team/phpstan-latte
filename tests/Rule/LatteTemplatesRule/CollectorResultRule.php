@@ -10,10 +10,11 @@ use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Utils\Strings;
 use PhpParser\Node;
-use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * @implements Rule<CollectedDataNode>
@@ -47,26 +48,26 @@ final class CollectorResultRule implements Rule
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $resolver = $this->shortClassName($collectedResolvedNode->getResolver());
-                $errors[] = new Error(
-                    "NODE $resolver " . $this->dumpValue($collectedResolvedNode->getParams()),
-                    $scope->getFile()
-                );
-                $templates = $latteTemplateResolver->findTemplates($collectedResolvedNode, $collectedDataNode);
+                $errors[] = RuleErrorBuilder::message("NODE $resolver " . $this->dumpValue($collectedResolvedNode->getParams()))->build();
+                $templates = $latteTemplateResolver->resolve($collectedResolvedNode, $collectedDataNode)->getTemplates();
                 foreach ($templates as $template) {
+                    if ($template instanceof RuleError) {
+                        continue;
+                    }
                     $path = pathinfo($template->getPath(), PATHINFO_BASENAME);
-                    $presenter = $this->shortClassName($template->getActualClass());
-                    $variables = array_map(function (Variable $v) {
+                    $actualClass = $this->shortClassName($template->getActualClass());
+                    $actionAction = $template->getActualAction();
+                    $variables = array_values(array_unique(array_map(function (Variable $v) {
                         return $v->getName();
-                    }, $template->getVariables());
-                    $components = array_map(function (Component $v) {
+                    }, $template->getVariables())));
+                    $components = array_values(array_unique(array_map(function (Component $v) {
                         return $v->getName();
-                    }, $template->getComponents());
-                    $errors[] = new Error(
-                        "TEMPLATE $path $presenter " .
+                    }, $template->getComponents())));
+                    $errors[] = RuleErrorBuilder::message(
+                        "TEMPLATE $path $actualClass::$actionAction " .
                         $this->dumpValue($variables) . ' ' .
-                        $this->dumpValue($components),
-                        $template->getPath()
-                    );
+                        $this->dumpValue($components)
+                    )->build();
                 }
             }
         }

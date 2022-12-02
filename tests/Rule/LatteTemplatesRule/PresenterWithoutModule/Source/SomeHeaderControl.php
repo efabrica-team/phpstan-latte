@@ -10,5 +10,6 @@ final class SomeHeaderControl extends Control
 {
     public function render(): void
     {
+        $this->template->render(__DIR__ . '/control.latte');
     }
 }

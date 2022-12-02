@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Template\Variable;
+use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -19,7 +20,7 @@ final class VariableFinder
     /**
      * @var array<string, array<string, Variable[]>>
      */
-    private array $collectedVariables;
+    private array $collectedVariables = [];
 
     private MethodCallFinder $methodCallFinder;
 
@@ -46,7 +47,12 @@ final class VariableFinder
      */
     public function find(string $className, string $methodName): array
     {
-        return $this->findMethodCalls($className, $methodName);
+        return array_merge(
+            $this->collectedVariables[$className][''] ?? [],
+            $this->findInParents($className),
+            $this->findInMethodCalls($className, '__construct'),
+            $this->findInMethodCalls($className, $methodName),
+        );
     }
 
     /**
@@ -54,14 +60,31 @@ final class VariableFinder
      */
     public function findByMethod(ReflectionMethod $method): array
     {
-        return $this->findMethodCalls($method->getDeclaringClass()->getName(), $method->getName());
+        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
+     * @return Variable[]
+     */
+    private function findInParents(string $className)
+    {
+        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+
+        $collectedVariables = [];
+        foreach ($classReflection->getParentClassNames() as $parentClass) {
+            $collectedVariables = array_merge(
+                $this->collectedVariables[$parentClass][''] ?? [],
+                $collectedVariables
+            );
+        }
+        return $collectedVariables;
     }
 
     /**
      * @param array<string, array<string, true>> $alreadyFound
      * @return Variable[]
      */
-    private function findMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
         if (isset($alreadyFound[$className][$methodName])) {
             return []; // stop recursion
@@ -69,17 +92,14 @@ final class VariableFinder
             $alreadyFound[$className][$methodName] = true;
         }
 
-        // TODO check not only called method but also all parents
-
         $collectedVariables = [
             $this->collectedVariables[$className][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledClassName => $calledMethods) {
-            $collectedVariables[] = $this->findMethodCalls($calledClassName, '', $alreadyFound);
             foreach ($calledMethods as $calledMethod) {
-                $collectedVariables[] = $this->findMethodCalls($calledClassName, $calledMethod, $alreadyFound);
+                $collectedVariables[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
             }
         }
 

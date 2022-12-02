@@ -91,8 +91,9 @@ final class LatteTemplatesRule implements Rule
         $errors = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
-                $templates = $latteTemplateResolver->findTemplates($collectedResolvedNode, $collectedDataNode);
-                $this->analyseTemplates($templates, $scope, $errors);
+                $result = $latteTemplateResolver->resolve($collectedResolvedNode, $collectedDataNode);
+                $errors = array_merge($errors, $result->getErrors());
+                $this->analyseTemplates($result->getTemplates(), $scope, $errors);
             }
         }
 
@@ -138,7 +139,7 @@ final class LatteTemplatesRule implements Rule
             }
 
             try {
-                $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents());
+                $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents(), $context);
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
                 $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $scope->getFile())], $templatePath, $context));

@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
@@ -61,19 +60,19 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     }
 
     /**
-     * @return Template[]
+     * @return LatteTemplateResolverResult
      */
-    protected function getTemplates(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): array
+    protected function getResult(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
     {
         $className = $resolvedNode->getParam(self::PARAM_CLASS_NAME);
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
 
         $fileName = $reflectionClass->getFileName();
         if ($fileName === null) {
-            return [];
+            return new LatteTemplateResolverResult();
         }
 
-        return $this->getClassTemplates($reflectionClass, $collectedDataNode);
+        return $this->getClassResult($reflectionClass, $collectedDataNode);
     }
 
     /**
@@ -123,7 +122,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     abstract protected function getClassGlobalComponents(ReflectionClass $reflectionClass): array;
 
     /**
-     * @return Template[]
+     * @return LatteTemplateResolverResult
      */
-    abstract protected function getClassTemplates(ReflectionClass $resolveClass, CollectedDataNode $collectedDataNode): array;
+    abstract protected function getClassResult(ReflectionClass $resolveClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult;
 }

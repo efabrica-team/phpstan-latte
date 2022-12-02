@@ -52,9 +52,9 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function compile(?string $actualClass, string $templateContent, array $variables, array $components): string
+    public function compile(?string $actualClass, string $templateContent, array $variables, array $components, string $context = ''): string
     {
-        $phpContent = $this->compiler->compile($templateContent, $actualClass);
+        $phpContent = $this->compiler->compile($templateContent, $actualClass, $context);
         $phpContent = $this->explicitCalls($actualClass, $phpContent, $variables, $components);
         $phpContent = $this->addExtractParams($phpContent);
         return $this->remapLines($phpContent);
@@ -64,19 +64,20 @@ final class LatteToPhpCompiler
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function compileFile(?string $actualClass, string $templatePath, array $variables, array $components): string
+    public function compileFile(?string $actualClass, string $templatePath, array $variables, array $components, string $context = ''): string
     {
         if (!file_exists($templatePath)) {
             throw new InvalidArgumentException('Template file "' . $templatePath . '" doesn\'t exist.');
         }
         $templateContent = file_get_contents($templatePath) ?: '';
-        $phpContent = $this->compile($actualClass, $templateContent, $variables, $components);
+        $phpContent = $this->compile($actualClass, $templateContent, $variables, $components, $context);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
         $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
         $contextHash = md5(
             $actualClass .
             json_encode($variables) .
-            json_encode($components)
+            json_encode($components) .
+            $context
         );
 
         $replacedPath = getcwd() ?: '';

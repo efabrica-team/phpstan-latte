@@ -11,20 +11,20 @@ use PHPStan\Node\CollectedDataNode;
 
 abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemplateResolver
 {
-    protected function getClassTemplates(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): array
+    protected function getClassResult(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
     {
-        $templates = [];
+        $result = new LatteTemplateResolverResult();
         $standaloneTemplateFiles = $this->findStandaloneTemplates($reflectionClass);
         foreach ($standaloneTemplateFiles as $standaloneTemplateFile) {
-            $templates[] = new Template(
+            $result->addTemplate(new Template(
                 $standaloneTemplateFile,
                 $reflectionClass->getName(),
                 null,
                 $this->getClassGlobalVariables($reflectionClass),
                 $this->getClassGlobalComponents($reflectionClass)
-            );
+            ));
         }
-        return $templates;
+        return $result;
     }
 
     /**
