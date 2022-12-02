@@ -40,6 +40,9 @@ final class AnalysedTemplatesRegistry
     {
         $files = [];
         foreach ($this->analysedPaths as $analysedPath) {
+            if (!is_dir($analysedPath)) {
+                continue;
+            }
             /** @var string $file */
             foreach (Finder::findFiles('*.latte')->from($analysedPath) as $file) {
                 $files[] = (string)$file;
