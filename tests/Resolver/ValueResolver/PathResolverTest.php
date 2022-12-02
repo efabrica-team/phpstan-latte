@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Resolver\ValueResolver;
 
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Parser;
@@ -11,15 +12,15 @@ use PhpParser\ParserFactory;
 use PHPStan\Testing\PHPStanTestCase;
 use Symfony\Component\Finder\Finder;
 
-final class ValueResolverTest extends PHPStanTestCase
+final class PathResolverTest extends PHPStanTestCase
 {
-    private ValueResolver $valueResolver;
+    private PathResolver $pathResolver;
 
     private Parser $phpParser;
 
     public function setUp(): void
     {
-        $this->valueResolver = new ValueResolver();
+        $this->pathResolver = new PathResolver(true, new ValueResolver());
         $parserFactory = new ParserFactory();
         $this->phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
     }
@@ -38,12 +39,12 @@ final class ValueResolverTest extends PHPStanTestCase
         $stmts = $this->phpParser->parse($php);
         /** @var Expression $expression */
         $expression = $stmts[0];
-        $this->assertEquals($output, $this->valueResolver->resolve($expression->expr, $path));
+        $this->assertEquals($output, $this->pathResolver->resolve($expression->expr, $path));
     }
 
     public function fixtures(): iterable
     {
-        foreach (Finder::create()->in(__DIR__ . '/Fixtures')->name('name.*.fixture') as $file) {
+        foreach (Finder::create()->in(__DIR__ . '/Fixtures')->name('path.*.fixture') as $file) {
             yield [(string)$file];
         }
     }

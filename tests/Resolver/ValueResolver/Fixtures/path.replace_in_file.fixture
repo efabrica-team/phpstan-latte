@@ -2,4 +2,4 @@
 
 str_replace('.fixture', '.abcd', __FILE__);
 -----
-{$dir}/replace_in_file.abcd
+{$dir}/path.replace_in_file.abcd

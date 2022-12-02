@@ -113,6 +113,16 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'test.latte',
             ],
             [
+                'Variable $b might not be defined.',
+                2,
+                'param_a.latte',
+            ],
+            [
+                'Variable $b might not be defined.',
+                2,
+                'param_b.latte',
+            ],
+            [
                 'Template file "' . __DIR__ . '/Fixtures/MultipleRenderMethods/invalid_file.latte" doesn\'t exist.',
                 -1,
                 'invalid_file.latte',

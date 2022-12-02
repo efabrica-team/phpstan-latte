@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Template\Template;
+use Nette\Utils\Finder;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Node\CollectedDataNode;
-use Symfony\Component\Finder\Finder;
 
 abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemplateResolver
 {
@@ -40,7 +40,8 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
         $patterns = $this->getTemplatePathPatterns($reflectionClass, $dir);
 
         $standaloneTemplates = [];
-        foreach (Finder::create()->in($dir)->name('*.latte') as $file) {
+        /** @var string $file */
+        foreach (Finder::findFiles('*.latte')->from($dir) as $file) {
             $file = (string)$file;
             if (str_contains($file, '@')) {
                 continue;

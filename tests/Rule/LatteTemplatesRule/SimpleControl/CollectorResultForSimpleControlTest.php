@@ -48,6 +48,9 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE default.latte SomeControl ["presenter","control","a","b"] []',
             'TEMPLATE test.latte SomeControl ["presenter","control","c","d"] []',
             'TEMPLATE invalid_file.latte SomeControl ["presenter","control"] []',
+            'TEMPLATE param_a.latte SomeControl ["presenter","control","a","c"] []',
+            'TEMPLATE param_b.latte SomeControl ["presenter","control","a","c"] []',
+
         ]);
     }
 }

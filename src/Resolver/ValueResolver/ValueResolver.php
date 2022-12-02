@@ -10,6 +10,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
@@ -17,11 +18,12 @@ use PhpParser\Node\Scalar\MagicConst\File;
 final class ValueResolver
 {
     /**
+     * @param mixed $unknownValuePlaceholder
      * @return mixed
      */
-    public function resolve(Expr $expr, ?string $actualFile = null)
+    public function resolve(Expr $expr, ?string $actualFile = null, $unknownValuePlaceholder = null)
     {
-        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($actualFile) {
+        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($actualFile, $unknownValuePlaceholder) {
             if ($expr instanceof Dir) {
                 return $actualFile ? dirname($actualFile) : null;
             }
@@ -35,7 +37,11 @@ final class ValueResolver
             }
 
             if ($expr instanceof Cast) {
-                return $this->resolve($expr->expr, $actualFile);
+                return $this->resolve($expr->expr, $actualFile, $unknownValuePlaceholder);
+            }
+
+            if ($expr instanceof Variable && $unknownValuePlaceholder) {
+                return $unknownValuePlaceholder;
             }
 
             if ($expr instanceof FuncCall) {
@@ -57,7 +63,7 @@ final class ValueResolver
                 return call_user_func_array($functionName, $arguments);
             }
 
-            return null;
+            throw new ConstExprEvaluationException();
         });
 
         try {

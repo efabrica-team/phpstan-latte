@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
+use Nette\Utils\Finder;
+use Nette\Utils\Strings;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 
@@ -28,7 +30,17 @@ final class TemplatePathFinder
             if (!isset($this->collectedTemplatePaths[$className][$methodName])) {
                 $this->collectedTemplatePaths[$className][$methodName] = [];
             }
-            $this->collectedTemplatePaths[$className][$methodName][] = $collectedTemplatePath->getTemplatePath();
+            $templatePath = $collectedTemplatePath->getTemplatePath();
+            if (strpos($templatePath, '*') !== false) {
+                $dirWithoutWildcards = (string)Strings::before((string)Strings::before($templatePath, '*'), '/', -1);
+                $pattern = substr($templatePath, strlen($dirWithoutWildcards) + 1);
+                /** @var string $file */
+                foreach (Finder::findFiles($pattern)->from($dirWithoutWildcards) as $file) {
+                    $this->collectedTemplatePaths[$className][$methodName][] = (string)$file;
+                }
+            } else {
+                $this->collectedTemplatePaths[$className][$methodName][] = $templatePath;
+            }
         }
     }
 

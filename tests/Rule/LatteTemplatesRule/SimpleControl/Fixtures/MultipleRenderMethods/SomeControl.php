@@ -26,6 +26,15 @@ final class SomeControl extends Control
         $this->template->render();
     }
 
+    public function renderWildcard(string $param): void
+    {
+        $this->template->a = 'a';
+        $this->template->c = 'c';
+
+        $this->template->setFile(__DIR__ . '/param_' . $param . '.latte');
+        $this->template->render();
+    }
+
     public function renderTemplateFileNotFound(): void
     {
         $this->template->setFile(__DIR__ . '/invalid_file.latte');
