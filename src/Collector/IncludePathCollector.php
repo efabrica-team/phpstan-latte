@@ -18,7 +18,7 @@ use PHPStan\Type\ThisType;
 
 /**
  * @phpstan-import-type CollectedIncludePathArray from CollectedIncludePath
- * @implements Collector<MethodCall, ?CollectedIncludePathArray>
+ * @implements Collector<MethodCall, ?CollectedIncludePathArray[]>
  */
 final class IncludePathCollector implements Collector
 {
@@ -41,7 +41,7 @@ final class IncludePathCollector implements Collector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedIncludePathArray
+     * @phpstan-return null|CollectedIncludePathArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -75,11 +75,6 @@ final class IncludePathCollector implements Collector
             return null;
         }
 
-        $includeTemplatePath = $this->valueResolver->resolve($includeTemplatePathArgument->value);
-        if (!is_string($includeTemplatePath)) {
-            return null;
-        }
-
         $variables = [];
         $includeTemplateParamsArgument = $node->getArgs()[1] ?? null;
         if ($includeTemplateParamsArgument !== null && $includeTemplateParamsArgument->value instanceof Plus && $includeTemplateParamsArgument->value->left instanceof Array_) {
@@ -87,16 +82,28 @@ final class IncludePathCollector implements Collector
                 if ($item === null || $item->key === null) {
                     continue;
                 }
-                $paramName = $this->valueResolver->resolve($item->key);
-                if (!is_string($paramName)) {
-                    continue;
+                $paramNames = $this->valueResolver->resolve($item->key, $scope) ?? [];
+                foreach ($paramNames as $paramName) {
+                    if (!is_string($paramName)) {
+                        continue;
+                    }
+                    $paramType = $scope->getType($item->value);
+                    $variables[] = new Variable($paramName, $paramType);
                 }
-                $paramType = $scope->getType($item->value);
-
-                $variables[] = new Variable($paramName, $paramType);
             }
         }
 
-        return (new CollectedIncludePath($includeTemplatePath, $variables))->toArray();
+        $paths = $this->valueResolver->resolve($includeTemplatePathArgument->value, $scope);
+        if ($paths === null) {
+            return null;
+        }
+        $templatePaths = [];
+        foreach ($paths as $path) {
+            if (!is_string($path)) {
+                continue;
+            }
+            $templatePaths[] = (new CollectedIncludePath($path, $variables))->toArray();
+        }
+        return count($templatePaths) > 0 ? $templatePaths : null;
     }
 }

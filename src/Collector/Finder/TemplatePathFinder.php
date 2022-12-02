@@ -114,14 +114,16 @@ final class TemplatePathFinder
     }
 
     /**
-     * @phpstan-param array<CollectedTemplatePathArray> $data
+     * @phpstan-param array<CollectedTemplatePathArray[]> $data
      * @return CollectedTemplatePath[]
      */
     private function buildData(array $data): array
     {
         $collectedTemplatePaths = [];
-        foreach ($data as $item) {
-            $collectedTemplatePaths[] = CollectedTemplatePath::fromArray($item);
+        foreach ($data as $itemList) {
+            foreach ($itemList as $item) {
+                $collectedTemplatePaths[] = CollectedTemplatePath::fromArray($item);
+            }
         }
         return $collectedTemplatePaths;
     }

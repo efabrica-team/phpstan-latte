@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Resolver\ValueResolver;
 
 use PhpParser\Node\Expr;
+use PHPStan\Analyser\Scope;
 
 final class PathResolver
 {
@@ -19,19 +20,26 @@ final class PathResolver
     }
 
     /**
-     * @return ?string
-     * @phpstan-return ?non-empty-string
+     * @return array<string>|null
+     * @phpstan-return array<non-empty-string>|null
      */
-    public function resolve(Expr $expr, ?string $actualFile = null)
+    public function resolve(Expr $expr, Scope $scope)
     {
-        $result = $this->valueResolver->resolve($expr, $actualFile, $this->resolveAllPossiblePaths ? '*' : null);
-        if (!is_string($result)) {
+        $resultCandidates = $this->valueResolver->resolve($expr, $scope, $this->resolveAllPossiblePaths ? '*' : null);
+        if ($resultCandidates === null) {
             return null;
         }
-        $result = preg_replace('#\*+#', '*', $result);
-        if ($result === null || $result === '' || $result[0] === '*') {
-            return null;
+        $resultList = [];
+        foreach ($resultCandidates as $result) {
+            if (!is_string($result)) {
+                continue;
+            }
+            $result = preg_replace('#\*+#', '*', $result);
+            if ($result === null || $result === '' || $result[0] === '*') {
+                continue;
+            }
+            $resultList[] = $result;
         }
-        return $result;
+        return count($resultList) > 0 ? $resultList : null;
     }
 }
