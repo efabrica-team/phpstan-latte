@@ -32,12 +32,14 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 $actions[$actionName] = [
                     'variables' => $this->getClassGlobalVariables($reflectionClass),
                     'components' => $this->getClassGlobalComponents($reflectionClass),
+                    'forms' => $this->getClassGlobalForms($reflectionClass),
                     'line' => $reflectionMethod->getStartLine(),
                 ];
             }
 
             $actions[$actionName]['variables'] = array_merge($actions[$actionName]['variables'], $this->variableFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['components'] = array_merge($actions[$actionName]['components'], $this->componentFinder->findByMethod($reflectionMethod));
+            $actions[$actionName]['forms'] = array_merge($actions[$actionName]['forms'], $this->formFinder->findByMethod($reflectionMethod));
         }
 
         $result = new LatteTemplateResolverResult();
@@ -50,7 +52,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                   ->identifier($actionName));
                 continue;
             }
-            $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['variables'], $actionDefinition['components']));
+            $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['variables'], $actionDefinition['components'], $actionDefinition['forms']));
         }
 
         return $result;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -122,7 +123,9 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     abstract protected function getClassGlobalComponents(ReflectionClass $reflectionClass): array;
 
     /**
-     * @return LatteTemplateResolverResult
+     * @return CollectedForm[]
      */
+    abstract protected function getClassGlobalForms(ReflectionClass $reflectionClass): array;
+
     abstract protected function getClassResult(ReflectionClass $resolveClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult;
 }

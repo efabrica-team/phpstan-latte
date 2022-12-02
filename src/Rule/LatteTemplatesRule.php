@@ -139,7 +139,7 @@ final class LatteTemplatesRule implements Rule
             }
 
             try {
-                $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents(), $context);
+                $compileFilePath = $this->latteToPhpCompiler->compileFile($actualClass, $templatePath, $template->getVariables(), $template->getComponents(), $template->getForms(), $context);
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
                 $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $scope->getFile())], $templatePath, $context));
@@ -171,6 +171,7 @@ final class LatteTemplatesRule implements Rule
                     $actualAction,
                     array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
                     $template->getComponents(),
+                    $template->getForms(),
                     $template->getPath()
                 );
             }

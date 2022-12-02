@@ -31,4 +31,14 @@ trait NetteApplicationUIPresenterGlobals
             $this->componentFinder->find($className, 'beforeRender')
         );
     }
+
+    protected function getClassGlobalForms(ReflectionClass $reflectionClass): array
+    {
+        $className = $reflectionClass->getName();
+        return array_merge(
+            $this->formFinder->find($className, ''),
+            $this->formFinder->find($className, 'startup'),
+            $this->formFinder->find($className, 'beforeRender')
+        );
+    }
 }
