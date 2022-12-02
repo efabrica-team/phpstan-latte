@@ -116,6 +116,11 @@ final class LatteToPhpCompiler
         $addedForms = [];
         foreach ($forms as $form) {
             $formName = $form->getName();
+            $className = ucfirst($formName) . '_' . md5(uniqid());
+
+            // TODO node visitor
+            $phpContent = str_replace('$form = $this->global->formsStack[] = $this->global->uiControl["' . $formName . '"]', '$form = new ' . $className . '()', $phpContent);
+
             // TODO check why there are 5 forms instead of one
             if (isset($addedForms[$formName])) {
                 continue;
@@ -141,21 +146,23 @@ final class LatteToPhpCompiler
             foreach ($form->getFormFields() as $formField) {
                 $comment = str_replace($componentType, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getType() . ' : ' . $componentType . ')', $comment);
 
-                // TODO node visitor
-                $phpContent = str_replace('end($this->global->formsStack)["' . $formField->getName() . '"]', '$form["' . $formField->getName() . '"]', $phpContent);
+                // TODO select corresponding part of code and replace all occurences in it, then replace original code with new
 
+                for ($i = 0; $i < 5; $i++) {    // label and input etc.
+                    // TODO node visitor
+                    /** @var string $phpContent */
+                    $phpContent = preg_replace('/new ' . $className . '(.*?)end\(\$this->global->formsStack\)\["' . $formField->getName() . '"\](.*?)renderFormEnd/s', 'new ' . $className . '$1\$form["' . $formField->getName() . '"]$2renderFormEnd', $phpContent);
+                }
             }
             $method->setDocComment('/** ' . $comment . ' */');
-            $className = ucfirst($formName) . '_' . md5(uniqid());
             $builderClass = (new Class_($className))->extend('Nette\Forms\Form')
                 ->addStmts([$method]);
             $phpContent .= "\n\n" . $this->printerStandard->prettyPrint([$builderClass->getNode()]);
-
-            // TODO node visitor
-            $phpContent = str_replace('$form = $this->global->formsStack[] = $this->global->uiControl["' . $formName . '"]', '$form = new ' . $className . '()', $phpContent);
         }
 
         // TODO node visitor
+
+        /** @var string $phpContent */
         $phpContent = preg_replace('#echo end\(\$this->global->formsStack\)\["(.*?)"\](.*?);#', '__latteCompileError(\'Form field with name "$1" probably does not exist.\');', $phpContent);
 
         // TODO node visitor

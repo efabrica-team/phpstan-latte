@@ -148,7 +148,11 @@ final class FormCollector implements Collector
     {
         $methodCall = null;
         if ($expression->expr instanceof MethodCall) {
-            $methodCall = $expression->expr;
+            if ($expression->expr->var instanceof MethodCall) {
+                $methodCall = $expression->expr->var;
+            } else {
+                $methodCall = $expression->expr;
+            }
         } elseif ($expression->expr instanceof Assign && $expression->expr->expr instanceof MethodCall) {
             $methodCall = $expression->expr->expr;
         }
