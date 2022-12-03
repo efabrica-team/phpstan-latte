@@ -15,7 +15,7 @@ use PHPStan\Collectors\Collector;
 
 /**
  * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
- * @implements Collector<MethodCall, ?CollectedTemplatePathArray>
+ * @implements Collector<MethodCall, ?CollectedTemplatePathArray[]>
  */
 final class TemplatePathCollector implements Collector
 {
@@ -42,7 +42,7 @@ final class TemplatePathCollector implements Collector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplatePathArray
+     * @phpstan-return null|CollectedTemplatePathArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -73,9 +73,14 @@ final class TemplatePathCollector implements Collector
             return null;
         }
 
-        $path = $this->pathResolver->resolve($arg->value, $scope->getFile()); if ($path === null) {
-            return (new CollectedTemplatePath($actualClassName, $functionName, null))->toArray();
+        $paths = $this->pathResolver->resolve($arg->value, $scope);
+        if ($paths === null) {
+            return [(new CollectedTemplatePath($actualClassName, $functionName, null))->toArray()];
         }
-        return (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();
+        $templatePaths = [];
+        foreach ($paths as $path) {
+            $templatePaths[] = (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();
+        }
+        return count($templatePaths) > 0 ? $templatePaths : null;
     }
 }

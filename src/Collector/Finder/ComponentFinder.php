@@ -120,14 +120,16 @@ final class ComponentFinder
     }
 
     /**
-     * @phpstan-param array<CollectedComponentArray> $data
+     * @phpstan-param array<CollectedComponentArray[]> $data
      * @return CollectedComponent[]
      */
     private function buildData(array $data): array
     {
         $collectedComponents = [];
-        foreach ($data as $item) {
-            $collectedComponents[] = CollectedComponent::fromArray($item, $this->typeStringResolver);
+        foreach ($data as $itemList) {
+            foreach ($itemList as $item) {
+                $collectedComponents[] = CollectedComponent::fromArray($item, $this->typeStringResolver);
+            }
         }
         return $collectedComponents;
     }

@@ -9,8 +9,8 @@ use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Nette\Application\InvalidPresenterException;
+use PhpParser\ConstExprEvaluator;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -36,17 +36,13 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
 
     private NameResolver $nameResolver;
 
-    private ValueResolver $valueResolver;
-
     private LinkProcessorFactory $linkProcessorFactory;
 
     public function __construct(
         NameResolver $nameResolver,
-        ValueResolver $valueResolver,
         LinkProcessorFactory $linkProcessorFactory
     ) {
         $this->nameResolver = $nameResolver;
-        $this->valueResolver = $valueResolver;
         $this->linkProcessorFactory = $linkProcessorFactory;
     }
 
@@ -91,7 +87,7 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNo
         $linkArgs = $methodCall->getArgs();
         $target = $linkArgs[0]->value;
 
-        $targetName = $this->valueResolver->resolve($target);
+        $targetName = (new ConstExprEvaluator())->evaluateDirectly($target);
         if (!is_string($targetName)) {
             return null;
         }
