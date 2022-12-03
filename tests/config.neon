@@ -5,5 +5,19 @@ parameters:
     checkExplicitMixed: true
     checkImplicitMixed: true
 
+    # based on phpstan/phpstan-nette
+    earlyTerminatingMethodCalls:
+        Nette\Application\UI\Component:
+            - error
+        Nette\Application\UI\Presenter:
+            - redirect
+            - redirectUrl
+            - sendJson
+            - sendPayload
+            - sendResponse
+            - sendTemplate
+            - terminate
+            - forward
+
 rules:
     - Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultRule

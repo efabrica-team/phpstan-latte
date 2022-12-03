@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 
 /**
@@ -23,6 +24,11 @@ final class MethodCallFinder
      */
     private array $collectedMethodCallers;
 
+    /**
+     * @var array<string, array<string, bool>>>
+     */
+    private array $hasTerminatingCalls;
+
     public function __construct(CollectedDataNode $collectedDataNode)
     {
         $collectedMethodCalls = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(MethodCallCollector::class)))));
@@ -31,14 +37,19 @@ final class MethodCallFinder
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
             $calledClassName = $collectedMethodCall->getCalledClassName();
             $calledMethodName = $collectedMethodCall->getCalledMethodName();
-            if (!isset($this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName])) {
-                $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName] = [];
+            if ($collectedMethodCall->isCall()) {
+                if (!isset($this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName])) {
+                    $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName] = [];
+                }
+                $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName][] = $calledMethodName;
+                if (!isset($this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName])) {
+                    $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName] = [];
+                }
+                $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName][] = $callerMethodName;
             }
-            $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName][] = $calledMethodName;
-            if (!isset($this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName])) {
-                $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName] = [];
+            if ($collectedMethodCall->isTerminatingCall()) {
+                $this->hasTerminatingCalls[$callerClassName][$callerMethodName] = true;
             }
-            $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName][] = $callerMethodName;
         }
     }
 
@@ -56,6 +67,16 @@ final class MethodCallFinder
     public function findCallers(string $className, string $methodName): array
     {
         return $this->collectedMethodCallers[$className][$methodName] ?? [];
+    }
+
+    public function hasTerminatingCalls(string $className, string $methodName): bool
+    {
+        return $this->hasTerminatingCalls[$className][$methodName] ?? false;
+    }
+
+    public function hasTerminatingCallsByMethod(ReflectionMethod $method): bool
+    {
+        return $this->hasTerminatingCalls($method->getDeclaringClass()->getName(), $method->getName());
     }
 
     /**

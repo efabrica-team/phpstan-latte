@@ -65,6 +65,9 @@ services:
     # Name resolvers
     - Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver
 
+    # MEthod resolvers
+    - Efabrica\PHPStanLatte\Resolver\MethodResolver\TerminatingMethodResolver(%earlyTerminatingMethodCalls%)
+
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)

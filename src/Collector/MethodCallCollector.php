@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
+use Efabrica\PHPStanLatte\Resolver\MethodResolver\TerminatingMethodResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
@@ -26,9 +27,12 @@ final class MethodCallCollector implements Collector
 {
     private NameResolver $nameResolver;
 
-    public function __construct(NameResolver $nameResolver)
+    private TerminatingMethodResolver $terminatingMethodResolver;
+
+    public function __construct(NameResolver $nameResolver, TerminatingMethodResolver $terminatingMethodResolver)
     {
         $this->nameResolver = $nameResolver;
+        $this->terminatingMethodResolver = $terminatingMethodResolver;
     }
 
     public function getNodeType(): string
@@ -90,24 +94,35 @@ final class MethodCallCollector implements Collector
             return null;
         }
 
-        $calledClassName = $reflectionMethod->getDeclaringClass()->getName();
+        $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
 
-        // Do not find template variables in nette classes
-        if (in_array($calledClassName, [
-            'Nette\Application\UI\Presenter',
-            'Nette\Application\UI\Control',
-            'Nette\Application\UI\Component',
-            'Nette\ComponentModel\Container',
-            'Latte\Runtime\Template',
-        ], true)) {
+        $callType = CollectedMethodCall::CALL;
+        if ($this->terminatingMethodResolver->isTerminatingCall($calledClassName, $calledMethodName)) {
+            $callType = CollectedMethodCall::TERMINATING_CALL;
+        }
+
+        // Do not find template variables in external classes
+        if ($callType === CollectedMethodCall::CALL && $this->isExternalCall($declaringClassName, $calledMethodName)) {
             return null;
         }
 
         return (new CollectedMethodCall(
             $actualClassName,
             $functionName,
-            $calledClassName,
-            $calledMethodName
+            $declaringClassName,
+            $calledMethodName,
+            $callType
         ))->toArray();
+    }
+
+    private function isExternalCall(string $calledClassName, string $calledMethodName): bool
+    {
+        return in_array($calledClassName, [
+            'Nette\Application\UI\Presenter',
+            'Nette\Application\UI\Control',
+            'Nette\Application\UI\Component',
+            'Nette\ComponentModel\Container',
+            'Latte\Runtime\Template',
+        ], true);
     }
 }
