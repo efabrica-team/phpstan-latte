@@ -17,17 +17,17 @@ final class MethodCallFinder
     /**
      * @var array<string, array<string, array<string, string[]>>>
      */
-    private array $collectedMethodCalled;
+    private array $collectedMethodCalled = [];
 
     /**
      * @var array<string, array<string, array<string, string[]>>>
      */
-    private array $collectedMethodCallers;
+    private array $collectedMethodCallers = [];
 
     /**
      * @var array<string, array<string, bool>>>
      */
-    private array $hasTerminatingCalls;
+    private array $hasTerminatingCalls = [];
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {

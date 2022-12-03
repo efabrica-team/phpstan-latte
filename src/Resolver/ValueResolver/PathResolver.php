@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Resolver\ValueResolver;
 
+use Nette\Utils\Finder;
+use Nette\Utils\Strings;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\Scope;
 
@@ -41,5 +43,26 @@ final class PathResolver
             $resultList[] = $result;
         }
         return count($resultList) > 0 ? $resultList : null;
+    }
+
+    /**
+     * @param ?string $path
+     * @return ?array<?string>
+     */
+    public function expand(?string $path): ?array
+    {
+        if ($path === null || strpos($path, '*') === false) {
+            return [$path];
+        }
+
+        $dirWithoutWildcards = (string)Strings::before((string)Strings::before($path, '*'), '/', -1);
+        $pattern = substr($path, strlen($dirWithoutWildcards) + 1);
+
+        $paths = [];
+        /** @var string $file */
+        foreach (Finder::findFiles($pattern)->from($dirWithoutWildcards) as $file) {
+            $paths[] = (string)$file;
+        }
+        return count($paths) > 0 ? $paths : null;
     }
 }

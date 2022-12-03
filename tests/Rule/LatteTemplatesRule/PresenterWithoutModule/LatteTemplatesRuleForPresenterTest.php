@@ -102,6 +102,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 5,
                 'noAction.latte',
             ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                5,
+                'direct.latte',
+            ],
         ]);
     }
 

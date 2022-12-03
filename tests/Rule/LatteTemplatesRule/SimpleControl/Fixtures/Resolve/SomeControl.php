@@ -10,23 +10,29 @@ final class SomeControl extends Control
 {
     public function renderConstVar(): void
     {
-        $var = '/default.latte';
+        $this->template->a = 'a';
+        $this->template->b = 'b';
+        $var = '/constVar.latte';
         $this->template->render(__DIR__ . $var);
     }
 
-    public function renderConstVar2(): void
+    public function renderExplicit(): void
     {
-        $var = __DIR__ . '/default2.latte';
-        $this->template->render($var);
+        $this->template->a = 'a';
+        $this->template->b = 'b';
+        $this->template->setFile(__DIR__ . '/error.latte');
+        $this->template->render(__DIR__ . '/explicit.latte');
     }
 
-    public function renderConstVarIf(bool $param): void
+    public function renderDefaultVars(): void
     {
-        if ($param) {
-            $var = __DIR__ . '/default.latte';
-        } else {
-            $var = __DIR__ . '/other.latte';
-        }
-        $this->template->render($var);
+        $this->template->setFile(__DIR__ . '/defaultVars.latte');
+        $this->template->render(null, ['a' => 'a', 'b' => 'b']);
+    }
+
+    public function renderExplicitVars(): void
+    {
+        $this->template->setFile(__DIR__ . '/error.latte');
+        $this->template->render(__DIR__ . '/explicitVars.latte', ['a' => 'a', 'b' => 'b']);
     }
 }

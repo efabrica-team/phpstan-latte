@@ -6,8 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
-use Nette\Utils\Finder;
-use Nette\Utils\Strings;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
@@ -24,9 +23,12 @@ final class TemplatePathFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
+    private PathResolver $pathResolver;
+
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
+        $this->pathResolver = $pathResolver;
 
         $collectedTemplatePaths = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(TemplatePathCollector::class)))));
         foreach ($collectedTemplatePaths as $collectedTemplatePath) {
@@ -35,16 +37,13 @@ final class TemplatePathFinder
             if (!isset($this->collectedTemplatePaths[$className][$methodName])) {
                 $this->collectedTemplatePaths[$className][$methodName] = [];
             }
-            $templatePath = $collectedTemplatePath->getTemplatePath();
-            if ($templatePath !== null && strpos($templatePath, '*') !== false) {
-                $dirWithoutWildcards = (string)Strings::before((string)Strings::before($templatePath, '*'), '/', -1);
-                $pattern = substr($templatePath, strlen($dirWithoutWildcards) + 1);
-                /** @var string $file */
-                foreach (Finder::findFiles($pattern)->from($dirWithoutWildcards) as $file) {
-                    $this->collectedTemplatePaths[$className][$methodName][] = (string)$file;
+            $templatePaths = $this->pathResolver->expand($collectedTemplatePath->getTemplatePath());
+            if ($templatePaths !== null) {
+                foreach ($templatePaths as $templatePath) {
+                    $this->collectedTemplatePaths[$className][$methodName][] = $templatePath;
                 }
             } else {
-                $this->collectedTemplatePaths[$className][$methodName][] = $templatePath;
+                $this->collectedTemplatePaths[$className][$methodName][] = null;
             }
         }
     }

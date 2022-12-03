@@ -41,6 +41,13 @@ final class VariablesPresenter extends ParentPresenter
         $this->redirect('default');
     }
 
+    public function actionDirectRender(): void
+    {
+        $this->template->fromTemplate = 'a';
+        $this->template->render(__DIR__ . '/templates/Variables/direct.latte', ['fromRender' => 'b']);
+        $this->terminate();
+    }
+
     private function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';
