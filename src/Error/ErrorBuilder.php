@@ -25,7 +25,7 @@ final class ErrorBuilder
         '/Call to an undefined method Nette\\\\ComponentModel\\\\IComponent::render\(\)\./', # rendering of unknown components
         '/Parameter #1 \$blocks of method Nette\\\\Bridges\\\\ApplicationLatte\\\\SnippetDriver::renderSnippets\(\) expects .*/', # nette internal error
         '/Parameter #3 \$blocks of static method Nette\\\\Bridges\\\\ApplicationLatte\\\\UIRuntime::initialize\(\) expects .*/', # nette internal error
-        '/Cannot call method getParent\(\) on Latte\\\\Essential\\\\CachingIterator\|null/\.', # latte internal error
+        '/Cannot call method getParent\(\) on Latte\\\\Essential\\\\CachingIterator\|null/\./', # latte internal error
         '/Only booleans are allowed in an if condition, bool\|null given\./', // latte code don't pass phpstan/strict-rules
         '/Instanceof between .* and Nette\\\\Application\\\\UI\\\\Renderable will always evaluate to true\./', // latte code don't pass phpstan/strict-rules
     ];
