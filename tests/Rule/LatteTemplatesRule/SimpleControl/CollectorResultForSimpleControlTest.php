@@ -68,6 +68,8 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE explicit.latte SomeControl::renderExplicit ["presenter","control","a","b"] []',
             'TEMPLATE defaultVars.latte SomeControl::renderDefaultVars ["presenter","control","a","b"] []',
             'TEMPLATE explicitVars.latte SomeControl::renderExplicitVars ["presenter","control","a","b"] []',
+            'TEMPLATE defaultObject.latte SomeControl::renderDefaultObject ["presenter","control","a","b"] []',
+            'TEMPLATE explicitObject.latte SomeControl::renderExplicitObject ["presenter","control","a","b"] []',
         ]);
     }
 }
