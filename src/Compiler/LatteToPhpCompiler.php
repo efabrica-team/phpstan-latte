@@ -119,7 +119,7 @@ final class LatteToPhpCompiler
             $className = ucfirst($formName) . '_' . md5(uniqid());
 
             // TODO node visitor
-            $phpContent = str_replace('$form = $this->global->formsStack[] = $this->global->uiControl["' . $formName . '"]', '$form = new ' . $className . '()', $phpContent);
+            $phpContent = preg_replace('#\$form = \$this->global->formsStack\[\] = \$this->global->uiControl\[[\'"]' . $formName . '[\'"]]#', '\$form = new ' . $className . '()', $phpContent);
 
             // TODO check why there are 5 forms instead of one
             if (isset($addedForms[$formName])) {
@@ -151,7 +151,7 @@ final class LatteToPhpCompiler
                 for ($i = 0; $i < 5; $i++) {    // label and input etc.
                     // TODO node visitor
                     /** @var string $phpContent */
-                    $phpContent = preg_replace('/new ' . $className . '(.*?)end\(\$this->global->formsStack\)\["' . $formField->getName() . '"\](.*?)renderFormEnd/s', 'new ' . $className . '$1\$form["' . $formField->getName() . '"]$2renderFormEnd', $phpContent);
+                    $phpContent = preg_replace('/new ' . $className . '(.*?)end\(\$this->global->formsStack\)\[[\'"]' . $formField->getName() . '[\'"]\](.*?)renderFormEnd/s', 'new ' . $className . '$1\$form["' . $formField->getName() . '"]$2renderFormEnd', $phpContent);
                 }
             }
             $method->setDocComment('/** ' . $comment . ' */');
@@ -163,13 +163,10 @@ final class LatteToPhpCompiler
         // TODO node visitor
 
         /** @var string $phpContent */
-        $phpContent = preg_replace('#echo end\(\$this->global->formsStack\)\["(.*?)"\](.*?);#', '__latteCompileError(\'Form field with name "$1" probably does not exist.\');', $phpContent);
+        $phpContent = preg_replace('#echo end\(\$this->global->formsStack\)\[[\'"](.*?)[\'"]\](.*?);#', '__latteCompileError(\'Form field with name "$1" probably does not exist.\');', $phpContent);
 
         // TODO node visitor
         $phpContent = str_replace('array_pop($this->global->formsStack)', '$form', $phpContent);
-
-//        echo $phpContent;
-
         return $phpContent;
     }
 
