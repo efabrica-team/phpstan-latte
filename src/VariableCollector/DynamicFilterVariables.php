@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\VariableCollector;
 
+use Closure;
+use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Utils\Strings;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Broker\ClassNotFoundException;
+use PHPStan\Type\CallableType;
+use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
 
 final class DynamicFilterVariables implements VariableCollectorInterface
 {
-    /** @var array<string, (string | array{string, string})> */
+    /** @var array<string, string|array{string, string}|callable> */
     private array $filters;
 
-    /**
-     * @param array<string, string|array{string, string}> $filters
-     */
-    public function __construct(array $filters)
+    private ?ClosureTypeFactory $closureTypeFactory;
+
+    public function __construct(CompilerInterface $compiler, ClosureTypeFactory $closureTypeFactory = null)
     {
-        $this->filters = $filters;
+        $this->filters = $compiler->getFilters();
+        $this->closureTypeFactory = $closureTypeFactory;
     }
 
     /**
@@ -29,8 +33,22 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     public function collect(): array
     {
         $variables = [];
-        foreach ($this->filters as $filter) {
+        foreach ($this->filters as $filterName => $filter) {
             if (is_string($filter)) {
+                continue;
+            }
+
+            if ($filter instanceof Closure) {
+                $variableName = '__filter__' . $filterName;
+                if ($this->closureTypeFactory) {
+                    $variables[$variableName] = new Variable($variableName, $this->closureTypeFactory->fromClosureObject($filter));
+                } else {
+                    $variables[$variableName] = new Variable($variableName, new CallableType());
+                }
+                continue;
+            }
+
+            if (!is_array($filter)) {
                 continue;
             }
 

@@ -6,20 +6,25 @@ namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
 use Latte\Engine;
 use Latte\Runtime\Defaults;
+use Latte\Runtime\FilterExecutor;
 use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
+use ReflectionClass;
+use ReflectionException;
 
 final class Latte2Compiler extends AbstractCompiler
 {
     /**
+     * @param array<string, string|array{string, string}> $filters
      * @param string[] $macros
      */
     public function __construct(
         ?Engine $engine = null,
         bool $strictMode = false,
+        array $filters = [],
         array $macros = []
     ) {
-        parent::__construct($engine, $strictMode);
+        parent::__construct($engine, $strictMode, $filters);
         $this->installMacros($macros);
     }
 
@@ -52,10 +57,43 @@ final class Latte2Compiler extends AbstractCompiler
 
     public function getFilters(): array
     {
-        $defaults = new Defaults();
-        /** @var array<string, string|array{string, string}> $defaultFilters */
-        $defaultFilters = array_change_key_case($defaults->getFilters());
-        return $defaultFilters;
+        try {
+            $engineFilters = $this->getEngineFiltersByReflection();
+        } catch (ReflectionException $e) {
+            $engineFilters = $this->getDefaultFilters();
+        }
+        return array_merge($engineFilters, $this->filters);
+    }
+
+    /**
+     * @return array<string, string|array{string, string}|callable>
+     */
+    private function getEngineFiltersByReflection(): array
+    {
+        // we must use try to use reflection to get to filter signatures in Latte 2 :-(
+        $engineFiltersPropertyReflection = (new ReflectionClass($this->engine))->getProperty('filters');
+        $engineFiltersPropertyReflection->setAccessible(true);
+        /** @var FilterExecutor $engineFiltersProperty */
+        $engineFiltersProperty = $engineFiltersPropertyReflection->getValue($this->engine);
+
+        $engineFiltersStaticPropertyReflection = (new ReflectionClass($engineFiltersProperty))->getProperty('_static');
+        $engineFiltersStaticPropertyReflection->setAccessible(true);
+        /** @var array<string, array{callable, ?bool}> */
+        $engineFiltersStaticProperty = $engineFiltersStaticPropertyReflection->getValue($engineFiltersProperty);
+
+        $engineFilters = [];
+        foreach ($engineFiltersStaticProperty as $filterName => $filterData) {
+            $engineFilters[strtolower($filterName)] = $filterData[0];
+        }
+        return $engineFilters;
+    }
+
+    /**
+     * @return array<string, string|array{string, string}|callable>
+     */
+    private function getDefaultFilters()
+    {
+        return array_change_key_case((new Defaults())->getFilters());
     }
 
     /**

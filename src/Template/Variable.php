@@ -34,7 +34,7 @@ final class Variable implements JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::typeOnly());
+        return $this->type->describe(VerbosityLevel::precise());
     }
 
     /**

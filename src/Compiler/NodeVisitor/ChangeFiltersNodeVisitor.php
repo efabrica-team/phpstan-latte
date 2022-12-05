@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Closure;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Nette\Utils\Strings;
 use PhpParser\Node;
@@ -25,19 +27,12 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
 {
     use ActualClassNodeVisitorBehavior;
 
-    /** @var array<string, string|array{string, string}> */
+    /** @var array<string, string|array{string, string}|callable> */
     private array $filters;
 
-    /**
-     * @param array<string, string|array{string, string}> $filters
-     */
-    public function __construct(array $filters, CompilerInterface $compiler)
+    public function __construct(CompilerInterface $compiler)
     {
         $this->filters = $compiler->getFilters();
-
-        foreach ($filters as $filterName => $filter) {
-            $this->filters[strtolower($filterName)] = $filter;
-        }
     }
 
     public function enterNode(Node $node): ?Node
@@ -75,7 +70,8 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
             return null;
         }
 
-        $filterName = strtolower($dynamicName->name->name);
+        $filterName = $dynamicName->name->name;
+        $filterName = LatteVersion::isLatte2() ? strtolower($filterName) : $filterName; // latte 3 is case-sensitive with filters
         return $this->createFilterCallNode($filterName, $node->getArgs());
     }
 
@@ -98,6 +94,14 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
 
         if (is_string($filter)) {
             return new FuncCall(new FullyQualified($filter), $args);
+        }
+
+        if ($filter instanceof Closure) {
+            return new FuncCall(new Variable('__filter__' . $filterName), $args);
+        }
+
+        if (!is_array($filter)) {
+            return null;
         }
 
         /** @var class-string $className */

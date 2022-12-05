@@ -395,42 +395,62 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             [
-                'Dumped type: int',
+                'Dumped type: 10',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 9|10',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 8|9|10',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 7|8|9|10',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: int',
+                'Comparison operation ">" between 10 and 0 is always true.',
+                2,
+                'recursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 9|10 and 0 is always true.',
+                2,
+                'recursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 8|9|10 and 0 is always true.',
+                2,
+                'recursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 7|8|9|10 and 0 is always true.',
+                2,
+                'recursion.latte',
+            ],
+            [
+                'Dumped type: 9|10',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 8|9|10',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 7|8|9|10',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: int',
+                'Dumped type: 6|7|8|9|10',
                 1,
                 '@recursionB.latte',
             ],

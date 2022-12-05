@@ -14,15 +14,22 @@ use Nette\Bridges\FormsLatte\FormsExtension;
 final class Latte3Compiler extends AbstractCompiler
 {
     /**
+     * @param array<string, string|array{string, string}> $filters
      * @param Extension[] $extensions
      */
     public function __construct(
         ?Engine $engine = null,
         bool $strictMode = false,
+        array $filters = [],
         array $extensions = []
     ) {
-        parent::__construct($engine, $strictMode);
+        parent::__construct($engine, $strictMode, $filters);
         $this->installExtensions($extensions);
+    }
+
+    public function getFilters(): array
+    {
+        return array_merge($this->engine->getFilters(), $this->filters);
     }
 
     protected function createDefaultEngine(): Engine
@@ -55,16 +62,6 @@ final class Latte3Compiler extends AbstractCompiler
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->addTypes($phpContent, $className, $actualClass);
         return $phpContent;
-    }
-
-    public function getFilters(): array
-    {
-        $filters = [];
-        foreach ($this->engine->getExtensions() as $extension) {
-            /** @var array<string, array{string, string}|string> $filters */
-            $filters = array_merge($filters, $extension->getFilters());
-        }
-        return $filters;
     }
 
     /**

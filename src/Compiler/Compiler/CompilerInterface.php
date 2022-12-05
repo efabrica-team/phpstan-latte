@@ -13,7 +13,7 @@ interface CompilerInterface
     public function compile(string $templateContent, ?string $actualClass, string $context = ''): string;
 
     /**
-     * @return array<string, string|array{string, string}>
+     * @return array<string, string|array{string, string}|callable>
      */
     public function getFilters(): array;
 }
