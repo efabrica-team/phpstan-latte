@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Component;
-use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Type;
 
 /**
  * @phpstan-type CollectedComponentArray array{className: string, methodName: string, componentName: string, componentType: string}
@@ -40,7 +41,12 @@ final class CollectedComponent
         return $this->component->getName();
     }
 
-    public function getComponentType(): string
+    public function getComponentType(): Type
+    {
+        return $this->component->getType();
+    }
+
+    public function getComponentTypeAsString(): string
     {
         return $this->component->getTypeAsString();
     }
@@ -59,16 +65,20 @@ final class CollectedComponent
             'className' => $this->className,
             'methodName' => $this->methodName,
             'componentName' => $this->getComponentName(),
-            'componentType' => $this->getComponentType(),
+            'componentType' => serialize($this->component->getType()),
         ];
     }
 
     /**
      * @phpstan-param CollectedComponentArray $item
      */
-    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    public static function fromArray(array $item): self
     {
-        $component = new Component($item['componentName'], $typeStringResolver->resolve($item['componentType']));
+        $type = unserialize($item['componentType']);
+        if (!$type instanceof Type) {
+            throw new ShouldNotHappenException('Cannot unserialize component type');
+        }
+        $component = new Component($item['componentName'], $type);
         return new CollectedComponent($item['className'], $item['methodName'], $component);
     }
 }

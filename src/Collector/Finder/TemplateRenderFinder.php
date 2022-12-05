@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\PhpDoc\TypeStringResolver;
 
 /**
  * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
@@ -27,14 +26,11 @@ final class TemplateRenderFinder
 
     private PathResolver $pathResolver;
 
-    private TypeStringResolver $typeStringResolver;
-
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver, TypeStringResolver $typeStringResolver)
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
         $this->templatePathFinder = $templatePathFinder;
         $this->pathResolver = $pathResolver;
-        $this->typeStringResolver = $typeStringResolver;
 
         $collectedTemplateRenders = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(TemplateRenderCollector::class)))));
         foreach ($collectedTemplateRenders as $collectedTemplateRender) {
@@ -130,7 +126,7 @@ final class TemplateRenderFinder
         $collectedTemplateRenders = [];
         foreach ($data as $itemList) {
             foreach ($itemList as $item) {
-                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($item, $this->typeStringResolver);
+                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($item);
             }
         }
         return $collectedTemplateRenders;

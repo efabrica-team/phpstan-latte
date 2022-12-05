@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
-use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\ShouldNotHappenException;
 
 /**
- * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{variableName: string, variableType: string}>, className: string, methodName: string, file: string, line: int}
+ * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{name: string, type: string}>, className: string, methodName: string, file: string, line: int}
  */
 final class CollectedTemplateRender
 {
@@ -84,10 +83,7 @@ final class CollectedTemplateRender
     {
         $variables = [];
         foreach ($this->variables as $variable) {
-            $variables[] = [
-                'variableName' => $variable->getName(),
-                'variableType' => $variable->getTypeAsString(),
-            ];
+            $variables[] = $variable->toArray();
         }
         return [
             'templatePath' => $this->templatePath,
@@ -102,11 +98,11 @@ final class CollectedTemplateRender
     /**
      * @phpstan-param CollectedTemplateRenderArray $item
      */
-    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    public static function fromArray(array $item): self
     {
         $variables = [];
         foreach ($item['variables'] as $variable) {
-            $variables[] = Variable::fromArray($variable, $typeStringResolver);
+            $variables[] = Variable::fromArray($variable);
         }
         if ($item['templatePath'] === true) {
             throw new ShouldNotHappenException('TemplatePath cannot be true, only string, null or false allowed.');
