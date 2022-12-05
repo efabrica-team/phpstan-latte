@@ -49,6 +49,7 @@ services:
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
     - Efabrica\PHPStanLatte\Compiler\LineMapper
+    - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
     # Latte template resolvers
@@ -86,6 +87,7 @@ services:
     - Efabrica\PHPStanLatte\LinkProcessor\LinkParamsProcessor
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor
     - Efabrica\PHPStanLatte\LinkProcessor\SignalLinkProcessor
+
 
     # Collectors
     -

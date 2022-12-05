@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Template;
 
 use JsonSerializable;
-use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
@@ -38,19 +38,31 @@ final class Variable implements JsonSerializable
     }
 
     /**
-     * @param array{variableName: string, variableType: string} $item
+     * @return array{name: string, type: string}
      */
-    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    public function toArray(): array
     {
-        return new Variable($item['variableName'], $typeStringResolver->resolve($item['variableType']));
+        return [
+          'name' => $this->name,
+          'type' => serialize($this->type),
+        ];
+    }
+
+    /**
+     * @param array{name: string, type: string} $item
+     */
+    public static function fromArray(array $item): self
+    {
+        $type = unserialize($item['type']);
+        if (!$type instanceof Type) {
+            throw new ShouldNotHappenException('Cannot unserialize variable type');
+        }
+        return new Variable($item['name'], $type);
     }
 
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
-        return [
-          'name' => $this->name,
-          'type' => $this->getTypeAsString(),
-        ];
+        $this->toArray();
     }
 }

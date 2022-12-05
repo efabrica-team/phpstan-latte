@@ -10,7 +10,6 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\PhpDoc\TypeStringResolver;
 
 /**
  * @phpstan-import-type CollectedVariableArray from CollectedVariable
@@ -24,12 +23,9 @@ final class VariableFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    private TypeStringResolver $typeStringResolver;
-
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TypeStringResolver $typeStringResolver)
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
-        $this->typeStringResolver = $typeStringResolver;
 
         $collectedVariables = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(VariableCollector::class)))));
         foreach ($collectedVariables as $collectedVariable) {
@@ -114,7 +110,7 @@ final class VariableFinder
     {
         $collectedVariables = [];
         foreach ($data as $item) {
-            $collectedVariables[] = CollectedVariable::fromArray($item, $this->typeStringResolver);
+            $collectedVariables[] = CollectedVariable::fromArray($item);
         }
         return $collectedVariables;
     }

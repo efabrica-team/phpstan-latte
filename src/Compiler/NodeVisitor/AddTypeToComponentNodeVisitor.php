@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\Template\Component;
 use PhpParser\Comment\Doc;
@@ -33,12 +34,15 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
     /** @var Component[] */
     private array $components;
 
+    private TypeToPhpDoc $typeToPhpDoc;
+
     /**
      * @param Component[] $components
      */
-    public function __construct(array $components)
+    public function __construct(array $components, TypeToPhpDoc $typeToPhpDoc)
     {
         $this->components = $components;
+        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     /**
@@ -86,7 +90,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $componentNameParts = explode('-', $componentName);
         $component = $this->findComponentByName($this->components, $componentNameParts);
-        $componentType = $component !== null ? $component->getTypeAsString() : 'mixed';
+        $componentType = $component !== null ? $this->typeToPhpDoc->toPhpDocString($component->getType()) : 'mixed';
         $safeComponentType = $componentType !== 'mixed' ? $componentType : '\Nette\ComponentModel\IComponent';
         $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $safeComponentType . ' ' . $tmpVarName . ' */'));
 

@@ -13,13 +13,10 @@ use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\PhpDoc\TypeStringResolver;
 
 abstract class AbstractTemplateResolver implements LatteTemplateResolverInterface
 {
     private PathResolver $pathResolver;
-
-    private TypeStringResolver $typeStringResolver;
 
     protected MethodCallFinder $methodCallFinder;
 
@@ -33,21 +30,20 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(PathResolver $pathResolver, TypeStringResolver $typeStringResolver)
+    public function __construct(PathResolver $pathResolver)
     {
         $this->pathResolver = $pathResolver;
-        $this->typeStringResolver = $typeStringResolver;
     }
 
     public function resolve(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
     {
         // TODO create factories?
         $this->methodCallFinder = new MethodCallFinder($collectedDataNode);
-        $this->variableFinder = new VariableFinder($collectedDataNode, $this->methodCallFinder, $this->typeStringResolver);
-        $this->componentFinder = new ComponentFinder($collectedDataNode, $this->methodCallFinder, $this->typeStringResolver);
+        $this->variableFinder = new VariableFinder($collectedDataNode, $this->methodCallFinder);
+        $this->componentFinder = new ComponentFinder($collectedDataNode, $this->methodCallFinder);
         $this->formFinder = new FormFinder($collectedDataNode, $this->methodCallFinder);
         $this->templatePathFinder = new TemplatePathFinder($collectedDataNode, $this->methodCallFinder, $this->pathResolver);
-        $this->templateRenderFinder = new TemplateRenderFinder($collectedDataNode, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver, $this->typeStringResolver);
+        $this->templateRenderFinder = new TemplateRenderFinder($collectedDataNode, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);
 
         return $this->getResult($resolvedNode, $collectedDataNode);
     }

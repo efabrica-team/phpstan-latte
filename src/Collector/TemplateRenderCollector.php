@@ -18,7 +18,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Collector;
-use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
@@ -36,21 +35,17 @@ final class TemplateRenderCollector implements Collector
 
     private PathResolver $pathResolver;
 
-    private TypeStringResolver $typeStringResolver;
-
     private TemplateTypeResolver $templateTypeResolver;
 
     public function __construct(
         NameResolver $nameResolver,
         ValueResolver $valueResolver,
         PathResolver $pathResolver,
-        TypeStringResolver $typeStringResolver,
         TemplateTypeResolver $templateTypeResolver
     ) {
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->pathResolver = $pathResolver;
-        $this->typeStringResolver = $typeStringResolver;
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
@@ -232,7 +227,7 @@ final class TemplateRenderCollector implements Collector
             /** @phpstan-var CollectedTemplateRenderArray[] $dataList */
             $dataList = $collectedData->getData();
             foreach ($dataList as $data) {
-                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($data, $this->typeStringResolver);
+                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($data);
             }
         }
         return $collectedTemplateRenders;

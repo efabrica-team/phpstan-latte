@@ -10,7 +10,6 @@ use Efabrica\PHPStanLatte\Template\Component;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\PhpDoc\TypeStringResolver;
 
 /**
  * @phpstan-import-type CollectedComponentArray from CollectedComponent
@@ -24,12 +23,9 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    private TypeStringResolver $typeStringResolver;
-
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, TypeStringResolver $typeStringResolver)
+    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
-        $this->typeStringResolver = $typeStringResolver;
 
         $componentsWithTypes = [];
         $collectedComponents = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)))));
@@ -128,7 +124,7 @@ final class ComponentFinder
         $collectedComponents = [];
         foreach ($data as $itemList) {
             foreach ($itemList as $item) {
-                $collectedComponents[] = CollectedComponent::fromArray($item, $this->typeStringResolver);
+                $collectedComponents[] = CollectedComponent::fromArray($item);
             }
         }
         return $collectedComponents;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
@@ -20,12 +21,15 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
     /** @var Variable[] */
     private array $variables;
 
+    private TypeToPhpDoc $typeToPhpDoc;
+
     /**
      * @param Variable[] $variables
      */
-    public function __construct(array $variables)
+    public function __construct(array $variables, TypeToPhpDoc $typeToPhpDoc)
     {
         $this->variables = $variables;
+        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     public function enterNode(Node $node): ?Node
@@ -51,7 +55,7 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
         foreach ($combinedVariables as $variable) {
             $prependVarTypesDocBlocks = sprintf(
                 '/** @var %s $%s */',
-                $variable->getTypeAsString(),
+                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
                 $variable->getName()
             );
 

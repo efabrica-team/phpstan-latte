@@ -41,6 +41,8 @@ final class LatteToPhpCompiler
 
     private Standard $printerStandard;
 
+    private TypeToPhpDoc $typeToPhpDoc;
+
     /**
      * @param PostCompileNodeVisitorInterface[] $postCompileNodeVisitors
      */
@@ -49,13 +51,15 @@ final class LatteToPhpCompiler
         CompilerInterface $compiler,
         array $postCompileNodeVisitors,
         LineNumberNodeVisitor $lineNumberNodeVisitor,
-        Standard $printerStandard
+        Standard $printerStandard,
+        TypeToPhpDoc $typeToPhpDoc
     ) {
         $this->tmpDir = $tmpDir ?? sys_get_temp_dir() . '/phpstan-latte';
         $this->compiler = $compiler;
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
         $this->printerStandard = $printerStandard;
         $this->lineNumberNodeVisitor = $lineNumberNodeVisitor;
+        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     /**
@@ -181,11 +185,11 @@ final class LatteToPhpCompiler
 
         $nodeTraverser = new NodeTraverser();
 
-        $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables);
+        $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables, $this->typeToPhpDoc);
         $addVarTypeNodeVisitor->setActualClass($actualClass);
         $nodeTraverser->addVisitor($addVarTypeNodeVisitor);
 
-        $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($components);
+        $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($components, $this->typeToPhpDoc);
         $nodeTraverser->addVisitor($addTypeToComponentNodeVisitor);
 
         foreach ($this->postCompileNodeVisitors as $postCompileNodeVisitor) {

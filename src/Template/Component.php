@@ -29,6 +29,11 @@ final class Component implements JsonSerializable
         return $this->name;
     }
 
+    public function getType(): Type
+    {
+        return $this->type;
+    }
+
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
@@ -55,7 +60,7 @@ final class Component implements JsonSerializable
     {
         return [
           'name' => $this->name,
-          'type' => $this->getTypeAsString(),
+          'type' => serialize($this->getType()),
         ];
     }
 }

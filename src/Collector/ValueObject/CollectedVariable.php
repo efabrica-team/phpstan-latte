@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
-use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Type;
 
 /**
  * @phpstan-type CollectedVariableArray array{className: string, methodName: string, variableName: string, variableType: string}
@@ -40,7 +41,12 @@ final class CollectedVariable
         return $this->variable->getName();
     }
 
-    public function getVariableType(): string
+    public function getVariableType(): Type
+    {
+        return $this->variable->getType();
+    }
+
+    public function getVariableTypeAsString(): string
     {
         return $this->variable->getTypeAsString();
     }
@@ -59,16 +65,20 @@ final class CollectedVariable
             'className' => $this->className,
             'methodName' => $this->methodName,
             'variableName' => $this->getVariableName(),
-            'variableType' => $this->getVariableType(),
+            'variableType' => serialize($this->getVariableType()),
         ];
     }
 
     /**
      * @phpstan-param CollectedVariableArray $item
      */
-    public static function fromArray(array $item, TypeStringResolver $typeStringResolver): self
+    public static function fromArray(array $item): self
     {
-        $variable = new Variable($item['variableName'], $typeStringResolver->resolve($item['variableType']));
+        $type = unserialize($item['variableType']);
+        if (!$type instanceof Type) {
+            throw new ShouldNotHappenException('Cannot unserialize variable type');
+        }
+        $variable = new Variable($item['variableName'], $type);
         return new CollectedVariable($item['className'], $item['methodName'], $variable);
     }
 }

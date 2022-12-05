@@ -47,4 +47,12 @@ final class SomeControl extends Control
         $this->template->setFile(__DIR__ . '/error.latte');
         $this->template->render(__DIR__ . '/explicitObject.latte', new SomeControlTemplateType());
     }
+
+    /**
+     * @param array{"a.b": string, 'b*c'?: int} $param
+     */
+    public function renderComplexType(array $param): void
+    {
+        $this->template->render(__DIR__ . '/complexType.latte', ['a' => $param, 'b' => $param]);
+    }
 }
