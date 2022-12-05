@@ -162,18 +162,23 @@ final class LatteTemplatesRule implements Rule
             $collectedDataList = $fileAnalyserResult->getCollectedData();
             $includeTemplates = [];
             foreach ($collectedDataList as $collectedData) {
-                /** @phpstan-var CollectedIncludePathArray $data */
-                $data = $collectedData->getData();
-                $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
-                $includeTemplates[] = new Template(
-                    realpath($dir . '/' . $collectedIncludedPath->getPath()) ?: '',
-                    $actualClass,
-                    $actualAction,
-                    array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
-                    $template->getComponents(),
-                    $template->getForms(),
-                    $template->getPath()
-                );
+                if ($collectedData->getCollectorType() !== IncludePathCollector::class) {
+                    continue;
+                }
+                /** @phpstan-var CollectedIncludePathArray[] $dataList */
+                $dataList = $collectedData->getData();
+                foreach ($dataList as $data) {
+                    $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
+                    $includeTemplates[] = new Template(
+                        realpath($dir . '/' . $collectedIncludedPath->getPath()) ?: '',
+                        $actualClass,
+                        $actualAction,
+                        array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
+                        $template->getComponents(),
+                        $template->getForms(),
+                        $template->getPath()
+                    );
+                }
             }
             $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
         }

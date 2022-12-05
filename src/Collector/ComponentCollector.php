@@ -22,7 +22,7 @@ use PHPStan\Type\ObjectType;
 
 /**
  * @phpstan-import-type CollectedComponentArray from CollectedComponent
- * @implements Collector<Node, ?CollectedComponentArray>
+ * @implements Collector<Node, ?CollectedComponentArray[]>
  */
 final class ComponentCollector implements Collector
 {
@@ -42,7 +42,7 @@ final class ComponentCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedComponentArray
+     * @phpstan-return null|CollectedComponentArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -69,7 +69,7 @@ final class ComponentCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedComponentArray
+     * @phpstan-return CollectedComponentArray[]
      */
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?array
     {
@@ -87,15 +87,15 @@ final class ComponentCollector implements Collector
         }
 
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
-        return (new CollectedComponent(
+        return [(new CollectedComponent(
             $classReflection->getName(),
             '',
             new Component($componentName, $parametersAcceptor->getReturnType())
-        ))->toArray();
+        ))->toArray()];
     }
 
     /**
-     * @phpstan-return null|CollectedComponentArray
+     * @phpstan-return CollectedComponentArray[]
      */
     private function findAddComponent(MethodCall $node, Scope $scope, ClassReflection $classReflection): ?array
     {
@@ -111,22 +111,29 @@ final class ComponentCollector implements Collector
 
         $componentArg = $node->getArgs()[0]->value;
         $componentNameArg = $node->getArgs()[1]->value;
-
-        $componentName = $this->valueResolver->resolve($componentNameArg, $scope->getFile());
-        if (!is_string($componentName)) {
-            return null;
-        }
         $componentArgType = $scope->getType($componentArg);
 
-        return (new CollectedComponent(
-            $classReflection->getName(),
-            $scope->getFunctionName() ?: '',
-            new Component($componentName, $componentArgType)
-        ))->toArray();
+        $names = $this->valueResolver->resolve($componentNameArg, $scope);
+        if ($names === null) {
+            return null;
+        }
+
+        $components = [];
+        foreach ($names as $name) {
+            if (!is_string($name)) {
+                continue;
+            }
+            $components[] = (new CollectedComponent(
+                $classReflection->getName(),
+                $scope->getFunctionName() ?: '',
+                new Component($name, $componentArgType)
+            ))->toArray();
+        }
+        return $components;
     }
 
     /**
-     * @phpstan-return null|CollectedComponentArray
+     * @phpstan-return CollectedComponentArray[]
      */
     private function findAssignToThis(Assign $node, Scope $scope, ClassReflection $classReflection): ?array
     {
@@ -150,15 +157,22 @@ final class ComponentCollector implements Collector
             return null;
         }
 
-        $componentName = $this->valueResolver->resolve($node->var->dim);
-        if (!is_string($componentName)) {
+        $names = $this->valueResolver->resolve($node->var->dim, $scope);
+        if ($names === null) {
             return null;
         }
 
-        return (new CollectedComponent(
-            $classReflection->getName(),
-            $scope->getFunctionName() ?: '',
-            new Component($componentName, $exprType)
-        ))->toArray();
+        $components = [];
+        foreach ($names as $name) {
+            if (!is_string($name)) {
+                continue;
+            }
+            $components[] = (new CollectedComponent(
+                $classReflection->getName(),
+                $scope->getFunctionName() ?: '',
+                new Component($name, $exprType)
+            ))->toArray();
+        }
+        return $components;
     }
 }

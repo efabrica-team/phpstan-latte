@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use PHPStan\Analyser\ScopeContext;
 use PHPStan\Testing\PHPStanTestCase;
 use Symfony\Component\Finder\Finder;
 
@@ -34,12 +35,19 @@ final class PathResolverTest extends PHPStanTestCase
         $output = str_replace('{$dir}', dirname($path), $output);
         if ($output === 'null') {
             $output = null;
+        } else {
+            $output = array_map('trim', explode("\n", $output));
         }
 
         $stmts = $this->phpParser->parse($php);
         /** @var Expression $expression */
         $expression = $stmts[0];
-        $this->assertEquals($output, $this->pathResolver->resolve($expression->expr, $path));
+
+        $typeSpecifier = self::getContainer()->getService('typeSpecifier');
+        $scopeFactory = $this->createScopeFactory($this->createReflectionProvider(), $typeSpecifier);
+        $scope = $scopeFactory->create(ScopeContext::create($path));
+
+        $this->assertEquals($output, $this->pathResolver->resolve($expression->expr, $scope));
     }
 
     public function fixtures(): iterable

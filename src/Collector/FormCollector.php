@@ -126,16 +126,17 @@ final class FormCollector implements Collector
                 continue;
             }
 
-            $fieldName = $this->valueResolver->resolve($fieldNameArg->value);
-            if (!is_string($fieldName)) {
+            $fieldNames = $this->valueResolver->resolve($fieldNameArg->value, $scope);
+            if ($fieldNames === null) {
                 continue;
             }
 
-            $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType->describe(VerbosityLevel::typeOnly()));
+            foreach ($fieldNames as $fieldName) {
+                $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType->describe(VerbosityLevel::typeOnly()));
+            }
         }
 
         $formName = lcfirst(str_replace('createComponent', '', $methodName));
-
         return (new CollectedForm(
             $classReflection->getName(),
             '',

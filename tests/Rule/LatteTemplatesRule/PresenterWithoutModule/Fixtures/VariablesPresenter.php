@@ -36,6 +36,11 @@ final class VariablesPresenter extends ParentPresenter
     {
     }
 
+    public function actionRedirect(): void
+    {
+        $this->redirect('default');
+    }
+
     private function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';

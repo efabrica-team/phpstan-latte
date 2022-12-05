@@ -14,16 +14,27 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
+use PHPStan\Analyser\Scope;
+use PHPStan\Type\ConstantScalarType;
+use PHPStan\Type\UnionType;
 
 final class ValueResolver
 {
     /**
      * @param mixed $unknownValuePlaceholder
-     * @return mixed
+     * @return mixed[]|null
      */
-    public function resolve(Expr $expr, ?string $actualFile = null, $unknownValuePlaceholder = null)
+    public function resolve(Expr $expr, Scope $scope, $unknownValuePlaceholder = null)
     {
-        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($actualFile, $unknownValuePlaceholder) {
+        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($scope, $unknownValuePlaceholder) {
+            $actualFile = $scope->getFile();
+
+            $type = $scope->getType($expr);
+
+            if ($type instanceof ConstantScalarType) {
+                return $type->getValue();
+            }
+
             if ($expr instanceof Dir) {
                 return $actualFile ? dirname($actualFile) : null;
             }
@@ -37,7 +48,11 @@ final class ValueResolver
             }
 
             if ($expr instanceof Cast) {
-                return $this->resolve($expr->expr, $actualFile, $unknownValuePlaceholder);
+                $options = $this->resolve($expr->expr, $scope, $unknownValuePlaceholder);
+                if ($options === null || count($options) !== 1) {
+                    throw new ConstExprEvaluationException();
+                }
+                return $options[0];
             }
 
             if ($expr instanceof Variable && $unknownValuePlaceholder) {
@@ -57,7 +72,11 @@ final class ValueResolver
                 $args = $expr->getArgs();
                 $arguments = [];
                 foreach ($args as $arg) {
-                    $arguments[] = $this->resolve($arg->value, $actualFile);
+                    $options = $this->resolve($arg->value, $scope);
+                    if ($options === null || count($options) !== 1) {
+                        throw new ConstExprEvaluationException();
+                    }
+                    $arguments[] = $options[0];
                 }
 
                 return call_user_func_array($functionName, $arguments);
@@ -66,8 +85,21 @@ final class ValueResolver
             throw new ConstExprEvaluationException();
         });
 
+        $type = $scope->getType($expr);
+
+        if ($type instanceof UnionType) {
+            $options = [];
+            foreach ($type->getTypes() as $type) {
+                if (!$type instanceof ConstantScalarType) {
+                    return null;
+                }
+                $options[] = $type->getValue();
+            }
+            return $options;
+        }
+
         try {
-            return $constExprEvaluator->evaluateDirectly($expr);
+            return [$constExprEvaluator->evaluateDirectly($expr)];
         } catch (ConstExprEvaluationException $e) {
             return null;
         }

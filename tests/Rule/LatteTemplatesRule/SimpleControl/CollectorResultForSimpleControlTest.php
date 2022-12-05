@@ -59,4 +59,12 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\ResolveError\SomeControl"}',
         ]);
     }
+
+    public function testResolve(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Resolve/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\Resolve\SomeControl"}',
+            'TEMPLATE default.latte SomeControl::renderConstVar ["presenter","control"] []',
+        ]);
+    }
 }
