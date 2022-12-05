@@ -95,7 +95,7 @@ final class FormCollector implements Collector
                 continue;
             }
 
-            $methodCall = $this->findMethodCall($stmt);
+            $methodCall = $this->findMethodCallForExpression($stmt);
             if ($methodCall === null) {
                 continue;
             }
@@ -148,17 +148,21 @@ final class FormCollector implements Collector
         ))->toArray();
     }
 
-    private function findMethodCall(Expression $expression): ?MethodCall
+    private function findMethodCallForExpression(Expression $expression): ?MethodCall
     {
         $methodCall = null;
         if ($expression->expr instanceof MethodCall) {
-            if ($expression->expr->var instanceof MethodCall) {
-                $methodCall = $expression->expr->var;
-            } else {
-                $methodCall = $expression->expr;
-            }
+            $methodCall = $this->findMethodCall($expression->expr);
         } elseif ($expression->expr instanceof Assign && $expression->expr->expr instanceof MethodCall) {
             $methodCall = $expression->expr->expr;
+        }
+        return $methodCall;
+    }
+
+    private function findMethodCall(MethodCall $methodCall): ?MethodCall
+    {
+        if ($methodCall->var instanceof MethodCall) {
+            return $this->findMethodCall($methodCall->var);
         }
         return $methodCall;
     }
