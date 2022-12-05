@@ -59,7 +59,7 @@ final class TemplatePathCollector implements Collector
         $actualClassName = $classReflection->getName();
 
         $calledMethodName = $this->nameResolver->resolve($node->name);
-        if (!in_array($calledMethodName, ['render', 'renderToString', 'setFile'], true)) {
+        if (!in_array($calledMethodName, ['setFile'], true)) {
             return null;
         }
 
@@ -75,6 +75,7 @@ final class TemplatePathCollector implements Collector
 
         $paths = $this->pathResolver->resolve($arg->value, $scope);
         if ($paths === null) {
+            // failed to resolve
             return [(new CollectedTemplatePath($actualClassName, $functionName, null))->toArray()];
         }
         $templatePaths = [];

@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Collector\FormCollector;
 use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
 use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
+use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\Collector\VariableCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
@@ -32,6 +33,7 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
             $container->getByType(FormCollector::class),
             $container->getByType(MethodCallCollector::class),
             $container->getByType(TemplatePathCollector::class),
+            $container->getByType(TemplateRenderCollector::class),
         ];
     }
 

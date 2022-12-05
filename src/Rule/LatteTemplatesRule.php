@@ -7,8 +7,8 @@ namespace Efabrica\PHPStanLatte\Rule;
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\Collector\IncludePathCollector;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedIncludePath;
+use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
@@ -19,7 +19,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -27,7 +26,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
 
 /**
- * @phpstan-import-type CollectedIncludePathArray from CollectedIncludePath
+ * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
  * @implements Rule<CollectedDataNode>
  */
 final class LatteTemplatesRule implements Rule
@@ -43,11 +42,9 @@ final class LatteTemplatesRule implements Rule
 
     private RuleRegistry $rulesRegistry;
 
-    private IncludePathCollector $includePathCollector;
+    private TemplateRenderCollector $templateRenderCollector;
 
     private ErrorBuilder $errorBuilder;
-
-    private TypeStringResolver $typeStringResolver;
 
     private RelativePathHelper $relativePathHelper;
 
@@ -60,9 +57,8 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
-        IncludePathCollector $includePathCollector,
+        TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
-        TypeStringResolver $typeStringResolver,
         RelativePathHelper $relativePathHelper
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
@@ -70,9 +66,8 @@ final class LatteTemplatesRule implements Rule
         $this->fileAnalyserFactory = $fileAnalyserFactory;
         $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
-        $this->includePathCollector = $includePathCollector;
+        $this->templateRenderCollector = $templateRenderCollector;
         $this->errorBuilder = $errorBuilder;
-        $this->typeStringResolver = $typeStringResolver;
         $this->relativePathHelper = $relativePathHelper;
     }
 
@@ -150,7 +145,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath,
                 [],
                 $this->rulesRegistry,
-                new CollectorsRegistry([$this->includePathCollector]),
+                new CollectorsRegistry([$this->templateRenderCollector]),
                 null
             );
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
@@ -159,24 +154,24 @@ final class LatteTemplatesRule implements Rule
 
             $dir = dirname($templatePath);
 
-            $collectedDataList = $fileAnalyserResult->getCollectedData();
             $includeTemplates = [];
-            foreach ($collectedDataList as $collectedData) {
-                if ($collectedData->getCollectorType() !== IncludePathCollector::class) {
-                    continue;
-                }
-                /** @phpstan-var CollectedIncludePathArray[] $dataList */
-                $dataList = $collectedData->getData();
-                foreach ($dataList as $data) {
-                    $collectedIncludedPath = CollectedIncludePath::fromArray($data, $this->typeStringResolver);
+            $collectedDataList = $fileAnalyserResult->getCollectedData();
+            foreach ($this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData()) as $collectedTemplateRender) {
+                $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
+                if (is_string($includedTemplatePath)) {
                     $includeTemplates[] = new Template(
-                        realpath($dir . '/' . $collectedIncludedPath->getPath()) ?: '',
+                        realpath($dir . '/' . $collectedTemplateRender->getTemplatePath()) ?: '',
                         $actualClass,
                         $actualAction,
-                        array_merge($collectedIncludedPath->getVariables(), $template->getVariables()),
+                        array_merge($collectedTemplateRender->getVariables(), $template->getVariables()),
                         $template->getComponents(),
                         $template->getForms(),
                         $template->getPath()
+                    );
+                } elseif ($includedTemplatePath === false) {
+                    $errors[] = $this->errorBuilder->buildError(
+                        new Error('Cannot resolve included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
+                        $templatePath
                     );
                 }
             }

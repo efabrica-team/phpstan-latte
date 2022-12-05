@@ -139,14 +139,40 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'SomeControl.php',
             ],
             [
-                'Cannot resolve latte template for SomeControl::renderNotEvaluated().',
-                15,
+                'Cannot automatically resolve latte template from expression.',
+                17,
                 'SomeControl.php',
             ],
             [
-                'Cannot automatically resolve latte template from expression inside SomeControl::renderNotEvaluatedVar().',
-                20,
+                'Cannot automatically resolve latte template from expression.',
+                23,
                 'SomeControl.php',
+            ],
+        ]);
+    }
+
+    public function testResolve(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Resolve/SomeControl.php'], [
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'constVar.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'explicit.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'defaultVars.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'explicitVars.latte',
             ],
         ]);
     }

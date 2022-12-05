@@ -27,6 +27,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'TEMPLATE empty.latte VariablesPresenter::empty ["startup","startupParent","presenter","control"] ["parentForm"]',
             'TEMPLATE parent.latte VariablesPresenter::parent ["startup","startupParent","presenter","control","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE noAction.latte VariablesPresenter:: ["startup","startupParent","presenter","control"] ["parentForm"]',
+            'TEMPLATE direct.latte VariablesPresenter::directRender ["startup","startupParent","presenter","control","fromTemplate","fromRender"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"\PresenterWithoutModule\Fixtures\ParentPresenter"}',
         ]);

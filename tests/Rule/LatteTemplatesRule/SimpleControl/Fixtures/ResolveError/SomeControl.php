@@ -14,7 +14,7 @@ final class SomeControl extends Control
 
     public function renderNotEvaluated(string $param): void
     {
-        $this->template->render(__DIR__ . $param . '.latte');
+        $this->template->render(__DIR__ . '/' . $param . '.latte');
     }
 
     public function renderNotEvaluatedVar(string $param): void

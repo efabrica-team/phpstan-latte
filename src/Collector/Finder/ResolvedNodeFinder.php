@@ -16,7 +16,7 @@ final class ResolvedNodeFinder
     /**
      * @var array<string, CollectedResolvedNode[]>
      */
-    private array $collectedResolvedNodes;
+    private array $collectedResolvedNodes = [];
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {

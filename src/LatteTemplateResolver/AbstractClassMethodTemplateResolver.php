@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Template\Template;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -17,8 +16,6 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
             return new LatteTemplateResolverResult();
         }
 
-        $className = $reflectionClass->getName();
-        $shortClassName = $reflectionClass->getShortName();
         $globalVariables = $this->getClassGlobalVariables($reflectionClass);
         $globalComponents = $this->getClassGlobalComponents($reflectionClass);
         $globalForms = $this->getClassGlobalForms($reflectionClass);
@@ -29,24 +26,13 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
             $components = array_merge($globalComponents, $this->componentFinder->findByMethod($reflectionMethod));
             $forms = array_merge($globalForms, $this->formFinder->findByMethod($reflectionMethod));
 
-            $templatePaths = $this->templatePathFinder->findByMethod($reflectionMethod);
-            if (count($templatePaths) === 0) {
-                $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$shortClassName}::{$reflectionMethod->getName()}().")
+            $templateRenders = $this->templateRenderFinder->findByMethod($reflectionMethod);
+            if (count($templateRenders) === 0) {
+                $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
                     ->file($reflectionClass->getFileName() ?? 'unknown')
-                    ->line($reflectionMethod->getStartLine())
-                    ->identifier($reflectionMethod->getName()));
+                    ->line($reflectionMethod->getStartLine()));
             }
-            foreach ($templatePaths as $templatePath) {
-                if ($templatePath === null) {
-                    // TODO exact file and line where failed expression is located
-                    $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot automatically resolve latte template from expression inside {$shortClassName}::{$reflectionMethod->getName()}().")
-                        ->file($reflectionClass->getFileName() ?? 'unknown')
-                        ->line($reflectionMethod->getStartLine())
-                        ->identifier($reflectionMethod->getName()));
-                } else {
-                    $result->addTemplate(new Template($templatePath, $className, $reflectionMethod->getName(), $variables, $components, $forms));
-                }
-            }
+            $result->addTemplatesFromRenders($templateRenders, $variables, $components, $forms, $reflectionClass->getName(), $reflectionMethod->getName());
         }
         return $result;
     }
