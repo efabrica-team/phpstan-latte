@@ -119,7 +119,8 @@ final class LatteToPhpCompiler
             $className = ucfirst($formName) . '_' . md5(uniqid());
 
             // TODO node visitor
-            $phpContent = preg_replace('#\$form = \$this->global->formsStack\[\] = \$this->global->uiControl\[[\'"]' . $formName . '[\'"]]#', '\$form = new ' . $className . '()', $phpContent);
+            /** @var string $phpContent */
+            $phpContent = preg_replace('#\$form =(.*?)\$this->global->formsStack\[\] = \$this->global->uiControl\[[\'"]' . $formName . '[\'"]]#', '\$form = new ' . $className . '()', $phpContent);
 
             // TODO check why there are 5 forms instead of one
             if (isset($addedForms[$formName])) {

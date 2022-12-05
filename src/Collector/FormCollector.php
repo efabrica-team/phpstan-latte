@@ -132,6 +132,9 @@ final class FormCollector implements Collector
             }
 
             foreach ($fieldNames as $fieldName) {
+                if (!is_string($fieldName)) {
+                    continue;
+                }
                 $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType->describe(VerbosityLevel::typeOnly()));
             }
         }

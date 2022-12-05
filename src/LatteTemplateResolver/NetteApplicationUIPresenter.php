@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -26,7 +27,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             return new LatteTemplateResolverResult();
         }
 
-        /** @var array<string, array{variables: Variable[], components: Component[], line: int, hasTerminatingCalls: bool}> $actions */
+        /** @var array<string, array{variables: Variable[], components: Component[], forms: CollectedForm[], line: int, hasTerminatingCalls: bool}> $actions */
         $actions = [];
         foreach ($this->getMethodsMatching($reflectionClass, '/^(action|render).*/') as $reflectionMethod) {
             $actionName = lcfirst((string)preg_replace('/^(action|render)/i', '', $reflectionMethod->getName()));
