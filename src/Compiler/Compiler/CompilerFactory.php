@@ -15,6 +15,9 @@ final class CompilerFactory
 
     protected ?string $engineBootstrap;
 
+    /** @var array<string, string|array{string, string}> */
+    private array $filters;
+
     /** @var string[] */
     protected array $macros;
 
@@ -22,17 +25,20 @@ final class CompilerFactory
     protected array $extensions;
 
     /**
+     * @param array<string, string|array{string, string}> $filters
      * @param string[] $macros
      * @param Extension[] $extensions
      */
     public function __construct(
         ?string $engineBootstrap = null,
         bool $strictMode = false,
+        array $filters = [],
         array $macros = [],
         array $extensions = []
     ) {
         $this->engineBootstrap = $engineBootstrap;
         $this->strictMode = $strictMode;
+        $this->filters = $filters;
         $this->macros = $macros;
         $this->extensions = $extensions;
     }
@@ -51,12 +57,12 @@ final class CompilerFactory
             if (count($this->extensions) > 0) {
                 throw new InvalidArgumentException('You cannot use configuration option latte > extensions with Latte 2');
             }
-            return new Latte2Compiler($engine, $this->strictMode, $this->macros);
+            return new Latte2Compiler($engine, $this->strictMode, $this->filters, $this->macros);
         } else {
             if (count($this->extensions) > 0) {
                 throw new InvalidArgumentException('You cannot use configuration option latte > macros with Latte 3');
             }
-            return new Latte3Compiler($engine, $this->strictMode, $this->extensions);
+            return new Latte3Compiler($engine, $this->strictMode, $this->filters, $this->extensions);
         }
     }
 }

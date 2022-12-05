@@ -41,6 +41,7 @@ services:
         arguments:
             engineBootstrap: %latte.engineBootstrap%
             strictMode: %latte.strictMode%
+            filters: %latte.filters%
             macros: %latte.macros%
             extensions: %latte.extensions%
 
@@ -70,7 +71,7 @@ services:
 
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
-    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(%latte.filters%)
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor
@@ -128,7 +129,7 @@ services:
         factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage
     - Efabrica\PHPStanLatte\VariableCollector\DefaultTemplateVariables
     - Efabrica\PHPStanLatte\VariableCollector\GlobalTemplateVariables(%latte.globalVariables%)
-    - Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables(%latte.filters%)
+    - Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables()
 
     # Error builder
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.applicationMapping%)

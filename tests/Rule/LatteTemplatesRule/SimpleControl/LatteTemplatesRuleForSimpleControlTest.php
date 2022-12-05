@@ -20,24 +20,24 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisTemplate/SomeControl.php'], [
             [
-              'Dumped type: string|null',
-              1,
-              'default.latte',
+                'Dumped type: \'a\'|null',
+                1,
+                'default.latte',
             ],
             [
-                    'Dumped type: string',
-                    2,
-                    'default.latte',
+                'Dumped type: \'b\'',
+                2,
+                'default.latte',
             ],
             [
-              'Dumped type: mixed',
-              3,
-              'default.latte',
+                'Dumped type: mixed',
+                3,
+                'default.latte',
             ],
             [
-              'Variable $c might not be defined.',
-              3,
-              'default.latte',
+                'Variable $c might not be defined.',
+                3,
+                'default.latte',
             ],
         ]);
     }
@@ -46,12 +46,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisGetTemplate/SomeControl.php'], [
             [
-                'Dumped type: string|null',
+                'Dumped type: \'a\'|null',
                 1,
                 'default.latte',
             ],
             [
-                'Dumped type: string',
+                'Dumped type: \'b\'',
                 2,
                 'default.latte',
             ],
@@ -72,12 +72,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
             [
-                'Dumped type: string|null',
+                'Dumped type: \'a\'|null',
                 1,
                 'default.latte',
             ],
             [
-                'Dumped type: string',
+                'Dumped type: \'b\'',
                 2,
                 'default.latte',
             ],

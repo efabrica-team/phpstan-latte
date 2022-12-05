@@ -1,0 +1,5 @@
+parameters:
+    latte:
+        filters:
+            existingFilter: strlen
+        engineBootstrap: %rootDir%/../../../tests/Rule/LatteTemplatesRule/EngineBootstrap/engine.bootstrap.php
