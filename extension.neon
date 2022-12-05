@@ -117,6 +117,12 @@ services:
         tags:
             - phpstan.collector
 
+    -
+        factory: Efabrica\PHPStanLatte\Collector\FormCollector
+        tags:
+            - phpstan.collector
+
+
     # Variable collectors
     variableCollectorStorage:
         factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage

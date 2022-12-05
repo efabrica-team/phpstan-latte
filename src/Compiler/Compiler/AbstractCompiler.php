@@ -39,9 +39,9 @@ abstract class AbstractCompiler implements CompilerInterface
         return $comment;
     }
 
-  /**
-   * @param array<string, mixed> $types
-   */
+    /**
+     * @param array<string, mixed> $types
+     */
     protected function generateTypes(string $className, array $types): string
     {
         $phpCode = "/**\n";

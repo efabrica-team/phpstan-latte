@@ -206,6 +206,22 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         ]);
     }
 
+    public function testForms(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], [
+            [
+                'Form field with name "password" probably does not exist.',
+                4,
+                'default.latte',
+            ],
+            [
+                'Form field with name "second_submit" probably does not exist.',
+                13,
+                'default.latte',
+            ],
+        ]);
+    }
+
     public function testFilters(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [

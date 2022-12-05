@@ -21,11 +21,13 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
         $shortClassName = $reflectionClass->getShortName();
         $globalVariables = $this->getClassGlobalVariables($reflectionClass);
         $globalComponents = $this->getClassGlobalComponents($reflectionClass);
+        $globalForms = $this->getClassGlobalForms($reflectionClass);
 
         $result = new LatteTemplateResolverResult();
         foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
             $variables = array_merge($globalVariables, $this->variableFinder->findByMethod($reflectionMethod));
             $components = array_merge($globalComponents, $this->componentFinder->findByMethod($reflectionMethod));
+            $forms = array_merge($globalForms, $this->formFinder->findByMethod($reflectionMethod));
 
             $templatePaths = $this->templatePathFinder->findByMethod($reflectionMethod);
             if (count($templatePaths) === 0) {
@@ -42,7 +44,7 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                         ->line($reflectionMethod->getStartLine())
                         ->identifier($reflectionMethod->getName()));
                 } else {
-                    $result->addTemplate(new Template($templatePath, $className, $reflectionMethod->getName(), $variables, $components));
+                    $result->addTemplate(new Template($templatePath, $className, $reflectionMethod->getName(), $variables, $components, $forms));
                 }
             }
         }
