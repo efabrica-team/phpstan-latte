@@ -10,9 +10,14 @@
 - LatteCompileErrorsRule to cover more errors in generated template code
 - Added support for latte 3.x
 - Added checks of included templates in context of parent template
-- Check all render* methods in components ({`control component:subrender}`)
-- Check subcomponents ({`control component-subcomponent}`)
+- Check all render* methods in components (`{control component:subrender}`)
+- Check subcomponents (`{control component-subcomponent}`)
 - Support for more template path definitions (simple string, concatenation, `__DIR__`, `__FILE__`, but also simple function calls like str_replace etc.)
+- Error formater with reference to class and included template
+- Report of unanalyzed templates
+- Support for forms
+- Support for closure filters
+- Collect variables passed as #2 parameter in $template->render*() methods
 
 ### Fixed
 - Link params processing
