@@ -200,8 +200,9 @@ final class TemplateRenderCollector implements Collector
         }
 
         $argumentType = $scope->getType($argument);
-
-        // todo support object (tempalte type)
+        if ($argumentType instanceof ObjectType) {
+            $argumentType = $argumentType->toArray();
+        }
 
         $variables = [];
         if ($argumentType instanceof ConstantArrayType) {

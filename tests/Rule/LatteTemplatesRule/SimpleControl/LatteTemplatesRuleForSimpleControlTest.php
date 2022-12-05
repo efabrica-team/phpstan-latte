@@ -174,6 +174,16 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 3,
                 'explicitVars.latte',
             ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'defaultObject.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'explicitObject.latte',
+            ],
         ]);
     }
 }

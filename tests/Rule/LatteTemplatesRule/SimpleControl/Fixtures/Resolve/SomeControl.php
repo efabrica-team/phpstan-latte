@@ -35,4 +35,16 @@ final class SomeControl extends Control
         $this->template->setFile(__DIR__ . '/error.latte');
         $this->template->render(__DIR__ . '/explicitVars.latte', ['a' => 'a', 'b' => 'b']);
     }
+
+    public function renderDefaultObject(): void
+    {
+        $this->template->setFile(__DIR__ . '/defaultObject.latte');
+        $this->template->render(null, new SomeControlTemplateType());
+    }
+
+    public function renderExplicitObject(): void
+    {
+        $this->template->setFile(__DIR__ . '/error.latte');
+        $this->template->render(__DIR__ . '/explicitObject.latte', new SomeControlTemplateType());
+    }
 }
