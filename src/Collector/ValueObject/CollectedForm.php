@@ -8,7 +8,7 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
  * @phpstan-import-type CollectedFormFieldArray from CollectedFormField
  * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, formFields: CollectedFormFieldArray[]}
  */
-final class CollectedForm
+final class CollectedForm extends CollectedValueObject
 {
     /** @var class-string */
     private string $className;

@@ -15,15 +15,14 @@ use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use PHPStan\Collectors\Collector;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
- * @implements Collector<CallLike, ?CollectedMethodCallArray>
+ * @extends AbstractCollector<CallLike, CollectedMethodCall, CollectedMethodCallArray>
  */
-final class MethodCallCollector implements Collector
+final class MethodCallCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
@@ -42,7 +41,7 @@ final class MethodCallCollector implements Collector
 
     /**
      * @param CallLike $node
-     * @phpstan-return null|CollectedMethodCallArray
+     * @phpstan-return null|CollectedMethodCallArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -106,13 +105,13 @@ final class MethodCallCollector implements Collector
             return null;
         }
 
-        return (new CollectedMethodCall(
+        return $this->collectItem(new CollectedMethodCall(
             $actualClassName,
             $functionName,
             $declaringClassName,
             $calledMethodName,
             $callType
-        ))->toArray();
+        ));
     }
 
     private function isExternalCall(string $calledClassName, string $calledMethodName): bool

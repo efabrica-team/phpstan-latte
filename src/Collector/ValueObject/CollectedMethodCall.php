@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 /**
  * @phpstan-type CollectedMethodCallArray array{callerClassName: string, callerMethodName: string, calledClassName: string, calledMethodName: string, type: string}
  */
-final class CollectedMethodCall
+final class CollectedMethodCall extends CollectedValueObject
 {
     public const CALL = 'call';
     public const TERMINATING_CALL = 'terminating';

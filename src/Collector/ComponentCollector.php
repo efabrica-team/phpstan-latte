@@ -16,15 +16,14 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 
 /**
  * @phpstan-import-type CollectedComponentArray from CollectedComponent
- * @implements Collector<Node, ?CollectedComponentArray[]>
+ * @extends AbstractCollector<Node, CollectedComponent, CollectedComponentArray>
  */
-final class ComponentCollector implements Collector
+final class ComponentCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
@@ -87,11 +86,11 @@ final class ComponentCollector implements Collector
         }
 
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
-        return [(new CollectedComponent(
+        return $this->collectItem(new CollectedComponent(
             $classReflection->getName(),
             '',
             new Component($componentName, $parametersAcceptor->getReturnType())
-        ))->toArray()];
+        ));
     }
 
     /**
@@ -123,13 +122,13 @@ final class ComponentCollector implements Collector
             if (!is_string($name)) {
                 continue;
             }
-            $components[] = (new CollectedComponent(
+            $components[] = new CollectedComponent(
                 $classReflection->getName(),
                 $scope->getFunctionName() ?: '',
                 new Component($name, $componentArgType)
-            ))->toArray();
+            );
         }
-        return $components;
+        return $this->collectItems($components);
     }
 
     /**
@@ -167,12 +166,12 @@ final class ComponentCollector implements Collector
             if (!is_string($name)) {
                 continue;
             }
-            $components[] = (new CollectedComponent(
+            $components[] = new CollectedComponent(
                 $classReflection->getName(),
                 $scope->getFunctionName() ?: '',
                 new Component($name, $exprType)
-            ))->toArray();
+            );
         }
-        return $components;
+        return $this->collectItems($components);
     }
 }

@@ -16,8 +16,6 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\CollectedData;
-use PHPStan\Collectors\Collector;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
@@ -25,9 +23,9 @@ use PHPStan\Type\ThisType;
 
 /**
  * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
- * @implements Collector<MethodCall, ?CollectedTemplateRenderArray[]>
+ * @extends AbstractCollector<MethodCall, CollectedTemplateRender, CollectedTemplateRenderArray>
  */
-final class TemplateRenderCollector implements Collector
+final class TemplateRenderCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
@@ -160,13 +158,13 @@ final class TemplateRenderCollector implements Collector
     private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables): ?array
     {
         if ($paths === null) {
-            return [$this->buildTemplateRender($node, $scope, false, $variables)->toArray()];
+            return $this->collectItem($this->buildTemplateRender($node, $scope, false, $variables));
         }
         $templateRenders = [];
         foreach ($paths as $path) {
-            $templateRenders[] = $this->buildTemplateRender($node, $scope, $path, $variables)->toArray();
+            $templateRenders[] = $this->buildTemplateRender($node, $scope, $path, $variables);
         }
-        return count($templateRenders) > 0 ? $templateRenders : null;
+        return $this->collectItems($templateRenders);
     }
 
     /**
@@ -211,25 +209,5 @@ final class TemplateRenderCollector implements Collector
             }
         }
         return $variables;
-    }
-
-  /**
-   * @param array<CollectedData> $collectedDataList
-   * @return CollectedTemplateRender[]
-   */
-    public function extractCollectedData(array $collectedDataList): array
-    {
-        $collectedTemplateRenders = [];
-        foreach ($collectedDataList as $collectedData) {
-            if ($collectedData->getCollectorType() !== TemplateRenderCollector::class) {
-                continue;
-            }
-            /** @phpstan-var CollectedTemplateRenderArray[] $dataList */
-            $dataList = $collectedData->getData();
-            foreach ($dataList as $data) {
-                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($data);
-            }
-        }
-        return $collectedTemplateRenders;
     }
 }

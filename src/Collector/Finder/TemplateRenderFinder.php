@@ -32,7 +32,7 @@ final class TemplateRenderFinder
         $this->templatePathFinder = $templatePathFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplateRenders = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(TemplateRenderCollector::class)))));
+        $collectedTemplateRenders = TemplateRenderCollector::loadData($collectedDataNode, CollectedTemplateRender::class);
         foreach ($collectedTemplateRenders as $collectedTemplateRender) {
             $className = $collectedTemplateRender->getClassName();
             $methodName = $collectedTemplateRender->getMethodName();
@@ -115,20 +115,5 @@ final class TemplateRenderFinder
         }
 
         return array_merge(...$collectedTemplateRenders);
-    }
-
-    /**
-     * @phpstan-param array<CollectedTemplateRenderArray[]> $data
-     * @return CollectedTemplateRender[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedTemplateRenders = [];
-        foreach ($data as $itemList) {
-            foreach ($itemList as $item) {
-                $collectedTemplateRenders[] = CollectedTemplateRender::fromArray($item);
-            }
-        }
-        return $collectedTemplateRenders;
     }
 }

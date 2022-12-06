@@ -28,7 +28,7 @@ final class ComponentFinder
         $this->methodCallFinder = $methodCallFinder;
 
         $componentsWithTypes = [];
-        $collectedComponents = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(ComponentCollector::class)))));
+        $collectedComponents = ComponentCollector::loadData($collectedDataNode, CollectedComponent::class);
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
             $methodName = $collectedComponent->getMethodName();
@@ -113,20 +113,5 @@ final class ComponentFinder
         }
 
         return array_merge(...$collectedComponents);
-    }
-
-    /**
-     * @phpstan-param array<CollectedComponentArray[]> $data
-     * @return CollectedComponent[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedComponents = [];
-        foreach ($data as $itemList) {
-            foreach ($itemList as $item) {
-                $collectedComponents[] = CollectedComponent::fromArray($item);
-            }
-        }
-        return $collectedComponents;
     }
 }

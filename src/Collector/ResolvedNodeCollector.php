@@ -8,13 +8,12 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 
 /**
  * @phpstan-import-type CollectedResolvedNodeArray from CollectedResolvedNode
- * @implements Collector<Node, ?CollectedResolvedNodeArray[]>
+ * @extends AbstractCollector<Node, CollectedResolvedNode, CollectedResolvedNodeArray>
  */
-final class ResolvedNodeCollector implements Collector
+final class ResolvedNodeCollector extends AbstractCollector
 {
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
@@ -41,9 +40,9 @@ final class ResolvedNodeCollector implements Collector
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             $resolvedNode = $latteTemplateResolver->collect($node, $scope);
             if ($resolvedNode !== null) {
-                $resolvedNodes[] = $resolvedNode->toArray();
+                $resolvedNodes[] = $resolvedNode;
             }
         }
-        return count($resolvedNodes) > 0 ? $resolvedNodes : null;
+        return $this->collectItems($resolvedNodes);
     }
 }

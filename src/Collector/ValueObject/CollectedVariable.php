@@ -11,7 +11,7 @@ use PHPStan\Type\Type;
 /**
  * @phpstan-type CollectedVariableArray array{className: string, methodName: string, variableName: string, variableType: string}
  */
-final class CollectedVariable
+final class CollectedVariable extends CollectedValueObject
 {
     private string $className;
 

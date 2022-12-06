@@ -156,7 +156,7 @@ final class LatteTemplatesRule implements Rule
 
             $includeTemplates = [];
             $collectedDataList = $fileAnalyserResult->getCollectedData();
-            foreach ($this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData()) as $collectedTemplateRender) {
+            foreach ($this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), CollectedTemplateRender::class) as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath)) {
                     $includeTemplates[] = new Template(

@@ -30,7 +30,7 @@ final class TemplatePathFinder
         $this->methodCallFinder = $methodCallFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplatePaths = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(TemplatePathCollector::class)))));
+        $collectedTemplatePaths = TemplatePathCollector::loadData($collectedDataNode, CollectedTemplatePath::class);
         foreach ($collectedTemplatePaths as $collectedTemplatePath) {
             $className = $collectedTemplatePath->getClassName();
             $methodName = $collectedTemplatePath->getMethodName();
@@ -110,20 +110,5 @@ final class TemplatePathFinder
         }
 
         return array_merge(...$collectedTemplatePaths);
-    }
-
-    /**
-     * @phpstan-param array<CollectedTemplatePathArray[]> $data
-     * @return CollectedTemplatePath[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedTemplatePaths = [];
-        foreach ($data as $itemList) {
-            foreach ($itemList as $item) {
-                $collectedTemplatePaths[] = CollectedTemplatePath::fromArray($item);
-            }
-        }
-        return $collectedTemplatePaths;
     }
 }

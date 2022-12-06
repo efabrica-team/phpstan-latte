@@ -20,7 +20,7 @@ final class ResolvedNodeFinder
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {
-        $collectedResolvedNodes = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(ResolvedNodeCollector::class)))));
+        $collectedResolvedNodes = ResolvedNodeCollector::loadData($collectedDataNode, CollectedResolvedNode::class);
         foreach ($collectedResolvedNodes as $collectedResolvedNode) {
             $resolver = $collectedResolvedNode->getResolver();
             if (!isset($this->collectedResolvedNodes[$resolver])) {
@@ -36,20 +36,5 @@ final class ResolvedNodeFinder
     public function find(string $resolver): array
     {
         return $this->collectedResolvedNodes[$resolver] ?? [];
-    }
-
-    /**
-     * @phpstan-param array<CollectedResolvedNodeArray[]> $data
-     * @return CollectedResolvedNode[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedResolvedNodes = [];
-        foreach ($data as $itemList) {
-            foreach ($itemList as $item) {
-                $collectedResolvedNodes[] = CollectedResolvedNode::fromArray($item);
-            }
-        }
-        return $collectedResolvedNodes;
     }
 }
