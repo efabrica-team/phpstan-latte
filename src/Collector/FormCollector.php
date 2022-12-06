@@ -15,7 +15,6 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
@@ -106,11 +105,11 @@ final class FormCollector extends AbstractCollector
                 continue;
             }
 
-            try {
-                $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
-            } catch (MissingMethodFromReflectionException $e) {
+            if (!$formClassReflection->hasMethod($formMethodName)) {
                 continue;
             }
+
+            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
 
             $formFieldParametersAcceptor = $formFieldReflectionMethod->getVariants()[0] ?? null;
             if ($formFieldParametersAcceptor === null) {
