@@ -48,7 +48,7 @@ final class FormsPresenter extends ParentPresenter
     {
         $form = new CustomForm();
 //        $form->addGroup('General');
-        $form->addText('custom_text', 'Custom text')
+        $form->addCustomText('custom_text', 'Custom text')
             ->setRequired();
         $form->addTextArea('custom_textarea', 'Custom textarea');
         $form->addSubmit('submit');
