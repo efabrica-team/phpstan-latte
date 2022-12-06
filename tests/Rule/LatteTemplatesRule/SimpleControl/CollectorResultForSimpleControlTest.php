@@ -71,6 +71,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE defaultObject.latte SomeControl::renderDefaultObject ["presenter","control","a","b"] []',
             'TEMPLATE explicitObject.latte SomeControl::renderExplicitObject ["presenter","control","a","b"] []',
             'TEMPLATE complexType.latte SomeControl::renderComplexType ["presenter","control","a","b"] []',
+            'TEMPLATE throwSometimes.latte SomeControl::renderThrowSometimes ["presenter","control"] []',
         ]);
     }
 }

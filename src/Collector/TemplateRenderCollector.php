@@ -83,7 +83,7 @@ final class TemplateRenderCollector extends AbstractCollector
      */
     public function processNodeInCompiledLatte(Node $node, Scope $scope): ?array
     {
-        $calledMethodName = $this->nameResolver->resolve($node->name);
+        $calledMethodName = $this->nameResolver->resolve($node);
         if ($calledMethodName !== 'createTemplate') {
             return null;
         }
@@ -126,7 +126,7 @@ final class TemplateRenderCollector extends AbstractCollector
      */
     public function processNodeInPhp(Node $node, Scope $scope): ?array
     {
-        $calledMethodName = $this->nameResolver->resolve($node->name);
+        $calledMethodName = $this->nameResolver->resolve($node);
         if (!in_array($calledMethodName, ['render', 'renderToString'], true)) {
             return null;
         }

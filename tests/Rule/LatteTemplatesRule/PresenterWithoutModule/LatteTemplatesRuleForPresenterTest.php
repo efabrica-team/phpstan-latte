@@ -90,11 +90,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Variable $nonExistingVariable might not be defined.',
-                5,
-                'empty.latte',
-            ],
-            [
-                'Variable $nonExistingVariable might not be defined.',
                 4,
                 'parent.latte',
             ],
@@ -459,6 +454,27 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Dumped type: 6|7|8|9|10',
                 1,
                 '@recursionB.latte',
+            ],
+        ]);
+    }
+
+    public function testResolve(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/ResolvePresenter.php'], [
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'empty.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'recursion.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'throwSometimes.latte',
             ],
         ]);
     }

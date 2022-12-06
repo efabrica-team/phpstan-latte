@@ -28,7 +28,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             return new LatteTemplateResolverResult();
         }
 
-        /** @var array<string, array{variables: Variable[], components: Component[], forms: CollectedForm[], line: int, renders: CollectedTemplateRender[], hasTerminatingCalls: bool}> $actions */
+        /** @var array<string, array{variables: Variable[], components: Component[], forms: CollectedForm[], line: int, renders: CollectedTemplateRender[], terminated: bool}> $actions */
         $actions = [];
         foreach ($this->getMethodsMatching($reflectionClass, '/^(action|render).*/') as $reflectionMethod) {
             $actionName = lcfirst((string)preg_replace('/^(action|render)/i', '', $reflectionMethod->getName()));
@@ -40,7 +40,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                     'forms' => $this->getClassGlobalForms($reflectionClass),
                     'line' => $reflectionMethod->getStartLine(),
                     'renders' => $this->templateRenderFinder->findByMethod($reflectionMethod),
-                    'hasTerminatingCalls' => false,
+                    'terminated' => false,
                 ];
             }
 
@@ -48,7 +48,8 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             $actions[$actionName]['components'] = array_merge($actions[$actionName]['components'], $this->componentFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['forms'] = array_merge($actions[$actionName]['forms'], $this->formFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['renders'] = array_merge($actions[$actionName]['renders'], $this->templateRenderFinder->findByMethod($reflectionMethod));
-            $actions[$actionName]['hasTerminatingCalls'] = $actions[$actionName]['hasTerminatingCalls'] || $this->methodCallFinder->hasTerminatingCallsByMethod($reflectionMethod);
+            $actions[$actionName]['terminated'] = $actions[$actionName]['terminated'] || $this->methodCallFinder->hasAnyTerminatingCallsByMethod($reflectionMethod);
+            $actions[$actionName]['terminated'] = $actions[$actionName]['terminated'] || $this->methodFinder->hasAnyAlwaysTerminatedByMethod($reflectionMethod);
         }
 
         $result = new LatteTemplateResolverResult();
@@ -59,7 +60,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             // default renders
             $template = $this->findDefaultTemplateFilePath($reflectionClass, $actionName);
             if ($template === null) {
-                if (!$actionDefinition['hasTerminatingCalls']) { // might not be rendered at all (for example redirect)
+                if (!$actionDefinition['terminated']) { // might not be rendered at all (for example redirect)
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for action $actionName")
                         ->file($reflectionClass->getFileName() ?? 'unknown')
                         ->line($actionDefinition['line'])

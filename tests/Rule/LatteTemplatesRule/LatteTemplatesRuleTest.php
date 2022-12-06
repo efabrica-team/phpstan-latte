@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
-use Efabrica\PHPStanLatte\Collector\ComponentCollector;
-use Efabrica\PHPStanLatte\Collector\FormCollector;
-use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
-use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
-use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
-use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
-use Efabrica\PHPStanLatte\Collector\VariableCollector;
+use Efabrica\PHPStanLatte\Collector\AbstractCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
@@ -26,15 +20,11 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
     protected function getCollectors(): array
     {
         $container = $this->getContainer();
-        return [
-            $container->getByType(ResolvedNodeCollector::class),
-            $container->getByType(VariableCollector::class),
-            $container->getByType(ComponentCollector::class),
-            $container->getByType(FormCollector::class),
-            $container->getByType(MethodCallCollector::class),
-            $container->getByType(TemplatePathCollector::class),
-            $container->getByType(TemplateRenderCollector::class),
-        ];
+        $collectors = [];
+        foreach ($container->findServiceNamesByType(AbstractCollector::class) as $serviceName) {
+            $collectors[] = $container->getService($serviceName);
+        }
+        return $collectors;
     }
 
     public function analyse(array $files, array $expectedErrors): void
