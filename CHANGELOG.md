@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.2.0] - 2022-12-06
 ### Changed
 - Used collectors to find all variables, components, method calls and templates to analyse
 - LatteTemplateRule changed to CollectedDataNode
@@ -15,7 +16,7 @@
 - Support for more template path definitions (simple string, concatenation, `__DIR__`, `__FILE__`, but also simple function calls like str_replace etc.)
 - Error formater with reference to class and included template
 - Report of unanalyzed templates
-- Support for forms
+- Support for basic forms
 - Support for closure filters
 - Collect variables passed as #2 parameter in $template->render*() methods
 
@@ -33,5 +34,6 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.1.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/efabrica-team/phpstan-latte/compare/0b29bd7924d89c16d68d804fecdf5427197f2497...0.1.0
