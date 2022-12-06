@@ -14,9 +14,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
@@ -30,10 +29,13 @@ final class FormCollector extends AbstractCollector
 
     private ValueResolver $valueResolver;
 
-    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver)
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
     {
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getNodeType(): string
@@ -85,9 +87,7 @@ final class FormCollector extends AbstractCollector
             return null;
         }
 
-        // TODO find real form class and use it (e.g. $form = new Form())
-        $formClassReflection = (new BetterReflection())->reflector()->reflectClass('Nette\Forms\Form');
-
+        $formClassReflection = $this->reflectionProvider->getClass($returnType->describe(VerbosityLevel::typeOnly()));
         $formFields = [];
         foreach ($node->stmts ?: [] as $stmt) {
             if (!$stmt instanceof Expression) {
@@ -105,17 +105,22 @@ final class FormCollector extends AbstractCollector
                 continue;
             }
 
-            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName);
-            if ($formFieldReflectionMethod === null) {
+            if (!$formClassReflection->hasMethod($formMethodName)) {
                 continue;
             }
 
-            $formFieldMethodReturnTypeReflection = $formFieldReflectionMethod->getReturnType();
-            if (!$formFieldMethodReturnTypeReflection instanceof ReflectionNamedType) {
+            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
+
+            $formFieldParametersAcceptor = $formFieldReflectionMethod->getVariants()[0] ?? null;
+            if ($formFieldParametersAcceptor === null) {
                 continue;
             }
 
-            $formFieldMethodReturnType = new ObjectType($formFieldMethodReturnTypeReflection->getName());
+            $formFieldMethodReturnType = $formFieldParametersAcceptor->getReturnType();
+            if (!$formFieldMethodReturnType instanceof ObjectType) {
+                continue;
+            }
+
             if (!$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Container')->yes() && !$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Controls\BaseControl')->yes()) {
                 continue;
             }
