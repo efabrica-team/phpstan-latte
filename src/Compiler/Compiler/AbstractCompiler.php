@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
 use Latte\Engine;
+use PHPStan\Type\ArrayType;
+use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -71,7 +73,7 @@ abstract class AbstractCompiler implements CompilerInterface
             } else {
                 $type = is_object($value) ? get_class($value) : gettype($value);
             }
-            $phpCode .= "* @property-read {$type} \${$name}\n";
+            $phpCode .= "* @property {$type} \${$name}\n";
         }
         $phpCode .= "*/\n";
         $phpCode .= "class {$className} extends \\stdClass { }\n";
@@ -85,6 +87,7 @@ abstract class AbstractCompiler implements CompilerInterface
         $providers['uiPresenter'] = new ObjectType($actualClass ?? 'Nette\Application\UI\Presenter');
         $providers['snippetDriver'] = TypeCombinator::addNull(new ObjectType('Nette\Bridges\ApplicationLatte\SnippetDriver'));
         $providers['uiNonce'] = TypeCombinator::addNull(new StringType());
+        $providers['formsStack'] = new ArrayType(new IntegerType(), new ObjectType('Nette\Forms\Container'));
         $phpContent .= $this->generateTypes($className . '_global', $providers);
         return $phpContent;
     }
