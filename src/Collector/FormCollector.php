@@ -143,6 +143,7 @@ final class FormCollector extends AbstractCollector
             $classReflection->getName(),
             '',
             $formName,
+            $returnType,
             $formFields
         ));
     }

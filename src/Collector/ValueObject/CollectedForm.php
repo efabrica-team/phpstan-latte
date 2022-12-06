@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
+use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Type;
+
 /**
  * @phpstan-import-type CollectedFormFieldArray from CollectedFormField
- * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, formFields: CollectedFormFieldArray[]}
+ * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, type: string, formFields: CollectedFormFieldArray[]}
  */
 final class CollectedForm extends CollectedValueObject
 {
@@ -17,6 +20,8 @@ final class CollectedForm extends CollectedValueObject
 
     private string $name;
 
+    private Type $type;
+
     /** @var CollectedFormField[] */
     private array $formFields;
 
@@ -24,11 +29,12 @@ final class CollectedForm extends CollectedValueObject
      * @param class-string $className
      * @param CollectedFormField[] $formFields
      */
-    public function __construct(string $className, string $methodName, string $name, array $formFields)
+    public function __construct(string $className, string $methodName, string $name, Type $type, array $formFields)
     {
         $this->className = $className;
         $this->methodName = $methodName;
         $this->name = $name;
+        $this->type = $type;
         $this->formFields = $formFields;
     }
 
@@ -45,6 +51,11 @@ final class CollectedForm extends CollectedValueObject
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getType(): Type
+    {
+        return $this->type;
     }
 
     /**
@@ -64,6 +75,7 @@ final class CollectedForm extends CollectedValueObject
             'className' => $this->className,
             'methodName' => $this->methodName,
             'name' => $this->name,
+            'type' => serialize($this->type),
             'formFields' => [],
         ];
 
@@ -83,6 +95,10 @@ final class CollectedForm extends CollectedValueObject
         foreach ($item['formFields'] as $formField) {
             $formFields[] = CollectedFormField::fromArray($formField);
         }
-        return new CollectedForm($item['className'], $item['methodName'], $item['name'], $formFields);
+        $type = unserialize($item['type']);
+        if (!$type instanceof Type) {
+            throw new ShouldNotHappenException('Cannot unserialize form type');
+        }
+        return new CollectedForm($item['className'], $item['methodName'], $item['name'], $type, $formFields);
     }
 }

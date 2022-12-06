@@ -27,6 +27,7 @@ use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
+use PHPStan\Type\VerbosityLevel;
 
 final class LatteToPhpCompiler
 {
@@ -160,7 +161,7 @@ final class LatteToPhpCompiler
                 }
             }
             $method->setDocComment('/** ' . $comment . ' */');
-            $builderClass = (new Class_($className))->extend('Nette\Forms\Form')
+            $builderClass = (new Class_($className))->extend($form->getType()->describe(VerbosityLevel::typeOnly()))
                 ->addStmts([$method]);
             $phpContent .= "\n\n" . $this->printerStandard->prettyPrint([$builderClass->getNode()]);
         }
