@@ -11,13 +11,12 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 
 /**
  * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
- * @implements Collector<MethodCall, ?CollectedTemplatePathArray[]>
+ * @extends AbstractCollector<MethodCall, CollectedTemplatePath, CollectedTemplatePathArray>
  */
-final class TemplatePathCollector implements Collector
+final class TemplatePathCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
@@ -76,12 +75,12 @@ final class TemplatePathCollector implements Collector
         $paths = $this->pathResolver->resolve($arg->value, $scope);
         if ($paths === null) {
             // failed to resolve
-            return [(new CollectedTemplatePath($actualClassName, $functionName, null))->toArray()];
+            return $this->collectItem(new CollectedTemplatePath($actualClassName, $functionName, null));
         }
         $templatePaths = [];
         foreach ($paths as $path) {
-            $templatePaths[] = (new CollectedTemplatePath($actualClassName, $functionName, $path))->toArray();
+            $templatePaths[] = new CollectedTemplatePath($actualClassName, $functionName, $path);
         }
-        return count($templatePaths) > 0 ? $templatePaths : null;
+        return $this->collectItems($templatePaths);
     }
 }

@@ -31,7 +31,7 @@ final class MethodCallFinder
 
     public function __construct(CollectedDataNode $collectedDataNode)
     {
-        $collectedMethodCalls = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(MethodCallCollector::class)))));
+        $collectedMethodCalls = MethodCallCollector::loadData($collectedDataNode, CollectedMethodCall::class);
         foreach ($collectedMethodCalls as $collectedMethodCall) {
             $callerClassName = $collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
@@ -77,18 +77,5 @@ final class MethodCallFinder
     public function hasTerminatingCallsByMethod(ReflectionMethod $method): bool
     {
         return $this->hasTerminatingCalls($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @phpstan-param array<CollectedMethodCallArray> $data
-     * @return CollectedMethodCall[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedMethodCalls = [];
-        foreach ($data as $item) {
-            $collectedMethodCalls[] = CollectedMethodCall::fromArray($item);
-        }
-        return $collectedMethodCalls;
     }
 }

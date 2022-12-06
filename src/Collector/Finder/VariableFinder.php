@@ -27,7 +27,7 @@ final class VariableFinder
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedVariables = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(VariableCollector::class)))));
+        $collectedVariables = VariableCollector::loadData($collectedDataNode, CollectedVariable::class);
         foreach ($collectedVariables as $collectedVariable) {
             $className = $collectedVariable->getClassName();
             $methodName = $collectedVariable->getMethodName();
@@ -100,18 +100,5 @@ final class VariableFinder
         }
 
         return array_merge(...$collectedVariables);
-    }
-
-    /**
-     * @phpstan-param array<CollectedVariableArray> $data
-     * @return CollectedVariable[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedVariables = [];
-        foreach ($data as $item) {
-            $collectedVariables[] = CollectedVariable::fromArray($item);
-        }
-        return $collectedVariables;
     }
 }

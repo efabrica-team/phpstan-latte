@@ -16,16 +16,15 @@ use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
-use PHPStan\Collectors\Collector;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
  * @phpstan-import-type CollectedFormArray from CollectedForm
- * @implements Collector<Node, ?CollectedFormArray>
+ * @extends AbstractCollector<Node, CollectedForm, CollectedFormArray>
  */
-final class FormCollector implements Collector
+final class FormCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
@@ -43,7 +42,7 @@ final class FormCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedFormArray
+     * @phpstan-return null|CollectedFormArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -60,7 +59,7 @@ final class FormCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedFormArray
+     * @phpstan-return null|CollectedFormArray[]
      */
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection, Scope $scope): ?array
     {
@@ -140,12 +139,12 @@ final class FormCollector implements Collector
         }
 
         $formName = lcfirst(str_replace('createComponent', '', $methodName));
-        return (new CollectedForm(
+        return $this->collectItem(new CollectedForm(
             $classReflection->getName(),
             '',
             $formName,
             $formFields
-        ))->toArray();
+        ));
     }
 
     private function findMethodCallForExpression(Expression $expression): ?MethodCall

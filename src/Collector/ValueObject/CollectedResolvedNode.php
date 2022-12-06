@@ -9,7 +9,7 @@ use PHPStan\ShouldNotHappenException;
 /**
  * @phpstan-type CollectedResolvedNodeArray array{resolver: string, params: array<string, string>}
  */
-final class CollectedResolvedNode
+final class CollectedResolvedNode extends CollectedValueObject
 {
     private string $resolver;
 

@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 /**
  * @phpstan-type CollectedFormFieldArray array{name: string, type: string}
  */
-final class CollectedFormField
+final class CollectedFormField extends CollectedValueObject
 {
     private string $name;
 

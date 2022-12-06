@@ -10,7 +10,7 @@ use PHPStan\ShouldNotHappenException;
 /**
  * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{name: string, type: string}>, className: string, methodName: string, file: string, line: int}
  */
-final class CollectedTemplateRender
+final class CollectedTemplateRender extends CollectedValueObject
 {
     /** @var null|string|false */
     private $templatePath;

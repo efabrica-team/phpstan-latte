@@ -13,13 +13,12 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 
 /**
  * @phpstan-import-type CollectedVariableArray from CollectedVariable
- * @implements Collector<Node, ?CollectedVariableArray>
+ * @extends AbstractCollector<Node, CollectedVariable, CollectedVariableArray>
  */
-final class VariableCollector implements Collector
+final class VariableCollector extends AbstractCollector
 {
     private TemplateTypeResolver $templateTypeResolver;
 
@@ -34,7 +33,7 @@ final class VariableCollector implements Collector
     }
 
     /**
-     * @phpstan-return null|CollectedVariableArray
+     * @phpstan-return null|CollectedVariableArray[]
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
@@ -74,10 +73,10 @@ final class VariableCollector implements Collector
         }
 
         $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
-        return (new CollectedVariable(
+        return $this->collectItem(new CollectedVariable(
             $classReflection->getName(),
             $functionName,
             new TemplateVariable($variableName, $scope->getType($node->expr))
-        ))->toArray();
+        ));
     }
 }

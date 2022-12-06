@@ -26,7 +26,7 @@ final class FormFinder
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedForms = $this->buildData(array_filter(array_merge(...array_values($collectedDataNode->get(FormCollector::class)))));
+        $collectedForms = FormCollector::loadData($collectedDataNode, CollectedForm::class);
         foreach ($collectedForms as $collectedForm) {
             $className = $collectedForm->getClassName();
             $methodName = $collectedForm->getMethodName();
@@ -99,18 +99,5 @@ final class FormFinder
         }
 
         return array_merge(...$collectedForms);
-    }
-
-    /**
-     * @phpstan-param array<CollectedFormArray> $data
-     * @return CollectedForm[]
-     */
-    private function buildData(array $data): array
-    {
-        $collectedForms = [];
-        foreach ($data as $item) {
-            $collectedForms[] = CollectedForm::fromArray($item);
-        }
-        return $collectedForms;
     }
 }

@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 /**
  * @phpstan-type CollectedTemplatePathArray array{className: string, methodName: string, templatePath: ?string}
  */
-final class CollectedTemplatePath
+final class CollectedTemplatePath extends CollectedValueObject
 {
     private string $className;
 
