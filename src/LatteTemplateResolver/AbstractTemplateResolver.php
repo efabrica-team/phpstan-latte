@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\FormFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
+use Efabrica\PHPStanLatte\Collector\Finder\MethodFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\TemplateRenderFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
@@ -17,6 +18,8 @@ use PHPStan\Node\CollectedDataNode;
 abstract class AbstractTemplateResolver implements LatteTemplateResolverInterface
 {
     private PathResolver $pathResolver;
+
+    protected MethodFinder $methodFinder;
 
     protected MethodCallFinder $methodCallFinder;
 
@@ -39,6 +42,7 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
     {
         // TODO create factories?
         $this->methodCallFinder = new MethodCallFinder($collectedDataNode);
+        $this->methodFinder = new MethodFinder($collectedDataNode, $this->methodCallFinder);
         $this->variableFinder = new VariableFinder($collectedDataNode, $this->methodCallFinder);
         $this->componentFinder = new ComponentFinder($collectedDataNode, $this->methodCallFinder);
         $this->formFinder = new FormFinder($collectedDataNode, $this->methodCallFinder);

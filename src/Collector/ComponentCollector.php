@@ -100,7 +100,7 @@ final class ComponentCollector extends AbstractCollector
     {
         // TODO check if caller class is control / presenter
 
-        if ($this->nameResolver->resolve($node->name) !== 'addComponent') {
+        if ($this->nameResolver->resolve($node) !== 'addComponent') {
             return null;
         }
 

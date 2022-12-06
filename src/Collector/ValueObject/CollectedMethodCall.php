@@ -11,6 +11,7 @@ final class CollectedMethodCall extends CollectedValueObject
 {
     public const CALL = 'call';
     public const TERMINATING_CALL = 'terminating';
+    public const OUTPUT_CALL = 'output';
 
     private string $callerClassName;
 
@@ -59,6 +60,11 @@ final class CollectedMethodCall extends CollectedValueObject
     public function isTerminatingCall(): bool
     {
         return $this->type === self::TERMINATING_CALL;
+    }
+
+    public function isOutputCall(): bool
+    {
+        return $this->type === self::OUTPUT_CALL;
     }
 
     /**

@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
-use Efabrica\PHPStanLatte\Resolver\MethodResolver\TerminatingMethodResolver;
+use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
+use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use PHPStan\Type\ObjectType;
-use PHPStan\Type\VerbosityLevel;
 
 /**
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
@@ -26,12 +24,15 @@ final class MethodCallCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 
-    private TerminatingMethodResolver $terminatingMethodResolver;
+    private CalledClassResolver $calledClassResolver;
 
-    public function __construct(NameResolver $nameResolver, TerminatingMethodResolver $terminatingMethodResolver)
+    private TerminatingCallResolver $terminatingCallResolver;
+
+    public function __construct(NameResolver $nameResolver, CalledClassResolver $calledClassResolver, TerminatingCallResolver $terminatingCallResolver)
     {
         $this->nameResolver = $nameResolver;
-        $this->terminatingMethodResolver = $terminatingMethodResolver;
+        $this->calledClassResolver = $calledClassResolver;
+        $this->terminatingCallResolver = $terminatingCallResolver;
     }
 
     public function getNodeType(): string
@@ -56,29 +57,24 @@ final class MethodCallCollector extends AbstractCollector
         }
 
         $actualClassName = $classReflection->getName();
+        $calledClassName = $this->calledClassResolver->resolve($node, $scope);
+        $calledMethodName = $this->nameResolver->resolve($node);
 
-        if (!$node instanceof MethodCall && !$node instanceof StaticCall) {
+        if ($this->terminatingCallResolver->isTerminatingCallNode($node, $scope)) {
+            return $this->collectItem(new CollectedMethodCall(
+                $actualClassName,
+                $functionName,
+                $calledClassName ?? '',
+                $calledMethodName ?? '',
+                CollectedMethodCall::TERMINATING_CALL
+            ));
+        }
+
+        if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
             return null;
         }
 
-        if ($node instanceof StaticCall) {
-            $calledClassName = $this->nameResolver->resolve($node->class);
-            if ($calledClassName === 'parent') {
-                $classReflection = $classReflection->getParentClass();
-                if ($classReflection === null) {
-                    return null;
-                }
-                $calledClassName = $classReflection->getName();
-            }
-        } elseif ($node->var instanceof Variable && is_string($node->var->name) && $node->var->name === 'this') {
-            $calledClassName = $classReflection->getName();
-        } else {
-            $callerType = $scope->getType($node->var);
-            $calledClassName = $callerType instanceof ObjectType ? $callerType->describe(VerbosityLevel::typeOnly()) : null;
-        }
-
-        $calledMethodName = $this->nameResolver->resolve($node->name);
-        if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
+        if (!$node instanceof MethodCall && !$node instanceof StaticCall) {
             return null;
         }
 
@@ -95,13 +91,8 @@ final class MethodCallCollector extends AbstractCollector
 
         $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
 
-        $callType = CollectedMethodCall::CALL;
-        if ($this->terminatingMethodResolver->isTerminatingCall($calledClassName, $calledMethodName)) {
-            $callType = CollectedMethodCall::TERMINATING_CALL;
-        }
-
         // Do not find template variables in external classes
-        if ($callType === CollectedMethodCall::CALL && $this->isExternalCall($declaringClassName, $calledMethodName)) {
+        if ($this->isExternalCall($declaringClassName, $calledMethodName)) {
             return null;
         }
 
@@ -109,8 +100,7 @@ final class MethodCallCollector extends AbstractCollector
             $actualClassName,
             $functionName,
             $declaringClassName,
-            $calledMethodName,
-            $callType
+            $calledMethodName
         ));
     }
 
