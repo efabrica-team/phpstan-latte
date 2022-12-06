@@ -28,9 +28,14 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
 
             $templateRenders = $this->templateRenderFinder->findByMethod($reflectionMethod);
             if (count($templateRenders) === 0) {
-                $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
-                    ->file($reflectionClass->getFileName() ?? 'unknown')
-                    ->line($reflectionMethod->getStartLine()));
+                if (!$this->methodCallFinder->hasAnyOutputCallsByMethod($reflectionMethod) &&
+                    !$this->methodCallFinder->hasAnyTerminatingCallsByMethod($reflectionMethod) &&
+                    !$this->methodFinder->hasAnyAlwaysTerminatedByMethod($reflectionMethod)
+                ) {
+                    $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
+                        ->file($reflectionClass->getFileName() ?? 'unknown')
+                        ->line($reflectionMethod->getStartLine()));
+                }
             }
             $result->addTemplatesFromRenders($templateRenders, $variables, $components, $forms, $reflectionClass->getName(), $reflectionMethod->getName());
         }

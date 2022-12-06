@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Resolve;
 
+use Exception;
 use Nette\Application\UI\Control;
 
 final class SomeControl extends Control
@@ -54,5 +55,74 @@ final class SomeControl extends Control
     public function renderComplexType(array $param): void
     {
         $this->template->render(__DIR__ . '/complexType.latte', ['a' => $param, 'b' => $param]);
+    }
+
+    public function renderError(): void
+    {
+        $this->error();
+    }
+
+    public function renderIndirectError(): void
+    {
+        $this->renderError();
+    }
+
+    /**
+     * @return never
+     */
+    public function renderThrow(): void
+    {
+        throw new Exception('Not renderable');
+    }
+
+    public function renderIndirectThrow(): void
+    {
+        $this->renderThrow();
+    }
+
+    public function renderCalledThrow(): void
+    {
+        $this->throwError();
+    }
+
+    /**
+     * @return never
+     */
+    private function throwError(): void
+    {
+        throw new Exception('Not renderable');
+    }
+
+    public function renderThrowSometimes(bool $param): void
+    {
+        if ($param) {
+            throw new Exception('Not renderable');
+        }
+        $this->template->render(__DIR__ . '/throwSometimes.latte');
+    }
+
+    public function renderOutput(): void
+    {
+        echo 'output';
+    }
+
+    public function renderIndirectOutput(): void
+    {
+        $this->renderOutput();
+    }
+
+    public function renderPrint(): void
+    {
+        print 'output';
+    }
+
+    public function renderPrintR(): void
+    {
+        print_r($this);
+    }
+
+    public function renderVarDump(): void
+    {
+        var_dump($this);
     }
 }

@@ -57,7 +57,7 @@ final class TemplatePathCollector extends AbstractCollector
 
         $actualClassName = $classReflection->getName();
 
-        $calledMethodName = $this->nameResolver->resolve($node->name);
+        $calledMethodName = $this->nameResolver->resolve($node);
         if (!in_array($calledMethodName, ['setFile'], true)) {
             return null;
         }

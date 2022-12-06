@@ -18,7 +18,6 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->title = 'foo';
         $this->bar();
         $this->baz();
-        $this->recursion(5);
         $this->getTemplate()->viaGetTemplate = 'foobar';
     }
 
@@ -32,13 +31,9 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->fromOtherAction = 'from other action';
     }
 
-    public function actionEmpty(): void
+    private function bar(): void
     {
-    }
-
-    public function actionRedirect(): void
-    {
-        $this->redirect('default');
+        $this->template->variableFromOtherMethod = 'bar';
     }
 
     public function actionDirectRender(): void
@@ -46,18 +41,5 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->fromTemplate = 'a';
         $this->template->render(__DIR__ . '/templates/Variables/direct.latte', ['fromRender' => 'b']);
         $this->terminate();
-    }
-
-    private function bar(): void
-    {
-        $this->template->variableFromOtherMethod = 'bar';
-    }
-
-    private function recursion(int $counter): void
-    {
-        $this->template->variableFromRecursionMethod = 'bar';
-        if ($counter > 0) {
-            $this->recursion($counter - 1);
-        }
     }
 }

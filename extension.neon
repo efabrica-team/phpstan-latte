@@ -67,8 +67,10 @@ services:
     # Name resolvers
     - Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver
 
-    # MEthod resolvers
-    - Efabrica\PHPStanLatte\Resolver\MethodResolver\TerminatingMethodResolver(%earlyTerminatingMethodCalls%)
+    # Method resolvers
+    - Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver
+    - Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver(%earlyTerminatingMethodCalls%)
+    - Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver()
 
     # Compiler post process Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
@@ -106,7 +108,17 @@ services:
             - phpstan.collector
 
     -
+        factory: Efabrica\PHPStanLatte\Collector\MethodCollector
+        tags:
+            - phpstan.collector
+
+    -
         factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
+        tags:
+            - phpstan.collector
+
+    -
+        factory: Efabrica\PHPStanLatte\Collector\MethodOutputCollector
         tags:
             - phpstan.collector
 
