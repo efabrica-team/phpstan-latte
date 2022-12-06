@@ -14,9 +14,9 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
@@ -30,10 +30,13 @@ final class FormCollector extends AbstractCollector
 
     private ValueResolver $valueResolver;
 
-    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver)
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
     {
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getNodeType(): string
@@ -85,8 +88,7 @@ final class FormCollector extends AbstractCollector
             return null;
         }
 
-        $formClassReflection = (new BetterReflection())->reflector()->reflectClass($returnType->describe(VerbosityLevel::typeOnly()));
-
+        $formClassReflection = $this->reflectionProvider->getClass($returnType->describe(VerbosityLevel::typeOnly()));
         $formFields = [];
         foreach ($node->stmts ?: [] as $stmt) {
             if (!$stmt instanceof Expression) {
@@ -104,17 +106,22 @@ final class FormCollector extends AbstractCollector
                 continue;
             }
 
-            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName);
-            if ($formFieldReflectionMethod === null) {
+            try {
+                $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
+            } catch (MissingMethodFromReflectionException $e) {
                 continue;
             }
 
-            $formFieldMethodReturnTypeReflection = $formFieldReflectionMethod->getReturnType();
-            if (!$formFieldMethodReturnTypeReflection instanceof ReflectionNamedType) {
+            $formFieldParametersAcceptor = $formFieldReflectionMethod->getVariants()[0] ?? null;
+            if ($formFieldParametersAcceptor === null) {
                 continue;
             }
 
-            $formFieldMethodReturnType = new ObjectType($formFieldMethodReturnTypeReflection->getName());
+            $formFieldMethodReturnType = $formFieldParametersAcceptor->getReturnType();
+            if (!$formFieldMethodReturnType instanceof ObjectType) {
+                continue;
+            }
+
             if (!$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Container')->yes() && !$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Controls\BaseControl')->yes()) {
                 continue;
             }
