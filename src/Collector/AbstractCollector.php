@@ -15,7 +15,7 @@ use PHPStan\Node\CollectedDataNode;
  * @template A of array
  * @implements Collector<N, ?A[]>
  */
-abstract class AbstractCollector implements Collector
+abstract class AbstractCollector implements PHPStanLatteCollectorInterface
 {
     /**
      * @param class-string $class

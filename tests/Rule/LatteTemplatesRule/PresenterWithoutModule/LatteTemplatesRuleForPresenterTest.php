@@ -22,7 +22,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testVariables(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php'], [
             [
                 'Variable $items might not be defined.',
                 5,
@@ -110,7 +110,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([
             __DIR__ . '/Fixtures/ComponentsPresenter.php',
-            __DIR__ . '/Fixtures/ParentPresenter.php',
             __DIR__ . '/Source/ControlRegistrator.php',
             __DIR__ . '/Source/SomeBodyControl.php',
             __DIR__ . '/Source/SomeControl.php',
@@ -230,7 +229,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testFilters(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
             [
                 'Trying to invoke mixed but it\'s not a callable.',
                 2,
@@ -247,7 +246,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testLinks(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], [
             [
                 'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
                 7,
@@ -394,7 +393,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testRecursion(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/RecursionPresenter.php'], [
             [
                 'Dumped type: 10',
                 1,

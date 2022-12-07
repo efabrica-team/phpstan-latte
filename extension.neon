@@ -139,6 +139,10 @@ services:
         tags:
             - phpstan.collector
 
+    -
+        factory: Efabrica\PHPStanLatte\Collector\ParentCollector
+        tags:
+            - phpstan.collector
 
     # Variable collectors
     variableCollectorStorage:
