@@ -1,0 +1,14 @@
+{* ERROR: Dumped type: 10 *}
+{* ERROR: Dumped type: 9|10  *}
+{* ERROR: Dumped type: 8|9|10 *}
+{* ERROR: Dumped type: 7|8|9|10 *}
+{php \PhpStan\dumpType($counter)}
+
+{* ERROR: Comparison operation ">" between 10 and 0 is always true. *}
+{* ERROR: Comparison operation ">" between 9|10 and 0 is always true. *}
+{* ERROR: Comparison operation ">" between 8|9|10 and 0 is always true. *}
+{* ERROR: Comparison operation ">" between 7|8|9|10 and 0 is always true. *}
+{if $counter > 0}
+  {include recursion.latte counter: $counter - 1}
+  {include @recursionB.latte counter: $counter - 1}
+{/if}

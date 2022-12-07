@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixt
 
 use Nette\Application\UI\Control;
 
+// COLLECT: NODE NetteApplicationUIControl {"className":"SomeControl"}
 final class SomeControl extends Control
 {
     public function render(): void
@@ -17,6 +18,7 @@ final class SomeControl extends Control
         $template->b = 'b';
 
         $template->setFile(__DIR__ . '/default.latte');
+        // COLLECT: TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []
         $template->render();
     }
 }

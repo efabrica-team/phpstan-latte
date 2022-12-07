@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
+namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\EngineBootstrap;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Nette\Utils\Finder;
 
 final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleTest
 {
@@ -17,30 +18,23 @@ final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleT
         ];
     }
 
-    public function testFilters(): void
+    /**
+     * @dataProvider fixtures
+     */
+    public function testFixture(string $fixtureName): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
-            [
-                'Trying to invoke mixed but it\'s not a callable.',
-                2,
-                'default.latte',
-            ],
-            [
-                'Undefined latte filter "nonExistingFilter".',
-                2,
-                'default.latte',
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
-            ],
-            [
-                'Closure invoked with 1 parameter, 0 required.',
-                3,
-                'default.latte',
-            ],
-            [
-                'Parameter #1 $ of closure expects int, string given.',
-                4,
-                'default.latte',
-            ],
-        ]);
+        $this->analyseFixture(
+            __DIR__ . '/Fixtures/' . $fixtureName,
+            __NAMESPACE__ . '\\Fixtures\\' . $fixtureName,
+        );
+    }
+
+    public function fixtures()
+    {
+        $fixtures = [];
+        foreach (Finder::findDirectories()->in(__DIR__ . '/Fixtures') as $path) {
+            $fixtures[] = [$path->getFilename()];
+        }
+        return $fixtures;
     }
 }

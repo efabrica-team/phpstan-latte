@@ -1,0 +1,21 @@
+{form firstForm}
+    {input text}
+    {input textarea}
+    {input password} {* ERROR: Form field with name "password" probably does not exist. *}
+    {input submit, ['class' => 'btn']}
+{/form}
+
+{form secondForm}
+    {input select}
+    {input username}
+    {input password}
+    {input checkbox}{label checkbox /}
+    {input second_submit, ['class' => 'btn']} {* ERROR: Form field with name "second_submit" probably does not exist. *}
+{/form}
+
+{form customForm}
+{*    {$form->getRenderer()->renderControls($form->getGroup('General'), true) |noescape}*}
+    {$form->getRenderer()->renderPair($form['custom_text'])}
+    {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
+    {$form->getRenderer()->someNonExistingCustomMethod($form['submit'])} {* ERROR: Call to an undefined method CustomFormRenderer::someNonExistingCustomMethod(). *}
+{/form}

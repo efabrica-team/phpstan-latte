@@ -1,0 +1,9 @@
+{$title|existingFilter}
+
+{* ERROR: Trying to invoke mixed but it's not a callable. *}
+{* ERROR:Undefined latte filter "nonExistingFilter". ### Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters *}
+{$title|nonExistingFilter}
+
+{$title|closure} {* ERROR: Closure invoked with 1 parameter, 0 required. *}
+{$title|closureWithIntParam} {* ERROR: Parameter #1 $ of closure expects int, string given. *}
+{$title|closureWithStringParam}

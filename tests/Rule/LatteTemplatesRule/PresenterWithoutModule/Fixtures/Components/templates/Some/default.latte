@@ -1,0 +1,25 @@
+{block content}
+
+{control form}
+
+{control parentForm}
+
+{control onlyParentDefaultForm}
+
+{control onlyCreateForm} {* ERROR: Component with name "onlyCreateForm" probably doesn't exist. *}
+
+{control nonExistingControl} {* ERROR: Component with name "nonExistingControl" probably doesn't exist. *}
+
+{control someControl}
+
+{control someControl:otherRender}
+
+{control someControl:nonExistingRender} {* ERROR: Call to an undefined method SomeControl::renderNonExistingRender(). *}
+
+{control someControl-header}
+{control someControl-body}
+{control someControl-body-table}
+{control someControl-footer}
+{control someControl-nonexisting} {* ERROR: Component with name "someControl-nonexisting" probably doesn't exist. *}
+
+{control noType} {* ERROR: Component with name "noType" have no type specified. ### Define return type of createComponentNoType method. *}

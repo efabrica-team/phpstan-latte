@@ -7,6 +7,8 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 
+// COLLECT: NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}
+// COLLECT: NODE NetteApplicationUIPresenterStandalone {"className":"ParentPresenter"}
 abstract class ParentPresenter extends Presenter
 {
     protected function startup()

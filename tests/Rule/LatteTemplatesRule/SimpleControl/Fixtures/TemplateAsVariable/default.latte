@@ -1,3 +1,4 @@
-{php \PhpStan\dumpType($a)}
-{php \PhpStan\dumpType($b)}
-{php \PhpStan\dumpType($c)}
+{php \PhpStan\dumpType($a)} {* ERROR: Dumped type: 'a'|null *}
+{php \PhpStan\dumpType($b)} {* ERROR: Dumped type: 'b' *}
+{* ERROR: Variable $c might not be defined. *}
+{php \PhpStan\dumpType($c)} {* ERROR: Dumped type: mixed *}

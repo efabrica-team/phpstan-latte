@@ -1,0 +1,7 @@
+{block content}
+
+{$fromOtherAction}
+{$fromRenderDefault} {* ERROR: Variable $fromRenderDefault might not be defined. *}
+{$nonExistingVariable} {* ERROR: Variable $nonExistingVariable might not be defined. *}
+
+{include @partial.latte, renamedFromOtherAction: $fromOtherAction}
