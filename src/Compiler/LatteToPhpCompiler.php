@@ -17,14 +17,17 @@ use InvalidArgumentException;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
+use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable as NodeVariable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use PHPStan\Type\VerbosityLevel;
@@ -109,6 +112,7 @@ final class LatteToPhpCompiler
         $phpContent = $this->explicitCalls($actualClass, $phpContent, $variables, $components);
         $phpContent = $this->addExtractParams($phpContent);
         $phpContent = $this->addFormClasses($phpContent, $forms);
+        $phpContent = $this->cleanup($phpContent);
         return $this->remapLines($phpContent);
     }
 
@@ -208,6 +212,31 @@ final class LatteToPhpCompiler
 
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new AddExtractParamsToTopNodeVisitor());
+        $nodeTraverser->traverse($phpStmts);
+
+        return $this->printerStandard->prettyPrintFile($phpStmts);
+    }
+
+    private function cleanup(string $phpContent): string
+    {
+        $phpStmts = $this->findNodes($phpContent);
+
+        $nodeTraverser = new NodeTraverser();
+        $cleanupVisitor = new class extends NodeVisitorAbstract
+        {
+            public function leaveNode(Node $node): ?int
+            {
+                if ($node instanceof Expression) {
+                    // if only one expr in Expression is Variable, we can remove it
+                    if ($node->expr instanceof NodeVariable) {
+                        return NodeTraverser::REMOVE_NODE;
+                    }
+                }
+
+                return null;
+            }
+        };
+        $nodeTraverser->addVisitor($cleanupVisitor);
         $nodeTraverser->traverse($phpStmts);
 
         return $this->printerStandard->prettyPrintFile($phpStmts);
