@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedFormField;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
@@ -32,12 +33,15 @@ final class FormCollector extends AbstractCollector
 
     private ReflectionProvider $reflectionProvider;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
+    private LattePhpDocResolver $lattePhpDocResolver;
+
+    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider, LattePhpDocResolver $lattePhpDocResolver)
     {
         parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->reflectionProvider = $reflectionProvider;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -86,6 +90,10 @@ final class FormCollector extends AbstractCollector
         }
 
         if (!$returnType->isInstanceOf('Nette\Forms\Form')->yes()) {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 

@@ -95,6 +95,7 @@ services:
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterActionLinkProcessor
     - Efabrica\PHPStanLatte\LinkProcessor\SignalLinkProcessor
 
+    - Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver
 
     # Collectors
     -

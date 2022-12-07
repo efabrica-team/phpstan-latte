@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
@@ -29,12 +30,20 @@ final class MethodCallCollector extends AbstractCollector
 
     private TerminatingCallResolver $terminatingCallResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, CalledClassResolver $calledClassResolver, TerminatingCallResolver $terminatingCallResolver)
-    {
+    private LattePhpDocResolver $lattePhpDocResolver;
+
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        CalledClassResolver $calledClassResolver,
+        TerminatingCallResolver $terminatingCallResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
         parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->calledClassResolver = $calledClassResolver;
         $this->terminatingCallResolver = $terminatingCallResolver;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -58,6 +67,10 @@ final class MethodCallCollector extends AbstractCollector
             return null;
         }
 
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
+            return null;
+        }
+
         $actualClassName = $classReflection->getName();
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
@@ -73,6 +86,10 @@ final class MethodCallCollector extends AbstractCollector
         }
 
         if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForMethod($calledClassName, $calledMethodName)->isIgnored()) {
             return null;
         }
 

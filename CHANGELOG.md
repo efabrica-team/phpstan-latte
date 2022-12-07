@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Annotation `@phpstan-latte-ignore` can be used to ignore render calls, variable assignments, component creation, whole methods or classes.
+
 ## [0.2.0] - 2022-12-06
 ### Changed
 - Used collectors to find all variables, components, method calls and templates to analyse

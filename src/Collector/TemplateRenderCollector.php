@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
@@ -36,18 +37,22 @@ final class TemplateRenderCollector extends AbstractCollector
 
     private TemplateTypeResolver $templateTypeResolver;
 
+    private LattePhpDocResolver $lattePhpDocResolver;
+
     public function __construct(
         TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ValueResolver $valueResolver,
         PathResolver $pathResolver,
-        TemplateTypeResolver $templateTypeResolver
+        TemplateTypeResolver $templateTypeResolver,
+        LattePhpDocResolver $lattePhpDocResolver
     ) {
         parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->pathResolver = $pathResolver;
         $this->templateTypeResolver = $templateTypeResolver;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -136,6 +141,10 @@ final class TemplateRenderCollector extends AbstractCollector
 
         $calledType = $scope->getType($node->var);
         if (!$this->templateTypeResolver->resolve($calledType)) {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 

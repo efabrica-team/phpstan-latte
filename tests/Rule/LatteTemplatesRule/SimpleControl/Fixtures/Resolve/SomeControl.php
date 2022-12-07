@@ -126,6 +126,24 @@ final class SomeControl extends Control
         var_dump($this);
     }
 
+    /** @phpstan-latte-ignore */
+    public function renderIgnoredEmpty(): void
+    {
+    }
+
+    /** @phpstan-latte-ignore */
+    public function renderIgnoredMethod(): void
+    {
+        $this->template->render(__DIR__ . '/error.latte');
+    }
+
+    public function renderIgnoredRender(): void
+    {
+        /** @phpstan-latte-ignore */
+        $this->template->render(__DIR__ . '/error.latte');
+        $this->template->render(__DIR__ . '/default.latte');
+    }
+
     public function notRender(): void
     {
     }
