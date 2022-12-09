@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 final class VariablesPresenter extends ParentPresenter
 {
-    /* @var string[] */
+    /** @var string[] */
     private array $strings;
 
     protected function startup()
