@@ -17,3 +17,8 @@
 {$fromRenderDefault}
 {$nonExistingVariable}
 {$fromOtherAction}
+
+{php \PhpStan\dumpType($strings)}
+{foreach $strings as $string}
+    {php \PhpStan\dumpType($string)}
+{/foreach}
