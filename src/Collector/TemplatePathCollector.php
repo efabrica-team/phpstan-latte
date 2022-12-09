@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -25,10 +26,12 @@ final class TemplatePathCollector extends AbstractCollector
     private PathResolver $pathResolver;
 
     public function __construct(
+        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         TemplateTypeResolver $templateTypeResolver,
         PathResolver $pathResolver
     ) {
+        parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->pathResolver = $pathResolver;

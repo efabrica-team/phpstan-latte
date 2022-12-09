@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
@@ -22,8 +23,9 @@ final class VariableCollector extends AbstractCollector
 {
     private TemplateTypeResolver $templateTypeResolver;
 
-    public function __construct(TemplateTypeResolver $templateTypeResolver)
+    public function __construct(TypeSerializer $typeSerializer, TemplateTypeResolver $templateTypeResolver)
     {
+        parent::__construct($typeSerializer);
         $this->templateTypeResolver = $templateTypeResolver;
     }
 

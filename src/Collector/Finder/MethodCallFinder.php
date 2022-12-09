@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
 use Efabrica\PHPStanLatte\Collector\MethodOutputCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
 
@@ -35,11 +36,11 @@ final class MethodCallFinder
      */
     private array $hasOutputCalls = [];
 
-    public function __construct(CollectedDataNode $collectedDataNode)
+    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer)
     {
         $collectedMethodCalls = array_merge(
-            MethodCallCollector::loadData($collectedDataNode, CollectedMethodCall::class),
-            MethodOutputCollector::loadData($collectedDataNode, CollectedMethodCall::class)
+            MethodCallCollector::loadData($collectedDataNode, $typeSerializer, CollectedMethodCall::class),
+            MethodOutputCollector::loadData($collectedDataNode, $typeSerializer, CollectedMethodCall::class)
         );
         foreach ($collectedMethodCalls as $collectedMethodCall) {
             $callerClassName = $collectedMethodCall->getCallerClassName();

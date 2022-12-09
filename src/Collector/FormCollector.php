@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedFormField;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
@@ -31,8 +32,9 @@ final class FormCollector extends AbstractCollector
 
     private ReflectionProvider $reflectionProvider;
 
-    public function __construct(NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
+    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider)
     {
+        parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->reflectionProvider = $reflectionProvider;
@@ -139,7 +141,7 @@ final class FormCollector extends AbstractCollector
                 if (!is_string($fieldName)) {
                     continue;
                 }
-                $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType->describe(VerbosityLevel::typeOnly()));
+                $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType);
             }
         }
 

@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -21,14 +22,17 @@ use PHPStan\Rules\RuleErrorBuilder;
  */
 final class CollectorResultRule implements Rule
 {
+    private TypeSerializer $typeSerializer;
+
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
-    public function __construct(array $latteTemplateResolvers)
+    public function __construct(TypeSerializer $typeSerializer, array $latteTemplateResolvers)
     {
+        $this->typeSerializer = $typeSerializer;
         $this->latteTemplateResolvers = $latteTemplateResolvers;
     }
 
@@ -44,7 +48,7 @@ final class CollectorResultRule implements Rule
     {
         $errors = [];
 
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $resolver = $this->shortClassName($collectedResolvedNode->getResolver());

@@ -10,6 +10,7 @@ use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
@@ -36,11 +37,13 @@ final class TemplateRenderCollector extends AbstractCollector
     private TemplateTypeResolver $templateTypeResolver;
 
     public function __construct(
+        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ValueResolver $valueResolver,
         PathResolver $pathResolver,
         TemplateTypeResolver $templateTypeResolver
     ) {
+        parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->pathResolver = $pathResolver;

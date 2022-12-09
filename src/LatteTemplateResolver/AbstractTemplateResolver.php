@@ -13,10 +13,13 @@ use Efabrica\PHPStanLatte\Collector\Finder\TemplateRenderFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Node\CollectedDataNode;
 
 abstract class AbstractTemplateResolver implements LatteTemplateResolverInterface
 {
+    private TypeSerializer $typeSerializer;
+
     private PathResolver $pathResolver;
 
     protected MethodFinder $methodFinder;
@@ -33,21 +36,22 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(PathResolver $pathResolver)
+    public function __construct(TypeSerializer $typeSerializer, PathResolver $pathResolver)
     {
+        $this->typeSerializer = $typeSerializer;
         $this->pathResolver = $pathResolver;
     }
 
     public function resolve(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
     {
         // TODO create factories?
-        $this->methodCallFinder = new MethodCallFinder($collectedDataNode);
-        $this->methodFinder = new MethodFinder($collectedDataNode, $this->methodCallFinder);
-        $this->variableFinder = new VariableFinder($collectedDataNode, $this->methodCallFinder);
-        $this->componentFinder = new ComponentFinder($collectedDataNode, $this->methodCallFinder);
-        $this->formFinder = new FormFinder($collectedDataNode, $this->methodCallFinder);
-        $this->templatePathFinder = new TemplatePathFinder($collectedDataNode, $this->methodCallFinder, $this->pathResolver);
-        $this->templateRenderFinder = new TemplateRenderFinder($collectedDataNode, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);
+        $this->methodCallFinder = new MethodCallFinder($collectedDataNode, $this->typeSerializer);
+        $this->methodFinder = new MethodFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
+        $this->variableFinder = new VariableFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
+        $this->componentFinder = new ComponentFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
+        $this->formFinder = new FormFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
+        $this->templatePathFinder = new TemplatePathFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder, $this->pathResolver);
+        $this->templateRenderFinder = new TemplateRenderFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);
 
         return $this->getResult($resolvedNode, $collectedDataNode);
     }

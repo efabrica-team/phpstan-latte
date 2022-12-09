@@ -60,7 +60,7 @@ final class Component implements JsonSerializable
     {
         return [
           'name' => $this->name,
-          'type' => serialize($this->getType()),
+          'type' => $this->getTypeAsString(),
         ];
     }
 }

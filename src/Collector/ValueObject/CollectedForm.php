@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use PHPStan\ShouldNotHappenException;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Type\Type;
 
 /**
  * @phpstan-import-type CollectedFormFieldArray from CollectedFormField
- * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, type: string, formFields: CollectedFormFieldArray[]}
+ * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, type: array<string, string>, formFields: CollectedFormFieldArray[]}
  */
 final class CollectedForm extends CollectedValueObject
 {
@@ -69,18 +69,18 @@ final class CollectedForm extends CollectedValueObject
     /**
      * @phpstan-return CollectedFormArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         $formArray = [
             'className' => $this->className,
             'methodName' => $this->methodName,
             'name' => $this->name,
-            'type' => serialize($this->type),
+            'type' => $typeSerializer->toArray($this->type),
             'formFields' => [],
         ];
 
         foreach ($this->formFields as $formField) {
-            $formArray['formFields'][] = $formField->toArray();
+            $formArray['formFields'][] = $formField->toArray($typeSerializer);
         }
 
         return $formArray;
@@ -89,16 +89,13 @@ final class CollectedForm extends CollectedValueObject
     /**
      * @phpstan-param CollectedFormArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
         $formFields = [];
         foreach ($item['formFields'] as $formField) {
-            $formFields[] = CollectedFormField::fromArray($formField);
+            $formFields[] = CollectedFormField::fromArray($formField, $typeSerializer);
         }
-        $type = unserialize($item['type']);
-        if (!$type instanceof Type) {
-            throw new ShouldNotHappenException('Cannot unserialize form type');
-        }
+        $type = $typeSerializer->fromArray($item['type']);
         return new CollectedForm($item['className'], $item['methodName'], $item['name'], $type, $formFields);
     }
 }

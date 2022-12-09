@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 
@@ -21,8 +22,9 @@ final class ResolvedNodeCollector extends AbstractCollector
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
-    public function __construct(array $latteTemplateResolvers)
+    public function __construct(TypeSerializer $typeSerializer, array $latteTemplateResolvers)
     {
+        parent::__construct($typeSerializer);
         $this->latteTemplateResolvers = $latteTemplateResolvers;
     }
 
