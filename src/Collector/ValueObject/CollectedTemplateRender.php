@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\ShouldNotHappenException;
 
 /**
- * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{name: string, type: string}>, className: string, methodName: string, file: string, line: int}
+ * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{name: string, type: array<string, string>}>, className: string, methodName: string, file: string, line: int}
  */
 final class CollectedTemplateRender extends CollectedValueObject
 {
@@ -79,11 +80,14 @@ final class CollectedTemplateRender extends CollectedValueObject
     /**
      * @phpstan-return CollectedTemplateRenderArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         $variables = [];
         foreach ($this->variables as $variable) {
-            $variables[] = $variable->toArray();
+            $variables[] = [
+                'name' => $variable->getName(),
+                'type' => $typeSerializer->toArray($variable->getType()),
+            ];
         }
         return [
             'templatePath' => $this->templatePath,
@@ -98,11 +102,11 @@ final class CollectedTemplateRender extends CollectedValueObject
     /**
      * @phpstan-param CollectedTemplateRenderArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
         $variables = [];
         foreach ($item['variables'] as $variable) {
-            $variables[] = Variable::fromArray($variable);
+            $variables[] = new Variable($variable['name'], $typeSerializer->fromArray($variable['type']));
         }
         if ($item['templatePath'] === true) {
             throw new ShouldNotHappenException('TemplatePath cannot be true, only string, null or false allowed.');

@@ -158,7 +158,7 @@ final class Postprocessor
                 ->setReturnType($componentType);
             $comment = '@return ' . $componentType;
             foreach ($form->getFormFields() as $formField) {
-                $comment = str_replace($componentType, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getType() . ' : ' . $componentType . ')', $comment);
+                $comment = str_replace($componentType, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentType . ')', $comment);
 
                 // TODO select corresponding part of code and replace all occurences in it, then replace original code with new
 

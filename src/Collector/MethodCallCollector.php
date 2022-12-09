@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
@@ -28,8 +29,9 @@ final class MethodCallCollector extends AbstractCollector
 
     private TerminatingCallResolver $terminatingCallResolver;
 
-    public function __construct(NameResolver $nameResolver, CalledClassResolver $calledClassResolver, TerminatingCallResolver $terminatingCallResolver)
+    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, CalledClassResolver $calledClassResolver, TerminatingCallResolver $terminatingCallResolver)
     {
+        parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->calledClassResolver = $calledClassResolver;
         $this->terminatingCallResolver = $terminatingCallResolver;
