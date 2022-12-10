@@ -22,3 +22,8 @@
 {foreach $strings as $string}
     {php \PhpStan\dumpType($string)}
 {/foreach}
+
+{php \PhpStan\dumpType($localStrings)}
+{foreach $localStrings as $string}
+    {php \PhpStan\dumpType($string)}
+{/foreach}
