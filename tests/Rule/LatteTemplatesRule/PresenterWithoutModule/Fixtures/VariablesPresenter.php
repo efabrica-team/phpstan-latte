@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 final class VariablesPresenter extends ParentPresenter
 {
+    /** @var array<string[]> */
+    private array $stringLists = [];
+
     protected function startup()
     {
         parent::startup();
@@ -19,6 +22,9 @@ final class VariablesPresenter extends ParentPresenter
         $this->bar();
         $this->baz();
         $this->getTemplate()->viaGetTemplate = 'foobar';
+        $this->template->stringLists = $this->stringLists;
+        $localStrings = ['foo', 'bar', 'baz'];
+        $this->template->localStrings = $localStrings;
     }
 
     public function renderDefault(): void
