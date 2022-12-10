@@ -66,7 +66,7 @@ final class Latte2Compiler extends AbstractCompiler
     }
 
     /**
-     * @return array<string, string|array{string, string}|callable>
+     * @return array<string, string|array{string, string}|array{object, string}|callable>
      */
     private function getEngineFiltersByReflection(): array
     {
