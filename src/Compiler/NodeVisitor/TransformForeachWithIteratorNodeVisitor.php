@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Foreach_;
 use PhpParser\NodeVisitorAbstract;
@@ -27,6 +29,13 @@ use PhpParser\NodeVisitorAbstract;
 final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
 {
     use ActualClassNodeVisitorBehavior;
+
+    private NameResolver $nameResolver;
+
+    public function __construct(NameResolver $nameResolver)
+    {
+        $this->nameResolver = $nameResolver;
+    }
 
     /**
      * @return Node[]|null
@@ -51,6 +60,15 @@ final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract 
 
         /** @var New_ $construct */
         $construct = $node->expr->expr->expr;
+        if (!$construct->class instanceof Name) {
+            return null;
+        }
+
+        $name = $this->nameResolver->resolve($construct->class);
+        if (!in_array($name, ['LR\CachingIterator', 'Latte\Runtime\CachingIterator', 'Latte\Essential\CachingIterator'])) {
+            return null;
+        }
+
         $constructArg = $construct->getArgs()[0] ?? null;
         if ($constructArg === null) {
             return null;
