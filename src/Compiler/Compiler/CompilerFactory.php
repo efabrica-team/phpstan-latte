@@ -59,7 +59,7 @@ final class CompilerFactory
             }
             return new Latte2Compiler($engine, $this->strictMode, $this->filters, $this->macros);
         } else {
-            if (count($this->extensions) > 0) {
+            if (count($this->macros) > 0) {
                 throw new InvalidArgumentException('You cannot use configuration option latte > macros with Latte 3');
             }
             return new Latte3Compiler($engine, $this->strictMode, $this->filters, $this->extensions);
