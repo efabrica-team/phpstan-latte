@@ -16,7 +16,7 @@ use PHPStan\Type\ObjectType;
 
 final class DynamicFilterVariables implements VariableCollectorInterface
 {
-    /** @var array<string, string|array{string, string}|callable> */
+    /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
 
     private ?ClosureTypeFactory $closureTypeFactory;
@@ -53,7 +53,7 @@ final class DynamicFilterVariables implements VariableCollectorInterface
             }
 
             /** @var class-string $className */
-            $className = $filter[0];
+            $className = is_string($filter[0]) ? $filter[0] : get_class($filter[0]);
             $methodName = $filter[1];
 
             if ($methodName === '') {

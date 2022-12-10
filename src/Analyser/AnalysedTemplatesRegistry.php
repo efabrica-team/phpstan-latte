@@ -9,7 +9,7 @@ use Nette\Utils\Finder;
 final class AnalysedTemplatesRegistry
 {
     /** @var string[] */
-    private array $analysedPaths;
+    private array $analysedPaths = [];
 
     private bool $reportUnanalysedTemplates;
 
