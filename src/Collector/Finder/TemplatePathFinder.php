@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
@@ -25,12 +26,12 @@ final class TemplatePathFinder
 
     private PathResolver $pathResolver;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
+    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplatePaths = TemplatePathCollector::loadData($collectedDataNode, CollectedTemplatePath::class);
+        $collectedTemplatePaths = TemplatePathCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplatePath::class);
         foreach ($collectedTemplatePaths as $collectedTemplatePath) {
             $className = $collectedTemplatePath->getClassName();
             $methodName = $collectedTemplatePath->getMethodName();

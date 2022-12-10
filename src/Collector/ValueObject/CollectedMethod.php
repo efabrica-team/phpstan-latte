@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
+
 /**
  * @phpstan-type CollectedMethodArray array{className: string, methodName: string, alwaysTerminated: bool}
  */
@@ -40,7 +42,7 @@ final class CollectedMethod extends CollectedValueObject
     /**
      * @phpstan-return CollectedMethodArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         return [
             'className' => $this->className,
@@ -52,7 +54,7 @@ final class CollectedMethod extends CollectedValueObject
     /**
      * @phpstan-param CollectedMethodArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
         return new CollectedMethod($item['className'], $item['methodName'], $item['alwaysTerminated']);
     }

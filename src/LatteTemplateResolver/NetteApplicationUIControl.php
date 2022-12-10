@@ -20,6 +20,6 @@ final class NetteApplicationUIControl extends AbstractClassMethodTemplateResolve
 
     protected function getClassMethodPattern(): string
     {
-        return '/render.*/';
+        return '/^render.*/';
     }
 }

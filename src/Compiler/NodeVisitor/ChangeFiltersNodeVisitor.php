@@ -27,7 +27,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
 {
     use ActualClassNodeVisitorBehavior;
 
-    /** @var array<string, string|array{string, string}|callable> */
+    /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
 
     public function __construct(CompilerInterface $compiler)
@@ -105,7 +105,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Post
         }
 
         /** @var class-string $className */
-        $className = $filter[0];
+        $className = is_string($filter[0]) ? $filter[0] : get_class($filter[0]);
         /** @var non-empty-string $methodName */
         $methodName = $filter[1];
 

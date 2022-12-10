@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 use Efabrica\PHPStanLatte\Collector\ComponentCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
@@ -23,12 +24,12 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
+    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
         $componentsWithTypes = [];
-        $collectedComponents = ComponentCollector::loadData($collectedDataNode, CollectedComponent::class);
+        $collectedComponents = ComponentCollector::loadData($collectedDataNode, $typeSerializer, CollectedComponent::class);
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
             $methodName = $collectedComponent->getMethodName();

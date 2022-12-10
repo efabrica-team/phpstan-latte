@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Node\CollectedDataNode;
 
 /**
@@ -18,9 +19,9 @@ final class ResolvedNodeFinder
      */
     private array $collectedResolvedNodes = [];
 
-    public function __construct(CollectedDataNode $collectedDataNode)
+    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer)
     {
-        $collectedResolvedNodes = ResolvedNodeCollector::loadData($collectedDataNode, CollectedResolvedNode::class);
+        $collectedResolvedNodes = ResolvedNodeCollector::loadData($collectedDataNode, $typeSerializer, CollectedResolvedNode::class);
         foreach ($collectedResolvedNodes as $collectedResolvedNode) {
             $resolver = $collectedResolvedNode->getResolver();
             if (!isset($this->collectedResolvedNodes[$resolver])) {

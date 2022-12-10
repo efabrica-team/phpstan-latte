@@ -15,6 +15,7 @@ use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
@@ -56,6 +57,8 @@ final class LatteTemplatesRule implements Rule
 
     private RelativePathHelper $relativePathHelper;
 
+    private TypeSerializer $typeSerializer;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      * @param PHPStanLatteCollectorInterface[] $latteCollector
@@ -69,7 +72,8 @@ final class LatteTemplatesRule implements Rule
         array $latteCollector,
         TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
-        RelativePathHelper $relativePathHelper
+        RelativePathHelper $relativePathHelper,
+        TypeSerializer $typeSerializer
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -80,6 +84,7 @@ final class LatteTemplatesRule implements Rule
         $this->templateRenderCollector = $templateRenderCollector;
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
+        $this->typeSerializer = $typeSerializer;
     }
 
     public function getNodeType(): string
@@ -93,7 +98,7 @@ final class LatteTemplatesRule implements Rule
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
         $collectedDataNode = $this->collectAdditionalData($collectedDataNode);
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
 
         $errors = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
@@ -212,8 +217,8 @@ final class LatteTemplatesRule implements Rule
             $dir = dirname($templatePath);
 
             $includeTemplates = [];
-            $collectedDataList = $fileAnalyserResult->getCollectedData();
-            foreach ($this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), CollectedTemplateRender::class) as $collectedTemplateRender) {
+            $collectedTemplateRenders = $this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), $this->typeSerializer, CollectedTemplateRender::class);
+            foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath)) {
                     $includeTemplates[] = new Template(

@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\FormCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\CollectedDataNode;
@@ -22,11 +23,11 @@ final class FormFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, MethodCallFinder $methodCallFinder)
+    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedForms = FormCollector::loadData($collectedDataNode, CollectedForm::class);
+        $collectedForms = FormCollector::loadData($collectedDataNode, $typeSerializer, CollectedForm::class);
         foreach ($collectedForms as $collectedForm) {
             $className = $collectedForm->getClassName();
             $methodName = $collectedForm->getMethodName();

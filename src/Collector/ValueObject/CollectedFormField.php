@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
+use PHPStan\Type\Type;
+use PHPStan\Type\VerbosityLevel;
+
 /**
- * @phpstan-type CollectedFormFieldArray array{name: string, type: string}
+ * @phpstan-type CollectedFormFieldArray array{name: string, type: array<string, string>}
  */
 final class CollectedFormField extends CollectedValueObject
 {
     private string $name;
 
-    private string $type;
+    private Type $type;
 
-    public function __construct(string $name, string $type)
+    public function __construct(string $name, Type $type)
     {
         $this->name = $name;
         $this->type = $type;
@@ -24,27 +28,32 @@ final class CollectedFormField extends CollectedValueObject
         return $this->name;
     }
 
-    public function getType(): string
+    public function getType(): Type
     {
         return $this->type;
+    }
+
+    public function getTypeAsString(): string
+    {
+        return $this->type->describe(VerbosityLevel::typeOnly());
     }
 
     /**
      * @phpstan-return CollectedFormFieldArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         return [
             'name' => $this->name,
-            'type' => $this->type,
+            'type' => $typeSerializer->toArray($this->type),
         ];
     }
 
     /**
      * @phpstan-param CollectedFormFieldArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
-        return new CollectedFormField($item['name'], $item['type']);
+        return new CollectedFormField($item['name'], $typeSerializer->fromArray($item['type']));
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
+
 /**
  * @phpstan-type CollectedTemplatePathArray array{className: string, methodName: string, templatePath: ?string}
  */
@@ -40,7 +42,7 @@ final class CollectedTemplatePath extends CollectedValueObject
     /**
      * @phpstan-return CollectedTemplatePathArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         return [
             'className' => $this->className,
@@ -52,7 +54,7 @@ final class CollectedTemplatePath extends CollectedValueObject
     /**
      * @phpstan-param CollectedTemplatePathArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
         return new CollectedTemplatePath($item['className'], $item['methodName'], $item['templatePath']);
     }

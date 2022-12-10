@@ -3,6 +3,7 @@
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedValueObject;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\CollectedData;
@@ -17,17 +18,24 @@ use PHPStan\Node\CollectedDataNode;
  */
 abstract class AbstractCollector implements PHPStanLatteCollectorInterface
 {
+    protected TypeSerializer $typeSerializer;
+
+    public function __construct(TypeSerializer $typeSerializer)
+    {
+        $this->typeSerializer = $typeSerializer;
+    }
+
     /**
      * @param class-string $class
      * @return T[]
      */
-    public static function loadData(CollectedDataNode $collectedDataNode, string $class)
+    public static function loadData(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, string $class)
     {
         $data = array_filter(array_merge(...array_values($collectedDataNode->get(static::class))));
         $collected = [];
         foreach ($data as $itemList) {
             foreach ($itemList as $item) {
-                $collected[] = $class::fromArray($item);
+                $collected[] = $class::fromArray($item, $typeSerializer);
             }
         }
         return $collected;
@@ -38,7 +46,7 @@ abstract class AbstractCollector implements PHPStanLatteCollectorInterface
    * @param class-string $class
    * @return T[]
    */
-    public function extractCollectedData(array $collectedDataList, string $class): array
+    public function extractCollectedData(array $collectedDataList, TypeSerializer $typeSerializer, string $class): array
     {
         $collectedTemplateRenders = [];
         foreach ($collectedDataList as $collectedData) {
@@ -48,7 +56,7 @@ abstract class AbstractCollector implements PHPStanLatteCollectorInterface
             /** @phpstan-var A[] $dataList */
             $dataList = $collectedData->getData();
             foreach ($dataList as $data) {
-                $collectedTemplateRenders[] = $class::fromArray($data);
+                $collectedTemplateRenders[] = $class::fromArray($data, $typeSerializer);
             }
         }
         return $collectedTemplateRenders;
@@ -58,14 +66,14 @@ abstract class AbstractCollector implements PHPStanLatteCollectorInterface
      * @phpstan-param array<T> $items
      * @return ?A[]
      */
-    public static function collectItems(array $items): ?array
+    public function collectItems(array $items): ?array
     {
         if (count($items) === 0) {
             return null;
         }
         $data = [];
         foreach ($items as $item) {
-            $data[] = $item->toArray();
+            $data[] = $item->toArray($this->typeSerializer);
         }
         return $data;
     }
@@ -74,9 +82,9 @@ abstract class AbstractCollector implements PHPStanLatteCollectorInterface
      * @phpstan-param T $item
      * @return A[]
      */
-    public static function collectItem(CollectedValueObject $item)
+    public function collectItem(CollectedValueObject $item)
     {
-        return [$item->toArray()];
+        return [$item->toArray($this->typeSerializer)];
     }
 
     /**

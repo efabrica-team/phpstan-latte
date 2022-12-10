@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Component;
-use PHPStan\ShouldNotHappenException;
+use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Type\Type;
 
 /**
- * @phpstan-type CollectedComponentArray array{className: string, methodName: string, componentName: string, componentType: string}
+ * @phpstan-type CollectedComponentArray array{className: string, methodName: string, componentName: string, componentType: array<string, string>}
  */
 final class CollectedComponent extends CollectedValueObject
 {
@@ -59,26 +59,22 @@ final class CollectedComponent extends CollectedValueObject
     /**
      * @phpstan-return CollectedComponentArray
      */
-    public function toArray(): array
+    public function toArray(TypeSerializer $typeSerializer): array
     {
         return [
             'className' => $this->className,
             'methodName' => $this->methodName,
             'componentName' => $this->getComponentName(),
-            'componentType' => serialize($this->component->getType()),
+            'componentType' => $typeSerializer->toArray($this->component->getType()),
         ];
     }
 
     /**
      * @phpstan-param CollectedComponentArray $item
      */
-    public static function fromArray(array $item): self
+    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
     {
-        $type = unserialize($item['componentType']);
-        if (!$type instanceof Type) {
-            throw new ShouldNotHappenException('Cannot unserialize component type');
-        }
-        $component = new Component($item['componentName'], $type);
+        $component = new Component($item['componentName'], $typeSerializer->fromArray($item['componentType']));
         return new CollectedComponent($item['className'], $item['methodName'], $component);
     }
 }

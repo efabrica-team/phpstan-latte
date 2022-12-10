@@ -53,6 +53,8 @@ services:
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
+    - Efabrica\PHPStanLatte\Type\TypeSerializer
+
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenterStandalone
@@ -77,6 +79,7 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables())
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformForeachWithIteratorNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor

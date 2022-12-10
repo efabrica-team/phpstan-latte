@@ -125,4 +125,8 @@ final class SomeControl extends Control
     {
         var_dump($this);
     }
+
+    public function notRender(): void
+    {
+    }
 }
