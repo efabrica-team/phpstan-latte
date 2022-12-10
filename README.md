@@ -89,8 +89,8 @@ Example:
 ```neon
 parameters:
     latte:
-        macros:
-            - MyMacro::install
+        extensions:
+            - MyExtension()
 ```
 
 ### filters
