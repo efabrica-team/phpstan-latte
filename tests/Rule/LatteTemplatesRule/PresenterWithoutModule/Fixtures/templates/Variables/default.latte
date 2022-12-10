@@ -18,12 +18,42 @@
 {$nonExistingVariable}
 {$fromOtherAction}
 
-{php \PhpStan\dumpType($strings)}
-{foreach $strings as $string}
-    {php \PhpStan\dumpType($string)}
+{php \PhpStan\dumpType($stringLists)}
+{foreach $stringLists as $stringList}
+    {php \PhpStan\dumpType($stringList)}
+{/foreach}
+
+{foreach $stringLists as $stringList}
+    {if $iterator->first}START{/if}
+    {if $iterator->isFirst()}START{/if}
+    {$iterator->counter}
+    {$iterator->getCounter()}
+    {php \PhpStan\dumpType($stringList)}
+    {foreach $stringList as $string}
+        {if $iterator->first}INNER START{/if}
+        {if $iterator->isFirst()}INNER START{/if}
+        {$iterator->counter}
+        {$iterator->getCounter()}
+        {php \PhpStan\dumpType($string)}
+        {if $iterator->last}INNER END{/if}
+        {if $iterator->isLast()}INNER END{/if}
+    {/foreach}
+    {if $iterator->last}END{/if}
+    {if $iterator->isLast()}END{/if}
 {/foreach}
 
 {php \PhpStan\dumpType($localStrings)}
 {foreach $localStrings as $string}
     {php \PhpStan\dumpType($string)}
+{/foreach}
+
+{foreach $localStrings as $string}
+    {if $iterator->first}START{/if}
+    {if $iterator->isFirst()}START{/if}
+    {$iterator->counter}
+    {$iterator->getCounter()}
+    {$iterator->getCounter0()}
+    {php \PhpStan\dumpType($string)}
+    {if $iterator->last}END{/if}
+    {if $iterator->isLast()}END{/if}
 {/foreach}

@@ -28,6 +28,9 @@ final class ErrorBuilder
         '/Cannot call method getParent\(\) on Latte\\\\Essential\\\\CachingIterator\|null\./', # latte internal error
         '/Only booleans are allowed in an if condition, bool\|null given\./', // latte code don't pass phpstan/strict-rules
         '/Instanceof between .* and Nette\\\\Application\\\\UI\\\\Renderable will always evaluate to true\./', // latte code don't pass phpstan/strict-rules
+        '/Parameter #2 \$parent of class Latte\\\\Runtime\\\\CachingIterator constructor expects Latte\\\\Runtime\\\\CachingIterator\|null, mixed given\./', // creating caching iterator
+        '/Cannot access property (.*?) on Latte\\\\Runtime\\\\CachingIterator\|null\./', // inner foreach cause that phpstan thinks there is null in CachingIterator
+        '/Cannot call method (.*?) on Latte\\\\Runtime\\\\CachingIterator\|null\./',  // inner foreach cause that phpstan thinks there is null in CachingIterator
     ];
 
     /** @var ErrorTransformerInterface[] */
