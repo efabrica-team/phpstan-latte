@@ -24,7 +24,7 @@ use PHPStan\Type\VerbosityLevel;
  * @phpstan-import-type CollectedFormArray from CollectedForm
  * @extends AbstractCollector<Node, CollectedForm, CollectedFormArray>
  */
-final class FormCollector extends AbstractCollector
+final class FormCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
     private NameResolver $nameResolver;
 

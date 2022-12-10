@@ -6,17 +6,17 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Node\ExecutionEndNode;
+use PHPStan\Node\InClassNode;
 
-final class ParentCollector implements PHPStanLatteCollectorInterface
+final class RelatedFilesCollector implements PHPStanLatteCollectorInterface
 {
     public function getNodeType(): string
     {
-        return ExecutionEndNode::class;
+        return InClassNode::class;
     }
 
     /**
-     * @param ExecutionEndNode $node
+     * @param InClassNode $node
      */
     public function processNode(Node $node, Scope $scope)
     {

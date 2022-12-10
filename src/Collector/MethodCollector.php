@@ -13,7 +13,7 @@ use PHPStan\Node\ExecutionEndNode;
  * @phpstan-import-type CollectedMethodArray from CollectedMethod
  * @extends AbstractCollector<ExecutionEndNode, CollectedMethod, CollectedMethodArray>
  */
-final class MethodCollector extends AbstractCollector
+final class MethodCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
     public function getNodeType(): string
     {

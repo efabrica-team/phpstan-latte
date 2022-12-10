@@ -104,48 +104,48 @@ services:
 
     -
         factory: Efabrica\PHPStanLatte\Collector\VariableCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\MethodCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\MethodOutputCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\TemplatePathCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
         factory: Efabrica\PHPStanLatte\Collector\FormCollector
-        tags:
-            - phpstan.collector
+#        tags:
+#            - phpstan.collector
 
     -
-        factory: Efabrica\PHPStanLatte\Collector\ParentCollector
-        tags:
-            - phpstan.collector
+        factory: Efabrica\PHPStanLatte\Collector\RelatedFilesCollector
+#        tags:
+#            - phpstan.collector
 
     # Variable collectors
     variableCollectorStorage:

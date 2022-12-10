@@ -6,9 +6,12 @@ namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
+use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\Collector\ParentCollector;
+use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
+use Efabrica\PHPStanLatte\Collector\RelatedFilesCollector;
 use Efabrica\PHPStanLatte\Collector\PHPStanLatteCollectorInterface;
+use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
@@ -19,6 +22,7 @@ use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
+use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Registry;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
@@ -51,6 +55,9 @@ final class LatteTemplatesRule implements Rule
     /** @var PHPStanLatteCollectorInterface[] */
     private array $latteCollectors;
 
+    /** @var PHPStanLatteCollectorInterface[] */
+    private array $latteCollectorsForAnalyse;
+
     private TemplateRenderCollector $templateRenderCollector;
 
     private ErrorBuilder $errorBuilder;
@@ -61,7 +68,7 @@ final class LatteTemplatesRule implements Rule
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
-     * @param PHPStanLatteCollectorInterface[] $latteCollector
+     * @param PHPStanLatteCollectorInterface[] $latteCollectors
      */
     public function __construct(
         array $latteTemplateResolvers,
@@ -69,7 +76,7 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
-        array $latteCollector,
+        array $latteCollectors,
         TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
@@ -80,7 +87,10 @@ final class LatteTemplatesRule implements Rule
         $this->fileAnalyserFactory = $fileAnalyserFactory;
         $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
-        $this->latteCollectors = $latteCollector;
+        $this->latteCollectors = $latteCollectors;
+        $this->latteCollectorsForAnalyse = array_filter($latteCollectors, function (PHPStanLatteCollectorInterface $latteCollector) {
+            return !$latteCollector instanceof ResolvedNodeCollector;
+        });
         $this->templateRenderCollector = $templateRenderCollector;
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
@@ -97,7 +107,9 @@ final class LatteTemplatesRule implements Rule
      */
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
-        $collectedDataNode = $this->collectAdditionalData($collectedDataNode);
+        $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
+        $processedFiles = array_unique(array_keys($resolvedNodes));
+        $collectedDataNode = $this->collectAdditionalData($collectedDataNode, $processedFiles);
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
 
         $errors = [];
@@ -118,13 +130,11 @@ final class LatteTemplatesRule implements Rule
         return $errors;
     }
 
-    private function collectAdditionalData(CollectedDataNode $collectedDataNode): CollectedDataNode
+    /**
+     * @param string[] $newFilesToCheck
+     */
+    private function collectAdditionalData(CollectedDataNode $collectedDataNode, array $newFilesToCheck): CollectedDataNode
     {
-        $collectedParents = $collectedDataNode->get(ParentCollector::class);
-        $processedFiles = array_unique(array_merge(array_keys($collectedParents)));
-        $relatedFiles = array_unique(array_merge(...array_merge(...array_values($collectedParents))));
-        $newFilesToCheck = array_diff($relatedFiles, $processedFiles);
-
         if ($newFilesToCheck === []) {
             return $collectedDataNode;
         }
@@ -135,14 +145,22 @@ final class LatteTemplatesRule implements Rule
                 $newFileToCheck,
                 [],
                 new DirectRegistry([]),
-                new Registry($this->latteCollectors),
+                new Registry($this->latteCollectorsForAnalyse),
                 null
             );
             $collectedData[] = $fileAnalyserResult->getCollectedData();
         }
 
         $newCollectedDataNode = new CollectedDataNode(array_merge(...$collectedData));
-        return $this->collectAdditionalData($newCollectedDataNode);
+
+        $collectedParents = $newCollectedDataNode->get(RelatedFilesCollector::class);
+        $processedFiles = array_unique(array_merge(array_keys($collectedParents)));
+        $relatedFiles = array_unique(array_merge(...array_merge(...array_values($collectedParents))));
+        $newFilesToCheck = array_diff($relatedFiles, $processedFiles);
+
+//        print_R($newFilesToCheck);
+//exit;
+        return $this->collectAdditionalData($newCollectedDataNode, $newFilesToCheck);
     }
 
     /**

@@ -16,7 +16,7 @@ use PHPStan\Node\CollectedDataNode;
  * @template A of array
  * @implements Collector<N, ?A[]>
  */
-abstract class AbstractCollector implements PHPStanLatteCollectorInterface
+abstract class AbstractCollector implements Collector
 {
     protected TypeSerializer $typeSerializer;
 

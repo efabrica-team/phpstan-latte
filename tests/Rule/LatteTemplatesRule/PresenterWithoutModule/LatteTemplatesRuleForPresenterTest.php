@@ -141,105 +141,105 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         ]);
     }
 
-    public function testComponents(): void
-    {
-        $this->analyse([
-            __DIR__ . '/Fixtures/ComponentsPresenter.php',
-            __DIR__ . '/Source/ControlRegistrator.php',
-            __DIR__ . '/Source/SomeBodyControl.php',
-            __DIR__ . '/Source/SomeControl.php',
-            __DIR__ . '/Source/SomeFooterControl.php',
-            __DIR__ . '/Source/SomeHeaderControl.php',
-            __DIR__ . '/Source/SomeTableControl.php',
-        ], [
-            [
-                'Component with name "onlyCreateForm" probably doesn\'t exist.',
-                9,
-                'default.latte',
-            ],
-            [
-                'Component with name "nonExistingControl" probably doesn\'t exist.',
-                11,
-                'default.latte',
-            ],
-            [
-                'Call to an undefined method ' . SomeControl::class . '::renderNonExistingRender().',
-                17,
-                'default.latte',
-            ],
-            [
-                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
-                23,
-                'default.latte',
-            ],
-            [
-                'Component with name "noType" have no type specified.',
-                25,
-                'default.latte',
-                'Define return type of createComponentNoType method.',
-            ],
-            [
-                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
-                7,
-                'create.latte',
-            ],
-            [
-                'Component with name "nonExistingControl" probably doesn\'t exist.',
-                11,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl" probably doesn\'t exist.',
-                13,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl-header" probably doesn\'t exist.',
-                14,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl-body" probably doesn\'t exist.',
-                15,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl-body-table" probably doesn\'t exist.',
-                16,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl-footer" probably doesn\'t exist.',
-                17,
-                'create.latte',
-            ],
-            [
-                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
-                18,
-                'create.latte',
-            ],
-            [
-                'Component with name "nonExistingControl" probably doesn\'t exist.',
-                3,
-                'parent.latte',
-            ],
-            [
-                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
-                7,
-                'noAction.latte',
-            ],
-            [
-                'Component with name "onlyCreateForm" probably doesn\'t exist.',
-                9,
-                'noAction.latte',
-            ],
-            [
-                'Component with name "nonExistingControl" probably doesn\'t exist.',
-                11,
-                'noAction.latte',
-            ],
-        ]);
-    }
+//    public function testComponents(): void
+//    {
+//        $this->analyse([
+//            __DIR__ . '/Fixtures/ComponentsPresenter.php',
+////            __DIR__ . '/Source/ControlRegistrator.php',
+////            __DIR__ . '/Source/SomeBodyControl.php',
+////            __DIR__ . '/Source/SomeControl.php',
+////            __DIR__ . '/Source/SomeFooterControl.php',
+////            __DIR__ . '/Source/SomeHeaderControl.php',
+////            __DIR__ . '/Source/SomeTableControl.php',
+//        ], [
+//            [
+//                'Component with name "onlyCreateForm" probably doesn\'t exist.',
+//                9,
+//                'default.latte',
+//            ],
+//            [
+//                'Component with name "nonExistingControl" probably doesn\'t exist.',
+//                11,
+//                'default.latte',
+//            ],
+//            [
+//                'Call to an undefined method ' . SomeControl::class . '::renderNonExistingRender().',
+//                17,
+//                'default.latte',
+//            ],
+//            [
+//                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
+//                23,
+//                'default.latte',
+//            ],
+//            [
+//                'Component with name "noType" have no type specified.',
+//                25,
+//                'default.latte',
+//                'Define return type of createComponentNoType method.',
+//            ],
+//            [
+//                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
+//                7,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "nonExistingControl" probably doesn\'t exist.',
+//                11,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl" probably doesn\'t exist.',
+//                13,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl-header" probably doesn\'t exist.',
+//                14,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl-body" probably doesn\'t exist.',
+//                15,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl-body-table" probably doesn\'t exist.',
+//                16,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl-footer" probably doesn\'t exist.',
+//                17,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "someControl-nonexisting" probably doesn\'t exist.',
+//                18,
+//                'create.latte',
+//            ],
+//            [
+//                'Component with name "nonExistingControl" probably doesn\'t exist.',
+//                3,
+//                'parent.latte',
+//            ],
+//            [
+//                'Component with name "onlyParentDefaultForm" probably doesn\'t exist.',
+//                7,
+//                'noAction.latte',
+//            ],
+//            [
+//                'Component with name "onlyCreateForm" probably doesn\'t exist.',
+//                9,
+//                'noAction.latte',
+//            ],
+//            [
+//                'Component with name "nonExistingControl" probably doesn\'t exist.',
+//                11,
+//                'noAction.latte',
+//            ],
+//        ]);
+//    }
 
     public function testForms(): void
     {

@@ -19,7 +19,7 @@ use PHPStan\Analyser\Scope;
  * @phpstan-import-type CollectedVariableArray from CollectedVariable
  * @extends AbstractCollector<Node, CollectedVariable, CollectedVariableArray>
  */
-final class VariableCollector extends AbstractCollector
+final class VariableCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
     private TemplateTypeResolver $templateTypeResolver;
 

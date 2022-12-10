@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
-use Efabrica\PHPStanLatte\Collector\PHPStanLatteCollectorInterface;
+use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
@@ -19,12 +19,9 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
 
     protected function getCollectors(): array
     {
-        $container = $this->getContainer();
-        $collectors = [];
-        foreach ($container->findServiceNamesByType(PHPStanLatteCollectorInterface::class) as $serviceName) {
-            $collectors[] = $container->getService($serviceName);
-        }
-        return $collectors;
+        return [
+            $this->getContainer()->getByType(ResolvedNodeCollector::class),
+        ];
     }
 
     public function analyse(array $files, array $expectedErrors): void
