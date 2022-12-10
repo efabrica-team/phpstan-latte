@@ -13,6 +13,7 @@ use Efabrica\PHPStanLatte\Collector\RelatedFilesCollector;
 use Efabrica\PHPStanLatte\Collector\PHPStanLatteCollectorInterface;
 use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
@@ -152,14 +153,16 @@ final class LatteTemplatesRule implements Rule
         }
 
         $newCollectedDataNode = new CollectedDataNode(array_merge(...$collectedData));
+        $collectedRelatedFiles = RelatedFilesCollector::loadData($newCollectedDataNode, $this->typeSerializer, CollectedRelatedFiles::class);
 
-        $collectedParents = $newCollectedDataNode->get(RelatedFilesCollector::class);
-        $processedFiles = array_unique(array_merge(array_keys($collectedParents)));
-        $relatedFiles = array_unique(array_merge(...array_merge(...array_values($collectedParents))));
-        $newFilesToCheck = array_diff($relatedFiles, $processedFiles);
+        $processedFiles = [];
+        $relatedFiles = [];
+        foreach ($collectedRelatedFiles as $collectedRelatedFile) {
+            $processedFiles[] = $collectedRelatedFile->getProcessedFile();
+            $relatedFiles[] = $collectedRelatedFile->getRelatedFiles();
+        }
 
-//        print_R($newFilesToCheck);
-//exit;
+        $newFilesToCheck = array_diff(array_merge(...$relatedFiles), $processedFiles);
         return $this->collectAdditionalData($newCollectedDataNode, $newFilesToCheck);
     }
 

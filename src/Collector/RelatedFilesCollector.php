@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector;
 
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedRelatedFiles;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 
-final class RelatedFilesCollector implements PHPStanLatteCollectorInterface
+final class RelatedFilesCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
     public function getNodeType(): string
     {
@@ -18,7 +19,7 @@ final class RelatedFilesCollector implements PHPStanLatteCollectorInterface
     /**
      * @param InClassNode $node
      */
-    public function processNode(Node $node, Scope $scope)
+    public function processNode(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
@@ -30,6 +31,6 @@ final class RelatedFilesCollector implements PHPStanLatteCollectorInterface
             $relatedFiles[] = $parentClassReflection->getFileName();
         }
 
-        return array_unique(array_filter($relatedFiles));
+        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), $relatedFiles));
     }
 }
