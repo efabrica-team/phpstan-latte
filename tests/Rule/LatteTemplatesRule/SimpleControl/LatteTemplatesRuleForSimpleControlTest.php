@@ -196,4 +196,40 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testBlocks(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Blocks/SomeControl.php'], [
+            [
+                'Dumped type: ?\stdClass',
+                2,
+                'define.latte',
+            ],
+            [
+                'Dumped type: ?string',
+                3,
+                'define.latte',
+            ],
+            [
+                'Dumped type: ?string',
+                4,
+                'define.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                5,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string',
+                6,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string',
+                7,
+                'define.latte',
+            ],
+        ]);
+    }
 }

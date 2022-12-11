@@ -1,0 +1,10 @@
+{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default'}
+    {php \PhpStan\dumpType($paramObject)}
+    {php \PhpStan\dumpType($paramString)}
+    {php \PhpStan\dumpType($paramNullable)}
+    {php \PhpStan\dumpType($paramNoType)}
+    {php \PhpStan\dumpType($paramDefault)}
+    {php \PhpStan\dumpType($paramNoTypeDefault)}
+{/define}
+
+{include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString}
