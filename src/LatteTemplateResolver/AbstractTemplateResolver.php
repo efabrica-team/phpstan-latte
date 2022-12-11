@@ -12,6 +12,7 @@ use Efabrica\PHPStanLatte\Collector\Finder\TemplatePathFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\TemplateRenderFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Node\CollectedDataNode;
@@ -21,6 +22,8 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
     private TypeSerializer $typeSerializer;
 
     private PathResolver $pathResolver;
+
+    protected LattePhpDocResolver $lattePhpDocResolver;
 
     protected MethodFinder $methodFinder;
 
@@ -36,10 +39,11 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(TypeSerializer $typeSerializer, PathResolver $pathResolver)
+    public function __construct(TypeSerializer $typeSerializer, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         $this->typeSerializer = $typeSerializer;
         $this->pathResolver = $pathResolver;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function resolve(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult

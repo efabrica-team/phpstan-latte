@@ -19,7 +19,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     public function testThisTemplate(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisTemplate/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\ThisTemplate\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
 
         ]);
@@ -28,7 +28,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     public function testThisGetTemplate(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisGetTemplate/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\ThisGetTemplate\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
         ]);
     }
@@ -36,7 +36,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     public function testTemplateAsVariable(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\TemplateAsVariable\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
         ]);
     }
@@ -44,7 +44,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     public function testMultipleRenderMethods(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/MultipleRenderMethods/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\MultipleRenderMethods\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
             'TEMPLATE test.latte SomeControl::renderTest ["presenter","control","c","d"] []',
             'TEMPLATE invalid_file.latte SomeControl::renderTemplateFileNotFound ["presenter","control"] []',
@@ -56,14 +56,14 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     public function testResolveError(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/ResolveError/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\ResolveError\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
         ]);
     }
 
     public function testResolve(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/Resolve/SomeControl.php'], [
-            'NODE NetteApplicationUIControl {"className":"\SimpleControl\Fixtures\Resolve\SomeControl"}',
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE constVar.latte SomeControl::renderConstVar ["presenter","control","a","b"] []',
             'TEMPLATE explicit.latte SomeControl::renderExplicit ["presenter","control","a","b"] []',
             'TEMPLATE defaultVars.latte SomeControl::renderDefaultVars ["presenter","control","a","b"] []',
@@ -72,6 +72,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE explicitObject.latte SomeControl::renderExplicitObject ["presenter","control","a","b"] []',
             'TEMPLATE complexType.latte SomeControl::renderComplexType ["presenter","control","a","b"] []',
             'TEMPLATE throwSometimes.latte SomeControl::renderThrowSometimes ["presenter","control"] []',
+            'TEMPLATE default.latte SomeControl::renderIgnoredRender ["presenter","control"] []',
         ]);
     }
 }

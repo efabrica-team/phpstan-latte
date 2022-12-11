@@ -69,12 +69,8 @@ final class TemplateRenderFinder
         foreach ($templateRenders as $templateRender) {
             // when render call does not specify template directly use default template(s) collected from setFile() calls
             if ($templateRender->getTemplatePath() === null) {
-                if (count($defaultTemplatePaths) === 0) {
-                    $templateRendersWithTemplatePaths[] = $templateRender->withError();
-                } else {
-                    foreach ($defaultTemplatePaths as $defaultTemplatePath) {
-                        $templateRendersWithTemplatePaths[] = $templateRender->withTemplatePath($defaultTemplatePath);
-                    }
+                foreach ($defaultTemplatePaths as $defaultTemplatePath) {
+                    $templateRendersWithTemplatePaths[] = $templateRender->withTemplatePath($defaultTemplatePath);
                 }
             } else {
                 $templateRendersWithTemplatePaths[] = $templateRender;
