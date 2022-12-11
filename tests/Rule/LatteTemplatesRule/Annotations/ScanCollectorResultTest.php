@@ -9,10 +9,11 @@ use Nette\Utils\Finder;
 
 abstract class ScanCollectorResultTest extends CollectorResultTest
 {
-    private $expectedErrorsScanner;
+    private ExpectedErrorsScanner $expectedErrorsScanner;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->expectedErrorsScanner = new ExpectedErrorsScanner();
     }
 
