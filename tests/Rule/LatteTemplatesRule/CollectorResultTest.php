@@ -14,11 +14,15 @@ abstract class CollectorResultTest extends LatteTemplatesRuleTest
         return $this->getContainer()->getByType(CollectorResultRule::class);
     }
 
-    public function analyse(array $files, array $expectedErrors): void
+    public function analyse(array $files, array $expectedErrors, string $namespace = null): void
     {
         $actualErrors = $this->gatherAnalyserErrors($files);
-        $actualErrors = array_map(static function (Error $error): string {
-            return $error->getMessage();
+        $actualErrors = array_map(static function (Error $error) use ($namespace): string {
+            $message = $error->getMessage();
+            if ($namespace) {
+                $message = str_replace($namespace . '\\', '', $message);
+            }
+            return $message;
         }, $actualErrors);
         sort($actualErrors);
         sort($expectedErrors);

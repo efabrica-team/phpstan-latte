@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
@@ -23,10 +24,13 @@ final class VariableCollector extends AbstractCollector implements PHPStanLatteC
 {
     private TemplateTypeResolver $templateTypeResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, TemplateTypeResolver $templateTypeResolver)
+    private LattePhpDocResolver $lattePhpDocResolver;
+
+    public function __construct(TypeSerializer $typeSerializer, TemplateTypeResolver $templateTypeResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         parent::__construct($typeSerializer);
         $this->templateTypeResolver = $templateTypeResolver;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -71,6 +75,10 @@ final class VariableCollector extends AbstractCollector implements PHPStanLatteC
 
         $assignVariableType = $scope->getType($var);
         if (!$this->templateTypeResolver->resolve($assignVariableType)) {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 

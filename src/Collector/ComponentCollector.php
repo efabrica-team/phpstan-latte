@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Component;
@@ -30,11 +31,14 @@ final class ComponentCollector extends AbstractCollector implements PHPStanLatte
 
     private ValueResolver $valueResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver)
+    private LattePhpDocResolver $lattePhpDocResolver;
+
+    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -87,6 +91,10 @@ final class ComponentCollector extends AbstractCollector implements PHPStanLatte
             return null;
         }
 
+        if ($this->lattePhpDocResolver->resolveForMethod($classReflection->getName(), $methodName)->isIgnored()) {
+            return null;
+        }
+
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
         return $this->collectItem(new CollectedComponent(
             $classReflection->getName(),
@@ -116,6 +124,10 @@ final class ComponentCollector extends AbstractCollector implements PHPStanLatte
 
         $names = $this->valueResolver->resolve($componentNameArg, $scope);
         if ($names === null) {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 
@@ -155,6 +167,10 @@ final class ComponentCollector extends AbstractCollector implements PHPStanLatte
             return null;
         }
         if (!$node->var->dim instanceof Expr) {
+            return null;
+        }
+
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 

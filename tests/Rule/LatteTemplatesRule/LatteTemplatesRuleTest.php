@@ -24,18 +24,21 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
         ];
     }
 
-    public function analyse(array $files, array $expectedErrors): void
+    public function analyse(array $files, array $expectedErrors, string $namespace = null): void
     {
         $actualErrors = $this->gatherAnalyserErrors($files);
-        $strictlyTypedSprintf = static function (int $line, string $message, string $file, ?string $tip): string {
+        $strictlyTypedSprintf = static function (int $line, string $message, string $file, ?string $tip) use ($namespace): string {
             $message = $file . ':' . sprintf('%02d: %s', $line, $message);
             if ($tip !== null) {
-                $message .= ' | ' . $tip;
+                $message .= ' ### ' . $tip;
+            }
+            if ($namespace) {
+                $message = str_replace($namespace . '\\', '', $message);
             }
             return $message;
         };
         $expectedErrors = array_map(static function (array $error) use ($strictlyTypedSprintf): string {
-            return $strictlyTypedSprintf($error[1], $error[0], $error[2], $error[3] ?? null);
+            return $strictlyTypedSprintf($error['line'] ?? $error[1], $error['error'] ?? $error[0], $error['file'] ?? $error[2], $error['tip'] ?? $error[3] ?? null);
         }, $expectedErrors);
         $actualErrors = array_map(static function (Error $error) use ($strictlyTypedSprintf): string {
             $line = $error->getLine();

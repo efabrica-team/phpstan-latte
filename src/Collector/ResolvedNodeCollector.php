@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -19,13 +20,16 @@ final class ResolvedNodeCollector extends AbstractCollector implements PHPStanLa
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
+    private LattePhpDocResolver $lattePhpDocResolver;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
-    public function __construct(TypeSerializer $typeSerializer, array $latteTemplateResolvers)
+    public function __construct(TypeSerializer $typeSerializer, array $latteTemplateResolvers, LattePhpDocResolver $lattePhpDocResolver)
     {
         parent::__construct($typeSerializer);
         $this->latteTemplateResolvers = $latteTemplateResolvers;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -38,6 +42,9 @@ final class ResolvedNodeCollector extends AbstractCollector implements PHPStanLa
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
+            return null;
+        }
         $resolvedNodes = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             $resolvedNode = $latteTemplateResolver->collect($node, $scope);

@@ -89,9 +89,11 @@ final class CollectorResultRule implements Rule
      */
     private function dumpValue($value): string
     {
+        if (isset($value['className'])) {
+            $value['className'] = $this->shortClassName($value['className']);
+        }
         $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $value = str_replace('\\\\', '\\', $value);
-        $value = str_replace(__NAMESPACE__, '', $value);
         return $value;
     }
 }
