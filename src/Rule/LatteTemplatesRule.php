@@ -159,10 +159,12 @@ final class LatteTemplatesRule implements Rule
         $relatedFiles = [];
         foreach ($collectedRelatedFiles as $collectedRelatedFile) {
             $processedFiles[] = $collectedRelatedFile->getProcessedFile();
-            $relatedFiles[] = $collectedRelatedFile->getRelatedFiles();
+            $relatedFiles[] = array_filter($collectedRelatedFile->getRelatedFiles(), function(string $file) {
+                return pathinfo($file, PATHINFO_EXTENSION) === 'php';
+            });
         }
 
-        $newFilesToCheck = array_diff(array_merge(...$relatedFiles), $processedFiles);
+        $newFilesToCheck = array_diff(array_unique(array_merge(...$relatedFiles)), array_unique($processedFiles));
         return $this->collectAdditionalData($newCollectedDataNode, $newFilesToCheck);
     }
 
