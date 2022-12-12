@@ -61,6 +61,7 @@ services:
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIControl
 
     # Type resolvers
+    - Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver
     - Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver
 
     # Value resolvers
