@@ -86,6 +86,7 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor

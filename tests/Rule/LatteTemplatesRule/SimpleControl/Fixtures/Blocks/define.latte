@@ -1,10 +1,12 @@
-{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default'}
+{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123}
     {php \PhpStan\dumpType($paramObject)}
     {php \PhpStan\dumpType($paramString)}
     {php \PhpStan\dumpType($paramNullable)}
     {php \PhpStan\dumpType($paramNoType)}
     {php \PhpStan\dumpType($paramDefault)}
     {php \PhpStan\dumpType($paramNoTypeDefault)}
+    {php \PhpStan\dumpType($paramFloat)}
+    {php \PhpStan\dumpType($paramInteger)}
 {/define}
 
-{include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString}
+{include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger}

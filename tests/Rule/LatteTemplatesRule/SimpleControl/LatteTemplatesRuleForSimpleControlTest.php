@@ -201,17 +201,17 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/Blocks/SomeControl.php'], [
             [
-                'Dumped type: ?\stdClass',
+                'Dumped type: stdClass|null',
                 2,
                 'define.latte',
             ],
             [
-                'Dumped type: ?string',
+                'Dumped type: string|null',
                 3,
                 'define.latte',
             ],
             [
-                'Dumped type: ?string',
+                'Dumped type: string|null',
                 4,
                 'define.latte',
             ],
@@ -221,13 +221,23 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: string',
+                'Dumped type: string|null',
                 6,
                 'define.latte',
             ],
             [
-                'Dumped type: string',
+                'Dumped type: mixed',
                 7,
+                'define.latte',
+            ],
+            [
+                'Dumped type: float|null',
+                8,
+                'define.latte',
+            ],
+            [
+                'Dumped type: int|null',
+                9,
                 'define.latte',
             ],
         ]);

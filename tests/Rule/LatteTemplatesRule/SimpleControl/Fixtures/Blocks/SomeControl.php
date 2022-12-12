@@ -13,6 +13,8 @@ final class SomeControl extends Control
     {
         $this->template->knownObject = new stdClass();
         $this->template->knownString = 'a';
+        $this->template->knownFloat = 1.23;
+        $this->template->knownInteger = 123;
 
         $this->template->setFile(__DIR__ . '/define.latte');
         $this->template->render();
