@@ -41,6 +41,9 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract impleme
         }
 
         $methodName = $this->nameResolver->resolve($node->name);
+        if ($methodName === null) {
+            return null;
+        }
         if (!str_starts_with($methodName, 'block')) {
             return null;
         }
