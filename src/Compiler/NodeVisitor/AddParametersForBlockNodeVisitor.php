@@ -53,7 +53,7 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract impleme
             return null;
         }
 
-        $pattern = '/{define (?<block_name>.*?), (?<parameters>.*)} on line (?<line>\d+)/';
+        $pattern = '/{define (?<block_name>.*?),? (?<parameters>.*)} on line (?<line>\d+)/';
         preg_match($pattern, $comment->getText(), $match);
         if (!isset($match['parameters'])) {
             return null;

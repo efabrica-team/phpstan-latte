@@ -90,6 +90,7 @@ services:
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
