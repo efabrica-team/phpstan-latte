@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
+use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
@@ -22,13 +23,16 @@ use PHPStan\Analyser\Scope;
  */
 final class VariableCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
+    private TypeResolver $typeResolver;
+
     private TemplateTypeResolver $templateTypeResolver;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, TemplateTypeResolver $templateTypeResolver, LattePhpDocResolver $lattePhpDocResolver)
+    public function __construct(TypeSerializer $typeSerializer, TypeResolver $typeResolver, TemplateTypeResolver $templateTypeResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         parent::__construct($typeSerializer);
+        $this->typeResolver = $typeResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -82,11 +86,16 @@ final class VariableCollector extends AbstractCollector implements PHPStanLatteC
             return null;
         }
 
+        $variableType = $this->typeResolver->resolveAsConstantType($node->expr, $scope);
+        if ($variableType === null) {
+            $variableType = $scope->getType($node->expr);
+        }
+
         $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
         return $this->collectItem(new CollectedVariable(
             $classReflection->getName(),
             $functionName,
-            new TemplateVariable($variableName, $scope->getType($node->expr))
+            new TemplateVariable($variableName, $variableType)
         ));
     }
 }

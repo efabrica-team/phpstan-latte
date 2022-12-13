@@ -243,15 +243,24 @@ final class LatteTemplatesRule implements Rule
             $collectedTemplateRenders = $this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), $this->typeSerializer, CollectedTemplateRender::class);
             foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
-                if (is_string($includedTemplatePath)) {
+                if (is_string($includedTemplatePath) && $includedTemplatePath !== '') {
+                    if ($includedTemplatePath[0] !== '/') {
+                        $includedTemplatePath = $dir . '/' . $includedTemplatePath;
+                    }
+                    $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
                     $includeTemplates[] = new Template(
-                        realpath($dir . '/' . $collectedTemplateRender->getTemplatePath()) ?: '',
+                        $includedTemplatePath,
                         $actualClass,
                         $actualAction,
                         array_merge($collectedTemplateRender->getVariables(), $template->getVariables()),
                         $template->getComponents(),
                         $template->getForms(),
                         $template->getPath()
+                    );
+                } elseif ($includedTemplatePath === '') {
+                    $errors[] = $this->errorBuilder->buildError(
+                        new Error('Empty path to included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
+                        $templatePath
                     );
                 } elseif ($includedTemplatePath === false) {
                     $errors[] = $this->errorBuilder->buildError(

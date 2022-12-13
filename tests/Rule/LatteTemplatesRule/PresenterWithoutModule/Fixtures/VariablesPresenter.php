@@ -48,4 +48,10 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->render(__DIR__ . '/templates/Variables/direct.latte', ['fromRender' => 'b']);
         $this->terminate();
     }
+
+    public function actionDynamicInclude(): void
+    {
+        $this->template->dynamicIncludeVar = 'a';
+        $this->template->includedTemplate = __DIR__ . '/templates/Variables/@includedDynamically.latte';
+    }
 }
