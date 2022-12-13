@@ -115,6 +115,10 @@ services:
         arguments:
             parser: @defaultAnalysisParser
     -
+        factory: Efabrica\PHPStanLatte\Collector\VariableMethodPhpDocCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
         factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
         arguments:
             parser: @defaultAnalysisParser

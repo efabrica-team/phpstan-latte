@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -17,10 +17,10 @@ use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
- * @extends AbstractCollector<ClassMethod, CollectedTemplateRender, CollectedTemplateRenderArray>
+ * @phpstan-import-type CollectedVariableArray from CollectedVariable
+ * @extends AbstractCollector<ClassMethod, CollectedVariable, CollectedVariableArray>
  */
-final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
+final class VariableMethodPhpDocCollector extends AbstractCollector
 {
     private LattePhpDocResolver $lattePhpDocResolver;
 
@@ -43,7 +43,7 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
 
     /**
      * @param ClassMethod $node
-     * @phpstan-return null|CollectedTemplateRenderArray[]
+     * @phpstan-return null|CollectedVariableArray[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -64,17 +64,13 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
 
         $variables = [];
         foreach ($lattePhpDoc->getVariablesWithParents() as $name => $type) {
-            if ($name === '') {
-                continue; // method annotation without variable name not allowed
-            }
-            $variables[$name] = new Variable($name, $type);
+            $variables[$name] = CollectedVariable::build($node, $scope, $name, $type);
         }
 
-        $templateRenders = [];
-        foreach ($lattePhpDoc->getTemplatePathsWithParents() as $templatePath) {
-            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $templatePath, $variables);
+        foreach ($lattePhpDoc->getParentClass()->getVariables() as $name => $type) {
+            $variables[] = new CollectedVariable($classReflection->getName(), '', new Variable($name, $type));
         }
 
-        return $this->collectItems($templateRenders);
+        return $this->collectItems(array_values($variables));
     }
 }

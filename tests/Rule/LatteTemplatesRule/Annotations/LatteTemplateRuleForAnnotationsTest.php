@@ -13,6 +13,7 @@ final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTe
         return [
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
+            __DIR__ . '/config.neon',
         ];
     }
 

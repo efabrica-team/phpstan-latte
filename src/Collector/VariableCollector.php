@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
-use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
@@ -84,16 +83,15 @@ final class VariableCollector extends AbstractCollector
         } else {
             return null;
         }
+
         if ($nameNode instanceof Expr) {
-            return null;
+            $variableName = null;
+        } else {
+            $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
         }
 
         $assignVariableType = $scope->getType($var);
         if (!$this->templateTypeResolver->resolve($assignVariableType)) {
-            return null;
-        }
-
-        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 
@@ -102,11 +100,23 @@ final class VariableCollector extends AbstractCollector
             $variableType = $scope->getType($node->expr);
         }
 
-        $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
-        return $this->collectItem(new CollectedVariable(
-            $classReflection->getName(),
-            $functionName,
-            new TemplateVariable($variableName, $variableType)
-        ));
+        if ($variableName !== null) {
+            $variables = [CollectedVariable::build($node, $scope, $variableName, $variableType)];
+        } else {
+            $variables = [];
+        }
+
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->isIgnored()) {
+            return null;
+        }
+        if ($lattePhpDoc->getVariables($variableName) !== []) {
+            $variables = [];
+            foreach ($lattePhpDoc->getVariables($variableName) as $name => $type) {
+                $variables[] = CollectedVariable::build($node, $scope, $name, $type);
+            }
+        }
+
+        return $this->collectItems($variables);
     }
 }

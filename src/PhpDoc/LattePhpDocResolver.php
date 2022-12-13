@@ -6,23 +6,39 @@ namespace Efabrica\PHPStanLatte\PhpDoc;
 
 use Nette\Utils\Strings;
 use PhpParser\Node;
+use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
-use PHPStan\PhpDoc\PhpDocStringResolver;
+use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDocParser\Ast\PhpDoc\GenericTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\FileTypeMapper;
+use PHPStan\Type\Type;
 
 final class LattePhpDocResolver
 {
-    private PhpDocStringResolver $phpDocStringResolver;
+    private Lexer $phpDocLexer;
+
+    private TypeParser $typeParser;
+
+    private TypeNodeResolver $typeNodeResolver;
+
+    private FileTypeMapper $fileTypeMapper;
 
     private ReflectionProvider $reflectionProvider;
 
     // TODO: Implement caching to prevent repeated parsing of same doc comment
-    public function __construct(PhpDocStringResolver $phpDocStringResolver, ReflectionProvider $reflectionProvider)
+    public function __construct(Lexer $phpDocLexer, TypeParser $typeParser, TypeNodeResolver $typeNodeResolver, FileTypeMapper $fileTypeMapper, ReflectionProvider $reflectionProvider)
     {
-        $this->phpDocStringResolver = $phpDocStringResolver;
+        $this->phpDocLexer = $phpDocLexer;
+        $this->typeParser = $typeParser;
+        $this->typeNodeResolver = $typeNodeResolver;
+        $this->fileTypeMapper = $fileTypeMapper;
         $this->reflectionProvider = $reflectionProvider;
     }
 
@@ -31,24 +47,59 @@ final class LattePhpDocResolver
         if ($commentText === null || $commentText === '') {
             return new LattePhpDoc();
         }
-        $phpDocNode = $this->phpDocStringResolver->resolve($commentText);
 
-        $isIgnored = count($phpDocNode->getTagsByName('@phpstan-latte-ignore')) > 0;
+        $resolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
+            $classReflection->getFileName(),
+            $classReflection->getName(),
+            null,
+            null,
+            $commentText,
+        );
 
-        $templateTags = $phpDocNode->getTagsByName('@phpstan-latte-template');
-        if (count($templateTags) > 0) {
-            $templatePaths = [];
-            foreach ($templateTags as $templateTag) {
-                if (!$templateTag->value instanceof GenericTagValueNode) {
-                    continue;
-                }
-                $templatePaths[] = $this->replacePlaceholders($templateTag->value->value, $classReflection);
-            }
-        } else {
-            $templatePaths = null;
+        $nameScope = $resolvedPhpDoc->getNullableNameScope() ??
+            new NameScope(null, [], $classReflection->getName());
+
+        $isIgnored = false;
+        $templatePaths = [];
+        $variables = [];
+        foreach ($resolvedPhpDoc->getPhpDocNodes() as $phpDocNode) {
+            $isIgnored = $isIgnored || count($phpDocNode->getTagsByName('@phpstan-latte-ignore')) > 0;
+            $templatePaths = array_merge($templatePaths, $this->parseTemplateTags($phpDocNode, $classReflection));
+            $variables = array_merge($variables, $this->parseVariableTags($phpDocNode, $nameScope));
         }
 
-        return new LattePhpDoc($isIgnored, $templatePaths);
+        return new LattePhpDoc($isIgnored, $templatePaths, $variables);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function parseTemplateTags(PhpDocNode $phpDocNode, ClassReflection $classReflection): array
+    {
+        $templatePaths = [];
+        foreach ($phpDocNode->getTagsByName('@phpstan-latte-template') as $templateTag) {
+            if (!$templateTag->value instanceof GenericTagValueNode) {
+                continue;
+            }
+            $templatePaths[] = $this->replacePlaceholders($templateTag->value->value, $classReflection);
+        }
+        return $templatePaths;
+    }
+
+    /**
+     * @return array<string, Type>
+     */
+    private function parseVariableTags(PhpDocNode $phpDocNode, NameScope $nameScope): array
+    {
+        $variables = [];
+        foreach ($phpDocNode->getTagsByName('@phpstan-latte-var') as $variableTag) {
+            if (!$variableTag->value instanceof GenericTagValueNode) {
+                continue;
+            }
+            $typeAndName = $this->parseTypeAndName($variableTag->value->value, $nameScope);
+            $variables[$typeAndName['name'] ?? ''] = $typeAndName['type'];
+        }
+        return $variables;
     }
 
     public function resolveForNode(Node $node, Scope $scope): LattePhpDoc
@@ -62,9 +113,9 @@ final class LattePhpDocResolver
         }
         $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
         if ($scope->getFunctionName() !== null) {
-            $lattePhpDoc->setParent($this->resolveForMethod($scope->getClassReflection()->getName(), $scope->getFunctionName()));
+            $lattePhpDoc->setParentMethod($this->resolveForMethod($scope->getClassReflection()->getName(), $scope->getFunctionName()));
         } else {
-            $lattePhpDoc->setParent($this->resolveForClass($scope->getClassReflection()->getName()));
+            $lattePhpDoc->setParentClass($this->resolveForClass($scope->getClassReflection()->getName()));
         }
         return $lattePhpDoc;
     }
@@ -78,7 +129,7 @@ final class LattePhpDocResolver
         } catch (MissingMethodFromReflectionException $e) {
             $lattePhpDoc = new LattePhpDoc(); // probably virtual method added by @method annotation
         }
-        $lattePhpDoc->setParent($this->resolveForClass($className));
+        $lattePhpDoc->setParentClass($this->resolveForClass($className));
         return $lattePhpDoc;
     }
 
@@ -87,6 +138,35 @@ final class LattePhpDocResolver
         $classReflection = $this->reflectionProvider->getClass($className);
         $commentText = $classReflection->getNativeReflection()->getDocComment() ?: null;
         return $this->resolve($commentText, $classReflection);
+    }
+
+    /**
+     * @return array{type: Type, name: ?string}
+     */
+    private function parseTypeAndName(string $valueString, NameScope $nameScope): array
+    {
+        $tokens = new TokenIterator($this->phpDocLexer->tokenize($valueString));
+        $typeNode = $this->typeParser->parse($tokens);
+        $type = $this->typeNodeResolver->resolve($typeNode, $nameScope);
+        $name = $this->parseOptionalVariableName($tokens);
+        return ['type' => $type, 'name' => $name];
+    }
+
+    private function parseOptionalVariableName(TokenIterator $tokens): string
+    {
+        if ($tokens->isCurrentTokenType(Lexer::TOKEN_VARIABLE)) {
+            $parameterName = $tokens->currentTokenValue();
+            $tokens->next();
+            if ($parameterName[0] === '$') {
+                $parameterName = substr($parameterName, 1);
+            }
+            return $parameterName;
+        } elseif ($tokens->isCurrentTokenType(Lexer::TOKEN_THIS_VARIABLE)) {
+            $tokens->next();
+            return '';
+        } else {
+            return '';
+        }
     }
 
     private function replacePlaceholders(string $value, ClassReflection $classReflection): string
