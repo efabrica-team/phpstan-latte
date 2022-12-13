@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
+use Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
@@ -33,7 +34,10 @@ final class TemplateRenderFinder
         $this->templatePathFinder = $templatePathFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplateRenders = TemplateRenderCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplateRender::class);
+        $collectedTemplateRenders = array_merge(
+            TemplateRenderCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplateRender::class),
+            TemplateRenderMethodPhpDocCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplateRender::class)
+        );
         foreach ($collectedTemplateRenders as $collectedTemplateRender) {
             $className = $collectedTemplateRender->getClassName();
             $methodName = $collectedTemplateRender->getMethodName();

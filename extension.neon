@@ -116,6 +116,7 @@ services:
     - Efabrica\PHPStanLatte\Collector\MethodOutputCollector
     - Efabrica\PHPStanLatte\Collector\TemplatePathCollector
     - Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
+    - Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector
     - Efabrica\PHPStanLatte\Collector\FormCollector
     - Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
 
