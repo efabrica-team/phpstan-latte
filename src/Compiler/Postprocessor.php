@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\PostCompileNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Builder\Class_;
@@ -35,6 +36,8 @@ final class Postprocessor
 
     private LineNumberNodeVisitor $lineNumberNodeVisitor;
 
+    private RenderBlockNodeVisitor $renderBlockNodeVisitor;
+
     private CleanupNodeVisitor $cleanupNodeVisitor;
 
     private Standard $printerStandard;
@@ -47,12 +50,14 @@ final class Postprocessor
     public function __construct(
         array $postCompileNodeVisitors,
         LineNumberNodeVisitor $lineNumberNodeVisitor,
+        RenderBlockNodeVisitor $renderBlockNodeVisitor,
         CleanupNodeVisitor $cleanupNodeVisitor,
         Standard $printerStandard,
         TypeToPhpDoc $typeToPhpDoc
     ) {
         $this->postCompileNodeVisitors = $postCompileNodeVisitors;
         $this->lineNumberNodeVisitor = $lineNumberNodeVisitor;
+        $this->renderBlockNodeVisitor = $renderBlockNodeVisitor;
         $this->cleanupNodeVisitor = $cleanupNodeVisitor;
         $this->printerStandard = $printerStandard;
         $this->typeToPhpDoc = $typeToPhpDoc;
@@ -68,6 +73,7 @@ final class Postprocessor
         $phpContent = $this->explicitCalls($actualClass, $phpContent, $variables, $components);
         $phpContent = $this->addExtractParams($phpContent);
         $phpContent = $this->addFormClasses($phpContent, $forms);
+        $phpContent = $this->explicitRenderBlockCalls($phpContent);
         $phpContent = $this->cleanup($phpContent);
         return $this->remapLines($phpContent);
     }
@@ -104,6 +110,17 @@ final class Postprocessor
 
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new AddExtractParamsToTopNodeVisitor());
+        $nodeTraverser->traverse($phpStmts);
+
+        return $this->printerStandard->prettyPrintFile($phpStmts);
+    }
+
+    private function explicitRenderBlockCalls(string $phpContent): string
+    {
+        $phpStmts = $this->findNodes($phpContent);
+
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor($this->renderBlockNodeVisitor);
         $nodeTraverser->traverse($phpStmts);
 
         return $this->printerStandard->prettyPrintFile($phpStmts);

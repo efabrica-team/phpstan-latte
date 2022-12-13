@@ -196,4 +196,80 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testBlocks(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Blocks/SomeControl.php'], [
+            [
+                'Block my-block has parameter $paramNoType with no type specified.',
+                1,
+                'define.latte',
+            ],
+            [
+                'Block my-block has parameter $paramNoTypeDefault with no type specified.',
+                1,
+                'define.latte',
+            ],
+            [
+                'Dumped type: stdClass|null',
+                2,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                3,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                4,
+                'define.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                5,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                6,
+                'define.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                7,
+                'define.latte',
+            ],
+            [
+                'Dumped type: float|null',
+                8,
+                'define.latte',
+            ],
+            [
+                'Dumped type: int|null',
+                9,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                13,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                13,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                14,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                14,
+                'define.latte',
+            ],
+        ]);
+    }
 }

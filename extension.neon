@@ -86,9 +86,11 @@ services:
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor
 
     # Other Node visitors
     - Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor
+    - Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
@@ -159,6 +161,7 @@ services:
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
+    - Efabrica\PHPStanLatte\Error\Transformer\BlockParameterErrorTransformer
 
     errorFormatter.table!:
         class: Efabrica\PHPStanLatte\Error\TableErrorFormatter

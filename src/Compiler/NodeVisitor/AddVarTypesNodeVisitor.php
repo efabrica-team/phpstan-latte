@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
@@ -50,9 +51,19 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements PostCo
             }
         }
 
+        $methodParams = [];
+        foreach ($node->params as $param) {
+            if ($param->var instanceof VariableExpr && is_string($param->var->name)) {
+                $methodParams[] = $param->var->name;
+            }
+        }
+
         $statements = (array)$node->stmts;
         $variableStatements = [];
         foreach ($combinedVariables as $variable) {
+            if (in_array($variable->getName(), $methodParams, true)) {
+                continue;
+            }
             $prependVarTypesDocBlocks = sprintf(
                 '/** @var %s $%s */',
                 $this->typeToPhpDoc->toPhpDocString($variable->getType()),
