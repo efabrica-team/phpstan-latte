@@ -57,8 +57,6 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract impleme
             return null;
         }
 
-        /** {block content} on line 1 */
-
         $parameters = [];
 
         $pattern = '/{define (?<block_name>.*?),? (?<parameters>.*)} on line (?<line>\d+)/';
