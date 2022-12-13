@@ -201,6 +201,16 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/Blocks/SomeControl.php'], [
             [
+                'Block my-block has parameter $paramNoType with no type specified.',
+                1,
+                'define.latte',
+            ],
+            [
+                'Block my-block has parameter $paramNoTypeDefault with no type specified.',
+                1,
+                'define.latte',
+            ],
+            [
                 'Dumped type: stdClass|null',
                 2,
                 'define.latte',
@@ -238,6 +248,26 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Dumped type: int|null',
                 9,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                13,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                13,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                14,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                14,
                 'define.latte',
             ],
         ]);

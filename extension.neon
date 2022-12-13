@@ -161,6 +161,7 @@ services:
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\UnknownTagErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
+    - Efabrica\PHPStanLatte\Error\Transformer\BlockParameterErrorTransformer
 
     errorFormatter.table!:
         class: Efabrica\PHPStanLatte\Error\TableErrorFormatter

@@ -77,10 +77,6 @@ final class ErrorBuilder
 
     public function buildError(Error $originalError, string $templatePath, ?string $context = null): ?RuleError
     {
-        if ($this->shouldErrorBeIgnored($originalError)) {
-            return null;
-        }
-
         $error = new LatteError($originalError->getMessage(), $originalError->getTip());
         $error = $this->transformError($error);
 
@@ -93,10 +89,13 @@ final class ErrorBuilder
         if ($error->getTip()) {
             $ruleErrorBuilder->tip($error->getTip());
         }
+        if ($this->shouldErrorBeIgnored($error)) {
+            return null;
+        }
         return $ruleErrorBuilder->build();
     }
 
-    private function shouldErrorBeIgnored(Error $error): bool
+    private function shouldErrorBeIgnored(LatteError $error): bool
     {
         foreach ($this->errorPatternsToIgnore as $errorPatternToIgnore) {
             if (preg_match($errorPatternToIgnore, $error->getMessage())) {

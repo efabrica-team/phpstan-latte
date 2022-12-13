@@ -8,8 +8,10 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
@@ -34,6 +36,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
 {
     private NameResolver $nameResolver;
 
+    /** @var array<string, Param[]>   */
     private array $blockMethods = [];
 
     public function __construct(NameResolver $nameResolver)
@@ -63,6 +66,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
                 }
             }
         }
+        return null;
     }
 
     public function enterNode(Node $node): ?Node
@@ -97,6 +101,11 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        if ($paramsArg->value instanceof FuncCall && $this->nameResolver->resolve($paramsArg->value->name) === 'get_defined_vars') {
+            // transform renderBlock('content') and similar where the second parameter is function call get_defined_vars()
+            return new MethodCall(new Variable('this'), $blockMethodName);
+        }
+
         if (!$paramsArg->value instanceof Plus) {
             return null;
         }
@@ -105,18 +114,20 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $params = [
-            'ʟ_args' => new Array_(),
-        ];
+        $params = [];
         foreach ($paramsArg->value->left->items as $param) {
+            if (!$param instanceof ArrayItem) {
+                continue;
+            }
             if (!$param->key instanceof String_) {
+                $params[] = $param->value;
                 continue;
             }
             $params[$param->key->value] = $param->value;
         }
 
         $methodCallArgs = [];
-        foreach ($blockMethodParams as $blockMethodParam) {
+        foreach ($blockMethodParams as $pos => $blockMethodParam) {
             if (!$blockMethodParam instanceof Param) {
                 continue;
             }
@@ -124,12 +135,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
                 continue;
             }
             $variableName = $this->nameResolver->resolve($blockMethodParam->var->name);
-
-//            var_dump($variableName);
-//            var_dump(isset($params[$variableName]));
-//            var_dump($params[$variableName] ?? null);
-
-            $methodCallArgs[] = new Arg($params[$variableName] ?? new ConstFetch(new Name('null')));
+            $methodCallArgs[] = new Arg($params[$pos] ?? $params[$variableName] ?? new ConstFetch(new Name('null')));
         }
 
         return new MethodCall(new Variable('this'), $blockMethodName, $methodCallArgs);
