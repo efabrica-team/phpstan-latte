@@ -17,19 +17,38 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class RelatedFilesCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
 {
+    /** @var string[] */
+    private array $collectedPaths;
+
     private CalledClassResolver $calledClassResolver;
 
     private ReflectionProvider $reflectionProvider;
 
     private NameResolver $nameResolver;
 
+    /**
+     * @param string[] $analysedPaths
+     * @param string[] $collectedPaths
+     */
     public function __construct(
+        array $analysedPaths,
+        array $collectedPaths,
         TypeSerializer $typeSerializer,
         CalledClassResolver $calledClassResolver,
         ReflectionProvider $reflectionProvider,
         NameResolver $nameResolver
     ) {
         parent::__construct($typeSerializer);
+        $this->collectedPaths = $analysedPaths;
+        foreach ($collectedPaths as $collectedPath) {
+            $realPath = realpath($collectedPath);
+            if ($realPath === false) {
+                continue;
+            }
+            if (file_exists($realPath)) {
+                $this->collectedPaths[] = $realPath;
+            }
+        }
         $this->calledClassResolver = $calledClassResolver;
         $this->reflectionProvider = $reflectionProvider;
         $this->nameResolver = $nameResolver;
@@ -47,7 +66,9 @@ final class RelatedFilesCollector extends AbstractCollector implements PHPStanLa
             $classReflection = $scope->getClassReflection();
             if ($classReflection !== null) {
                 foreach ($classReflection->getParents() as $parentClassReflection) {
-                    $relatedFiles[] = $parentClassReflection->getFileName();
+                    if ($this->isInCollectedPaths($parentClassReflection->getFileName())) {
+                        $relatedFiles[] = $parentClassReflection->getFileName();
+                    }
                 }
             }
         } elseif ($node instanceof New_) {
@@ -55,7 +76,9 @@ final class RelatedFilesCollector extends AbstractCollector implements PHPStanLa
             if  ($newClassName !== null) {
                 $classReflection = $this->reflectionProvider->getClass($newClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
-                    $relatedFiles[] = $classReflection->getFileName();
+                    if ($this->isInCollectedPaths($classReflection->getFileName())) {
+                        $relatedFiles[] = $classReflection->getFileName();
+                    }
                 }
             }
         } elseif ($node instanceof CallLike) {
@@ -63,10 +86,22 @@ final class RelatedFilesCollector extends AbstractCollector implements PHPStanLa
             if ($calledClassName !== null) {
                 $classReflection = $this->reflectionProvider->getClass($calledClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
-                    $relatedFiles[] = $classReflection->getFileName();
+                    if ($this->isInCollectedPaths($classReflection->getFileName())) {
+                        $relatedFiles[] = $classReflection->getFileName();
+                    }
                 }
             }
         }
-        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), $relatedFiles));
+        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), array_unique($relatedFiles)));
+    }
+
+    private function isInCollectedPaths(string $path): bool
+    {
+        foreach ($this->collectedPaths as $collectedPath) {
+            if (str_starts_with($path, $collectedPath)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

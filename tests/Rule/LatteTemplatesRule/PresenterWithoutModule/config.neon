@@ -4,3 +4,6 @@ parameters:
             existingFilter: strlen
         applicationMapping:
             *: Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\*Presenter
+        collectedPaths:
+            - tests/Rule/LatteTemplatesRule/PresenterWithoutModule/Fixtures
+            - tests/Rule/LatteTemplatesRule/PresenterWithoutModule/Source
