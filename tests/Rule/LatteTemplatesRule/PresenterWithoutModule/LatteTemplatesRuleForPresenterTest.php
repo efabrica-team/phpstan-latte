@@ -516,6 +516,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 3,
                 'throwSometimes.latte',
             ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'setFile.changed.latte',
+            ],
         ]);
     }
 }

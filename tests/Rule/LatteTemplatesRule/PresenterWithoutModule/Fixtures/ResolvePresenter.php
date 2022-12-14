@@ -68,4 +68,9 @@ final class ResolvePresenter extends Presenter
             throw new Exception('Not renderable');
         }
     }
+
+    public function actionSetFile(): void
+    {
+        $this->template->setFile(__DIR__ . '/templates/Resolve/setFile.changed.latte');
+    }
 }
