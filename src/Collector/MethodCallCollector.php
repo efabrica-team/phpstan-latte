@@ -109,28 +109,11 @@ final class MethodCallCollector extends AbstractCollector
         }
 
         $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-
-        // Do not find template variables in external classes
-        if ($this->isExternalCall($declaringClassName, $calledMethodName)) {
-            return null;
-        }
-
         return $this->collectItem(new CollectedMethodCall(
             $actualClassName,
             $functionName,
             $declaringClassName,
             $calledMethodName
         ));
-    }
-
-    private function isExternalCall(string $calledClassName, string $calledMethodName): bool
-    {
-        return in_array($calledClassName, [
-            'Nette\Application\UI\Presenter',
-            'Nette\Application\UI\Control',
-            'Nette\Application\UI\Component',
-            'Nette\ComponentModel\Container',
-            'Latte\Runtime\Template',
-        ], true);
     }
 }

@@ -148,7 +148,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testComponents(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php'], [
+        $this->analyse([__DIR__ . '/Fixtures/ComponentsPresenter.php', __DIR__ . '/Source/PresenterTrait.php'], [
             [
                 'Component with name "onlyCreateForm" probably doesn\'t exist.',
                 9,

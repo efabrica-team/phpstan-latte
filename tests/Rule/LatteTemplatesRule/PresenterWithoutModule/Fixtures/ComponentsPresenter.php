@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\ControlRegistrator;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\PresenterTrait;
 use Nette\Application\UI\Form;
 
 final class ComponentsPresenter extends ParentPresenter
 {
+    use PresenterTrait;
+
     /** @inject */
     public ControlRegistrator $controlRegistrator;
 
