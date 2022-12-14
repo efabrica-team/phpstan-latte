@@ -6,14 +6,10 @@ namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
-use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
+use Efabrica\PHPStanLatte\Collector\AdditionalDataCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
-use Efabrica\PHPStanLatte\Collector\RelatedFilesCollector;
-use Efabrica\PHPStanLatte\Collector\PHPStanLatteCollectorInterface;
 use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
@@ -23,13 +19,9 @@ use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\Collectors\CollectedData;
-use PHPStan\Collectors\Registry;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\Node\CollectedDataNode;
-use PHPStan\Rules\DirectRegistry;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -53,12 +45,6 @@ final class LatteTemplatesRule implements Rule
 
     private RuleRegistry $rulesRegistry;
 
-    /** @var PHPStanLatteCollectorInterface[] */
-    private array $latteCollectors;
-
-    /** @var PHPStanLatteCollectorInterface[] */
-    private array $latteCollectorsForAnalyse;
-
     private TemplateRenderCollector $templateRenderCollector;
 
     private ErrorBuilder $errorBuilder;
@@ -67,9 +53,10 @@ final class LatteTemplatesRule implements Rule
 
     private TypeSerializer $typeSerializer;
 
+    private AdditionalDataCollector $additionalDataCollector;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
-     * @param PHPStanLatteCollectorInterface[] $latteCollectors
      */
     public function __construct(
         array $latteTemplateResolvers,
@@ -77,25 +64,22 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
-        array $latteCollectors,
         TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
-        TypeSerializer $typeSerializer
+        TypeSerializer $typeSerializer,
+        AdditionalDataCollector $additionalDataCollector
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
         $this->fileAnalyserFactory = $fileAnalyserFactory;
         $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
-        $this->latteCollectors = $latteCollectors;
-        $this->latteCollectorsForAnalyse = array_filter($latteCollectors, function (PHPStanLatteCollectorInterface $latteCollector) {
-            return !$latteCollector instanceof ResolvedNodeCollector;
-        });
         $this->templateRenderCollector = $templateRenderCollector;
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
         $this->typeSerializer = $typeSerializer;
+        $this->additionalDataCollector = $additionalDataCollector;
     }
 
     public function getNodeType(): string
@@ -110,7 +94,7 @@ final class LatteTemplatesRule implements Rule
     {
         $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
         $processedFiles = array_unique(array_keys($resolvedNodes));
-        $collectedDataNode = $this->collectAdditionalData($collectedDataNode, $processedFiles);
+        $collectedDataNode = $this->additionalDataCollector->collect($collectedDataNode, $processedFiles);
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
 
         $errors = [];
@@ -129,61 +113,6 @@ final class LatteTemplatesRule implements Rule
         }
 
         return $errors;
-    }
-
-    /**
-     * @param string[] $newFilesToCheck
-     */
-    private function collectAdditionalData(CollectedDataNode $collectedDataNode, array $newFilesToCheck): CollectedDataNode
-    {
-        if ($newFilesToCheck === []) {
-            return $collectedDataNode;
-        }
-
-        $collectedData = [$this->createCollectedDataFromNode($collectedDataNode)];
-        foreach ($newFilesToCheck as $newFileToCheck) {
-            $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
-                $newFileToCheck,
-                [],
-                new DirectRegistry([]),
-                new Registry($this->latteCollectorsForAnalyse),
-                null
-            );
-            $collectedData[] = $fileAnalyserResult->getCollectedData();
-        }
-
-        $newCollectedDataNode = new CollectedDataNode(array_merge(...$collectedData));
-        $collectedRelatedFiles = RelatedFilesCollector::loadData($newCollectedDataNode, $this->typeSerializer, CollectedRelatedFiles::class);
-
-        $processedFiles = [];
-        $relatedFiles = [];
-        foreach ($collectedRelatedFiles as $collectedRelatedFile) {
-            $processedFiles[] = $collectedRelatedFile->getProcessedFile();
-            $relatedFiles[] = array_filter($collectedRelatedFile->getRelatedFiles(), function(string $file) {
-                return pathinfo($file, PATHINFO_EXTENSION) === 'php';
-            });
-        }
-
-        $newFilesToCheck = array_diff(array_unique(array_merge(...$relatedFiles)), array_unique($processedFiles));
-        return $this->collectAdditionalData($newCollectedDataNode, $newFilesToCheck);
-    }
-
-    /**
-     * @return CollectedData[]
-     */
-    private function createCollectedDataFromNode(CollectedDataNode $collectedDataNode): array
-    {
-        $collectedData = [];
-        foreach ($this->latteCollectors as $collector) {
-            $collectorType = get_class($collector);
-            $collectorData = $collectedDataNode->get($collectorType);
-            foreach ($collectorData as $file => $fileData) {
-                foreach ($fileData as $data) {
-                    $collectedData[] = new CollectedData($data, $file, $collectorType);
-                }
-            }
-        }
-        return $collectedData;
     }
 
     /**

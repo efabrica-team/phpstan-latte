@@ -25,7 +25,7 @@ use PHPStan\Type\ObjectType;
  * @phpstan-import-type CollectedComponentArray from CollectedComponent
  * @extends AbstractCollector<Node, CollectedComponent, CollectedComponentArray>
  */
-final class ComponentCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class ComponentCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 

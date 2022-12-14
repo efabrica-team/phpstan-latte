@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Template\Variable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 
 /**
@@ -14,6 +13,7 @@ final class CollectedRelatedFiles extends CollectedValueObject
 {
     private string $processedFile;
 
+    /** @var string[] */
     private array $relatedFiles;
 
     /**

@@ -16,7 +16,7 @@ use PHPStan\Analyser\Scope;
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
  * @extends AbstractCollector<Node, CollectedMethodCall, CollectedMethodCallArray>
  */
-final class MethodOutputCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class MethodOutputCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 

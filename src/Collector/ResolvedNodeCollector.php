@@ -15,7 +15,7 @@ use PHPStan\Analyser\Scope;
  * @phpstan-import-type CollectedResolvedNodeArray from CollectedResolvedNode
  * @extends AbstractCollector<Node, CollectedResolvedNode, CollectedResolvedNodeArray>
  */
-final class ResolvedNodeCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class ResolvedNodeCollector extends AbstractCollector
 {
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;

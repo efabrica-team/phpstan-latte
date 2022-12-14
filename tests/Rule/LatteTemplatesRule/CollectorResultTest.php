@@ -9,12 +9,6 @@ use PHPStan\Rules\Rule;
 
 abstract class CollectorResultTest extends LatteTemplatesRuleTest
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->markTestSkipped();
-    }
-
     protected function getRule(): Rule
     {
         return $this->getContainer()->getByType(CollectorResultRule::class);

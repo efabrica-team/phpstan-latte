@@ -18,7 +18,7 @@ use PHPStan\Analyser\Scope;
  * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
  * @extends AbstractCollector<MethodCall, CollectedTemplatePath, CollectedTemplatePathArray>
  */
-final class TemplatePathCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class TemplatePathCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 

@@ -27,7 +27,7 @@ use PHPStan\Type\ThisType;
  * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
  * @extends AbstractCollector<MethodCall, CollectedTemplateRender, CollectedTemplateRenderArray>
  */
-final class TemplateRenderCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class TemplateRenderCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 

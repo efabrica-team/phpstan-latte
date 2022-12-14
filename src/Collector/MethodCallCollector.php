@@ -22,7 +22,7 @@ use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
  * @extends AbstractCollector<CallLike, CollectedMethodCall, CollectedMethodCallArray>
  */
-final class MethodCallCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+final class MethodCallCollector extends AbstractCollector
 {
     private NameResolver $nameResolver;
 

@@ -15,7 +15,11 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ReflectionProvider;
 
-final class RelatedFilesCollector extends AbstractCollector implements PHPStanLatteCollectorInterface
+/**
+ * @phpstan-import-type CollectedRelatedFilesArray from CollectedRelatedFiles
+ * @extends AbstractCollector<Node, CollectedRelatedFiles, CollectedRelatedFilesArray>
+ */
+final class RelatedFilesCollector extends AbstractCollector
 {
     /** @var string[] */
     private array $collectedPaths;
@@ -73,7 +77,7 @@ final class RelatedFilesCollector extends AbstractCollector implements PHPStanLa
             }
         } elseif ($node instanceof New_) {
             $newClassName = $this->nameResolver->resolve($node->class);
-            if  ($newClassName !== null) {
+            if ($newClassName !== null) {
                 $classReflection = $this->reflectionProvider->getClass($newClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
                     if ($this->isInCollectedPaths($classReflection->getFileName())) {
@@ -92,11 +96,16 @@ final class RelatedFilesCollector extends AbstractCollector implements PHPStanLa
                 }
             }
         }
-        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), array_unique($relatedFiles)));
+
+        $relatedFiles = array_unique(array_filter($relatedFiles));
+        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), $relatedFiles));
     }
 
-    private function isInCollectedPaths(string $path): bool
+    private function isInCollectedPaths(?string $path): bool
     {
+        if ($path === null) {
+            return false;
+        }
         foreach ($this->collectedPaths as $collectedPath) {
             if (str_starts_with($path, $collectedPath)) {
                 return true;

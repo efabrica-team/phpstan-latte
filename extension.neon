@@ -108,6 +108,7 @@ services:
         tags:
             - phpstan.collector
 
+    - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
     - Efabrica\PHPStanLatte\Collector\VariableCollector
     - Efabrica\PHPStanLatte\Collector\ComponentCollector
     - Efabrica\PHPStanLatte\Collector\MethodCollector
