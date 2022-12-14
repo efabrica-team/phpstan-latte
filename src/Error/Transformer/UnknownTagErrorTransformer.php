@@ -14,7 +14,7 @@ final class UnknownTagErrorTransformer implements ErrorTransformerInterface
     {
         preg_match(self::UNKNOWN_TAG_REGEX, $error->getMessage(), $match);
         if (isset($match['unknown_tag'])) {
-            $tip = 'Register the method to install this tag/macro in phpstan.neon: parameters > latte > macros. See https://github.com/efabrica-team/phpstan-latte#macros';
+            $tip = 'Configure your Latte engine in phpstan.neon: parameters > latte. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#latte-engine-configuration';
             $error->setTip($tip);
         }
         return $error;

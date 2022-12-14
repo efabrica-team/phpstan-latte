@@ -28,7 +28,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             return new LatteTemplateResolverResult();
         }
 
-        /** @var array<string, array{variables: Variable[], components: Component[], forms: CollectedForm[], line: int, renders: CollectedTemplateRender[], terminated: bool}> $actions */
+        /** @var array<string, array{variables: Variable[], components: Component[], forms: CollectedForm[], line: int, renders: CollectedTemplateRender[], templatePaths: array<?string>, terminated: bool}> $actions */
         $actions = [];
         foreach ($this->getMethodsMatching($reflectionClass, '/^(action|render).*/') as $reflectionMethod) {
             $actionName = lcfirst((string)preg_replace('/^(action|render)/i', '', $reflectionMethod->getName()));
@@ -40,6 +40,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                     'forms' => $this->getClassGlobalForms($reflectionClass),
                     'line' => $reflectionMethod->getStartLine(),
                     'renders' => $this->templateRenderFinder->findByMethod($reflectionMethod),
+                    'templatePaths' => $this->templatePathFinder->findByMethod($reflectionMethod),
                     'terminated' => false,
                 ];
             }
@@ -48,6 +49,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             $actions[$actionName]['components'] = array_merge($actions[$actionName]['components'], $this->componentFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['forms'] = array_merge($actions[$actionName]['forms'], $this->formFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['renders'] = array_merge($actions[$actionName]['renders'], $this->templateRenderFinder->findByMethod($reflectionMethod));
+            $actions[$actionName]['templatePaths'] = array_merge($actions[$actionName]['templatePaths'], $this->templatePathFinder->findByMethod($reflectionMethod));
             $actions[$actionName]['terminated'] = $actions[$actionName]['terminated'] || $this->methodCallFinder->hasAnyTerminatingCallsByMethod($reflectionMethod);
             $actions[$actionName]['terminated'] = $actions[$actionName]['terminated'] || $this->methodFinder->hasAnyAlwaysTerminatedByMethod($reflectionMethod);
         }
@@ -57,10 +59,22 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             // explicit render calls
             $result->addTemplatesFromRenders($actionDefinition['renders'], $actionDefinition['variables'], $actionDefinition['components'], $actionDefinition['forms'], $reflectionClass->getName(), $actionName);
 
-            // default renders
+            // default render with set template path
+            foreach ($actionDefinition['templatePaths'] as $template) {
+                // TODO better location of unresolved expression - must become part of CollectedTemplatePath and CollectedTemplatePathFinder must return ValueObject not only strings
+                if ($template === null) {
+                    $result->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
+                    ->file($reflectionClass->getFileName() ?? 'unknown')
+                    ->line($actionDefinition['line']));
+                    continue;
+                }
+                $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['variables'], $actionDefinition['components'], $actionDefinition['forms']));
+            }
+
+            // default render with default template
             $template = $this->findDefaultTemplateFilePath($reflectionClass, $actionName);
             if ($template === null) {
-                if (!$actionDefinition['terminated']) { // might not be rendered at all (for example redirect)
+                if (!$actionDefinition['terminated'] && $actionDefinition['templatePaths'] === []) { // might not be rendered at all (for example redirect or use set template path)
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for action $actionName")
                         ->file($reflectionClass->getFileName() ?? 'unknown')
                         ->line($actionDefinition['line'])
