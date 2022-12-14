@@ -29,7 +29,7 @@ final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleT
                 'Undefined latte filter "nonExistingFilter".',
                 2,
                 'default.latte',
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
             ],
             [
                 'Closure invoked with 1 parameter, 0 required.',

@@ -30,11 +30,11 @@ includes:
 
 ## Configuration
 
-* [Latte engine configuration](docs/configuration#latte-engine-configuration)
-* [Analyser configuration](docs/configuration#analyser-configuration)
-* [Ignoring errors](docs/configuration#ignoring-errors)
-* [Link checking](docs/configuration#link-checking)
-* [Other configuration options](docs/configuration#other-configuration-options)
+* [Latte engine configuration](docs/configuration.md#latte-engine-configuration)
+* [Analyser configuration](docs/configuration.md#analyser-configuration)
+* [Ignoring errors](docs/configuration.md#ignoring-errors)
+* [Link checking](docs/configuration.md#link-checking)
+* [Other configuration options](docs/configuration.md#other-configuration-options)
 
 ## Annotations
 

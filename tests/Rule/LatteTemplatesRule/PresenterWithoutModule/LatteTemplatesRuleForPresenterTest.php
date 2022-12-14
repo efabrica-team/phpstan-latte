@@ -271,7 +271,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Undefined latte filter "nonExistingFilter".',
                 2,
                 'default.latte',
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte#filters',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
             ],
         ]);
     }
@@ -413,7 +413,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Cannot load presenter \'Links:Invalid\', class \'Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksModule\InvalidPresenter\' was not found.',
                 73,
                 'default.latte',
-                'Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte#applicationmapping',
+                'Check if your PHPStan configuration for latte > applicationMapping is correct. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#applicationmapping',
             ],
             [
                 'Parameter #2 $param2 of method ' . LinksPresenter::class . '::renderParamsMismatch() expects string, null given.',
