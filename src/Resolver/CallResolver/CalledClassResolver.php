@@ -37,6 +37,8 @@ final class CalledClassResolver
                     return null;
                 }
                 return $classReflection->getName();
+            } elseif ($calledClassName === 'self' || $calledClassName === 'static') {
+                return $classReflection->getName();
             }
             return $calledClassName;
         }

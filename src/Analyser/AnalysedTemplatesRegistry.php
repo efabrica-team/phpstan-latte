@@ -14,7 +14,7 @@ final class AnalysedTemplatesRegistry
     private bool $reportUnanalysedTemplates;
 
     /** @var array<string, bool>  */
-    private array $templateFiles;
+    private array $templateFiles = [];
 
     /**
      * @param string[] $analysedPaths
