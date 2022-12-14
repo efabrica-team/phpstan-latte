@@ -29,4 +29,4 @@ jobs:
         run: composer update --no-progress --no-interaction
 
       - name: Composer outdated
-        run: composer outdated -D --strict --ignore=latte/latte
+        run: composer outdated -D --strict --ignore=nette/finder

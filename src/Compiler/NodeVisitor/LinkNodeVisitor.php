@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
@@ -30,7 +31,7 @@ use PhpParser\NodeVisitorAbstract;
  * $myPresenter->renderMyAction($parameter1, $parameter2);
  * </code>
  */
-final class LinkNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
+final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
 {
     use ActualClassNodeVisitorBehavior;
 

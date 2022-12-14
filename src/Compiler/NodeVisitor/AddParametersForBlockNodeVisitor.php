@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
@@ -24,7 +25,7 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Unset_;
 use PhpParser\NodeVisitorAbstract;
 
-final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
+final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
 {
     use ActualClassNodeVisitorBehavior;
 

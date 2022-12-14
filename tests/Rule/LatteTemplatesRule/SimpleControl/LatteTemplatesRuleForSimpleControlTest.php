@@ -270,6 +270,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 14,
                 'define.latte',
             ],
+            [
+                'Dumped type: \'some string\'',
+                16,
+                'define.latte',
+            ],
         ]);
     }
 }

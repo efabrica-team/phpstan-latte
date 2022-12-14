@@ -15,9 +15,7 @@ final class SomeControl extends Control
         $this->template->knownString = 'a';
         $this->template->knownFloat = 1.23;
         $this->template->knownInteger = 123;
-
-        // TODO test override https://github.com/efabrica-team/phpstan-latte/issues/144
-        //  $this->template->paramString = 'some string';
+        $this->template->paramString = 'some string';
 
         $this->template->setFile(__DIR__ . '/define.latte');
         $this->template->render();

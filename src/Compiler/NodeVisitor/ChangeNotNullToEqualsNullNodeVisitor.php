@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\BinaryOp\Identical;
@@ -26,7 +27,7 @@ use PhpParser\NodeVisitorAbstract;
  * if ($this->getReferringTemplate() === null || $this->getReferenceType() === "extends") {
  * </code>
  */
-final class ChangeNotNullToEqualsNullNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
+final class ChangeNotNullToEqualsNullNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
 {
     use ActualClassNodeVisitorBehavior;
 
