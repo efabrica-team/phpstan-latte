@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
@@ -26,7 +27,7 @@ use PhpParser\NodeVisitorAbstract;
  * foreach ($stringList as $string) {
  * </code>
  */
-final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract implements PostCompileNodeVisitorInterface
+final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
 {
     use ActualClassNodeVisitorBehavior;
 
