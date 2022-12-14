@@ -12,3 +12,5 @@
 {include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger}
 {include my-block 'paramObject' => $knownString, 'paramString' => $knownInteger}
 {include my-block $knownString, $knownInteger, 'paramInteger' => $knownInteger}
+
+{php \PhpStan\dumpType($paramString)}
