@@ -6,7 +6,9 @@ namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
+use Efabrica\PHPStanLatte\Collector\AdditionalDataCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
+use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
@@ -51,6 +53,8 @@ final class LatteTemplatesRule implements Rule
 
     private TypeSerializer $typeSerializer;
 
+    private AdditionalDataCollector $additionalDataCollector;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
@@ -63,7 +67,8 @@ final class LatteTemplatesRule implements Rule
         TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
-        TypeSerializer $typeSerializer
+        TypeSerializer $typeSerializer,
+        AdditionalDataCollector $additionalDataCollector
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -74,6 +79,7 @@ final class LatteTemplatesRule implements Rule
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
         $this->typeSerializer = $typeSerializer;
+        $this->additionalDataCollector = $additionalDataCollector;
     }
 
     public function getNodeType(): string
@@ -86,6 +92,9 @@ final class LatteTemplatesRule implements Rule
      */
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
+        $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
+        $processedFiles = array_unique(array_keys($resolvedNodes));
+        $collectedDataNode = $this->additionalDataCollector->collect($collectedDataNode, $processedFiles);
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
 
         $errors = [];
@@ -160,8 +169,8 @@ final class LatteTemplatesRule implements Rule
             $dir = dirname($templatePath);
 
             $includeTemplates = [];
-            $collectedtemplateRenders = $this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), $this->typeSerializer, CollectedTemplateRender::class);
-            foreach ($collectedtemplateRenders as $collectedTemplateRender) {
+            $collectedTemplateRenders = $this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), $this->typeSerializer, CollectedTemplateRender::class);
+            foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath) && $includedTemplatePath !== '') {
                     if ($includedTemplatePath[0] !== '/') {

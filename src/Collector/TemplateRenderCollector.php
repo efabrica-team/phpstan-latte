@@ -149,7 +149,7 @@ final class TemplateRenderCollector extends AbstractCollector
         }
 
         $templatePathArg = $node->getArgs()[0] ?? null;
-        $tempalteVariablesArg = $node->getArgs()[1] ?? null;
+        $templateVariablesArg = $node->getArgs()[1] ?? null;
 
         if ($templatePathArg === null || $templatePathArg->value === null || $scope->getType($templatePathArg->value)->isNull()->yes()) {
             $paths = [null]; // path not provided
@@ -157,7 +157,7 @@ final class TemplateRenderCollector extends AbstractCollector
             $paths = $this->pathResolver->resolve($templatePathArg->value, $scope);
         }
 
-        $variables = $this->buildVariables($tempalteVariablesArg->value ?? null, $scope);
+        $variables = $this->buildVariables($templateVariablesArg->value ?? null, $scope);
 
         return $this->buildTemplateRenders($node, $scope, $paths, $variables);
     }

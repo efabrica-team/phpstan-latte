@@ -12,6 +12,7 @@ parameters:
         extensions: []
         resolveAllPossiblePaths: false
         reportUnanalysedTemplates: false
+        collectedPaths: []
 
 parametersSchema:
     latte: structure([
@@ -26,6 +27,7 @@ parametersSchema:
         extensions: arrayOf(object())
         resolveAllPossiblePaths: bool()
         reportUnanalysedTemplates: bool()
+        collectedPaths: arrayOf(string())
     ])
 
 rules:
@@ -106,46 +108,16 @@ services:
         tags:
             - phpstan.collector
 
-    -
-        factory: Efabrica\PHPStanLatte\Collector\VariableCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodOutputCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\TemplatePathCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
-        tags:
-            - phpstan.collector
-
-    -
-        factory: Efabrica\PHPStanLatte\Collector\FormCollector
-        tags:
-            - phpstan.collector
-
+    - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
+    - Efabrica\PHPStanLatte\Collector\VariableCollector
+    - Efabrica\PHPStanLatte\Collector\ComponentCollector
+    - Efabrica\PHPStanLatte\Collector\MethodCollector
+    - Efabrica\PHPStanLatte\Collector\MethodCallCollector
+    - Efabrica\PHPStanLatte\Collector\MethodOutputCollector
+    - Efabrica\PHPStanLatte\Collector\TemplatePathCollector
+    - Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
+    - Efabrica\PHPStanLatte\Collector\FormCollector
+    - Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
 
     # Variable collectors
     variableCollectorStorage:

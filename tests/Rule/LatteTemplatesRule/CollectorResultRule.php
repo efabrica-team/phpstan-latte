@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
+use Efabrica\PHPStanLatte\Collector\AdditionalDataCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
+use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -22,18 +24,24 @@ use PHPStan\Rules\RuleErrorBuilder;
  */
 final class CollectorResultRule implements Rule
 {
-    private TypeSerializer $typeSerializer;
-
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
+
+    private TypeSerializer $typeSerializer;
+
+    private AdditionalDataCollector $additionalDataCollector;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
-    public function __construct(TypeSerializer $typeSerializer, array $latteTemplateResolvers)
-    {
-        $this->typeSerializer = $typeSerializer;
+    public function __construct(
+        array $latteTemplateResolvers,
+        TypeSerializer $typeSerializer,
+        AdditionalDataCollector $additionalDataCollector
+    ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
+        $this->typeSerializer = $typeSerializer;
+        $this->additionalDataCollector = $additionalDataCollector;
     }
 
     public function getNodeType(): string
@@ -48,6 +56,9 @@ final class CollectorResultRule implements Rule
     {
         $errors = [];
 
+        $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
+        $processedFiles = array_unique(array_keys($resolvedNodes));
+        $collectedDataNode = $this->additionalDataCollector->collect($collectedDataNode, $processedFiles);
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {

@@ -21,6 +21,19 @@ parameters:
             message: '#^Calling PHPStan\\PhpDoc\\PhpDocStringResolver\:\:resolve\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
             path: src/PhpDoc/LattePhpDocResolver.php
 
+        -
+            messages:
+                - '#^Calling PHPStan\\Analyser\\FileAnalyser\:\:analyseFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Rules\\DirectRegistry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Collectors\\Registry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getCollectedData\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Node\\CollectedDataNode is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Creating new PHPStan\\Collectors\\CollectedData is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Property Efabrica\\PHPStanLatte\\Collector\\AdditionalDataCollector\:\:\$latteCollectors with generic class Efabrica\\PHPStanLatte\\Collector\\AbstractCollector does not specify its types: N, T, A$#'
+                - '#^Property Efabrica\\PHPStanLatte\\Collector\\AdditionalDataCollector\:\:\$latteCollectorsForAnalyse with generic class Efabrica\\PHPStanLatte\\Collector\\AbstractCollector does not specify its types: N, T, A$#'
+                - '#^Method Efabrica\\PHPStanLatte\\Collector\\AdditionalDataCollector\:\:__construct\(\) has parameter \$latteCollectors with generic class Efabrica\\PHPStanLatte\\Collector\\AbstractCollector but does not specify its types: N, T, A$#'
+            path: src/Collector/AdditionalDataCollector.php
+
         # Latte version conditions
         -
             message: '#Comparison operation "(<|>|<=|>=)" between [0-9]{5} and [0-9]{5} is always (true|false).#'
