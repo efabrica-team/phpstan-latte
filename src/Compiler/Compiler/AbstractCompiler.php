@@ -32,20 +32,7 @@ abstract class AbstractCompiler implements CompilerInterface
         }
         $this->engine = $engine;
         $this->filters = $filters;
-        $this->installFilters($filters);
         $this->strictMode = $strictMode;
-    }
-
-    /**
-     * @param array<string, string|array{string, string}> $filters
-     */
-    private function installFilters(array $filters): void
-    {
-        foreach ($filters as $filterName => $filter) {
-            if (is_callable($filter)) {
-                $this->engine->addFilter($filterName, $filter);
-            }
-        }
     }
 
     public function generateClassName(): string
