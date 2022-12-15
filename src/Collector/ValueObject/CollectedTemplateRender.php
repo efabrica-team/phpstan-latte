@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\Scope;
 use PHPStan\ShouldNotHappenException;
 
 /**
@@ -122,5 +125,21 @@ final class CollectedTemplateRender extends CollectedValueObject
     public function withTemplatePath(?string $templatePath): self
     {
         return new CollectedTemplateRender($templatePath, $this->variables, $this->className, $this->methodName, $this->file, $this->line);
+    }
+
+    /**
+     * @param false|string|null $path
+     * @param Variable[] $variables
+     */
+    public static function build(Node $node, Scope $scope, $path, array $variables = []): CollectedTemplateRender
+    {
+        return new CollectedTemplateRender(
+            $path,
+            $variables,
+            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
+            $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
+            $scope->getFile(),
+            $node->getStartLine()
+        );
     }
 }
