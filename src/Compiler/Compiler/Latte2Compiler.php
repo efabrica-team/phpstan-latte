@@ -62,7 +62,7 @@ final class Latte2Compiler extends AbstractCompiler
         } catch (ReflectionException $e) {
             $engineFilters = $this->getDefaultFilters();
         }
-        return array_merge($engineFilters, $this->filters);
+        return array_merge($engineFilters, array_change_key_case($this->filters));
     }
 
     /**
