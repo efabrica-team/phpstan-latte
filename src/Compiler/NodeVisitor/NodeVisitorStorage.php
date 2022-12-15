@@ -42,8 +42,8 @@ final class NodeVisitorStorage
      */
     public function getNodeVisitors(): array
     {
-        $allNodeVisitors = $this->nodeVisitors;
-        foreach ($this->temporaryNodeVisitors as $priority => $nodeVisitors) {
+        $allNodeVisitors = $this->temporaryNodeVisitors;
+        foreach ($this->nodeVisitors as $priority => $nodeVisitors) {
             if (!isset($allNodeVisitors[$priority])) {
                 $allNodeVisitors[$priority] = [];
             }
