@@ -184,6 +184,7 @@ final class LatteTemplatesRule implements Rule
                         array_merge($collectedTemplateRender->getVariables(), $template->getVariables()),
                         $template->getComponents(),
                         $template->getForms(),
+                        $template->getFilters(),
                         $template->getPath()
                     );
                 } elseif ($includedTemplatePath === '') {

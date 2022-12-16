@@ -19,12 +19,14 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
         $globalVariables = $this->getClassGlobalVariables($reflectionClass);
         $globalComponents = $this->getClassGlobalComponents($reflectionClass);
         $globalForms = $this->getClassGlobalForms($reflectionClass);
+        $globalFilters = $this->getClassGlobalFilters($reflectionClass);
 
         $result = new LatteTemplateResolverResult();
         foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
             $variables = array_merge($globalVariables, $this->variableFinder->findByMethod($reflectionMethod));
             $components = array_merge($globalComponents, $this->componentFinder->findByMethod($reflectionMethod));
             $forms = array_merge($globalForms, $this->formFinder->findByMethod($reflectionMethod));
+            $filters = array_merge($globalFilters, $this->filterFinder->findByMethod($reflectionMethod));
 
             $templateRenders = $this->templateRenderFinder->findByMethod($reflectionMethod);
             if (count($templateRenders) === 0) {
@@ -37,7 +39,7 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                         ->line($reflectionMethod->getStartLine()));
                 }
             }
-            $result->addTemplatesFromRenders($templateRenders, $variables, $components, $forms, $reflectionClass->getName(), $reflectionMethod->getName());
+            $result->addTemplatesFromRenders($templateRenders, $variables, $components, $forms, $filters, $reflectionClass->getName(), $reflectionMethod->getName());
         }
         return $result;
     }

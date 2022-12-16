@@ -22,7 +22,8 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
                 null,
                 $this->getClassGlobalVariables($reflectionClass),
                 $this->getClassGlobalComponents($reflectionClass),
-                $this->getClassGlobalForms($reflectionClass)
+                $this->getClassGlobalForms($reflectionClass),
+                $this->getClassGlobalFilters($reflectionClass)
             ));
         }
         return $result;
