@@ -6,8 +6,8 @@ namespace Efabrica\PHPStanLatte\VariableCollector;
 
 use Closure;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
+use Efabrica\PHPStanLatte\Helper\FilterHelper;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Nette\Utils\Strings;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\Type\CallableType;
@@ -39,7 +39,7 @@ final class DynamicFilterVariables implements VariableCollectorInterface
             }
 
             if ($filter instanceof Closure) {
-                $variableName = '__filter__' . $filterName;
+                $variableName = FilterHelper::createFilterVariableName($filterName);
                 if ($this->closureTypeFactory) {
                     $variables[$variableName] = new Variable($variableName, $this->closureTypeFactory->fromClosureObject($filter));
                 } else {
@@ -68,8 +68,7 @@ final class DynamicFilterVariables implements VariableCollectorInterface
                     continue;
                 }
 
-                // TODO create helper
-                $variableName = Strings::firstLower(Strings::replace($className, '#\\\#', '')) . 'Filter';
+                $variableName = FilterHelper::createFilterVariableName($filterName);
                 $variables[$variableName] = new Variable($variableName, new ObjectType($className));
             } catch (ClassNotFoundException $e) {
                 continue;
