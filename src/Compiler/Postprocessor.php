@@ -9,8 +9,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
-use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
@@ -45,24 +44,19 @@ final class Postprocessor
         $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
-    /**
-     * @param Variable[] $variables
-     * @param Component[] $components
-     * @param CollectedForm[] $forms
-     */
-    public function postProcess(?string $actualClass, string $phpContent, array $variables, array $components, array $forms): string
+    public function postProcess(string $phpContent, Template $template): string
     {
-        $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($variables, $this->typeToPhpDoc);
+        $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($template->getVariables(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeNodeVisitor);
 
-        $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($components, $this->typeToPhpDoc);
+        $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($template->getComponents(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addTypeToComponentNodeVisitor);
 
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $priority => $nodeVisitors) {
-            $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $actualClass);
+            $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $template);
             if ($priority === 200) { // just as back compatibility
                 // TODO create visitors for forms
-                $phpContent = $this->addFormClasses($phpContent, $forms);
+                $phpContent = $this->addFormClasses($phpContent, $template->getForms());
             }
         }
 
@@ -73,22 +67,22 @@ final class Postprocessor
     /**
      * @param NodeVisitor[] $nodeVisitors
      */
-    private function processNodeVisitors(string $phpContent, array $nodeVisitors, ?string $actualClass): string
+    private function processNodeVisitors(string $phpContent, array $nodeVisitors, Template $template): string
     {
         $phpStmts = $this->findNodes($phpContent);
         $nodeTraverser = new NodeTraverser();
         foreach ($nodeVisitors as $nodeVisitor) {
-            $this->setupVisitor($nodeVisitor, $actualClass);
+            $this->setupVisitor($nodeVisitor, $template);
             $nodeTraverser->addVisitor($nodeVisitor);
         }
         $nodeTraverser->traverse($phpStmts);
         return $this->printerStandard->prettyPrintFile($phpStmts);
     }
 
-    private function setupVisitor(NodeVisitor $nodeVisitor, ?string $actualClass): void
+    private function setupVisitor(NodeVisitor $nodeVisitor, Template $template): void
     {
         if ($nodeVisitor instanceof ActualClassNodeVisitorInterface) {
-            $nodeVisitor->setActualClass($actualClass);
+            $nodeVisitor->setActualClass($template->getActualClass());
         }
     }
 
