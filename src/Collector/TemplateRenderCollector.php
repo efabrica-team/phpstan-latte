@@ -144,10 +144,6 @@ final class TemplateRenderCollector extends AbstractCollector
             return null;
         }
 
-        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
-            return null;
-        }
-
         $templatePathArg = $node->getArgs()[0] ?? null;
         $templateVariablesArg = $node->getArgs()[1] ?? null;
 
@@ -158,6 +154,14 @@ final class TemplateRenderCollector extends AbstractCollector
         }
 
         $variables = $this->buildVariables($templateVariablesArg->value ?? null, $scope);
+
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->isIgnored()) {
+            return null;
+        }
+        if ($lattePhpDoc->getTemplatePaths() !== null) {
+            $paths = $lattePhpDoc->getTemplatePaths();
+        }
 
         return $this->buildTemplateRenders($node, $scope, $paths, $variables);
     }
@@ -170,29 +174,13 @@ final class TemplateRenderCollector extends AbstractCollector
     private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables): ?array
     {
         if ($paths === null) {
-            return $this->collectItem($this->buildTemplateRender($node, $scope, false, $variables));
+            return $this->collectItem(CollectedTemplateRender::build($node, $scope, false, $variables));
         }
         $templateRenders = [];
         foreach ($paths as $path) {
-            $templateRenders[] = $this->buildTemplateRender($node, $scope, $path, $variables);
+            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables);
         }
         return $this->collectItems($templateRenders);
-    }
-
-    /**
-     * @param false|string|null $path
-     * @param Variable[] $variables
-     */
-    private function buildTemplateRender(Node $node, Scope $scope, $path, array $variables): CollectedTemplateRender
-    {
-        return new CollectedTemplateRender(
-            $path,
-            $variables,
-            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
-            $scope->getFunctionName() ?? '',
-            $scope->getFile(),
-            $node->getStartLine()
-        );
     }
 
     /**

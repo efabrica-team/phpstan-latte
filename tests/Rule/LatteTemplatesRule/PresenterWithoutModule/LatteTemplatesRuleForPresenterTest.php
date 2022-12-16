@@ -263,15 +263,70 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
             [
-                'Trying to invoke mixed but it\'s not a callable.',
+                'Function strlen invoked with 3 parameters, 1 required.',
                 2,
                 'default.latte',
             ],
             [
-                'Undefined latte filter "nonExistingFilter".',
+                'Parameter #1 $string of function strlen expects string, int given.',
                 2,
                 'default.latte',
+            ],
+            [
+                'Trying to invoke mixed but it\'s not a callable.',
+                4,
+                'default.latte',
+            ],
+            [
+                'Undefined latte filter "nonExistingFilter".',
+                4,
+                'default.latte',
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
+            ],
+            [
+                'Closure invoked with 1 parameter, 2 required.',
+                6,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of closure expects string, int given.',
+                7,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of closure expects int, string given.',
+                7,
+                'default.latte',
+            ],
+            [
+                'Closure invoked with 1 parameter, 2 required.',
+                9,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of closure expects string, int given.',
+                10,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of closure expects int, string given.',
+                10,
+                'default.latte',
+            ],
+            [
+                'Callable callable(string, int): string invoked with 1 parameter, 2 required.',
+                12,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of callable callable(string, int): string expects string, int given.',
+                13,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of callable callable(string, int): string expects int, string given.',
+                13,
+                'default.latte',
             ],
         ]);
     }

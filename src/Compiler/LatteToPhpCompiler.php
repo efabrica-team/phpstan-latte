@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
-use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Template\Template;
 use InvalidArgumentException;
 
 final class LatteToPhpCompiler
@@ -28,27 +26,18 @@ final class LatteToPhpCompiler
         $this->postprocessor = $postprocessor;
     }
 
-    /**
-     * @param Variable[] $variables
-     * @param Component[] $components
-     * @param CollectedForm[] $forms
-     */
-    public function compileFile(?string $actualClass, string $templatePath, array $variables, array $components, array $forms, string $context = ''): string
+    public function compileFile(Template $template, string $context = ''): string
     {
+        $templatePath = $template->getPath();
         if (!file_exists($templatePath)) {
             throw new InvalidArgumentException('Template file "' . $templatePath . '" doesn\'t exist.');
         }
         $templateContent = file_get_contents($templatePath) ?: '';
-        $phpContent = $this->compiler->compile($templateContent, $actualClass, $context);
-        $phpContent = $this->postprocessor->postProcess($actualClass, $phpContent, $variables, $components, $forms);
+        $phpContent = $this->compiler->compile($templateContent, $template->getActualClass(), $context);
+        $phpContent = $this->postprocessor->postProcess($phpContent, $template);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
         $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
-        $contextHash = md5(
-            $actualClass .
-            json_encode($variables) .
-            json_encode($components) .
-            $context
-        );
+        $contextHash = md5(json_encode($template) . $context);
 
         $replacedPath = getcwd() ?: '';
         if (strpos($templateDir, $replacedPath) === 0) {

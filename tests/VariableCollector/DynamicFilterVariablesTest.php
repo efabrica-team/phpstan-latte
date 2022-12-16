@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
 use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorInterface;
 use Nette\Localization\Translator;
 use Nette\Utils\Strings;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class DynamicFilterVariablesTest extends AbstractCollectorTest
 {
@@ -23,10 +24,11 @@ final class DynamicFilterVariablesTest extends AbstractCollectorTest
             'closure' => function () {
             },
         ];
+        $typeStringResolver = $this->createMock(TypeStringResolver::class);
         if (LatteVersion::isLatte2()) {
-            return new DynamicFilterVariables(new Latte2Compiler(null, false, $filters));
+            return new DynamicFilterVariables(new Latte2Compiler(null, false, $filters), $typeStringResolver);
         } else {
-            return new DynamicFilterVariables(new Latte3Compiler(null, false, $filters));
+            return new DynamicFilterVariables(new Latte3Compiler(null, false, $filters), $typeStringResolver);
         }
     }
 

@@ -94,9 +94,10 @@ parameters:
         filters:
             myFilter: [My\Global\Type, doFoo]
             functionFilter: strlen
-```     
-
-
+            closureFilter: 'Closure(string, int): string'
+            closureWithSlashFilter: '\Closure(string, int): string'
+            callableFilter: 'callable(string, int): string'
+```
 
 ## Analyser configuration
 
