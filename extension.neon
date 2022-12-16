@@ -110,7 +110,11 @@ services:
 
     - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
     - Efabrica\PHPStanLatte\Collector\VariableCollector
-    - Efabrica\PHPStanLatte\Collector\ComponentCollector
+    -
+        factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
+        arguments:
+            parser: @defaultAnalysisParser
+
     - Efabrica\PHPStanLatte\Collector\MethodCollector
     - Efabrica\PHPStanLatte\Collector\MethodCallCollector
     - Efabrica\PHPStanLatte\Collector\MethodOutputCollector

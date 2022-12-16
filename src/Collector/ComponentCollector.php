@@ -17,8 +17,11 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\TraitUse;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -33,12 +36,24 @@ final class ComponentCollector extends AbstractCollector
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, LattePhpDocResolver $lattePhpDocResolver)
-    {
+    private ReflectionProvider $reflectionProvider;
+
+    private Parser $parser;
+
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ValueResolver $valueResolver,
+        LattePhpDocResolver $lattePhpDocResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser
+    ) {
         parent::__construct($typeSerializer);
         $this->nameResolver = $nameResolver;
         $this->valueResolver = $valueResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
+        $this->reflectionProvider = $reflectionProvider;
+        $this->parser = $parser;
     }
 
     public function getNodeType(): string
@@ -51,6 +66,27 @@ final class ComponentCollector extends AbstractCollector
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
+        // Use this and process stmts in abstract collector
+        if ($node instanceof TraitUse) {
+            $traitComponents = [];
+            foreach ($node->traits as $trait) {
+                $traitName = $this->nameResolver->resolve($trait);
+                if ($traitName === null) {
+                    continue;
+                }
+
+                $traitClassReflection = $this->reflectionProvider->getClass($traitName);
+                $traitFileName = $traitClassReflection->getFileName();
+                if ($traitFileName === null) {
+                    continue;
+                }
+
+                $traitNodes = $this->parser->parseFile($traitFileName);
+                $traitComponents = array_merge($traitComponents, $this->processStmts($traitNodes, $scope));
+            }
+            return $traitComponents;
+        }
+
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
             return null;
@@ -71,6 +107,25 @@ final class ComponentCollector extends AbstractCollector
         // TODO add other components registrations - traits
 
         return null;
+    }
+
+    /**
+     * @param Node[] $stmts
+     * @phpstan-return CollectedComponentArray[]
+     */
+    private function processStmts(array $stmts, Scope $scope): array
+    {
+        $return = [];
+        foreach ($stmts as $stmt) {
+            if (isset($stmt->stmts)) {
+                $return = array_merge($return, $this->processStmts($stmt->stmts, $scope));
+            }
+            $procesNodeReturn = $this->processNode($stmt, $scope);
+            if ($procesNodeReturn !== null) {
+                $return = array_merge($procesNodeReturn);
+            }
+        }
+        return $return;
     }
 
     /**
