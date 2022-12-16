@@ -9,7 +9,7 @@ use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
-use Nette\Utils\Strings;
+use Efabrica\PHPStanLatte\Helper\FilterHelper;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -98,7 +98,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Actu
         }
 
         if ($filter instanceof Closure) {
-            return new FuncCall(new Variable('__filter__' . $filterName), $args);
+            return new FuncCall(new Variable(FilterHelper::createFilterVariableName($filterName)), $args);
         }
 
         if (!is_array($filter)) {
@@ -125,8 +125,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Actu
             );
         }
 
-        // TODO create helper
-        $variableName = Strings::firstLower(Strings::replace($className, '#\\\#', '')) . 'Filter';
+        $variableName = FilterHelper::createFilterVariableName($filterName);
         return new MethodCall(
             new Variable($variableName),
             new Identifier($methodName),
