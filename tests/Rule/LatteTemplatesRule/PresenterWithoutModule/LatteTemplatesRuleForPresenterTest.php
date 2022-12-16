@@ -299,18 +299,33 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Callable callable(string, int): string invoked with 1 parameter, 2 required.',
+                'Closure invoked with 1 parameter, 2 required.',
                 9,
                 'default.latte',
             ],
             [
-                'Parameter #1 $ of callable callable(string, int): string expects string, int given.',
+                'Parameter #1 $ of closure expects string, int given.',
                 10,
                 'default.latte',
             ],
             [
-                'Parameter #2 $ of callable callable(string, int): string expects int, string given.',
+                'Parameter #2 $ of closure expects int, string given.',
                 10,
+                'default.latte',
+            ],
+            [
+                'Callable callable(string, int): string invoked with 1 parameter, 2 required.',
+                12,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of callable callable(string, int): string expects string, int given.',
+                13,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of callable callable(string, int): string expects int, string given.',
+                13,
                 'default.latte',
             ],
         ]);

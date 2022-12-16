@@ -16,6 +16,6 @@ final class FilterHelper
      */
     public static function isCallableString($filter): bool
     {
-        return is_string($filter) && (str_starts_with($filter, 'Closure(') || (str_starts_with($filter, '\Closure(') || str_starts_with($filter, 'callable('));
+        return is_string($filter) && (str_starts_with($filter, 'Closure(') || str_starts_with($filter, '\Closure(') || str_starts_with($filter, 'callable('));
     }
 }
