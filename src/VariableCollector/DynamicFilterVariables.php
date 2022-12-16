@@ -38,8 +38,9 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     {
         $variables = [];
         foreach ($this->filters as $filterName => $filter) {
-            if (is_string($filter) && str_starts_with($filter, 'Closure(')) {
+            if (FilterHelper::isCallableString($filter)) {
                 $variableName = FilterHelper::createFilterVariableName($filterName);
+                /** @var string $filter */
                 $variables[$variableName] = new Variable($variableName, $this->typeStringResolver->resolve($filter));
                 continue;
             }

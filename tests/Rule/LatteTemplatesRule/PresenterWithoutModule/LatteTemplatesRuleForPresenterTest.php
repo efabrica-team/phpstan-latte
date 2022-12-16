@@ -298,6 +298,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 7,
                 'default.latte',
             ],
+            [
+                'Callable callable(string, int): string invoked with 1 parameter, 2 required.',
+                9,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of callable callable(string, int): string expects string, int given.',
+                10,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of callable callable(string, int): string expects int, string given.',
+                10,
+                'default.latte',
+            ],
         ]);
     }
 
