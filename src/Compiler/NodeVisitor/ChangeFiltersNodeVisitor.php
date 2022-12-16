@@ -93,12 +93,12 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Actu
             ], $args);
         }
 
-        if (is_string($filter)) {
-            return new FuncCall(new FullyQualified($filter), $args);
+        if ($filter instanceof Closure || FilterHelper::isCallableString($filter)) {
+            return new FuncCall(new Variable(FilterHelper::createFilterVariableName($filterName)), $args);
         }
 
-        if ($filter instanceof Closure) {
-            return new FuncCall(new Variable(FilterHelper::createFilterVariableName($filterName)), $args);
+        if (is_string($filter)) {
+            return new FuncCall(new FullyQualified($filter), $args);
         }
 
         if (!is_array($filter)) {

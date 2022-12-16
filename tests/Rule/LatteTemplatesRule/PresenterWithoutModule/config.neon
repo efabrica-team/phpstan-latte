@@ -2,6 +2,9 @@ parameters:
     latte:
         filters:
             existingFilter: strlen
+            closureFilter: 'Closure(string, int): string'
+            closureWithSlashFilter: '\Closure(string, int): string'
+            callableFilter: 'callable(string, int): string'
         applicationMapping:
             *: Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\*Presenter
         collectedPaths:

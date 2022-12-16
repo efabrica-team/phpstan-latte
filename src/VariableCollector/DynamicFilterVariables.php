@@ -10,6 +10,7 @@ use Efabrica\PHPStanLatte\Helper\FilterHelper;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Broker\ClassNotFoundException;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\CallableType;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
@@ -19,11 +20,14 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
 
+    private TypeStringResolver $typeStringResolver;
+
     private ?ClosureTypeFactory $closureTypeFactory;
 
-    public function __construct(CompilerInterface $compiler, ClosureTypeFactory $closureTypeFactory = null)
+    public function __construct(CompilerInterface $compiler, TypeStringResolver  $typeStringResolver, ClosureTypeFactory $closureTypeFactory = null)
     {
         $this->filters = $compiler->getFilters();
+        $this->typeStringResolver = $typeStringResolver;
         $this->closureTypeFactory = $closureTypeFactory;
     }
 
@@ -34,7 +38,10 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     {
         $variables = [];
         foreach ($this->filters as $filterName => $filter) {
-            if (is_string($filter)) {
+            if (FilterHelper::isCallableString($filter)) {
+                $variableName = FilterHelper::createFilterVariableName($filterName);
+                /** @var string $filter */
+                $variables[$variableName] = new Variable($variableName, $this->typeStringResolver->resolve($filter));
                 continue;
             }
 
