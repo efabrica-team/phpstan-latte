@@ -94,6 +94,7 @@ parameters:
         filters:
             myFilter: [My\Global\Type, doFoo]
             functionFilter: strlen
+            closureFilter: 'Closure(string, int): string'
 ```     
 
 

@@ -283,6 +283,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
             ],
+            [
+                'Closure invoked with 1 parameter, 2 required.',
+                6,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $ of closure expects string, int given.',
+                7,
+                'default.latte',
+            ],
+            [
+                'Parameter #2 $ of closure expects int, string given.',
+                7,
+                'default.latte',
+            ],
         ]);
     }
 
