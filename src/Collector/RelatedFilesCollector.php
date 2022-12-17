@@ -11,8 +11,10 @@ use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
+use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
@@ -26,10 +28,6 @@ final class RelatedFilesCollector extends AbstractCollector
 
     private CalledClassResolver $calledClassResolver;
 
-    private ReflectionProvider $reflectionProvider;
-
-    private NameResolver $nameResolver;
-
     /**
      * @param string[] $analysedPaths
      * @param string[] $collectedPaths
@@ -38,11 +36,13 @@ final class RelatedFilesCollector extends AbstractCollector
         array $analysedPaths,
         array $collectedPaths,
         TypeSerializer $typeSerializer,
-        CalledClassResolver $calledClassResolver,
+        NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        NameResolver $nameResolver
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        CalledClassResolver $calledClassResolver
     ) {
-        parent::__construct($typeSerializer);
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->collectedPaths = $analysedPaths;
         foreach ($collectedPaths as $collectedPath) {
             $realPath = realpath($collectedPath);
@@ -55,7 +55,6 @@ final class RelatedFilesCollector extends AbstractCollector
         }
         $this->calledClassResolver = $calledClassResolver;
         $this->reflectionProvider = $reflectionProvider;
-        $this->nameResolver = $nameResolver;
     }
 
     public function getNodeType(): string
@@ -63,7 +62,7 @@ final class RelatedFilesCollector extends AbstractCollector
         return Node::class;
     }
 
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $relatedFiles = [];
         if ($node instanceof InClassNode) {

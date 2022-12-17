@@ -14,9 +14,12 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
@@ -24,8 +27,6 @@ use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
  */
 final class MethodCallCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private CalledClassResolver $calledClassResolver;
 
     private TerminatingCallResolver $terminatingCallResolver;
@@ -35,12 +36,14 @@ final class MethodCallCollector extends AbstractCollector
     public function __construct(
         TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
         CalledClassResolver $calledClassResolver,
         TerminatingCallResolver $terminatingCallResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->calledClassResolver = $calledClassResolver;
         $this->terminatingCallResolver = $terminatingCallResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -55,7 +58,7 @@ final class MethodCallCollector extends AbstractCollector
      * @param CallLike $node
      * @phpstan-return null|CollectedMethodCallArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

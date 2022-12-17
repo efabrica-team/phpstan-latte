@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
@@ -15,7 +16,10 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedVariableArray from CollectedVariable
@@ -29,9 +33,17 @@ final class VariableCollector extends AbstractCollector
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, TypeResolver $typeResolver, TemplateTypeResolver $templateTypeResolver, LattePhpDocResolver $lattePhpDocResolver)
-    {
-        parent::__construct($typeSerializer);
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        TypeResolver $typeResolver,
+        TemplateTypeResolver $templateTypeResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->typeResolver = $typeResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -45,9 +57,9 @@ final class VariableCollector extends AbstractCollector
     /**
      * @phpstan-return null|CollectedVariableArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
-        $classReflection = $scope->getClassReflection();
+        $classReflection = $scope->getTraitReflection() ?: $scope->getClassReflection();
         if ($classReflection === null) {
             return null;
         }
@@ -72,7 +84,6 @@ final class VariableCollector extends AbstractCollector
         } else {
             return null;
         }
-
         if ($nameNode instanceof Expr) {
             return null;
         }

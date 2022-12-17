@@ -12,7 +12,10 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
@@ -20,8 +23,6 @@ use PHPStan\Analyser\Scope;
  */
 final class TemplatePathCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private TemplateTypeResolver $templateTypeResolver;
 
     private PathResolver $pathResolver;
@@ -31,12 +32,14 @@ final class TemplatePathCollector extends AbstractCollector
     public function __construct(
         TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
         TemplateTypeResolver $templateTypeResolver,
         PathResolver $pathResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->templateTypeResolver = $templateTypeResolver;
         $this->pathResolver = $pathResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -51,7 +54,7 @@ final class TemplatePathCollector extends AbstractCollector
      * @param MethodCall $node
      * @phpstan-return null|CollectedTemplatePathArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

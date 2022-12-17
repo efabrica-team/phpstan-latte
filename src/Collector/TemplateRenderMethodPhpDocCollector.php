@@ -10,7 +10,10 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
@@ -18,13 +21,17 @@ use PHPStan\Analyser\Scope;
  */
 final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, LattePhpDocResolver $lattePhpDocResolver)
-    {
-        parent::__construct($typeSerializer);
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->nameResolver = $nameResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -38,7 +45,7 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
      * @param ClassMethod $node
      * @phpstan-return null|CollectedTemplateRenderArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

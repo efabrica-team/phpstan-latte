@@ -24,7 +24,7 @@ final class MethodCollector extends AbstractCollector
      * @param ExecutionEndNode $node
      * @phpstan-return null|CollectedMethodArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

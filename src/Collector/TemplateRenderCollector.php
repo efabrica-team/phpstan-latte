@@ -17,7 +17,10 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
@@ -29,8 +32,6 @@ use PHPStan\Type\ThisType;
  */
 final class TemplateRenderCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private ValueResolver $valueResolver;
 
     private PathResolver $pathResolver;
@@ -42,13 +43,15 @@ final class TemplateRenderCollector extends AbstractCollector
     public function __construct(
         TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
         ValueResolver $valueResolver,
         PathResolver $pathResolver,
         TemplateTypeResolver $templateTypeResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->valueResolver = $valueResolver;
         $this->pathResolver = $pathResolver;
         $this->templateTypeResolver = $templateTypeResolver;
@@ -64,7 +67,7 @@ final class TemplateRenderCollector extends AbstractCollector
      * @param MethodCall $node
      * @phpstan-return null|CollectedTemplateRenderArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

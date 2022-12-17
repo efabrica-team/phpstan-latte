@@ -22,6 +22,9 @@ parameters:
             path: src/PhpDoc/LattePhpDocResolver.php
 
         -
+            message: '#^Calling PHPStan\\Analyser\\NodeScopeResolver\:\:getPhpDocs\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            path: src/Collector/AbstractCollector.php
+        -
             messages:
                 - '#^Calling PHPStan\\Analyser\\FileAnalyser\:\:analyseFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
                 - '#^Creating new PHPStan\\Rules\\DirectRegistry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
