@@ -15,7 +15,9 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
@@ -27,20 +29,21 @@ use PHPStan\Type\VerbosityLevel;
  */
 final class FormCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private ValueResolver $valueResolver;
-
-    private ReflectionProvider $reflectionProvider;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, ReflectionProvider $reflectionProvider, LattePhpDocResolver $lattePhpDocResolver)
-    {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        ValueResolver $valueResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->valueResolver = $valueResolver;
-        $this->reflectionProvider = $reflectionProvider;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
@@ -52,7 +55,7 @@ final class FormCollector extends AbstractCollector
     /**
      * @phpstan-return null|CollectedFormArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

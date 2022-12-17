@@ -103,22 +103,53 @@ services:
     - Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver
 
     # Collectors
+    - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
     -
         factory: Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector
+        arguments:
+            parser: @defaultAnalysisParser
         tags:
             - phpstan.collector
-
-    - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
-    - Efabrica\PHPStanLatte\Collector\VariableCollector
-    - Efabrica\PHPStanLatte\Collector\ComponentCollector
-    - Efabrica\PHPStanLatte\Collector\MethodCollector
-    - Efabrica\PHPStanLatte\Collector\MethodCallCollector
-    - Efabrica\PHPStanLatte\Collector\MethodOutputCollector
-    - Efabrica\PHPStanLatte\Collector\TemplatePathCollector
-    - Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
-    - Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector
-    - Efabrica\PHPStanLatte\Collector\FormCollector
-    - Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
+    -
+        factory: Efabrica\PHPStanLatte\Collector\VariableCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\MethodCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\MethodOutputCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\TemplatePathCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\FormCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
+        arguments:
+            parser: @defaultAnalysisParser
 
     # Variable collectors
     variableCollectorStorage:

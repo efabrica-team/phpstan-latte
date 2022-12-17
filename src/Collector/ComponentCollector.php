@@ -17,8 +17,11 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -27,16 +30,20 @@ use PHPStan\Type\ObjectType;
  */
 final class ComponentCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private ValueResolver $valueResolver;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, ValueResolver $valueResolver, LattePhpDocResolver $lattePhpDocResolver)
-    {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        ValueResolver $valueResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->valueResolver = $valueResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -49,7 +56,7 @@ final class ComponentCollector extends AbstractCollector
     /**
      * @phpstan-return null|CollectedComponentArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

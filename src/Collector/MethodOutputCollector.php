@@ -10,7 +10,10 @@ use Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Parser\Parser;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
@@ -18,16 +21,20 @@ use PHPStan\Analyser\Scope;
  */
 final class MethodOutputCollector extends AbstractCollector
 {
-    private NameResolver $nameResolver;
-
     private CalledClassResolver $calledClassResolver;
 
     private OutputCallResolver $outputCallResolver;
 
-    public function __construct(TypeSerializer $typeSerializer, NameResolver $nameResolver, CalledClassResolver $calledClassResolver, OutputCallResolver $outputCallResolver)
-    {
-        parent::__construct($typeSerializer);
-        $this->nameResolver = $nameResolver;
+    public function __construct(
+        TypeSerializer $typeSerializer,
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider,
+        Parser $parser,
+        NodeScopeResolver $nodeScopeResolver,
+        CalledClassResolver $calledClassResolver,
+        OutputCallResolver $outputCallResolver
+    ) {
+        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
         $this->calledClassResolver = $calledClassResolver;
         $this->outputCallResolver = $outputCallResolver;
     }
@@ -38,10 +45,9 @@ final class MethodOutputCollector extends AbstractCollector
     }
 
     /**
-     * @param Node $node
      * @phpstan-return null|CollectedMethodCallArray[]
      */
-    public function processNode(Node $node, Scope $scope): ?array
+    public function collectData(Node $node, Scope $scope): ?array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {

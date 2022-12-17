@@ -569,4 +569,25 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
         ]);
     }
+
+    public function testTrait(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TraitPresenter.php'], [
+            [
+                'Dumped type: \'foo\'',
+                3,
+                'trait.latte',
+            ],
+            [
+                'Dumped type: mixed',   // TODO figure out how to change scope for assign in method
+                4,
+                'trait.latte',
+            ],
+            [
+                'Dumped type: array<int>',
+                5,
+                'trait.latte',
+            ],
+        ]);
+    }
 }
