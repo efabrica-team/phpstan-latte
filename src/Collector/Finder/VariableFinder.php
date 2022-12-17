@@ -55,11 +55,6 @@ final class VariableFinder
      */
     public function find(string $className, string $methodName): array
     {
-        file_put_contents("/app/trait.log", print_r([$className, $methodName, VariablesHelper::merge(
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName)
-        )], true), FILE_APPEND);
         return VariablesHelper::merge(
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
