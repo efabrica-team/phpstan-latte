@@ -9,23 +9,19 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
- * @extends AbstractCollector<CallLike, CollectedMethodCall, CollectedMethodCallArray>
+ * @extends AbstractLatteContextCollector<CallLike, CollectedMethodCall>
  */
-final class MethodCallCollector extends AbstractCollector
+final class MethodCallCollector extends AbstractLatteContextCollector
 {
     private CalledClassResolver $calledClassResolver;
 
@@ -34,16 +30,13 @@ final class MethodCallCollector extends AbstractCollector
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         CalledClassResolver $calledClassResolver,
         TerminatingCallResolver $terminatingCallResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->calledClassResolver = $calledClassResolver;
         $this->terminatingCallResolver = $terminatingCallResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -56,7 +49,7 @@ final class MethodCallCollector extends AbstractCollector
 
     /**
      * @param CallLike $node
-     * @phpstan-return null|CollectedMethodCallArray[]
+     * @phpstan-return null|CollectedMethodCall[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -79,13 +72,13 @@ final class MethodCallCollector extends AbstractCollector
         $calledMethodName = $this->nameResolver->resolve($node);
 
         if ($this->terminatingCallResolver->isTerminatingCallNode($node, $scope)) {
-            return $this->collectItem(new CollectedMethodCall(
+            return [new CollectedMethodCall(
                 $actualClassName,
                 $functionName,
                 $calledClassName ?? '',
                 $calledMethodName ?? '',
                 CollectedMethodCall::TERMINATING_CALL
-            ));
+            )];
         }
 
         if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
@@ -112,11 +105,11 @@ final class MethodCallCollector extends AbstractCollector
         }
 
         $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-        return $this->collectItem(new CollectedMethodCall(
+        return [new CollectedMethodCall(
             $actualClassName,
             $functionName,
             $declaringClassName,
             $calledMethodName
-        ));
+        )];
     }
 }

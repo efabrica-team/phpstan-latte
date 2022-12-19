@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
-/**
- * @phpstan-type CollectedFormFieldArray array{name: string, type: array<string, string>}
- */
-final class CollectedFormField extends CollectedValueObject
+final class CollectedFormField extends CollectedLatteContextObject
 {
     private string $name;
 
@@ -36,24 +32,5 @@ final class CollectedFormField extends CollectedValueObject
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
-    }
-
-    /**
-     * @phpstan-return CollectedFormFieldArray
-     */
-    public function toArray(TypeSerializer $typeSerializer): array
-    {
-        return [
-            'name' => $this->name,
-            'type' => $typeSerializer->toArray($this->type),
-        ];
-    }
-
-    /**
-     * @phpstan-param CollectedFormFieldArray $item
-     */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
-    {
-        return new CollectedFormField($item['name'], $typeSerializer->fromArray($item['type']));
     }
 }

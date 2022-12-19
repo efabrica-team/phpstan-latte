@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
-use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\RuleErrorBuilder;
 
 abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplateResolver
 {
-    protected function getClassResult(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
+    protected function getClassResult(ReflectionClass $reflectionClass, LatteContextData $latteContext): LatteTemplateResolverResult
     {
         if ($reflectionClass->isAbstract() || $reflectionClass->isAnonymous()) {
             return new LatteTemplateResolverResult();

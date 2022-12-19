@@ -8,31 +8,24 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
- * @extends AbstractCollector<ClassMethod, CollectedTemplateRender, CollectedTemplateRenderArray>
+ * @extends AbstractLatteContextCollector<ClassMethod, CollectedTemplateRender>
  */
-final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
+final class TemplateRenderMethodPhpDocCollector extends AbstractLatteContextCollector
 {
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
@@ -43,7 +36,7 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
 
     /**
      * @param ClassMethod $node
-     * @phpstan-return null|CollectedTemplateRenderArray[]
+     * @phpstan-return null|CollectedTemplateRender[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -75,6 +68,6 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractCollector
             $templateRenders[] = CollectedTemplateRender::build($node, $scope, $templatePath, $variables);
         }
 
-        return $this->collectItems($templateRenders);
+        return $templateRenders;
     }
 }

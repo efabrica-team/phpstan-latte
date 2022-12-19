@@ -7,21 +7,17 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedRelatedFilesArray from CollectedRelatedFiles
- * @extends AbstractCollector<Node, CollectedRelatedFiles, CollectedRelatedFilesArray>
+ * @extends AbstractLatteContextCollector<Node, CollectedRelatedFiles>
  */
-final class RelatedFilesCollector extends AbstractCollector
+final class RelatedFilesCollector extends AbstractLatteContextCollector
 {
     /** @var string[] */
     private array $collectedPaths;
@@ -35,14 +31,11 @@ final class RelatedFilesCollector extends AbstractCollector
     public function __construct(
         array $analysedPaths,
         array $collectedPaths,
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         CalledClassResolver $calledClassResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->collectedPaths = $analysedPaths;
         foreach ($collectedPaths as $collectedPath) {
             $realPath = realpath($collectedPath);
@@ -97,7 +90,7 @@ final class RelatedFilesCollector extends AbstractCollector
         }
 
         $relatedFiles = array_unique(array_filter($relatedFiles));
-        return $this->collectItem(new CollectedRelatedFiles($scope->getFile(), $relatedFiles));
+        return [new CollectedRelatedFiles($scope->getFile(), $relatedFiles)];
     }
 
     private function isInCollectedPaths(?string $path): bool

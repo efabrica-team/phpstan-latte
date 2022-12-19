@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
-
-/**
- * @phpstan-type CollectedMethodCallArray array{callerClassName: string, callerMethodName: string, calledClassName: string, calledMethodName: string, type: string}
- */
-final class CollectedMethodCall extends CollectedValueObject
+final class CollectedMethodCall extends CollectedLatteContextObject
 {
     public const CALL = 'call';
     public const TERMINATING_CALL = 'terminating';
@@ -67,27 +62,5 @@ final class CollectedMethodCall extends CollectedValueObject
     public function isOutputCall(): bool
     {
         return $this->type === self::OUTPUT_CALL;
-    }
-
-    /**
-     * @phpstan-return CollectedMethodCallArray
-     */
-    public function toArray(TypeSerializer $typeSerializer): array
-    {
-        return [
-            'callerClassName' => $this->callerClassName,
-            'callerMethodName' => $this->callerMethodName,
-            'calledClassName' => $this->calledClassName,
-            'calledMethodName' => $this->calledMethodName,
-            'type' => $this->type,
-        ];
-    }
-
-    /**
-     * @phpstan-param CollectedMethodCallArray $item
-     */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
-    {
-        return new CollectedMethodCall($item['callerClassName'], $item['callerMethodName'], $item['calledClassName'], $item['calledMethodName'], $item['type']);
     }
 }

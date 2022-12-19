@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\FormCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedFormArray from CollectedForm
- */
 final class FormFinder
 {
     /**
@@ -23,11 +18,11 @@ final class FormFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedForms = FormCollector::loadData($collectedDataNode, $typeSerializer, CollectedForm::class);
+        $collectedForms = $latteContext->getCollectedData(CollectedForm::class);
         foreach ($collectedForms as $collectedForm) {
             $className = $collectedForm->getClassName();
             $methodName = $collectedForm->getMethodName();

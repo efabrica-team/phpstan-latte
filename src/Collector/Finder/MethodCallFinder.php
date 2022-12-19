@@ -4,16 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\MethodCallCollector;
-use Efabrica\PHPStanLatte\Collector\MethodOutputCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
- */
 final class MethodCallFinder
 {
     /**
@@ -36,12 +30,9 @@ final class MethodCallFinder
      */
     private array $hasOutputCalls = [];
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer)
+    public function __construct(LatteContextData $latteContext)
     {
-        $collectedMethodCalls = array_merge(
-            MethodCallCollector::loadData($collectedDataNode, $typeSerializer, CollectedMethodCall::class),
-            MethodOutputCollector::loadData($collectedDataNode, $typeSerializer, CollectedMethodCall::class)
-        );
+        $collectedMethodCalls = $latteContext->getCollectedData(CollectedMethodCall::class);
         foreach ($collectedMethodCalls as $collectedMethodCall) {
             $callerClassName = $collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();

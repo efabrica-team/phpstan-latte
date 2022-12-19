@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
-use Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
- */
 final class TemplateRenderFinder
 {
     /**
@@ -28,16 +22,13 @@ final class TemplateRenderFinder
 
     private PathResolver $pathResolver;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
         $this->templatePathFinder = $templatePathFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplateRenders = array_merge(
-            TemplateRenderCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplateRender::class),
-            TemplateRenderMethodPhpDocCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplateRender::class)
-        );
+        $collectedTemplateRenders = $latteContext->getCollectedData(CollectedTemplateRender::class);
         foreach ($collectedTemplateRenders as $collectedTemplateRender) {
             $className = $collectedTemplateRender->getClassName();
             $methodName = $collectedTemplateRender->getMethodName();

@@ -9,22 +9,18 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedVariableArray from CollectedVariable
- * @extends AbstractCollector<Node, CollectedVariable, CollectedVariableArray>
+ * @extends AbstractLatteContextCollector<Node, CollectedVariable>
  */
-final class VariableCollector extends AbstractCollector
+final class VariableCollector extends AbstractLatteContextCollector
 {
     private TypeResolver $typeResolver;
 
@@ -33,16 +29,13 @@ final class VariableCollector extends AbstractCollector
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         TypeResolver $typeResolver,
         TemplateTypeResolver $templateTypeResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->typeResolver = $typeResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -54,7 +47,7 @@ final class VariableCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return null|CollectedVariableArray[]
+     * @phpstan-return null|CollectedVariable[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -117,6 +110,6 @@ final class VariableCollector extends AbstractCollector
             }
         }
 
-        return $this->collectItems($variables);
+        return $variables;
     }
 }

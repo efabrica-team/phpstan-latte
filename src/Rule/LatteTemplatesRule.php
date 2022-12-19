@@ -6,13 +6,13 @@ namespace Efabrica\PHPStanLatte\Rule;
 
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
-use Efabrica\PHPStanLatte\Collector\AdditionalDataCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
-use Efabrica\PHPStanLatte\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
+use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
@@ -29,7 +29,6 @@ use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
 
 /**
- * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
  * @implements Rule<CollectedDataNode>
  */
 final class LatteTemplatesRule implements Rule
@@ -45,15 +44,13 @@ final class LatteTemplatesRule implements Rule
 
     private RuleRegistry $rulesRegistry;
 
-    private TemplateRenderCollector $templateRenderCollector;
-
     private ErrorBuilder $errorBuilder;
 
     private RelativePathHelper $relativePathHelper;
 
     private TypeSerializer $typeSerializer;
 
-    private AdditionalDataCollector $additionalDataCollector;
+    private LatteContextAnalyser $latteContextAnalyser;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
@@ -64,22 +61,20 @@ final class LatteTemplatesRule implements Rule
         FileAnalyserFactory $fileAnalyserFactory,
         AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
-        TemplateRenderCollector $templateRenderCollector,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
         TypeSerializer $typeSerializer,
-        AdditionalDataCollector $additionalDataCollector
+        LatteContextAnalyser $latteContextAnalyser
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
         $this->fileAnalyserFactory = $fileAnalyserFactory;
         $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
-        $this->templateRenderCollector = $templateRenderCollector;
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
         $this->typeSerializer = $typeSerializer;
-        $this->additionalDataCollector = $additionalDataCollector;
+        $this->latteContextAnalyser = $latteContextAnalyser;
     }
 
     public function getNodeType(): string
@@ -93,16 +88,18 @@ final class LatteTemplatesRule implements Rule
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
         $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
-        $processedFiles = array_unique(array_keys($resolvedNodes));
-        $collectedDataNode = $this->additionalDataCollector->collect($collectedDataNode, $processedFiles);
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
 
-        $errors = [];
+        $processedFiles = array_unique(array_keys($resolvedNodes));
+        $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);
+
+        $errors = $latteContext->getErrors();
+
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
-                $result = $latteTemplateResolver->resolve($collectedResolvedNode, $collectedDataNode);
+                $result = $latteTemplateResolver->resolve($collectedResolvedNode, $latteContext);
                 $errors = array_merge($errors, $result->getErrors());
-                $this->analyseTemplates($result->getTemplates(), $scope, $errors);
+                $this->analyseTemplates($result->getTemplates(), $errors);
             }
         }
 
@@ -120,7 +117,7 @@ final class LatteTemplatesRule implements Rule
      * @param RuleError[] $errors
      * @param array<string, int> $alreadyAnalysed
      */
-    private function analyseTemplates(array $templates, Scope $scope, array &$errors, array &$alreadyAnalysed = []): void
+    private function analyseTemplates(array $templates, array &$errors, array &$alreadyAnalysed = []): void
     {
         foreach ($templates as $template) {
             $templatePath = $template->getPath();
@@ -151,7 +148,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template, $context);
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $scope->getFile())], $templatePath, $context));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, $context));
                 continue;
             }
 
@@ -159,7 +156,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath,
                 [],
                 $this->rulesRegistry,
-                new CollectorsRegistry([$this->templateRenderCollector]),
+                new CollectorsRegistry([]), // TODO predavat CollectorRegistry protoze nektere rules muzou pozadovat collector aby fungovaly
                 null
             );
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
@@ -169,7 +166,8 @@ final class LatteTemplatesRule implements Rule
             $dir = dirname($templatePath);
 
             $includeTemplates = [];
-            $collectedTemplateRenders = $this->templateRenderCollector->extractCollectedData($fileAnalyserResult->getCollectedData(), $this->typeSerializer, CollectedTemplateRender::class);
+            // TODO optimization - run only template render collectors
+            $collectedTemplateRenders = $this->latteContextAnalyser->analyseFile($compileFilePath)->getCollectedData(CollectedTemplateRender::class);
             foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath) && $includedTemplatePath !== '') {
@@ -181,7 +179,7 @@ final class LatteTemplatesRule implements Rule
                         $includedTemplatePath,
                         $actualClass,
                         $actualAction,
-                        array_merge($collectedTemplateRender->getVariables(), $template->getVariables()),
+                        VariablesHelper::merge($template->getVariables(), $collectedTemplateRender->getVariables()),
                         $template->getComponents(),
                         $template->getForms(),
                         $template->getFilters(),
@@ -199,7 +197,7 @@ final class LatteTemplatesRule implements Rule
                     );
                 }
             }
-            $this->analyseTemplates($includeTemplates, $scope, $errors, $alreadyAnalysed);
+            $this->analyseTemplates($includeTemplates, $errors, $alreadyAnalysed);
         }
     }
 }

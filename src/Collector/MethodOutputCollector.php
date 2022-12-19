@@ -8,33 +8,26 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethodCall;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedMethodCallArray from CollectedMethodCall
- * @extends AbstractCollector<Node, CollectedMethodCall, CollectedMethodCallArray>
+ * @extends AbstractLatteContextCollector<Node, CollectedMethodCall>
  */
-final class MethodOutputCollector extends AbstractCollector
+final class MethodOutputCollector extends AbstractLatteContextCollector
 {
     private CalledClassResolver $calledClassResolver;
 
     private OutputCallResolver $outputCallResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         CalledClassResolver $calledClassResolver,
         OutputCallResolver $outputCallResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->calledClassResolver = $calledClassResolver;
         $this->outputCallResolver = $outputCallResolver;
     }
@@ -45,7 +38,7 @@ final class MethodOutputCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return null|CollectedMethodCallArray[]
+     * @phpstan-return null|CollectedMethodCall[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -66,12 +59,12 @@ final class MethodOutputCollector extends AbstractCollector
         $actualClassName = $classReflection->getName();
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
-        return $this->collectItem(new CollectedMethodCall(
+        return [new CollectedMethodCall(
             $actualClassName,
             $functionName,
             $calledClassName ?? '',
             $calledMethodName ?? '',
             CollectedMethodCall::TERMINATING_CALL
-        ));
+        )];
     }
 }

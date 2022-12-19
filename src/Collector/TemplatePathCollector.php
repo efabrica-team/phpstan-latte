@@ -9,19 +9,15 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
- * @extends AbstractCollector<MethodCall, CollectedTemplatePath, CollectedTemplatePathArray>
+ * @extends AbstractLatteContextCollector<MethodCall, CollectedTemplatePath>
  */
-final class TemplatePathCollector extends AbstractCollector
+final class TemplatePathCollector extends AbstractLatteContextCollector
 {
     private TemplateTypeResolver $templateTypeResolver;
 
@@ -30,16 +26,13 @@ final class TemplatePathCollector extends AbstractCollector
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         TemplateTypeResolver $templateTypeResolver,
         PathResolver $pathResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->templateTypeResolver = $templateTypeResolver;
         $this->pathResolver = $pathResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
@@ -52,7 +45,7 @@ final class TemplatePathCollector extends AbstractCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplatePathArray[]
+     * @phpstan-return null|CollectedTemplatePath[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -90,12 +83,12 @@ final class TemplatePathCollector extends AbstractCollector
         $paths = $this->pathResolver->resolve($arg->value, $scope);
         if ($paths === null) {
             // failed to resolve
-            return $this->collectItem(new CollectedTemplatePath($actualClassName, $functionName, null));
+            return [new CollectedTemplatePath($actualClassName, $functionName, null)];
         }
         $templatePaths = [];
         foreach ($paths as $path) {
             $templatePaths[] = new CollectedTemplatePath($actualClassName, $functionName, $path);
         }
-        return $this->collectItems($templatePaths);
+        return $templatePaths;
     }
 }

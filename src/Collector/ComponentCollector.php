@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrayDimFetch;
@@ -17,33 +16,27 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
- * @phpstan-import-type CollectedComponentArray from CollectedComponent
- * @extends AbstractCollector<Node, CollectedComponent, CollectedComponentArray>
+ * @extends AbstractLatteContextCollector<Node, CollectedComponent>
  */
-final class ComponentCollector extends AbstractCollector
+final class ComponentCollector extends AbstractLatteContextCollector
 {
     private ValueResolver $valueResolver;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         ValueResolver $valueResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->valueResolver = $valueResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -54,7 +47,7 @@ final class ComponentCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return null|CollectedComponentArray[]
+     * @phpstan-return null|CollectedComponent[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -81,7 +74,7 @@ final class ComponentCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return CollectedComponentArray[]
+     * @phpstan-return CollectedComponent[]
      */
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?array
     {
@@ -103,15 +96,15 @@ final class ComponentCollector extends AbstractCollector
         }
 
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
-        return $this->collectItem(new CollectedComponent(
+        return [new CollectedComponent(
             $classReflection->getName(),
             '',
             new Component($componentName, $parametersAcceptor->getReturnType())
-        ));
+        )];
     }
 
     /**
-     * @phpstan-return CollectedComponentArray[]
+     * @phpstan-return CollectedComponent[]
      */
     private function findAddComponent(MethodCall $node, Scope $scope, ClassReflection $classReflection): ?array
     {
@@ -149,11 +142,11 @@ final class ComponentCollector extends AbstractCollector
                 new Component($name, $componentArgType)
             );
         }
-        return $this->collectItems($components);
+        return $components;
     }
 
     /**
-     * @phpstan-return CollectedComponentArray[]
+     * @phpstan-return CollectedComponent[]
      */
     private function findAssignToThis(Assign $node, Scope $scope, ClassReflection $classReflection): ?array
     {
@@ -197,6 +190,6 @@ final class ComponentCollector extends AbstractCollector
                 new Component($name, $exprType)
             );
         }
-        return $this->collectItems($components);
+        return $components;
     }
 }

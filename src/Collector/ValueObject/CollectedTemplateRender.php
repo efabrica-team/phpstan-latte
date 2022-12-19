@@ -5,16 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
-use PHPStan\ShouldNotHappenException;
 
-/**
- * @phpstan-type CollectedTemplateRenderArray array{templatePath: string|bool|null, variables: array<array{name: string, type: array<string, string>}>, className: string, methodName: string, file: string, line: int}
- */
-final class CollectedTemplateRender extends CollectedValueObject
+final class CollectedTemplateRender extends CollectedLatteContextObject
 {
     /** @var null|string|false */
     private $templatePath;
@@ -78,43 +73,6 @@ final class CollectedTemplateRender extends CollectedValueObject
     public function getLine(): int
     {
         return $this->line;
-    }
-
-    /**
-     * @phpstan-return CollectedTemplateRenderArray
-     */
-    public function toArray(TypeSerializer $typeSerializer): array
-    {
-        $variables = [];
-        foreach ($this->variables as $variable) {
-            $variables[] = [
-                'name' => $variable->getName(),
-                'type' => $typeSerializer->toArray($variable->getType()),
-            ];
-        }
-        return [
-            'templatePath' => $this->templatePath,
-            'variables' => $variables,
-            'className' => $this->className,
-            'methodName' => $this->methodName,
-            'file' => $this->file,
-            'line' => $this->line,
-        ];
-    }
-
-    /**
-     * @phpstan-param CollectedTemplateRenderArray $item
-     */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
-    {
-        $variables = [];
-        foreach ($item['variables'] as $variable) {
-            $variables[] = new Variable($variable['name'], $typeSerializer->fromArray($variable['type']));
-        }
-        if ($item['templatePath'] === true) {
-            throw new ShouldNotHappenException('TemplatePath cannot be true, only string, null or false allowed.');
-        }
-        return new CollectedTemplateRender($item['templatePath'], $variables, $item['className'], $item['methodName'], $item['file'], $item['line']);
     }
 
     public function withError(): self

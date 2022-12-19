@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\ComponentCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedComponentArray from CollectedComponent
- */
 final class ComponentFinder
 {
     /**
@@ -24,12 +19,12 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
         $componentsWithTypes = [];
-        $collectedComponents = ComponentCollector::loadData($collectedDataNode, $typeSerializer, CollectedComponent::class);
+        $collectedComponents = $latteContext->getCollectedData(CollectedComponent::class);
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
             $methodName = $collectedComponent->getMethodName();

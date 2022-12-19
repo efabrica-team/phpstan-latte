@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Template\Component;
@@ -11,7 +12,6 @@ use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
-use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\RuleErrorBuilder;
 
 final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
@@ -23,7 +23,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         return ['Nette\Application\UI\Presenter'];
     }
 
-    protected function getClassResult(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
+    protected function getClassResult(ReflectionClass $reflectionClass, LatteContextData $latteContext): LatteTemplateResolverResult
     {
         if ($reflectionClass->isAbstract() || $reflectionClass->isAnonymous()) {
             return new LatteTemplateResolverResult();

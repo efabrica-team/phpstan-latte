@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\TemplatePathCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedTemplatePathArray from CollectedTemplatePath
- */
 final class TemplatePathFinder
 {
     /**
@@ -26,12 +21,12 @@ final class TemplatePathFinder
 
     private PathResolver $pathResolver;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
         $this->pathResolver = $pathResolver;
 
-        $collectedTemplatePaths = TemplatePathCollector::loadData($collectedDataNode, $typeSerializer, CollectedTemplatePath::class);
+        $collectedTemplatePaths = $latteContext->getCollectedData(CollectedTemplatePath::class);
         foreach ($collectedTemplatePaths as $collectedTemplatePath) {
             $className = $collectedTemplatePath->getClassName();
             $methodName = $collectedTemplatePath->getMethodName();

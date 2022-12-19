@@ -12,15 +12,12 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\MethodCall;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -28,10 +25,9 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 
 /**
- * @phpstan-import-type CollectedTemplateRenderArray from CollectedTemplateRender
- * @extends AbstractCollector<MethodCall, CollectedTemplateRender, CollectedTemplateRenderArray>
+ * @extends AbstractLatteContextCollector<MethodCall, CollectedTemplateRender>
  */
-final class TemplateRenderCollector extends AbstractCollector
+final class TemplateRenderCollector extends AbstractLatteContextCollector
 {
     private ValueResolver $valueResolver;
 
@@ -42,17 +38,14 @@ final class TemplateRenderCollector extends AbstractCollector
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         ValueResolver $valueResolver,
         PathResolver $pathResolver,
         TemplateTypeResolver $templateTypeResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->valueResolver = $valueResolver;
         $this->pathResolver = $pathResolver;
         $this->templateTypeResolver = $templateTypeResolver;
@@ -66,7 +59,7 @@ final class TemplateRenderCollector extends AbstractCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRenderArray[]
+     * @phpstan-return null|CollectedTemplateRender[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -91,7 +84,7 @@ final class TemplateRenderCollector extends AbstractCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRenderArray[]
+     * @phpstan-return null|CollectedTemplateRender[]
      */
     public function processNodeInCompiledLatte(Node $node, Scope $scope): ?array
     {
@@ -134,7 +127,7 @@ final class TemplateRenderCollector extends AbstractCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRenderArray[]
+     * @phpstan-return null|CollectedTemplateRender[]
      */
     public function processNodeInPhp(Node $node, Scope $scope): ?array
     {
@@ -176,18 +169,18 @@ final class TemplateRenderCollector extends AbstractCollector
     /**
      * @param array<?string> $paths
      * @param Variable[] $variables
-     * @return null|CollectedTemplateRenderArray[]
+     * @return null|CollectedTemplateRender[]
      */
     private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables): ?array
     {
         if ($paths === null) {
-            return $this->collectItem(CollectedTemplateRender::build($node, $scope, false, $variables));
+            return [CollectedTemplateRender::build($node, $scope, false, $variables)];
         }
         $templateRenders = [];
         foreach ($paths as $path) {
             $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables);
         }
-        return $this->collectItems($templateRenders);
+        return count($templateRenders) > 0 ? $templateRenders : null;
     }
 
     /**

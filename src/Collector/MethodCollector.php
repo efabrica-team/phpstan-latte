@@ -6,14 +6,16 @@ namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedMethod;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Return_;
+use PhpParser\Node\Stmt\Throw_;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\ClassMethod;
 use PHPStan\Node\ExecutionEndNode;
 
 /**
- * @phpstan-import-type CollectedMethodArray from CollectedMethod
- * @extends AbstractCollector<ExecutionEndNode, CollectedMethod, CollectedMethodArray>
+ * @extends AbstractLatteContextCollector<ExecutionEndNode, CollectedMethod>
  */
-final class MethodCollector extends AbstractCollector
+final class MethodCollector extends AbstractLatteContextCollector
 {
     public function getNodeType(): string
     {
@@ -22,7 +24,7 @@ final class MethodCollector extends AbstractCollector
 
     /**
      * @param ExecutionEndNode $node
-     * @phpstan-return null|CollectedMethodArray[]
+     * @phpstan-return null|CollectedMethod[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -37,10 +39,17 @@ final class MethodCollector extends AbstractCollector
             return null;
         }
 
-        return $this->collectItem(new CollectedMethod(
+        if (!$node->getNode() instanceof ClassMethod &&
+           !$node->getNode() instanceof Return_ &&
+           !$node->getNode() instanceof Throw_
+        ) {
+            return null;
+        }
+
+        return [new CollectedMethod(
             $actualClassName,
             $methodName,
             $node->getStatementResult()->isAlwaysTerminating()
-        ));
+        )];
     }
 }

@@ -10,19 +10,15 @@ use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Filter;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedFilterArray from CollectedFilter
- * @extends AbstractCollector<Node, CollectedFilter, CollectedFilterArray>
+ * @extends AbstractLatteContextCollector<MethodCall, CollectedFilter>
  */
-final class FilterCollector extends AbstractCollector
+final class FilterCollector extends AbstractLatteContextCollector
 {
     private TypeResolver $typeResolver;
 
@@ -31,16 +27,13 @@ final class FilterCollector extends AbstractCollector
     private ValueResolver $valueResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         TypeResolver $typeResolver,
         TemplateTypeResolver $templateTypeResolver,
         ValueResolver $valueResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->typeResolver = $typeResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->valueResolver = $valueResolver;
@@ -48,11 +41,11 @@ final class FilterCollector extends AbstractCollector
 
     public function getNodeType(): string
     {
-        return Node::class;
+        return MethodCall::class;
     }
 
     /**
-     * @phpstan-return null|CollectedFilterArray[]
+     * @phpstan-return null|CollectedFilter[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -63,10 +56,6 @@ final class FilterCollector extends AbstractCollector
 
         $functionName = $scope->getFunctionName();
         if ($functionName === null) {
-            return null;
-        }
-
-        if (!$node instanceof MethodCall) {
             return null;
         }
 
@@ -105,6 +94,6 @@ final class FilterCollector extends AbstractCollector
                 new Filter($filterName, $filterType)
             );
         }
-        return $this->collectitems($collectedFilters);
+        return $collectedFilters;
     }
 }

@@ -8,31 +8,24 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @phpstan-import-type CollectedVariableArray from CollectedVariable
- * @extends AbstractCollector<ClassMethod, CollectedVariable, CollectedVariableArray>
+ * @extends AbstractLatteContextCollector<ClassMethod, CollectedVariable>
  */
-final class VariableMethodPhpDocCollector extends AbstractCollector
+final class VariableMethodPhpDocCollector extends AbstractLatteContextCollector
 {
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
@@ -43,7 +36,7 @@ final class VariableMethodPhpDocCollector extends AbstractCollector
 
     /**
      * @param ClassMethod $node
-     * @phpstan-return null|CollectedVariableArray[]
+     * @phpstan-return null|CollectedVariable[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -64,13 +57,13 @@ final class VariableMethodPhpDocCollector extends AbstractCollector
 
         $variables = [];
         foreach ($lattePhpDoc->getVariablesWithParents() as $name => $type) {
-            $variables[$name] = CollectedVariable::build($node, $scope, $name, $type);
+            $variables[$name] = CollectedVariable::build($node, $scope, $name, $type, true);
         }
 
         foreach ($lattePhpDoc->getParentClass()->getVariables() as $name => $type) {
-            $variables[] = new CollectedVariable($classReflection->getName(), '', new Variable($name, $type));
+            $variables[] = new CollectedVariable($classReflection->getName(), '', new Variable($name, $type), true);
         }
 
-        return $this->collectItems(array_values($variables));
+        return array_values($variables);
     }
 }

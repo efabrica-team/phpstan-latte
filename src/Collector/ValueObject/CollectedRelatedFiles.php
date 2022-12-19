@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
-
-/**
- * @phpstan-type CollectedRelatedFilesArray array{processedFile: string, relatedFiles: string[]}
- */
-final class CollectedRelatedFiles extends CollectedValueObject
+final class CollectedRelatedFiles extends CollectedLatteContextObject
 {
     private string $processedFile;
 
@@ -36,24 +31,5 @@ final class CollectedRelatedFiles extends CollectedValueObject
     public function getRelatedFiles(): array
     {
         return $this->relatedFiles;
-    }
-
-    /**
-     * @phpstan-return CollectedRelatedFilesArray
-     */
-    public function toArray(TypeSerializer $typeSerializer): array
-    {
-        return [
-            'processedFile' => $this->processedFile,
-            'relatedFiles' => $this->relatedFiles,
-        ];
-    }
-
-    /**
-     * @phpstan-param CollectedRelatedFilesArray $item
-     */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
-    {
-        return new CollectedRelatedFiles($item['processedFile'], $item['relatedFiles']);
     }
 }

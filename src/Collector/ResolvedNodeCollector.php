@@ -7,13 +7,9 @@ namespace Efabrica\PHPStanLatte\Collector;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
-use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
-use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * @phpstan-import-type CollectedResolvedNodeArray from CollectedResolvedNode
@@ -31,14 +27,10 @@ final class ResolvedNodeCollector extends AbstractCollector
      */
     public function __construct(
         TypeSerializer $typeSerializer,
-        NameResolver $nameResolver,
-        ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         array $latteTemplateResolvers,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($typeSerializer);
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -51,7 +43,7 @@ final class ResolvedNodeCollector extends AbstractCollector
     /**
      * @phpstan-return null|CollectedResolvedNodeArray[]
      */
-    public function collectData(Node $node, Scope $scope): ?array
+    public function processNode(Node $node, Scope $scope): ?array
     {
         if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
@@ -60,9 +52,9 @@ final class ResolvedNodeCollector extends AbstractCollector
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             $resolvedNode = $latteTemplateResolver->collect($node, $scope);
             if ($resolvedNode !== null) {
-                $resolvedNodes[] = $resolvedNode;
+                $resolvedNodes[] = $resolvedNode->toArray($this->typeSerializer);
             }
         }
-        return $this->collectItems($resolvedNodes);
+        return $resolvedNodes;
     }
 }

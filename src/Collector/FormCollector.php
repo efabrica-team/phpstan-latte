@@ -9,40 +9,33 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedFormField;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
-use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
- * @phpstan-import-type CollectedFormArray from CollectedForm
- * @extends AbstractCollector<Node, CollectedForm, CollectedFormArray>
+ * @extends AbstractLatteContextCollector<Node, CollectedForm>
  */
-final class FormCollector extends AbstractCollector
+final class FormCollector extends AbstractLatteContextCollector
 {
     private ValueResolver $valueResolver;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
-        TypeSerializer $typeSerializer,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        Parser $parser,
-        NodeScopeResolver $nodeScopeResolver,
         ValueResolver $valueResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
-        parent::__construct($typeSerializer, $nameResolver, $reflectionProvider, $parser, $nodeScopeResolver);
+        parent::__construct($nameResolver, $reflectionProvider);
         $this->valueResolver = $valueResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -53,7 +46,7 @@ final class FormCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return null|CollectedFormArray[]
+     * @phpstan-return null|CollectedForm[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -70,7 +63,7 @@ final class FormCollector extends AbstractCollector
     }
 
     /**
-     * @phpstan-return null|CollectedFormArray[]
+     * @phpstan-return null|CollectedForm[]
      */
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection, Scope $scope): ?array
     {
@@ -157,13 +150,13 @@ final class FormCollector extends AbstractCollector
         }
 
         $formName = lcfirst(str_replace('createComponent', '', $methodName));
-        return $this->collectItem(new CollectedForm(
+        return [new CollectedForm(
             $classReflection->getName(),
             '',
             $formName,
             $returnType,
             $formFields
-        ));
+        )];
     }
 
     private function findMethodCallForExpression(Expression $expression): ?MethodCall

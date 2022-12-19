@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\Type\Type;
 
-/**
- * @phpstan-import-type CollectedFormFieldArray from CollectedFormField
- * @phpstan-type CollectedFormArray array{className: class-string, methodName: string, name: string, type: array<string, string>, formFields: CollectedFormFieldArray[]}
- */
-final class CollectedForm extends CollectedValueObject
+final class CollectedForm extends CollectedLatteContextObject
 {
     /** @var class-string */
     private string $className;
@@ -64,38 +59,5 @@ final class CollectedForm extends CollectedValueObject
     public function getFormFields(): array
     {
         return $this->formFields;
-    }
-
-    /**
-     * @phpstan-return CollectedFormArray
-     */
-    public function toArray(TypeSerializer $typeSerializer): array
-    {
-        $formArray = [
-            'className' => $this->className,
-            'methodName' => $this->methodName,
-            'name' => $this->name,
-            'type' => $typeSerializer->toArray($this->type),
-            'formFields' => [],
-        ];
-
-        foreach ($this->formFields as $formField) {
-            $formArray['formFields'][] = $formField->toArray($typeSerializer);
-        }
-
-        return $formArray;
-    }
-
-    /**
-     * @phpstan-param CollectedFormArray $item
-     */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
-    {
-        $formFields = [];
-        foreach ($item['formFields'] as $formField) {
-            $formFields[] = CollectedFormField::fromArray($formField, $typeSerializer);
-        }
-        $type = $typeSerializer->fromArray($item['type']);
-        return new CollectedForm($item['className'], $item['methodName'], $item['name'], $type, $formFields);
     }
 }

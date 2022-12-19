@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\FilterCollector;
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedFilter;
 use Efabrica\PHPStanLatte\Template\Filter;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedFilterArray from CollectedFilter
- */
 final class FilterFinder
 {
     /**
@@ -24,11 +19,11 @@ final class FilterFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedFilters = FilterCollector::loadData($collectedDataNode, $typeSerializer, CollectedFilter::class);
+        $collectedFilters = $latteContext->getCollectedData(CollectedFilter::class);
         foreach ($collectedFilters as $collectedFilter) {
             $className = $collectedFilter->getClassName();
             $methodName = $collectedFilter->getMethodName();

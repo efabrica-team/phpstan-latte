@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Template\Component;
@@ -15,7 +16,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
@@ -64,7 +64,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     /**
      * @return LatteTemplateResolverResult
      */
-    protected function getResult(CollectedResolvedNode $resolvedNode, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
+    protected function getResult(CollectedResolvedNode $resolvedNode, LatteContextData $latteContext): LatteTemplateResolverResult
     {
         $className = $resolvedNode->getParam(self::PARAM_CLASS_NAME);
         $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
@@ -74,7 +74,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
             return new LatteTemplateResolverResult();
         }
 
-        return $this->getClassResult($reflectionClass, $collectedDataNode);
+        return $this->getClassResult($reflectionClass, $latteContext);
     }
 
     /**
@@ -136,5 +136,5 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
      */
     abstract protected function getClassGlobalFilters(ReflectionClass $reflectionClass): array;
 
-    abstract protected function getClassResult(ReflectionClass $resolveClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult;
+    abstract protected function getClassResult(ReflectionClass $resolveClass, LatteContextData $latteContext): LatteTemplateResolverResult;
 }

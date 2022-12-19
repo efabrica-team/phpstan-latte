@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedVariable;
-use Efabrica\PHPStanLatte\Collector\VariableCollector;
-use Efabrica\PHPStanLatte\Collector\VariableMethodPhpDocCollector;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\Node\CollectedDataNode;
 
-/**
- * @phpstan-import-type CollectedVariableArray from CollectedVariable
- */
 final class VariableFinder
 {
     /**
@@ -31,22 +25,19 @@ final class VariableFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
 
-        $assignedVariables = VariableCollector::loadData($collectedDataNode, $typeSerializer, CollectedVariable::class);
-        foreach ($assignedVariables as $variable) {
+        $collectedVriables = $latteContext->getCollectedData(CollectedVariable::class);
+        foreach ($collectedVriables as $variable) {
             $className = $variable->getClassName();
             $methodName = $variable->getMethodName();
-            $this->assignedVariables[$className][$methodName] = VariablesHelper::union($this->assignedVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
-        }
-
-        $declaredVariables = VariableMethodPhpDocCollector::loadData($collectedDataNode, $typeSerializer, CollectedVariable::class);
-        foreach ($declaredVariables as $variable) {
-            $className = $variable->getClassName();
-            $methodName = $variable->getMethodName();
-            $this->declaredVariables[$className][$methodName] = VariablesHelper::merge($this->declaredVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
+            if ($variable->isDeclared()) {
+                $this->declaredVariables[$className][$methodName] = VariablesHelper::merge($this->declaredVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
+            } else {
+                $this->assignedVariables[$className][$methodName] = VariablesHelper::union($this->assignedVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
+            }
         }
     }
 
