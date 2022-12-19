@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
@@ -162,8 +163,11 @@ final class TemplateRenderCollector extends AbstractCollector
         if ($lattePhpDoc->isIgnored()) {
             return null;
         }
-        if ($lattePhpDoc->getTemplatePaths() !== null) {
+        if ($lattePhpDoc->getTemplatePaths() !== []) {
             $paths = $lattePhpDoc->getTemplatePaths();
+        }
+        foreach ($lattePhpDoc->getVariables() as $name => $type) {
+            $variables[$name] = new TemplateVariable($name, $type);
         }
 
         return $this->buildTemplateRenders($node, $scope, $paths, $variables);
@@ -187,7 +191,7 @@ final class TemplateRenderCollector extends AbstractCollector
     }
 
     /**
-     * @return Variable[]
+     * @return array<string, Variable>
      */
     private function buildVariables(?Expr $argument, Scope $scope): array
     {
@@ -208,7 +212,8 @@ final class TemplateRenderCollector extends AbstractCollector
                 if (!$arrayKeyType instanceof ConstantStringType) { // only string keys
                     continue;
                 }
-                $variables[] = new Variable($arrayKeyType->getValue(), $valueTypes[$k]);
+                $variableName = $arrayKeyType->getValue();
+                $variables[$variableName] = new Variable($variableName, $valueTypes[$k]);
             }
         }
         return $variables;

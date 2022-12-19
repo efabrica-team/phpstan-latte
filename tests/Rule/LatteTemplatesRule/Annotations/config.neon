@@ -1,0 +1,4 @@
+parameters:
+    latte:
+        errorPatternsToIgnore:
+            - '#.*unknown class Placeholder\\.*#'

@@ -131,9 +131,9 @@ final class CollectedTemplateRender extends CollectedValueObject
      * @param false|string|null $path
      * @param Variable[] $variables
      */
-    public static function build(Node $node, Scope $scope, $path, array $variables = []): CollectedTemplateRender
+    public static function build(Node $node, Scope $scope, $path, array $variables = []): self
     {
-        return new CollectedTemplateRender(
+        return new self(
             $path,
             $variables,
             $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',

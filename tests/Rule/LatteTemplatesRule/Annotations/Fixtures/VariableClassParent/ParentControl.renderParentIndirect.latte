@@ -1,0 +1,14 @@
+{* Two errors for each dump because it is called from SomeControl::renderParentIndirectRender and ParentControl::renderParentIndirect *}
+{$explicitParam}
+
+{* ERROR: Dumped type: Placeholder\VarClass *}
+{* ERROR: Dumped type: Placeholder\VarParentClass *}
+{php \PHPStan\dumpType($myVar)}
+
+{* ERROR: Dumped type: Placeholder\VarClass *}
+{* ERROR: Dumped type: Placeholder\VarParentClass *}
+{php \PHPStan\dumpType($classVar)}
+
+{* ERROR: Dumped type: Placeholder\VarParentClass *}
+{* ERROR: Dumped type: Placeholder\VarParentClass *}
+{php \PHPStan\dumpType($parentClassVar)}

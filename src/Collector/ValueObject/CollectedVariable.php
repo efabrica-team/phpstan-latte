@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
 use Efabrica\PHPStanLatte\Template\Variable;
 use Efabrica\PHPStanLatte\Type\TypeSerializer;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\Scope;
 use PHPStan\Type\Type;
 
 /**
@@ -76,5 +79,15 @@ final class CollectedVariable extends CollectedValueObject
     {
         $variable = new Variable($item['variableName'], $typeSerializer->fromArray($item['variableType']));
         return new CollectedVariable($item['className'], $item['methodName'], $variable);
+    }
+
+    public static function build(Node $node, Scope $scope, string $name, Type $type): self
+    {
+        $classReflection = $scope->getTraitReflection() ?: $scope->getClassReflection();
+        return new self(
+            $classReflection !== null ? $classReflection->getName() : '',
+            $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
+            new Variable($name, $type)
+        );
     }
 }

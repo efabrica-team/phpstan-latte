@@ -1,0 +1,5 @@
+{$explicitParam}
+{php \PHPStan\dumpType($myVar)} {* ERROR: Dumped type: Placeholder\VarParentCall *}
+{php \PHPStan\dumpType($callVar)} {* ERROR: Dumped type: Placeholder\VarParentCall *}
+{php \PHPStan\dumpType($classVar)} {* ERROR: Dumped type: Placeholder\VarParentClass *}
+{php \PHPStan\dumpType($parentClassVar)} {* ERROR: Dumped type: Placeholder\VarParentClass *}
