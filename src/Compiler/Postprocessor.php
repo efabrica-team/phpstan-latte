@@ -8,8 +8,11 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
+use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
@@ -34,23 +37,44 @@ final class Postprocessor
 
     private TypeToPhpDoc $typeToPhpDoc;
 
+    private DynamicFilterVariables $dynamicFilterVariables;
+
+    private VariableCollectorStorage $variableCollectorStorage;
+
     public function __construct(
         NodeVisitorStorage $nodeVisitorStorage,
         Standard $printerStandard,
-        TypeToPhpDoc $typeToPhpDoc
+        TypeToPhpDoc $typeToPhpDoc,
+        DynamicFilterVariables $dynamicFilterVariables,
+        VariableCollectorStorage $variableCollectorStorage
     ) {
         $this->nodeVisitorStorage = $nodeVisitorStorage;
         $this->printerStandard = $printerStandard;
         $this->typeToPhpDoc = $typeToPhpDoc;
+        $this->dynamicFilterVariables = $dynamicFilterVariables;
+        $this->variableCollectorStorage = $variableCollectorStorage;
     }
 
     public function postProcess(string $phpContent, Template $template): string
     {
+        $filters = [];
+        foreach ($template->getFilters() as $filter) {
+            $filters[$filter->getName()] = $filter->getTypeAsString();
+        }
+
+        $this->dynamicFilterVariables->addFilters($filters);
+
+        $addVarTypeFromCollectorStorageNodeVisitor = new AddVarTypesNodeVisitor($this->variableCollectorStorage->collectVariables(), $this->typeToPhpDoc);
+        $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeFromCollectorStorageNodeVisitor);
+
         $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($template->getVariables(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeNodeVisitor);
 
         $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($template->getComponents(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addTypeToComponentNodeVisitor);
+
+        $changeFilterNodeVisitor = new ChangeFiltersNodeVisitor($filters);
+        $this->nodeVisitorStorage->addTemporaryNodeVisitor(200, $changeFilterNodeVisitor);
 
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $priority => $nodeVisitors) {
             $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $template);

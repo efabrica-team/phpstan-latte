@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Closure;
-use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
@@ -31,9 +30,12 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Actu
     /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
 
-    public function __construct(CompilerInterface $compiler)
+    /**
+     * @param array<string, string|array{string, string}|array{object, string}|callable> $filters
+     */
+    public function __construct(array $filters)
     {
-        $this->filters = $compiler->getFilters();
+        $this->filters = LatteVersion::isLatte2() ? array_change_key_case($filters) : $filters;
     }
 
     public function enterNode(Node $node): ?Node

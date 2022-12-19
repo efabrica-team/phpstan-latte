@@ -328,6 +328,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 13,
                 'default.latte',
             ],
+            [
+                'Trying to invoke mixed but it\'s not a callable.',
+                4,
+                'parent.latte',
+            ],
+            [
+                'Undefined latte filter "actionDefaultFilter".',
+                4,
+                'parent.latte',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
+            ],
         ]);
     }
 

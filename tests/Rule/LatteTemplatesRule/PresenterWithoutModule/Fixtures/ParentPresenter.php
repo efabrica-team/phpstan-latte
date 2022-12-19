@@ -12,6 +12,9 @@ abstract class ParentPresenter extends Presenter
     protected function startup()
     {
         parent::startup();
+        $this->template->addFilter('parentStartupFilter', function (string $string): string {
+            return uniqid($string);
+        });
         $this->template->startupParent = 'startupParent';
     }
 

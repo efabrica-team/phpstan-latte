@@ -73,7 +73,7 @@ final class VariableFinder
     /**
      * @return Variable[]
      */
-    private function findInClasses(string $className)
+    private function findInClasses(string $className): array
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
 

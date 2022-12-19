@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
+use Efabrica\PHPStanLatte\Collector\Finder\FilterFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\FormFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\Collector\Finder\MethodFinder;
@@ -33,6 +34,8 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected ComponentFinder $componentFinder;
 
+    protected FilterFinder $filterFinder;
+
     protected FormFinder $formFinder;
 
     protected TemplatePathFinder $templatePathFinder;
@@ -53,6 +56,7 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->methodFinder = new MethodFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
         $this->variableFinder = new VariableFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
         $this->componentFinder = new ComponentFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
+        $this->filterFinder = new FilterFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
         $this->formFinder = new FormFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder);
         $this->templatePathFinder = new TemplatePathFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder, $this->pathResolver);
         $this->templateRenderFinder = new TemplateRenderFinder($collectedDataNode, $this->typeSerializer, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);

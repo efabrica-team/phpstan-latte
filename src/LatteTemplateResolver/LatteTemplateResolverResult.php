@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\Template\Component;
+use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use InvalidArgumentException;
@@ -69,9 +70,10 @@ final class LatteTemplateResolverResult
      * @param Variable[] $variables
      * @param Component[] $components
      * @param CollectedForm[] $forms
+     * @param Filter[] $filters
      * @param class-string $className
      */
-    public function addTemplatesFromRenders(array $templateRenders, array $variables, array $components, array $forms, string $className, string $action): void
+    public function addTemplatesFromRenders(array $templateRenders, array $variables, array $components, array $forms, array $filters, string $className, string $action): void
     {
         foreach ($templateRenders as $templateRender) {
             $templatePath = $templateRender->getTemplatePath();
@@ -80,7 +82,7 @@ final class LatteTemplateResolverResult
                     ->file($templateRender->getFile())
                     ->line($templateRender->getLine()));
             } else {
-                $this->addTemplateFromRender($templateRender, $variables, $components, $forms, $className, $action);
+                $this->addTemplateFromRender($templateRender, $variables, $components, $forms, $filters, $className, $action);
             }
         }
     }
@@ -89,15 +91,24 @@ final class LatteTemplateResolverResult
      * @param Variable[] $variables
      * @param Component[] $components
      * @param CollectedForm[] $forms
+     * @param Filter[] $filters
      * @param class-string $className
      */
-    public function addTemplateFromRender(CollectedTemplateRender $templateRender, array $variables, array $components, array $forms, string $className, string $action): void
+    public function addTemplateFromRender(CollectedTemplateRender $templateRender, array $variables, array $components, array $forms, array $filters, string $className, string $action): void
     {
         $templatePath = $templateRender->getTemplatePath();
         if (!is_string($templatePath)) {
             throw new InvalidArgumentException('Cannot add template from CollectedTemplate render without resolved template.');
         }
 
-        $this->addTemplate(new Template($templatePath, $className, $action, VariablesHelper::merge($variables, $templateRender->getVariables()), $components, $forms));
+        $this->addTemplate(new Template(
+            $templatePath,
+            $className,
+            $action,
+            VariablesHelper::merge($variables, $templateRender->getVariables()),
+            $components,
+            $forms,
+            $filters
+        ));
     }
 }

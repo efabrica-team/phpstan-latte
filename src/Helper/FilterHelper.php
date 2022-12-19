@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Helper;
 
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+
 final class FilterHelper
 {
     public static function createFilterVariableName(string $filterName): string
     {
-        return '__filter__' . $filterName;
+        return '__filter__' . (LatteVersion::isLatte2() ? strtolower($filterName) : $filterName);
     }
 
     /**

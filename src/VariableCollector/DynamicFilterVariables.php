@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\CallableType;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
@@ -19,6 +20,9 @@ final class DynamicFilterVariables implements VariableCollectorInterface
 {
     /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
+
+    /** @var array<string, string|array{string, string}|array{object, string}|callable> */
+    private array $tmpFilters = [];
 
     private TypeStringResolver $typeStringResolver;
 
@@ -32,12 +36,21 @@ final class DynamicFilterVariables implements VariableCollectorInterface
     }
 
     /**
+     * @param array<string, string|array{string, string}|array{object, string}|callable> $filters
+     */
+    public function addFilters(array $filters): void
+    {
+        $this->tmpFilters = array_merge($this->tmpFilters, $filters);
+    }
+
+    /**
      * @return Variable[]
+     * @throws ShouldNotHappenException
      */
     public function collect(): array
     {
         $variables = [];
-        foreach ($this->filters as $filterName => $filter) {
+        foreach (array_merge($this->filters, $this->tmpFilters) as $filterName => $filter) {
             if (FilterHelper::isCallableString($filter)) {
                 $variableName = FilterHelper::createFilterVariableName($filterName);
                 /** @var string $filter */
@@ -82,6 +95,7 @@ final class DynamicFilterVariables implements VariableCollectorInterface
             }
         }
 
+        $this->tmpFilters = [];
         return array_values($variables);
     }
 }

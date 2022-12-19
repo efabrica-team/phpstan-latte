@@ -34,7 +34,7 @@ rules:
     - Efabrica\PHPStanLatte\Rule\LatteCompileErrorsRule
 
 services:
-    -
+    phpstanLatteCompiler:
         class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface
         factory: @Efabrica\PHPStanLatte\Compiler\Compiler\CompilerFactory::create
 
@@ -83,10 +83,9 @@ services:
         setup:
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor())
-            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(@variableCollectorStorage::collectVariables()))
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
-            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())
+            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor(@phpstanLatteCompiler::getFilters()))
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformForeachWithIteratorNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
@@ -120,6 +119,10 @@ services:
             parser: @defaultAnalysisParser
     -
         factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
+        arguments:
+            parser: @defaultAnalysisParser
+    -
+        factory: Efabrica\PHPStanLatte\Collector\FilterCollector
         arguments:
             parser: @defaultAnalysisParser
     -

@@ -26,4 +26,9 @@ trait NetteApplicationUIControlGlobals
     {
         return $this->formFinder->find($reflectionClass->getName(), '');
     }
+
+    protected function getClassGlobalFilters(ReflectionClass $reflectionClass): array
+    {
+        return $this->filterFinder->find($reflectionClass->getName(), '');
+    }
 }
