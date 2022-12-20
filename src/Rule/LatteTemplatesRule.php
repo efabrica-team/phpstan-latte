@@ -15,7 +15,6 @@ use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
@@ -48,8 +47,6 @@ final class LatteTemplatesRule implements Rule
 
     private RelativePathHelper $relativePathHelper;
 
-    private TypeSerializer $typeSerializer;
-
     private LatteContextAnalyser $latteContextAnalyser;
 
     /**
@@ -63,7 +60,6 @@ final class LatteTemplatesRule implements Rule
         RuleRegistry $rulesRegistry,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
-        TypeSerializer $typeSerializer,
         LatteContextAnalyser $latteContextAnalyser
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
@@ -73,7 +69,6 @@ final class LatteTemplatesRule implements Rule
         $this->rulesRegistry = $rulesRegistry;
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
-        $this->typeSerializer = $typeSerializer;
         $this->latteContextAnalyser = $latteContextAnalyser;
     }
 
@@ -88,7 +83,7 @@ final class LatteTemplatesRule implements Rule
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
         $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
 
         $processedFiles = array_unique(array_keys($resolvedNodes));
         $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);

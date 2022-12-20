@@ -10,7 +10,6 @@ use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -27,8 +26,6 @@ final class CollectorResultRule implements Rule
     /** @var LatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
-    private TypeSerializer $typeSerializer;
-
     private LatteContextAnalyser $latteContextAnalyser;
 
     /**
@@ -36,11 +33,9 @@ final class CollectorResultRule implements Rule
      */
     public function __construct(
         array $latteTemplateResolvers,
-        TypeSerializer $typeSerializer,
         LatteContextAnalyser $latteContextAnalyser
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
-        $this->typeSerializer = $typeSerializer;
         $this->latteContextAnalyser = $latteContextAnalyser;
     }
 
@@ -59,7 +54,7 @@ final class CollectorResultRule implements Rule
         $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
         $processedFiles = array_unique(array_keys($resolvedNodes));
         $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->typeSerializer);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $resolver = $this->shortClassName($collectedResolvedNode->getResolver());

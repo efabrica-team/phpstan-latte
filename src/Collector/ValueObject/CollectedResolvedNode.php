@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\ValueObject;
 
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PHPStan\ShouldNotHappenException;
 
 /**
@@ -50,7 +49,7 @@ final class CollectedResolvedNode extends CollectedValueObject
     /**
      * @phpstan-return CollectedResolvedNodeArray
      */
-    public function toArray(TypeSerializer $typeSerializer): array
+    public function toArray(): array
     {
         return [
             'resolver' => $this->resolver,
@@ -61,7 +60,7 @@ final class CollectedResolvedNode extends CollectedValueObject
     /**
      * @phpstan-param CollectedResolvedNodeArray $item
      */
-    public static function fromArray(array $item, TypeSerializer $typeSerializer): self
+    public static function fromArray(array $item): self
     {
         return new CollectedResolvedNode($item['resolver'], $item['params']);
     }

@@ -60,8 +60,6 @@ services:
         arguments:
             parser: @defaultAnalysisParser
 
-    - Efabrica\PHPStanLatte\Type\TypeSerializer
-
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenterStandalone

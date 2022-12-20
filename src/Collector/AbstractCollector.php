@@ -3,7 +3,6 @@
 namespace Efabrica\PHPStanLatte\Collector;
 
 use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedValueObject;
-use Efabrica\PHPStanLatte\Type\TypeSerializer;
 use PhpParser\Node;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\Collectors\Collector;
@@ -17,24 +16,17 @@ use PHPStan\Node\CollectedDataNode;
  */
 abstract class AbstractCollector implements Collector
 {
-    protected TypeSerializer $typeSerializer;
-
-    public function __construct(TypeSerializer $typeSerializer)
-    {
-        $this->typeSerializer = $typeSerializer;
-    }
-
     /**
      * @param class-string $class
      * @return T[]
      */
-    public static function loadData(CollectedDataNode $collectedDataNode, TypeSerializer $typeSerializer, string $class)
+    public static function loadData(CollectedDataNode $collectedDataNode, string $class)
     {
         $data = array_filter(array_merge(...array_values($collectedDataNode->get(static::class))));
         $collected = [];
         foreach ($data as $itemList) {
             foreach ($itemList as $item) {
-                $collected[] = $class::fromArray($item, $typeSerializer);
+                $collected[] = $class::fromArray($item);
             }
         }
         return $collected;
@@ -45,7 +37,7 @@ abstract class AbstractCollector implements Collector
    * @param class-string $class
    * @return T[]
    */
-    public function extractCollectedData(array $collectedDataList, TypeSerializer $typeSerializer, string $class): array
+    public function extractCollectedData(array $collectedDataList, string $class): array
     {
         $collectedTemplateRenders = [];
         foreach ($collectedDataList as $collectedData) {
@@ -55,7 +47,7 @@ abstract class AbstractCollector implements Collector
             /** @phpstan-var A[] $dataList */
             $dataList = $collectedData->getData();
             foreach ($dataList as $data) {
-                $collectedTemplateRenders[] = $class::fromArray($data, $typeSerializer);
+                $collectedTemplateRenders[] = $class::fromArray($data);
             }
         }
         return $collectedTemplateRenders;
@@ -72,7 +64,7 @@ abstract class AbstractCollector implements Collector
         }
         $data = [];
         foreach ($items as $item) {
-            $data[] = $item->toArray($this->typeSerializer);
+            $data[] = $item->toArray();
         }
         return $data;
     }
@@ -83,6 +75,6 @@ abstract class AbstractCollector implements Collector
      */
     protected function collectItem(CollectedValueObject $item): array
     {
-        return [$item->toArray($this->typeSerializer)];
+        return [$item->toArray()];
     }
 }
