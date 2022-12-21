@@ -1,4 +1,5 @@
 parameters:
+    usePathConstantsAsConstantString: true
     latte:
         strictMode: false
         tmpDir: null
