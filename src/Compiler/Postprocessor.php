@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
 use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;

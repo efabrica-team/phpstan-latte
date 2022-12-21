@@ -56,7 +56,10 @@ services:
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
 
-    - Efabrica\PHPStanLatte\Type\TypeSerializer
+    -
+        factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
+        arguments:
+            parser: @defaultAnalysisParser
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
@@ -103,61 +106,24 @@ services:
     - Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver
 
     # Collectors
-    - Efabrica\PHPStanLatte\Collector\AdditionalDataCollector
     -
-        factory: Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector
-        arguments:
-            parser: @defaultAnalysisParser
+        factory: Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector
         tags:
             - phpstan.collector
-    -
-        factory: Efabrica\PHPStanLatte\Collector\VariableCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\VariableMethodPhpDocCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\ComponentCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\FilterCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodCallCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\MethodOutputCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\TemplatePathCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\FormCollector
-        arguments:
-            parser: @defaultAnalysisParser
-    -
-        factory: Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
-        arguments:
-            parser: @defaultAnalysisParser
+
+    # Latte context collectors
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FilterCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCallCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodOutputCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderMethodPhpDocCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FormCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
 
     # Variable collectors
     variableCollectorStorage:

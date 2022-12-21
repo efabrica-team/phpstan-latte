@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Template\Template;
 use Nette\Utils\Finder;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
-use PHPStan\Node\CollectedDataNode;
 
 abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemplateResolver
 {
-    protected function getClassResult(ReflectionClass $reflectionClass, CollectedDataNode $collectedDataNode): LatteTemplateResolverResult
+    protected function getClassResult(ReflectionClass $reflectionClass, LatteContextData $latteContext): LatteTemplateResolverResult
     {
         $result = new LatteTemplateResolverResult();
         $standaloneTemplateFiles = $this->findStandaloneTemplates($reflectionClass);

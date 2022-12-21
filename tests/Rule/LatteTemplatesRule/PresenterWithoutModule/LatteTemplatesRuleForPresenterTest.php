@@ -498,17 +498,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'recursion.latte',
             ],
             [
-                'Dumped type: 9|10',
+                'Dumped type: 9',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: 8|9|10',
+                'Dumped type: 8',
                 1,
                 'recursion.latte',
             ],
             [
-                'Dumped type: 7|8|9|10',
+                'Dumped type: 7',
                 1,
                 'recursion.latte',
             ],
@@ -518,37 +518,37 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'recursion.latte',
             ],
             [
-                'Comparison operation ">" between 9|10 and 0 is always true.',
+                'Comparison operation ">" between 9 and 0 is always true.',
                 2,
                 'recursion.latte',
             ],
             [
-                'Comparison operation ">" between 8|9|10 and 0 is always true.',
+                'Comparison operation ">" between 8 and 0 is always true.',
                 2,
                 'recursion.latte',
             ],
             [
-                'Comparison operation ">" between 7|8|9|10 and 0 is always true.',
+                'Comparison operation ">" between 7 and 0 is always true.',
                 2,
                 'recursion.latte',
             ],
             [
-                'Dumped type: 9|10',
+                'Dumped type: 9',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: 8|9|10',
+                'Dumped type: 8',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: 7|8|9|10',
+                'Dumped type: 7',
                 1,
                 '@recursionB.latte',
             ],
             [
-                'Dumped type: 6|7|8|9|10',
+                'Dumped type: 6',
                 1,
                 '@recursionB.latte',
             ],
@@ -590,7 +590,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'trait.latte',
             ],
             [
-                'Dumped type: mixed',   // TODO figure out how to change scope for assign in method
+                'Dumped type: array{\'foo\', \'bar\', \'baz\'}',
                 4,
                 'trait.latte',
             ],

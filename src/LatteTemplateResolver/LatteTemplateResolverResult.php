@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Template;
