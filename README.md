@@ -2,6 +2,8 @@
 PHPStan extension to check compiled latte templates in context of Presenter or Component etc.
 It is based on Tomas Votruba's [blog series](https://tomasvotruba.com/blog/stamp-static-analysis-of-templates/) and his packages symplify and reveal.
 
+![Preview](docs/preview.png)
+
 ## Features
 
 - Supports Latte 2 and Latte 3
