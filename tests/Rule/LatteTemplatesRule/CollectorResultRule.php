@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
+use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;

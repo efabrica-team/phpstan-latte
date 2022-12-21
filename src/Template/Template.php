@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedForm;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use JsonSerializable;
 use ReturnTypeWillChange;
 

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Collector\Finder\ComponentFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\FilterFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\FormFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\MethodCallFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\MethodFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\TemplatePathFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\TemplateRenderFinder;
-use Efabrica\PHPStanLatte\Collector\Finder\VariableFinder;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\LatteContext\Finder\ComponentFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\FilterFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\FormFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\MethodCallFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\MethodFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\TemplatePathFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\TemplateRenderFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 

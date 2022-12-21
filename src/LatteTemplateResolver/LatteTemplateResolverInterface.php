@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 

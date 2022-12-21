@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Collector\Finder;
 
-use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
+use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
 use PHPStan\Node\CollectedDataNode;
 
 /**

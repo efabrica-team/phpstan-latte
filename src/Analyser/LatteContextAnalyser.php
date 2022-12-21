@@ -2,8 +2,8 @@
 
 namespace Efabrica\PHPStanLatte\Analyser;
 
-use Efabrica\PHPStanLatte\Collector\AbstractLatteContextCollector;
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedRelatedFiles;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
+use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextCollector;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\TraitUse;
 use PHPStan\Analyser\Error;

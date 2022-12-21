@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
-use Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector;
+use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;

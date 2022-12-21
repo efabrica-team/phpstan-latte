@@ -19,8 +19,8 @@ parameters:
         -
             messages:
                 - '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
-                - '#^Property Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::\$collectors with generic class Efabrica\\PHPStanLatte\\Collector\\AbstractLatteContextCollector does not specify its types: N, T#'
-                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\Collector\\AbstractLatteContextCollector but does not specify its types: N, T#'
+                - '#^Property Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::\$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector does not specify its types: N, T#'
+                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: N, T#'
             path: src/Analyser/LatteContextAnalyser.php
 
         # Latte version conditions

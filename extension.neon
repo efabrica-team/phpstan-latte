@@ -106,23 +106,23 @@ services:
 
     # Collectors
     -
-        factory: Efabrica\PHPStanLatte\Collector\ResolvedNodeCollector
+        factory: Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector
         tags:
             - phpstan.collector
 
     # Latte context collectors
-    - Efabrica\PHPStanLatte\Collector\VariableCollector
-    - Efabrica\PHPStanLatte\Collector\VariableMethodPhpDocCollector
-    - Efabrica\PHPStanLatte\Collector\ComponentCollector
-    - Efabrica\PHPStanLatte\Collector\FilterCollector
-    - Efabrica\PHPStanLatte\Collector\MethodCollector
-    - Efabrica\PHPStanLatte\Collector\MethodCallCollector
-    - Efabrica\PHPStanLatte\Collector\MethodOutputCollector
-    - Efabrica\PHPStanLatte\Collector\TemplatePathCollector
-    - Efabrica\PHPStanLatte\Collector\TemplateRenderCollector
-    - Efabrica\PHPStanLatte\Collector\TemplateRenderMethodPhpDocCollector
-    - Efabrica\PHPStanLatte\Collector\FormCollector
-    - Efabrica\PHPStanLatte\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FilterCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCallCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\MethodOutputCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderMethodPhpDocCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FormCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
 
     # Variable collectors
     variableCollectorStorage:

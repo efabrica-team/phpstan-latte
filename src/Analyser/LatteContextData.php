@@ -4,7 +4,7 @@ declare (strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Analyser;
 
-use Efabrica\PHPStanLatte\Collector\ValueObject\CollectedLatteContextObject;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use PHPStan\Analyser\Error;
 
 class LatteContextData
