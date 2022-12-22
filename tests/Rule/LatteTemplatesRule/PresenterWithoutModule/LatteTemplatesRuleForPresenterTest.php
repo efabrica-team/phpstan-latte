@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\ResolvePresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\CustomFormRenderer;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\SomeControl;
 
@@ -142,6 +143,81 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Variable $nonExistingVariable might not be defined.',
                 1,
                 '@includedDynamically.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                4,
+                'onlyRender.latte',
+            ],
+            [
+                'Variable $fromDifferentRenderAction might not be defined.', // action different
+                3,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRendersAction might not be defined.', // action different
+                4,
+                'different.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action different
+                6,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRenderAction might not be defined.', // action differentRenders
+                3,
+                'different.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                6,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRendersAction might not be defined.', // action differentRender
+                4,
+                'different.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action differentRender
+                6,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRenderAction might not be defined.', // action differentRenderConditional
+                3,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRendersAction might not be defined.', // action differentRenderConditional
+                4,
+                'different.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action differentRenderConditional
+                6,
+                'different.latte',
+            ],
+            [
+                'Variable $fromDifferentRendersAction might not be defined.', // action different2
+                3,
+                'different2.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action different2
+                5,
+                'different2.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                5,
+                'different2.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                3,
+                'differentRenderConditional.latte',
             ],
         ]);
     }
@@ -578,6 +654,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 3,
                 'setFile.changed.latte',
             ],
+            [
+                'Latte template was not set for ' . ResolvePresenter::class . '::sendTemplateDefault',
+                89,
+                'ResolvePresenter.php',
+            ],
+            [
+                'Cannot automatically resolve latte template from expression.',
+                95,
+                'ResolvePresenter.php',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'sendTemplate.latte',
+            ],
         ]);
     }
 
@@ -598,6 +689,37 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Dumped type: array<int>',
                 5,
                 'trait.latte',
+            ],
+        ]);
+    }
+
+    public function testStartupView(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/StartupViewPresenter.php'], [
+            [
+                'Variable $nonExistingVariable might not be defined.', // action default
+                4,
+                'default.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action parent
+                4,
+                'parent.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action startup
+                4,
+                'startup.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action default(startup)
+                4,
+                'startup.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.', // action parent(startup)
+                4,
+                'startup.latte',
             ],
         ]);
     }

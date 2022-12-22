@@ -94,10 +94,8 @@ final class VariableFinder
         $collectedVariables = $this->assignedVariables[$className][$methodName] ?? [];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $collectedVariables = VariablesHelper::union($collectedVariables, $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound));
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $collectedVariables = VariablesHelper::union($collectedVariables, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
         }
 
         $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$className][$methodName] ?? []);
