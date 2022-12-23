@@ -61,8 +61,8 @@ class LatteContextAnalyser
 
         $this->nodeScopeResolver->setAnalysedFiles($files); // TODO when changes in PHPStan are merged
 
+        $collectedRelatedFiles = [];
         do {
-            $collectedRelatedFiles = [];
             foreach ($files as $file) {
                 $fileResult = $this->analyseFile($file);
                 if ($fileResult->getErrors() !== []) {
