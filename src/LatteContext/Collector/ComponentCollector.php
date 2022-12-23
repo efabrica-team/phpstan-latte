@@ -15,10 +15,11 @@ use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Return_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -56,8 +57,8 @@ final class ComponentCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if ($node instanceof ClassMethod) {
-            return $this->findCreateComponent($node, $classReflection);
+        if ($node instanceof Return_) {
+            return $this->findCreateComponent($node, $scope, $classReflection);
         }
 
         if ($node instanceof MethodCall) {
@@ -76,11 +77,11 @@ final class ComponentCollector extends AbstractLatteContextCollector
     /**
      * @phpstan-return CollectedComponent[]
      */
-    private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection): ?array
+    private function findCreateComponent(Return_ $node, Scope $scope, ClassReflection $classReflection): ?array
     {
         // TODO check if actual class is control / presenter
 
-        $methodName = $this->nameResolver->resolve($node->name);
+        $methodName = $scope->getFunctionName();
         if ($methodName === null || !str_starts_with($methodName, 'createComponent') || $methodName === 'createComponent') {
             return null;
         }
@@ -95,11 +96,16 @@ final class ComponentCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        $componentType = $parametersAcceptor->getReturnType();
+        if ($componentType instanceof MixedType && $node->expr !== null) {
+            $componentType = $scope->getType($node->expr);
+        }
+
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
         return [new CollectedComponent(
             $classReflection->getName(),
             '',
-            new Component($componentName, $parametersAcceptor->getReturnType())
+            new Component($componentName, $componentType)
         )];
     }
 
