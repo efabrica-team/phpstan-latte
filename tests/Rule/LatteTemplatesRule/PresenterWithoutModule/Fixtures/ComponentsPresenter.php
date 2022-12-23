@@ -12,6 +12,8 @@ final class ComponentsPresenter extends ParentPresenter
     /** @inject */
     public ControlRegistrator $controlRegistrator;
 
+    public $component;
+
     protected function startup()
     {
         parent::startup();
@@ -40,6 +42,11 @@ final class ComponentsPresenter extends ParentPresenter
     }
 
     protected function createComponentNoType()
+    {
+        return $this->component;
+    }
+
+    protected function createComponentImplicitType()
     {
         $form = new Form();
         return $form;
