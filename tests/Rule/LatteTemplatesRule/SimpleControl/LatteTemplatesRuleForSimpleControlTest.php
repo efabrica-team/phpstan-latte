@@ -277,4 +277,15 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testVariables(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Variables/SomeControl.php'], [
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
 }

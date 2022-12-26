@@ -95,12 +95,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Variable $fromRenderDefault might not be defined.',
-                4,
+                6,
                 'other.latte',
             ],
             [
                 'Variable $nonExistingVariable might not be defined.',
-                5,
+                7,
                 'other.latte',
             ],
             [
