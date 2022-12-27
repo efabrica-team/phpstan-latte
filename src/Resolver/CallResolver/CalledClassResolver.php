@@ -11,7 +11,6 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\VerbosityLevel;
 
 final class CalledClassResolver
 {
@@ -54,7 +53,7 @@ final class CalledClassResolver
                 return null;
             }
             $callerType = $scope->getType($node->var);
-            return $callerType instanceof ObjectType ? $callerType->describe(VerbosityLevel::typeOnly()) : null;
+            return $callerType instanceof ObjectType ? $callerType->getClassName() : null;
         }
     }
 }
