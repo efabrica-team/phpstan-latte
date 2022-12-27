@@ -6,7 +6,8 @@
 - Annotation `@phpstan-latte-ignore` can be used to ignore render calls, variable assignments, component creation, whole methods or classes.
 - Annotation `@phpstan-latte-template` can be used to specify what template is used to render.
 - Annotation `@phpstan-latte-var` can be used to specify what variables are available in tempalte.
-
+- Resolves calls to `setView` and `sendTemplate` in presenters
+ 
 ## [0.2.0] - 2022-12-06
 ### Changed
 - Used collectors to find all variables, components, method calls and templates to analyse

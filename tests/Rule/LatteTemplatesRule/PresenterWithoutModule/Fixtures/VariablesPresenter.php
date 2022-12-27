@@ -54,4 +54,38 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->dynamicIncludeVar = 'a';
         $this->template->includedTemplate = __DIR__ . '/templates/Variables/@includedDynamically.latte';
     }
+
+    public function renderOnlyRender(): void
+    {
+        $this->template->fromOnlyRender = 'from only render';
+    }
+
+    public function actionDifferentRender()
+    {
+        $this->template->fromDifferentRenderAction = 'from different render';
+        $this->setView('different');
+    }
+
+    public function actionDifferentRenders(bool $param)
+    {
+        $this->template->fromDifferentRendersAction = 'from different renders';
+        $this->setView($param ? 'different' : 'different2');
+    }
+
+    public function actionDifferentRenderConditional(bool $param)
+    {
+        if ($param) {
+            $this->setView('different');
+        }
+    }
+
+    public function renderDifferent(): void
+    {
+        $this->template->fromDifferentRender = 'from different render 1';
+    }
+
+    public function renderDifferent2(): void
+    {
+        $this->template->fromDifferentRender2 = 'from different render 2';
+    }
 }

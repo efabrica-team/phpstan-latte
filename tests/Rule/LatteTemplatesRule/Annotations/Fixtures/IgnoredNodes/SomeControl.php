@@ -38,11 +38,11 @@ final class SomeControl extends Control
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
-    // ERROR: Cannot resolve latte template for SomeControl::renderIgnoredTemplatePath().
     public function renderIgnoredTemplatePath()
     {
         /** @phpstan-latte-ignore */
         $this->template->setFile(__DIR__ . '/error.latte');
+        // ERROR: Latte template was not set for SomeControl::renderIgnoredTemplatePath
         $this->template->render();
     }
 

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
 use Exception;
+use Latte\Engine;
 use Nette\Application\UI\Presenter;
+use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 
 final class ResolvePresenter extends Presenter
 {
@@ -72,5 +74,24 @@ final class ResolvePresenter extends Presenter
     public function actionSetFile(): void
     {
         $this->template->setFile(__DIR__ . '/templates/Resolve/setFile.changed.latte');
+    }
+
+    public function actionSendTemplate(): void
+    {
+        $this->template->send = 'send';
+        $this->template->setFile(__DIR__ . '/templates/Resolve/sendTemplate.latte');
+        $this->sendTemplate();
+    }
+
+    public function actionSendTemplateDefault(): void
+    {
+        $this->template->send = 'send';
+        $this->sendTemplate();
+    }
+
+    public function actionSendTemplateUnresolvable(): void
+    {
+        $this->template->send = 'send';
+        $this->sendTemplate(new DefaultTemplate(new Engine()));
     }
 }

@@ -124,6 +124,7 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderMethodPhpDocCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\FormCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
+    - Efabrica\PHPStanLatte\LatteContext\Collector\NetteApplicationUIPresenterCollector
 
     # Variable collectors
     variableCollectorStorage:

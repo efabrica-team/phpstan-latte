@@ -24,10 +24,10 @@ final class NameResolver
             return null;
         }
         if (is_string($node)) {
-            return $node;
+            return $node !== '' ? $node : null;
         }
         if ($node instanceof Name || $node instanceof Identifier) {
-            return (string)$node;
+            return $this->resolve((string)$node);
         }
         if ($node instanceof FuncCall || $node instanceof MethodCall || $node instanceof StaticCall) {
             return $this->resolve($node->name);

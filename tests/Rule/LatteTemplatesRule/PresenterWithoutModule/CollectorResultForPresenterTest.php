@@ -22,12 +22,20 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
         $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"VariablesPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"VariablesPresenter"}',
-            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","title","viaGetTemplate","stringLists","localStrings","variableFromParentCalledViaParent","variableFromParent","varFromVariable","variableFromOtherMethod","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
+            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","title","viaGetTemplate","stringLists","localStrings","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
             'TEMPLATE other.latte VariablesPresenter::other ["startup","startupParent","presenter","control","fromOtherAction"] ["parentForm"]',
             'TEMPLATE parent.latte VariablesPresenter::parent ["startup","startupParent","presenter","control","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE noAction.latte VariablesPresenter:: ["startup","startupParent","presenter","control"] ["parentForm"]',
             'TEMPLATE direct.latte VariablesPresenter::directRender ["startup","startupParent","presenter","control","fromTemplate","fromRender"] ["parentForm"]',
             'TEMPLATE dynamicInclude.latte VariablesPresenter::dynamicInclude ["startup","startupParent","presenter","control","dynamicIncludeVar","includedTemplate"] ["parentForm"]',
+            'TEMPLATE onlyRender.latte VariablesPresenter::onlyRender ["startup","startupParent","presenter","control","fromOnlyRender"] ["parentForm"]',
+            'TEMPLATE different.latte VariablesPresenter::different ["startup","startupParent","presenter","control","fromDifferentRender"] ["parentForm"]',
+            'TEMPLATE different2.latte VariablesPresenter::different2 ["startup","startupParent","presenter","control","fromDifferentRender2"] ["parentForm"]',
+            'TEMPLATE different.latte VariablesPresenter::differentRender(different) ["startup","startupParent","presenter","control","fromDifferentRenderAction","fromDifferentRender"] ["parentForm"]',
+            'TEMPLATE different.latte VariablesPresenter::differentRenders(different) ["startup","startupParent","presenter","control","fromDifferentRendersAction","fromDifferentRender"] ["parentForm"]',
+            'TEMPLATE different2.latte VariablesPresenter::differentRenders(different2) ["startup","startupParent","presenter","control","fromDifferentRendersAction","fromDifferentRender2"] ["parentForm"]',
+            'TEMPLATE differentRenderConditional.latte VariablesPresenter::differentRenderConditional ["startup","startupParent","presenter","control"] ["parentForm"]',
+            'TEMPLATE different.latte VariablesPresenter::differentRenderConditional(different) ["startup","startupParent","presenter","control","fromDifferentRender"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ParentPresenter"}',
         ], __NAMESPACE__ . '\Fixtures');
@@ -106,6 +114,20 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'TEMPLATE throwSometimes.latte ResolvePresenter::throwSometimes ["presenter","control"] []',
             'TEMPLATE recursion.latte ResolvePresenter::recursion ["presenter","control","variableFromRecursionMethod"] []',
             'TEMPLATE setFile.changed.latte ResolvePresenter::setFile ["presenter","control"] []',
+            'TEMPLATE sendTemplate.latte ResolvePresenter::sendTemplate ["presenter","control","send"] []',
+        ]);
+    }
+
+    public function testStartupView(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/StartupViewPresenter.php'], [
+            'NODE NetteApplicationUIPresenter {"className":"StartupViewPresenter"}',
+            'NODE NetteApplicationUIPresenterStandalone {"className":"StartupViewPresenter"}',
+            'TEMPLATE default.latte StartupViewPresenter::default ["startupParent","presenter","control","fromDefault","fromRenderDefault"] ["parentForm"]',
+            'TEMPLATE parent.latte StartupViewPresenter::parent ["startupParent","presenter","control","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
+            'TEMPLATE startup.latte StartupViewPresenter::default(startup) ["startupParent","presenter","control","fromDefault","fromRenderStartup"] ["parentForm"]',
+            'TEMPLATE startup.latte StartupViewPresenter::parent(startup) ["startupParent","presenter","control","variableFromParentAction","fromRenderStartup"] ["parentForm","parentDefaultForm"]',
+            'TEMPLATE startup.latte StartupViewPresenter::startup ["startupParent","presenter","control","fromRenderStartup"] ["parentForm"]',
         ]);
     }
 }

@@ -77,8 +77,12 @@ final class LatteTemplateResolverResult
     {
         foreach ($templateRenders as $templateRender) {
             $templatePath = $templateRender->getTemplatePath();
-            if (!is_string($templatePath)) {
+            if ($templatePath === false) {
                 $this->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
+                    ->file($templateRender->getFile())
+                    ->line($templateRender->getLine()));
+            } elseif ($templatePath === null) {
+                $this->addErrorFromBuilder(RuleErrorBuilder::message("Latte template was not set for $className::$action")
                     ->file($templateRender->getFile())
                     ->line($templateRender->getLine()));
             } else {

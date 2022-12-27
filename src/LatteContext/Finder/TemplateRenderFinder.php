@@ -63,7 +63,7 @@ final class TemplateRenderFinder
         $templateRendersWithTemplatePaths = [];
         foreach ($templateRenders as $templateRender) {
             // when render call does not specify template directly use default template(s) collected from setFile() calls
-            if ($templateRender->getTemplatePath() === null) {
+            if ($templateRender->getTemplatePath() === null && count($defaultTemplatePaths) > 0) {
                 foreach ($defaultTemplatePaths as $defaultTemplatePath) {
                     $templateRendersWithTemplatePaths[] = $templateRender->withTemplatePath($defaultTemplatePath);
                 }
@@ -71,7 +71,6 @@ final class TemplateRenderFinder
                 $templateRendersWithTemplatePaths[] = $templateRender;
             }
         }
-
         return $templateRendersWithTemplatePaths;
     }
 
@@ -100,10 +99,8 @@ final class TemplateRenderFinder
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $collectedTemplateRenders[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $collectedTemplateRenders[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return array_merge(...$collectedTemplateRenders);
