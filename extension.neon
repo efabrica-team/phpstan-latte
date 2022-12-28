@@ -51,11 +51,13 @@ services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
-    - Efabrica\PHPStanLatte\Compiler\Postprocessor
+    -
+        factory: Efabrica\PHPStanLatte\Compiler\Postprocessor
+        arguments:
+            parser: @defaultAnalysisParser
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
-
     -
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
