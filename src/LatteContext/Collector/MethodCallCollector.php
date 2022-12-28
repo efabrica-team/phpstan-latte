@@ -11,11 +11,7 @@ use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
-use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
@@ -69,19 +65,10 @@ final class MethodCallCollector extends AbstractLatteContextCollector
 
         $actualClassName = $classReflection->getName();
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
+        $declaringClassName = $this->calledClassResolver->resolveDeclaring($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
 
-        if ($this->terminatingCallResolver->isTerminatingCallNode($node, $scope)) {
-            return [new CollectedMethodCall(
-                $actualClassName,
-                $functionName,
-                $calledClassName ?? '',
-                $calledMethodName ?? '',
-                CollectedMethodCall::TERMINATING_CALL
-            )];
-        }
-
-        if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
+        if ($declaringClassName === null || $calledClassName === null || $calledMethodName === null) {
             return null;
         }
 
@@ -89,25 +76,19 @@ final class MethodCallCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if (!$node instanceof MethodCall && !$node instanceof StaticCall) {
-            return null;
+        if ($this->terminatingCallResolver->isTerminatingCallNode($node, $scope)) {
+            return [CollectedMethodCall::build(
+                $node,
+                $scope,
+                $calledClassName,
+                $calledMethodName,
+                CollectedMethodCall::TERMINATING_CALL
+            )];
         }
 
-        try {
-            $reflectionClass = (new BetterReflection())->reflector()->reflectClass($calledClassName);
-        } catch (IdentifierNotFound $e) {
-            return null;
-        }
-
-        $reflectionMethod = $reflectionClass->getMethod($calledMethodName);
-        if ($reflectionMethod === null) {
-            return null;
-        }
-
-        $declaringClassName = $reflectionMethod->getDeclaringClass()->getName();
-        return [new CollectedMethodCall(
-            $actualClassName,
-            $functionName,
+        return [CollectedMethodCall::build(
+            $node,
+            $scope,
             $declaringClassName,
             $calledMethodName
         )];

@@ -89,10 +89,8 @@ final class FilterFinder
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $collectedFilters[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $collectedFilters[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return array_merge(...$collectedFilters);

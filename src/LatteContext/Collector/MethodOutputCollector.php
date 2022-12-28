@@ -59,12 +59,12 @@ final class MethodOutputCollector extends AbstractLatteContextCollector
         $actualClassName = $classReflection->getName();
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
-        return [new CollectedMethodCall(
-            $actualClassName,
-            $functionName,
+        return [CollectedMethodCall::build(
+            $node,
+            $scope,
             $calledClassName ?? '',
             $calledMethodName ?? '',
-            CollectedMethodCall::TERMINATING_CALL
+            CollectedMethodCall::OUTPUT_CALL
         )];
     }
 }

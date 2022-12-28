@@ -11,14 +11,9 @@ use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 final class MethodCallFinder
 {
     /**
-     * @var array<string, array<string, array<string, string[]>>>
+     * @var array<string, array<string, CollectedMethodCall[]>>
      */
     private array $collectedMethodCalled = [];
-
-    /**
-     * @var array<string, array<string, array<string, string[]>>>
-     */
-    private array $collectedMethodCallers = [];
 
     /**
      * @var array<string, array<string, bool>>>
@@ -36,29 +31,21 @@ final class MethodCallFinder
         foreach ($collectedMethodCalls as $collectedMethodCall) {
             $callerClassName = $collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
-            $calledClassName = $collectedMethodCall->getCalledClassName();
-            $calledMethodName = $collectedMethodCall->getCalledMethodName();
-            if ($collectedMethodCall->isCall()) {
-                if (!isset($this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName])) {
-                    $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName] = [];
-                }
-                $this->collectedMethodCalled[$callerClassName][$callerMethodName][$calledClassName][] = $calledMethodName;
-                if (!isset($this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName])) {
-                    $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName] = [];
-                }
-                $this->collectedMethodCallers[$calledClassName][$calledMethodName][$callerClassName][] = $callerMethodName;
-            }
             if ($collectedMethodCall->isTerminatingCall()) {
                 $this->hasTerminatingCalls[$callerClassName][$callerMethodName] = true;
-            }
-            if ($collectedMethodCall->isOutputCall()) {
+            } elseif ($collectedMethodCall->isOutputCall()) {
                 $this->hasOutputCalls[$callerClassName][$callerMethodName] = true;
+            } else {
+                if (!isset($this->collectedMethodCalled[$callerClassName][$callerMethodName])) {
+                    $this->collectedMethodCalled[$callerClassName][$callerMethodName] = [];
+                }
+                $this->collectedMethodCalled[$callerClassName][$callerMethodName][] = $collectedMethodCall;
             }
         }
     }
 
     /**
-     * @return array<string, string[]>
+     * @return CollectedMethodCall[]
      */
     public function findCalled(string $className, string $methodName): array
     {
@@ -66,11 +53,33 @@ final class MethodCallFinder
     }
 
     /**
-     * @return array<string, string[]>
+     * @return CollectedMethodCall[]
      */
-    public function findCallers(string $className, string $methodName): array
+    public function findCalledByMethod(ReflectionMethod $method): array
     {
-        return $this->collectedMethodCallers[$className][$methodName] ?? [];
+        return $this->findCalled($method->getDeclaringClass()->getName(), $method->getName());
+    }
+
+    /**
+     * @return CollectedMethodCall[]
+     */
+    public function findCalledOfType(string $className, string $methodName, string $type): array
+    {
+        $calledByType = [];
+        foreach ($this->collectedMethodCalled[$className][$methodName] ?? [] as $called) {
+            if ($called->getType() === $type) {
+                $calledByType[] = $called;
+            }
+        }
+        return $calledByType;
+    }
+
+    /**
+     * @return CollectedMethodCall[]
+     */
+    public function findCalledOfTypeByMethod(ReflectionMethod $method, string $type): array
+    {
+        return $this->findCalledOfType($method->getDeclaringClass()->getName(), $method->getName(), $type);
     }
 
     public function hasAnyTerminatingCalls(string $className, string $methodName): bool
@@ -97,10 +106,8 @@ final class MethodCallFinder
         $hasTerminatingCalls = $this->hasTerminatingCalls[$className][$methodName] ?? false;
 
         $methodCalls = $this->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyTerminatingCallsInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyTerminatingCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return $hasTerminatingCalls;
@@ -130,10 +137,8 @@ final class MethodCallFinder
         $hasTerminatingCalls = $this->hasOutputCalls[$className][$methodName] ?? false;
 
         $methodCalls = $this->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyOutputCallsInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyOutputCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return $hasTerminatingCalls;

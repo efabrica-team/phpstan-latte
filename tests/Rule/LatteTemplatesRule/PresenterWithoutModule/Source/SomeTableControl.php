@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Nette\Application\UI\Control;
 
+/**
+ * @template T
+ */
 final class SomeTableControl extends Control
 {
     public function render(): void

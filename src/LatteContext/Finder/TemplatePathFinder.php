@@ -99,10 +99,8 @@ final class TemplatePathFinder
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $collectedTemplatePaths[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $collectedTemplatePaths[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return array_merge(...$collectedTemplatePaths);

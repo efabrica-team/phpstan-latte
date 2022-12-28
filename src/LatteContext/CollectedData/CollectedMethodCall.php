@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\Scope;
+
 final class CollectedMethodCall extends CollectedLatteContextObject
 {
     public const CALL = 'call';
@@ -18,15 +22,32 @@ final class CollectedMethodCall extends CollectedLatteContextObject
 
     private string $calledMethodName;
 
+    private bool $isCalledConditionally;
+
     private string $type;
 
-    public function __construct(string $callerClassName, string $callerMethodName, string $calledClassName, string $calledMethodName, string $type = self::CALL)
-    {
+    /** @var array<string, string|int|float|bool> */
+    private array $params;
+
+    /**
+     * @param array<string, string|int|float|bool> $params
+     */
+    public function __construct(
+        string $callerClassName,
+        string $callerMethodName,
+        string $calledClassName,
+        string $calledMethodName,
+        bool $isCalledConditionally,
+        string $type = self::CALL,
+        array $params = []
+    ) {
         $this->callerClassName = $callerClassName;
         $this->callerMethodName = $callerMethodName;
         $this->calledClassName = $calledClassName;
         $this->calledMethodName = $calledMethodName;
+        $this->isCalledConditionally = $isCalledConditionally;
         $this->type = $type;
+        $this->params = $params;
     }
 
     public function getCallerClassName(): string
@@ -49,6 +70,16 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->calledMethodName;
     }
 
+    public function isCalledConditionally(): bool
+    {
+        return $this->isCalledConditionally;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     public function isCall(): bool
     {
         return $this->type === self::CALL;
@@ -62,5 +93,39 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     public function isOutputCall(): bool
     {
         return $this->type === self::OUTPUT_CALL;
+    }
+
+    /**
+     * @return array<string, string|int|float|bool>
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
+     * @param array<string, string|int|float|bool> $params
+     */
+    public static function build(
+        Node $node,
+        Scope $scope,
+        string $calledClassName,
+        string $calledMethodName,
+        string $type = self::CALL,
+        array $params = []
+    ): self {
+        /** @var Node $parentNode */
+        $parentNode = $node->getAttribute('parent');
+        /** @var Node $parentNode */
+        $grandparentNode = $parentNode->getAttribute('parent');
+        return new self(
+            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
+            $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
+            $calledClassName,
+            $calledMethodName,
+            !$grandparentNode instanceof ClassMethod,
+            $type,
+            $params
+        );
     }
 }

@@ -102,10 +102,8 @@ final class ComponentFinder
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $collectedComponents[] = $this->findInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $collectedComponents[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return array_merge(...$collectedComponents);

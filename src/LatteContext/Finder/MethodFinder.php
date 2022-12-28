@@ -61,10 +61,8 @@ final class MethodFinder
         $alwaysTerminated = $this->find($className, $methodName)->isAlwaysTerminated();
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledClassName => $calledMethods) {
-            foreach ($calledMethods as $calledMethod) {
-                $alwaysTerminated = $alwaysTerminated || $this->findAnyAlwaysTerminatedInMethodCalls($calledClassName, $calledMethod, $alreadyFound);
-            }
+        foreach ($methodCalls as $calledMethod) {
+            $alwaysTerminated = $alwaysTerminated || $this->findAnyAlwaysTerminatedInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
         }
 
         return $alwaysTerminated;

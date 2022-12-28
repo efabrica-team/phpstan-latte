@@ -99,8 +99,8 @@ final class Postprocessor
             $this->setupVisitor($nodeVisitor, $template);
             $nodeTraverser->addVisitor($nodeVisitor);
         }
-        $nodeTraverser->traverse($phpStmts);
-        return $this->printerStandard->prettyPrintFile($phpStmts);
+        $newPhpStmts = $nodeTraverser->traverse($phpStmts);
+        return $this->printerStandard->prettyPrintFile($newPhpStmts);
     }
 
     private function setupVisitor(NodeVisitor $nodeVisitor, Template $template): void
