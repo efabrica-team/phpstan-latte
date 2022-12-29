@@ -15,10 +15,13 @@ parameters:
         reportUnanalysedTemplates: false
         collectedPaths: []
     ignoreErrors:
-        - '#Unknown PHPDoc tag: @phpstan-latte-template#'
-        - '#Unknown PHPDoc tag: @phpstan-latte-var#'
-        - '#Unknown PHPDoc tag: @phpstan-latte-component#'
-        - '#Unknown PHPDoc tag: @phpstan-latte-ignore#'
+        -
+            messages:
+                - '#Unknown PHPDoc tag: @phpstan-latte-template#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-var#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-component#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-ignore#'
+            reportUnmatched: false
 
 parametersSchema:
     latte: structure([
