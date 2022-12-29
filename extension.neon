@@ -123,6 +123,7 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentMethodPhpDocCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\FilterCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\MethodCallCollector

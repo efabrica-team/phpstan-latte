@@ -42,15 +42,15 @@ final class ResolvedNodeCollector extends AbstractCollector
      */
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
-            return null;
-        }
         $resolvedNodes = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             $resolvedNode = $latteTemplateResolver->collect($node, $scope);
             if ($resolvedNode !== null) {
                 $resolvedNodes[] = $resolvedNode;
             }
+        }
+        if (count($resolvedNodes) > 0 && $this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
+            return null;
         }
         return $this->collectItems($resolvedNodes);
     }

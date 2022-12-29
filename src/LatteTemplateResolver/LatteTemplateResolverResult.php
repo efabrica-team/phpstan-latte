@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\Helper\ComponentsHelper;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
@@ -110,7 +111,7 @@ final class LatteTemplateResolverResult
             $className,
             $action,
             VariablesHelper::merge($variables, $templateRender->getVariables()),
-            $components,
+            ComponentsHelper::merge($components, $templateRender->getComponents()),
             $forms,
             $filters
         ));

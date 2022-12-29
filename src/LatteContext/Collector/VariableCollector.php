@@ -103,9 +103,9 @@ final class VariableCollector extends AbstractLatteContextCollector
         if ($lattePhpDoc->isIgnored()) {
             return null;
         }
-        if ($lattePhpDoc->getVariables($variableName) !== []) {
+        if ($lattePhpDoc->hasVariables()) {
             $variables = [];
-            foreach ($lattePhpDoc->getVariables($variableName) as $name => $type) {
+            foreach ($lattePhpDoc->getVariables([$variableName]) as $name => $type) {
                 $variables[] = CollectedVariable::build($node, $scope, $name, $type);
             }
         }

@@ -1,0 +1,13 @@
+{* Two errors for each component because it is called from SomeControl::renderParentIndirectRender and ParentControl::renderParentIndirect *}
+
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentParentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{control myComponent}
+
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentParentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{control classComponent}
+
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentParentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{* ERROR: Call to method render() on an unknown class Placeholder\ComponentParentClass. ### Learn more at https://phpstan.org/user-guide/discovering-symbols *}
+{control parentClassComponent}

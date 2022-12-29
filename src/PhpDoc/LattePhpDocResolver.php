@@ -62,13 +62,15 @@ final class LattePhpDocResolver
         $isIgnored = false;
         $templatePaths = [];
         $variables = [];
+        $components = [];
         foreach ($resolvedPhpDoc->getPhpDocNodes() as $phpDocNode) {
             $isIgnored = $isIgnored || count($phpDocNode->getTagsByName('@phpstan-latte-ignore')) > 0;
             $templatePaths = array_merge($templatePaths, $this->parseTemplateTags($phpDocNode, $classReflection));
             $variables = array_merge($variables, $this->parseVariableTags($phpDocNode, $nameScope));
+            $components = array_merge($components, $this->parseComponentTags($phpDocNode, $nameScope));
         }
 
-        return new LattePhpDoc($isIgnored, $templatePaths, $variables);
+        return new LattePhpDoc($isIgnored, $templatePaths, $variables, $components);
     }
 
     /**
@@ -102,16 +104,34 @@ final class LattePhpDocResolver
         return $variables;
     }
 
+    /**
+     * @return array<string, Type>
+     */
+    private function parseComponentTags(PhpDocNode $phpDocNode, NameScope $nameScope): array
+    {
+        $components = [];
+        foreach ($phpDocNode->getTagsByName('@phpstan-latte-component') as $variableTag) {
+            if (!$variableTag->value instanceof GenericTagValueNode) {
+                continue;
+            }
+            $typeAndName = $this->parseTypeAndName($variableTag->value->value, $nameScope);
+            $components[$typeAndName['name'] ?? ''] = $typeAndName['type'];
+        }
+        return $components;
+    }
+
     public function resolveForNode(Node $node, Scope $scope): LattePhpDoc
     {
         if ($scope->getClassReflection() === null) {
             return new LattePhpDoc();
         }
         $docNode = $node->getDocComment();
-        if ($docNode === null) {
-            return new LattePhpDoc();
+        if ($docNode !== null) {
+            $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
+        } else {
+            $lattePhpDoc = new LattePhpDoc();
         }
-        $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
+
         if ($scope->getFunctionName() !== null) {
             $lattePhpDoc->setParentMethod($this->resolveForMethod($scope->getClassReflection()->getName(), $scope->getFunctionName()));
         } else {
