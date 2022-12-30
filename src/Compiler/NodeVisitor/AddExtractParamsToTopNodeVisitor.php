@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
@@ -15,9 +17,23 @@ use PhpParser\NodeVisitorAbstract;
 
 final class AddExtractParamsToTopNodeVisitor extends NodeVisitorAbstract
 {
+    private NameResolver $nameResolver;
+
+    public function __construct(NameResolver $nameResolver)
+    {
+        $this->nameResolver = $nameResolver;
+    }
+
     public function enterNode(Node $node): ?Node
     {
         if (!$node instanceof ClassMethod) {
+            return null;
+        }
+
+        if (
+            LatteVersion::isLatte2() && $this->nameResolver->resolve($node) !== 'main' ||
+            LatteVersion::isLatte3() && $this->nameResolver->resolve($node) !== 'prepare'
+        ) {
             return null;
         }
 
