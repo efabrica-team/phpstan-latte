@@ -34,6 +34,6 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
             return false;
         }
         $action = $matches[1];
-        return count($this->getMethodsMatching($reflectionClass, '/^(action|render)' . preg_quote($action) . '/')) === 0;
+        return count($this->getMethodsMatchingIncludingIgnored($reflectionClass, '/^(action|render)' . preg_quote($action) . '/')) === 0;
     }
 }
