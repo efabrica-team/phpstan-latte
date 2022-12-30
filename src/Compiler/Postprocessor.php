@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
@@ -84,10 +85,7 @@ final class Postprocessor
         $changeFilterNodeVisitor = new ChangeFiltersNodeVisitor($filters);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(200, $changeFilterNodeVisitor);
 
-        $addFormClassesNodeVisitor = new AddFormClassesNodeVisitor($template->getForms());
-        $this->nodeVisitorStorage->addTemporaryNodeVisitor(300, $addFormClassesNodeVisitor);
-
-        foreach ($this->nodeVisitorStorage->getNodeVisitors() as $priority => $nodeVisitors) {
+        foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
             $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $template);
         }
 
@@ -115,6 +113,9 @@ final class Postprocessor
     {
         if ($nodeVisitor instanceof ActualClassNodeVisitorInterface) {
             $nodeVisitor->setActualClass($template->getActualClass());
+        }
+        if ($nodeVisitor instanceof FormsNodeVisitorInterface) {
+            $nodeVisitor->setForms($template->getForms());
         }
     }
 

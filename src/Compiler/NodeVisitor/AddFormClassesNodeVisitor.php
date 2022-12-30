@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Error\Error;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
@@ -12,49 +15,39 @@ use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Type\VerbosityLevel;
 
-final class AddFormClassesNodeVisitor extends NodeVisitorAbstract
+final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisitorInterface
 {
-    /** @var CollectedForm[] */
-    private array $forms;
+    use FormsNodeVisitorBehavior;
 
-    /** @var array<string, string> */
-    private array $formClassNames = [];
+    private NameResolver $nameResolver;
 
-    /**
-     * @param CollectedForm[] $forms
-     */
-    public function __construct(array $forms)
+    public function __construct(NameResolver $nameResolver)
     {
-        foreach ($forms as $form) {
-            $formName = $form->getName();
+        $this->nameResolver = $nameResolver;
+    }
 
-            // TODO check why there are more then one same forms
-            if (isset($this->formClassNames[$formName])) {
-                continue;
-            }
-
-            $id = md5(uniqid());
-            $className = ucfirst($formName) . '_' . $id;
-            $this->formClassNames[$formName] = $className;
-            $this->forms[$formName] = $form;
-        }
+    public function beforeTraverse(array $nodes)
+    {
+        $this->reset();
     }
 
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof StaticCall) {
-            // TODO use name resolver
-            if ($node->name->name === 'renderFormBegin') {
+            if ($this->nameResolver->resolve($node) === 'renderFormBegin') {
                 // TODO add checks
                 /** @var Assign $arg0 */
                 $arg0 = $node->args[0]->value;
@@ -68,25 +61,42 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract
                 // TODO add method where all checks are done
                 $formName = $formNameString->value;
 
-                $node->args[0] = new Assign(new Variable(new Name('form')), new New_(new Name($this->formClassNames[$formName])));
+                $formClassName = $this->formClassNames[$formName] ?? null;
+                if ($formClassName === null) {
+                    return null;
+                }
+                $this->actualForm = $this->forms[$formName] ?? null;
+
+                $node->args[0] = new Assign(new Variable(new Name('form')), new New_(new Name($formClassName)));
                 return $node;
             }
-            if ($node->name->name === 'renderFormEnd') {
+            if ($this->nameResolver->resolve($node) === 'renderFormEnd') {
                 $node->args[0] = new Variable(new Name('form'));
                 return $node;
             }
-        } elseif ($node instanceof Node\Stmt\Echo_) {
-            // TODO we need to replace not only echo
-            if ($node->exprs[0] instanceof Node\Expr\MethodCall) {
+        } elseif ($node instanceof Echo_) { // TODO we need to replace not only echo
+            if ($node->exprs[0] instanceof MethodCall) {
                 $methodCall = $node->exprs[0];
                 if ($methodCall->var instanceof ArrayDimFetch) {
-                    // TODO if there are more method calls, this is not working
-                    if ($methodCall->var->var instanceof Node\Expr\FuncCall) {
-                        // TODO use name resolver
-                        if ($methodCall->var->var->name->toString() === 'end') {
-                            $methodCall->var->var = new Variable(new Name('form'));
-                            $node->exprs[0] = $methodCall;
-                            return $node;
+                    if ($methodCall->var->dim instanceof String_) {
+                        $fieldName = $methodCall->var->dim->value;
+                        $formField = $this->actualForm->getFormField($fieldName);
+
+                        if ($formField === null) {
+                            $error = new Error('Form field with name "' . $fieldName . '" probably does not exist.');
+                            $errorNode = $error->toNode();
+                            $errorNode->setAttributes($node->getAttributes());
+                            return $errorNode;
+                        }
+
+                        // TODO if there are more method calls, this is not working
+                        if ($methodCall->var->var instanceof FuncCall) {
+                            // TODO use name resolver
+                            if ($methodCall->var->var->name->toString() === 'end') {
+                                $methodCall->var->var = new Variable(new Name('form'));
+                                $node->exprs[0] = $methodCall;
+                                return $node;
+                            }
                         }
                     }
                 }
@@ -112,7 +122,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract
     {
         $componentType = '\Nette\ComponentModel\IComponent';
         foreach ($this->forms as $formName => $form) {
-            $className = $this->formClassNames[$formName];
+            $className = $this->formClassNames[$formName] ?? null;
+            if ($className === null) {
+                continue;
+            }
             $method = (new Method('offsetGet'))
                 ->addParam(new Param('name'))
                 ->addStmts([

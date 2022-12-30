@@ -23,8 +23,8 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
         $dir = is_dir("$dir/templates") ? $dir : dirname($dir);
 
         return [
-             $dir . '/templates/' . $presenterName . '/([a-zA-Z0-9_]*?).latte',
-             $dir . '/templates/' . $presenterName . '\.([a-zA-Z0-9_]?).latte',
+             $dir . '/templates/' . $presenterName . '/([a-zA-Z0-9_]+).latte',
+             $dir . '/templates/' . $presenterName . '\.([a-zA-Z0-9_]+).latte',
         ];
     }
 
@@ -34,6 +34,6 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
             return false;
         }
         $action = $matches[1];
-        return count($this->getMethodsMatching($reflectionClass, '/^(action|render)' . preg_quote($action) . '/')) === 0;
+        return count($this->getMethodsMatchingIncludingIgnored($reflectionClass, '/^(action|render)' . preg_quote($action) . '/')) === 0;
     }
 }

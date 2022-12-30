@@ -14,6 +14,14 @@ parameters:
         resolveAllPossiblePaths: false
         reportUnanalysedTemplates: false
         collectedPaths: []
+    ignoreErrors:
+        -
+            messages:
+                - '#Unknown PHPDoc tag: @phpstan-latte-template#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-var#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-component#'
+                - '#Unknown PHPDoc tag: @phpstan-latte-ignore#'
+            reportUnmatched: false
 
 parametersSchema:
     latte: structure([
@@ -96,6 +104,7 @@ services:
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformForeachWithIteratorNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
+            - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())
             - addNodeVisitor(10000, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor())
 
