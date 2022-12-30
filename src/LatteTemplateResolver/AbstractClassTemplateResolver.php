@@ -83,11 +83,22 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     protected function getMethodsMatching(ReflectionClass $reflectionClass, string $pattern): array
     {
         $methods = [];
+        foreach ($this->getMethodsMatchingIncludingIgnored($reflectionClass, $pattern) as $reflectionMethod) {
+            if (!$this->lattePhpDocResolver->resolveForMethod($reflectionClass->getName(), $reflectionMethod->getName())->isIgnored()) {
+                $methods[] = $reflectionMethod;
+            }
+        }
+        return $methods;
+    }
+
+    /**
+     * @return ReflectionMethod[]
+     */
+    protected function getMethodsMatchingIncludingIgnored(ReflectionClass $reflectionClass, string $pattern): array
+    {
+        $methods = [];
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             if (preg_match($pattern . 'i', $reflectionMethod->getName()) === 1) {
-                if ($this->lattePhpDocResolver->resolveForMethod($reflectionClass->getName(), $reflectionMethod->getName())->isIgnored()) {
-                    continue;
-                }
                 $methods[] = $reflectionMethod;
             }
         }
