@@ -66,4 +66,15 @@ abstract class ParentPresenter extends Presenter
         };
         return $form;
     }
+
+    protected function parentCreateIndirectForm(): Form
+    {
+        return $this->createIndirectForm();
+    }
+
+    // overwritten in FormsPresenter
+    protected function createIndirectForm(): Form
+    {
+        return new Form();
+    }
 }

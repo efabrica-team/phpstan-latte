@@ -58,4 +58,58 @@ final class FormsPresenter extends ParentPresenter
 
         return $form;
     }
+
+    protected function createComponentIndirectForm(): Form
+    {
+        return $this->createIndirectForm();
+    }
+
+    protected function createComponentIndirectThroughtParentForm(): Form
+    {
+        return $this->parentCreateIndirectForm();
+    }
+
+    protected function createIndirectForm(): Form
+    {
+        $form = new Form();
+        $form->setTranslator(null);
+        $form->addSelect('select', 'Select', ['item1', 'item2', 'item3']);
+        $form->addCheckbox('checkbox', 'Checkbox');
+        $form->addText('username', 'Username')
+            ->setRequired()
+            ->addRule(Form::EMAIL);
+        $form->addPassword('password', 'Passowrd')
+            ->setRequired();
+        $form->addSubmit('submit');
+
+        $form->onSuccess[] = function (Form $form, array $values): void {
+        };
+
+        return $form;
+    }
+
+    protected function createComponentIndirectFormFields(): Form
+    {
+        $form = new Form();
+        $form->setTranslator(null);
+        $this->createIndirectFormFields($form);
+
+        $form->onSuccess[] = function (Form $form, array $values): void {
+        };
+
+        return $form;
+    }
+
+    protected function createIndirectFormFields(Form $form): void
+    {
+        $form->addSelect('select', 'Select', ['item1', 'item2', 'item3']);
+        $form->addCheckbox('checkbox', 'Checkbox');
+        $form->addText('username', 'Username')
+            ->setRequired()
+            ->addRule(Form::EMAIL);
+        $form->addPassword('password', 'Passowrd')
+            ->setRequired();
+        $form->addSubmit('submit');
+    }
+
 }
