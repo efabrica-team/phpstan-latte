@@ -115,9 +115,9 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         array $params = []
     ): self {
         /** @var Node $parentNode */
-        $parentNode = $node->getAttribute('parent');
+        $parentNode = $node->getAttribute('parent') ?? $node;
         /** @var Node $parentNode */
-        $grandparentNode = $parentNode->getAttribute('parent');
+        $grandparentNode = $parentNode->getAttribute('parent') ?? $parentNode;
         return new self(
             $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
