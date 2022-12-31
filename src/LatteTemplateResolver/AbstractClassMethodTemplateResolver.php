@@ -23,16 +23,16 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
 
         $result = new LatteTemplateResolverResult();
         foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
-            $variables = array_merge($globalVariables, $this->variableFinder->findByMethod($reflectionMethod));
-            $components = array_merge($globalComponents, $this->componentFinder->findByMethod($reflectionMethod));
-            $forms = array_merge($globalForms, $this->formFinder->findByMethod($reflectionMethod));
-            $filters = array_merge($globalFilters, $this->filterFinder->findByMethod($reflectionMethod));
+            $variables = array_merge($globalVariables, $this->variableFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+            $components = array_merge($globalComponents, $this->componentFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+            $forms = array_merge($globalForms, $this->formFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+            $filters = array_merge($globalFilters, $this->filterFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
 
-            $templateRenders = $this->templateRenderFinder->findByMethod($reflectionMethod);
+            $templateRenders = $this->templateRenderFinder->find($reflectionClass->getName(), $reflectionMethod->getName());
             if (count($templateRenders) === 0) {
-                if (!$this->methodCallFinder->hasAnyOutputCallsByMethod($reflectionMethod) &&
-                    !$this->methodCallFinder->hasAnyTerminatingCallsByMethod($reflectionMethod) &&
-                    !$this->methodFinder->hasAnyAlwaysTerminatedByMethod($reflectionMethod)
+                if (!$this->methodCallFinder->hasAnyOutputCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
+                    !$this->methodCallFinder->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
+                    !$this->methodFinder->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName())
                 ) {
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
                         ->file($reflectionClass->getFileName() ?? 'unknown')

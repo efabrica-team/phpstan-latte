@@ -103,6 +103,22 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->params;
     }
 
+    public function withCurrentClassName(string $currentClassName): self
+    {
+        if ($this->calledClassName !== 'this' && $this->calledClassName !== 'static') {
+            return $this;
+        }
+        return new self(
+            $this->callerClassName,
+            $this->callerMethodName,
+            $currentClassName,
+            $this->calledMethodName,
+            $this->isCalledConditionally,
+            $this->type,
+            $this->params
+        );
+    }
+
     /**
      * @param array<string, string|int|float|bool> $params
      */

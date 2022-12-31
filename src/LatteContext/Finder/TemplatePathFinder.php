@@ -8,7 +8,6 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class TemplatePathFinder
 {
@@ -60,14 +59,6 @@ final class TemplatePathFinder
     /**
      * @return array<?string>
      */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @return array<?string>
-     */
     private function findInParents(string $className)
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
@@ -88,14 +79,19 @@ final class TemplatePathFinder
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
+        }
+
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
             return []; // stop recursion
         } else {
-            $alreadyFound[$className][$methodName] = true;
+            $alreadyFound[$declaringClass][$methodName] = true;
         }
 
         $collectedTemplatePaths = [
-            $this->collectedTemplatePaths[$className][$methodName] ?? [],
+            $this->collectedTemplatePaths[$declaringClass][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);

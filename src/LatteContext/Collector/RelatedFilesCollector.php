@@ -79,7 +79,7 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             }
         } elseif ($node instanceof CallLike) {
             $calledClassName = $this->calledClassResolver->resolve($node, $scope);
-            if ($calledClassName !== null) {
+            if ($calledClassName !== null && $calledClassName !== 'this' && $calledClassName !== 'self' && $calledClassName !== 'static') {
                 $classReflection = $this->reflectionProvider->getClass($calledClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
                     if ($this->isInCollectedPaths($classReflection->getFileName())) {
