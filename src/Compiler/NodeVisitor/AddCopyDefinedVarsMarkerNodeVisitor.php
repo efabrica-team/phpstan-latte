@@ -93,7 +93,7 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
         if ($statement instanceof Expression) {
             if ($statement->expr instanceof FuncCall) {
                 // \PhpStan\dumpType($foo)
-                if ($this->nameResolver->resolve($statement->expr) === 'PhpStan\dumpType') {
+                if (strtolower($this->nameResolver->resolve($statement->expr)) === 'phpstan\dumptype') {
                     return true;
                 }
             }
