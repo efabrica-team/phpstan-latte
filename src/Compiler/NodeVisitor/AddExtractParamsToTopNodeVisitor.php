@@ -30,8 +30,7 @@ final class AddExtractParamsToTopNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (
-            LatteVersion::isLatte2() && $this->nameResolver->resolve($node) !== 'main' ||
+        if (LatteVersion::isLatte2() && $this->nameResolver->resolve($node) !== 'main' ||
             LatteVersion::isLatte3() && $this->nameResolver->resolve($node) !== 'prepare'
         ) {
             return null;

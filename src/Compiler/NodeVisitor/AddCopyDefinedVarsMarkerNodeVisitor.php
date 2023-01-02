@@ -33,6 +33,7 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes)
     {
         $this->markerAdded = false;
+        return null;
     }
 
     public function enterNode(Node $node): ?Node
@@ -41,8 +42,7 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (
-            LatteVersion::isLatte2() && $this->nameResolver->resolve($node) !== 'main' ||
+        if (LatteVersion::isLatte2() && $this->nameResolver->resolve($node) !== 'main' ||
             LatteVersion::isLatte3() && $this->nameResolver->resolve($node) !== 'prepare'
         ) {
             return null;
@@ -93,7 +93,7 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
         if ($statement instanceof Expression) {
             if ($statement->expr instanceof FuncCall) {
                 // \PhpStan\dumpType($foo)
-                if (strtolower($this->nameResolver->resolve($statement->expr)) === 'phpstan\dumptype') {
+                if (strtolower((string)$this->nameResolver->resolve($statement->expr)) === 'phpstan\dumptype') {
                     return true;
                 }
             }
