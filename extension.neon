@@ -94,6 +94,7 @@ services:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage
         setup:
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor())
+            - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddCopyDefinedVarsMarkerNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())

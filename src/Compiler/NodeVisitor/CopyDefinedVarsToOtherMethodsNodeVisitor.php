@@ -7,10 +7,10 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\If_;
-use PhpParser\Node\Stmt\Return_;
-use PhpParser\NodeTraverser;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
 
 final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
@@ -36,29 +36,16 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        var_dump(count($this->definedVarsStatements));
-
         if (
             LatteVersion::isLatte2() && $this->nameResolver->resolve($node) === 'main' ||
             LatteVersion::isLatte3() && $this->nameResolver->resolve($node) === 'prepare'
         ) {
             $stmts = (array)$node->stmts;
             foreach ($stmts as $stmt) {
-                if ($stmt instanceof Return_) {
-                    continue;
-                }
-                if ($stmt instanceof If_) {
-                    $ifStmts = $stmt->stmts;
-                    $newIfStmts = [];
-                    foreach ($ifStmts as $ifStmt) {
-                        if ($ifStmt instanceof Return_) {
-                            continue;
-                        }
-                        $newIfStmts[] = $ifStmt;
-                    }
-                    $stmt->stmts = $newIfStmts;
-                }
                 $this->definedVarsStatements[] = $stmt;
+                if ($this->isMarkerExpression($stmt)) {
+                    break;
+                }
             }
         }
 
@@ -81,5 +68,22 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
         $statements = (array)$node->stmts;
         $node->stmts = array_merge($this->definedVarsStatements, $statements);
         return $node;
+    }
+
+    private function isMarkerExpression(Node $stmt): bool
+    {
+        if (!$stmt instanceof Expression) {
+            return false;
+        }
+
+        if (!$stmt->expr instanceof Assign) {
+            return false;
+        }
+
+        if (!$stmt->expr->var instanceof Variable) {
+            return false;
+        }
+
+        return $this->nameResolver->resolve($stmt->expr->var->name) === '___marker___';
     }
 }
