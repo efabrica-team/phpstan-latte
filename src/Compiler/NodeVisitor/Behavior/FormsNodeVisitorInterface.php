@@ -16,5 +16,5 @@ interface FormsNodeVisitorInterface
     /**
      * Creates form class names, will not be needed if we will have namespaces in compiled templates
      */
-    public function reset(): void;
+    public function resetForms(): void;
 }

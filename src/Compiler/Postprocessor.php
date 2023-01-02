@@ -4,35 +4,20 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
 use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
-use PhpParser\Builder\Class_;
-use PhpParser\Builder\Method;
-use PhpParser\Builder\Param;
-use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Variable as NodeVariable;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt;
-use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\PrettyPrinter\Standard;
-use PHPStan\Node\FileNode;
 use PHPStan\Parser\Parser;
-use PHPStan\Parser\ParserErrorsException;
-use PHPStan\Type\VerbosityLevel;
-use Throwable;
 
 final class Postprocessor
 {
@@ -117,30 +102,6 @@ final class Postprocessor
         if ($nodeVisitor instanceof FormsNodeVisitorInterface) {
             $nodeVisitor->setForms($template->getForms());
         }
-    }
-
-    /**
-     * @param CollectedForm[] $forms
-     */
-    private function addFormClasses(string $phpContent, array $forms): string
-    {
-
-                // TODO select corresponding part of code and replace all occurences in it, then replace original code with new
-
-        for ($i = 0; $i < 5; $i++) {    // label and input etc.
-            // TODO node visitor
-            /** @var string $phpContent */
-            $phpContent = preg_replace('/new ' . $className . '(.*?)end\(\$this->global->formsStack\)\[[\'"]' . $formField->getName() . '[\'"]\](.*?)renderFormEnd/s', 'new ' . $className . '$1\$form["' . $formField->getName() . '"]$2renderFormEnd', $phpContent);
-        }
-
-
-
-        // TODO node visitor
-
-        /** @var string $phpContent */
-        $phpContent = preg_replace('#echo \\\\end\(\$this->global->formsStack\)\[[\'"](.*?)[\'"]\](.*?);#', '__latteCompileError(\'Form field with name "$1" probably does not exist.\');', $phpContent);
-
-        return $phpContent;
     }
 
     /**

@@ -33,7 +33,7 @@ trait FormsNodeVisitorBehavior
         }
     }
 
-    public function reset(): void
+    public function resetForms(): void
     {
         $this->actualForm = null;
         $this->formClassNames = [];
