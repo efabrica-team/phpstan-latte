@@ -69,14 +69,14 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
         }
 
         if ($statement instanceof Echo_) {
+            // echo LR\Filters::escapeHtmlText($foo) or echo Nette\Bridges\FormsLatte\Runtime::renderFormBegin($foo) etc
             if (($statement->exprs[0] ?? null) instanceof StaticCall) {
-                if ($this->nameResolver->resolve($statement->exprs[0]) === 'escapeHtmlText') {
-                    return true;
-                }
+                return true;
             }
         }
         if ($statement instanceof Return_) {
             if ($statement->expr instanceof FuncCall) {
+                // return get_defined_vars();
                 if ($this->nameResolver->resolve($statement->expr) === 'get_defined_vars') {
                     return true;
                 }
@@ -84,8 +84,25 @@ final class AddCopyDefinedVarsMarkerNodeVisitor extends NodeVisitorAbstract
         }
         if ($statement instanceof If_) {
             if ($statement->cond instanceof MethodCall) {
+                // if ($this->getParentName()) { ... }
                 if ($this->nameResolver->resolve($statement->cond) === 'getParentName') {
                     return true;
+                }
+            }
+        }
+        if ($statement instanceof Expression) {
+            if ($statement->expr instanceof FuncCall) {
+                // \PhpStan\dumpType($foo)
+                if ($this->nameResolver->resolve($statement->expr) === 'PhpStan\dumpType') {
+                    return true;
+                }
+            }
+            if ($statement->expr instanceof Assign) {
+                if ($statement->expr->var instanceof Variable) {
+                    // $_tmp = $this->global->uiControl->getComponent("foo");
+                    if ($this->nameResolver->resolve($statement->expr->var->name) === '_tmp') {
+                        return true;
+                    }
                 }
             }
         }
