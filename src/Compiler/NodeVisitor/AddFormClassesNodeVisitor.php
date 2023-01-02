@@ -51,46 +51,30 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
     public function enterNode(Node $node): ?Node
     {
-        if ($node instanceof StaticCall) {
-            if ($this->nameResolver->resolve($node) === 'renderFormBegin') {
-                $nodeArgs = $node->getArgs();
-                if ($nodeArgs === []) {
-                    return null;
-                }
-                if (!$node->getArgs()[0]->value instanceof Assign) {
-                    return null;
-                }
-                /** @var Assign $arg0 */
-                $arg0 = $node->getArgs()[0]->value;
-
-                if (!$arg0->expr instanceof Assign) {
-                    return null;
-                }
-                /** @var Assign $assign */
-                $assign = $arg0->expr;
-
-                if (!$assign->expr instanceof ArrayDimFetch) {
-                    return null;
-                }
-                /** @var ArrayDimFetch $dimFetch */
-                $dimFetch = $assign->expr;
-
-                if (!$dimFetch->dim instanceof String_) {
-                    return null;
-                }
-                /** @var String_ $formNameString */
-                $formNameString = $dimFetch->dim;
-                $formName = $formNameString->value;
-
-                $formClassName = $this->formClassNames[$formName] ?? null;
-                if ($formClassName === null) {
-                    return null;
-                }
-                $this->actualForm = $this->forms[$formName] ?? null;
-
-                $node->args[0] = new Arg(new Assign(new Variable('form'), new New_(new Name($formClassName))));
-                return $node;
+        if ($node instanceof Assign) {
+            if (!$node->expr instanceof Assign) {
+                return null;
             }
+            $assign = $node->expr;
+
+            if (!$assign->expr instanceof ArrayDimFetch) {
+                return null;
+            }
+            $dimFetch = $assign->expr;
+
+            if (!$dimFetch->dim instanceof String_) {
+                return null;
+            }
+            $formNameString = $dimFetch->dim;
+            $formName = $formNameString->value;
+
+            $formClassName = $this->formClassNames[$formName] ?? null;
+            if ($formClassName === null) {
+                return null;
+            }
+            $this->actualForm = $this->forms[$formName] ?? null;
+            return new Assign(new Variable('form'), new New_(new Name($formClassName)));
+        } elseif ($node instanceof StaticCall) {
             if ($this->nameResolver->resolve($node) === 'renderFormEnd') {
                 $node->args[0] = new Arg(new Variable('form'));
                 $this->actualForm = null;
