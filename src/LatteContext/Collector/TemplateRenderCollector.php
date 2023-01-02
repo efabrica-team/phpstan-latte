@@ -10,8 +10,8 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Efabrica\PHPStanLatte\Template\Variable as TemplateVariable;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
@@ -151,6 +151,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
         }
 
         $variables = $this->buildVariables($templateVariablesArg->value ?? null, $scope);
+        $components = [];
 
         $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
         if ($lattePhpDoc->isIgnored()) {
@@ -160,25 +161,29 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
             $paths = $lattePhpDoc->getTemplatePaths();
         }
         foreach ($lattePhpDoc->getVariables() as $name => $type) {
-            $variables[$name] = new TemplateVariable($name, $type);
+            $variables[$name] = new Variable($name, $type);
+        }
+        foreach ($lattePhpDoc->getComponents() as $name => $type) {
+            $components[$name] = new Component($name, $type);
         }
 
-        return $this->buildTemplateRenders($node, $scope, $paths, $variables);
+        return $this->buildTemplateRenders($node, $scope, $paths, $variables, $components);
     }
 
     /**
      * @param array<?string> $paths
      * @param Variable[] $variables
+     * @param Component[] $components
      * @return null|CollectedTemplateRender[]
      */
-    private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables): ?array
+    private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables, array $components = []): ?array
     {
         if ($paths === null) {
-            return [CollectedTemplateRender::build($node, $scope, false, $variables)];
+            return [CollectedTemplateRender::build($node, $scope, false, $variables, $components)];
         }
         $templateRenders = [];
         foreach ($paths as $path) {
-            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables);
+            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables, $components);
         }
         return count($templateRenders) > 0 ? $templateRenders : null;
     }

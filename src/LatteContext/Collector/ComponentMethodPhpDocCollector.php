@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedComponent;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<ClassMethod, CollectedTemplateRender>
+ * @extends AbstractLatteContextCollector<ClassMethod, CollectedComponent>
  */
-final class TemplateRenderMethodPhpDocCollector extends AbstractLatteContextCollector
+final class ComponentMethodPhpDocCollector extends AbstractLatteContextCollector
 {
     private LattePhpDocResolver $lattePhpDocResolver;
 
@@ -37,7 +36,7 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractLatteContextColl
 
     /**
      * @param ClassMethod $node
-     * @phpstan-return null|CollectedTemplateRender[]
+     * @phpstan-return null|CollectedComponent[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -56,27 +55,15 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractLatteContextColl
             return null;
         }
 
-        $variables = [];
-        foreach ($lattePhpDoc->getVariablesWithParents() as $name => $type) {
-            if ($name === '') {
-                continue; // method annotation without variable name not allowed
-            }
-            $variables[$name] = new Variable($name, $type);
-        }
-
         $components = [];
         foreach ($lattePhpDoc->getComponentsWithParents() as $name => $type) {
-            if ($name === '') {
-                continue; // method annotation without component name not allowed
-            }
-            $components[$name] = new Component($name, $type);
+            $components[$name] = CollectedComponent::build($node, $scope, $name, $type, true);
         }
 
-        $templateRenders = [];
-        foreach ($lattePhpDoc->getTemplatePathsWithParents() as $templatePath) {
-            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $templatePath, $variables, $components);
+        foreach ($lattePhpDoc->getParentClass()->getComponents() as $name => $type) {
+            $components[] = new CollectedComponent($classReflection->getName(), '', new Component($name, $type), true);
         }
 
-        return $templateRenders;
+        return array_values($components);
     }
 }

@@ -92,21 +92,27 @@ final class ComponentCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if ($this->lattePhpDocResolver->resolveForMethod($classReflection->getName(), $methodName)->isIgnored()) {
-            return null;
-        }
-
         $componentType = $parametersAcceptor->getReturnType();
         if ($componentType instanceof MixedType && $node->expr !== null) {
             $componentType = $scope->getType($node->expr);
         }
 
         $componentName = lcfirst(str_replace('createComponent', '', $methodName));
-        return [new CollectedComponent(
-            $classReflection->getName(),
-            '',
-            new Component($componentName, $componentType)
-        )];
+
+        $components = [CollectedComponent::build(null, $scope, $componentName, $componentType)];
+
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->isIgnored()) {
+            return null;
+        }
+        if ($lattePhpDoc->hasComponents()) {
+            $components = [];
+            foreach ($lattePhpDoc->getComponents([$componentName]) as $name => $type) {
+                $components[] = CollectedComponent::build(null, $scope, $name, $type);
+            }
+        }
+
+        return $components;
     }
 
     /**
@@ -124,31 +130,7 @@ final class ComponentCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $componentArg = $node->getArgs()[0]->value;
-        $componentNameArg = $node->getArgs()[1]->value;
-        $componentArgType = $scope->getType($componentArg);
-
-        $names = $this->valueResolver->resolve($componentNameArg, $scope);
-        if ($names === null) {
-            return null;
-        }
-
-        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
-            return null;
-        }
-
-        $components = [];
-        foreach ($names as $name) {
-            if (!is_string($name)) {
-                continue;
-            }
-            $components[] = new CollectedComponent(
-                $classReflection->getName(),
-                $scope->getFunctionName() ?: '',
-                new Component($name, $componentArgType)
-            );
-        }
-        return $components;
+        return $this->buildComponents($node, $scope, $classReflection, $node->getArgs()[1]->value, $node->getArgs()[0]->value);
     }
 
     /**
@@ -157,7 +139,6 @@ final class ComponentCollector extends AbstractLatteContextCollector
     private function findAssignToThis(Assign $node, Scope $scope, ClassReflection $classReflection): ?array
     {
         // TODO check if actual class is control / presenter
-
         if (!$node->var instanceof ArrayDimFetch) {
             return null;
         }
@@ -167,35 +148,48 @@ final class ComponentCollector extends AbstractLatteContextCollector
         if ($node->var->var->name !== 'this') {
             return null;
         }
-
-        $exprType = $scope->getType($node->expr);
-        if (!($exprType instanceof ObjectType && $exprType->isInstanceOf('Nette\ComponentModel\IComponent')->yes())) {
-            return null;
-        }
         if (!$node->var->dim instanceof Expr) {
             return null;
         }
 
-        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
-            return null;
-        }
+        return $this->buildComponents($node, $scope, $classReflection, $node->var->dim, $node->expr);
+    }
 
-        $names = $this->valueResolver->resolve($node->var->dim, $scope);
-        if ($names === null) {
-            return null;
-        }
+    /**
+     * @return ?CollectedComponent[] $components
+     */
+    private function buildComponents(Node $node, Scope $scope, ClassReflection $classReflection, Expr $componentNameArg, Expr $componentArg): ?array
+    {
+        $componentArgType = $scope->getType($componentArg);
+
+        $names = $this->valueResolver->resolve($componentNameArg, $scope) ?? [];
+        $names = array_filter($names, function ($val) {
+            return is_string($val);
+        });
 
         $components = [];
-        foreach ($names as $name) {
-            if (!is_string($name)) {
-                continue;
+
+        // TODO support union types
+        if ($componentArgType instanceof ObjectType && $componentArgType->isInstanceOf('Nette\ComponentModel\IComponent')->yes()) {
+            foreach ($names as $name) {
+                $components[] = new CollectedComponent(
+                    $classReflection->getName(),
+                    $scope->getFunctionName() ?: '',
+                    new Component($name, $componentArgType)
+                );
             }
-            $components[] = new CollectedComponent(
-                $classReflection->getName(),
-                $scope->getFunctionName() ?: '',
-                new Component($name, $exprType)
-            );
         }
-        return $components;
+
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->isIgnored()) {
+            return null;
+        }
+        if ($lattePhpDoc->hasComponents()) {
+            $components = [];
+            foreach ($lattePhpDoc->getComponents($names) as $name => $type) {
+                $components[$name] = CollectedComponent::build($node, $scope, $name, $type);
+            }
+        }
+        return count($components) > 0 ? array_values($components) : null;
     }
 }
