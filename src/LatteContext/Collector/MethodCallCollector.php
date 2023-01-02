@@ -63,16 +63,10 @@ final class MethodCallCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $actualClassName = $classReflection->getName();
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
-        $declaringClassName = $this->calledClassResolver->resolveDeclaring($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
 
-        if ($declaringClassName === null || $calledClassName === null || $calledMethodName === null) {
-            return null;
-        }
-
-        if ($this->lattePhpDocResolver->resolveForMethod($calledClassName, $calledMethodName)->isIgnored()) {
+        if ($calledClassName === null || $calledMethodName === null) {
             return null;
         }
 
@@ -89,7 +83,7 @@ final class MethodCallCollector extends AbstractLatteContextCollector
         return [CollectedMethodCall::build(
             $node,
             $scope,
-            $declaringClassName,
+            $calledClassName,
             $calledMethodName
         )];
     }

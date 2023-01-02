@@ -16,9 +16,12 @@ use Efabrica\PHPStanLatte\LatteContext\Finder\TemplateRenderFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use PHPStan\Reflection\ReflectionProvider;
 
 abstract class AbstractTemplateResolver implements LatteTemplateResolverInterface
 {
+    private ReflectionProvider $reflectionProvider;
+
     private PathResolver $pathResolver;
 
     protected LattePhpDocResolver $lattePhpDocResolver;
@@ -39,8 +42,9 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
+    public function __construct(ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->pathResolver = $pathResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
@@ -48,7 +52,7 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
     public function resolve(CollectedResolvedNode $resolvedNode, LatteContextData $latteContext): LatteTemplateResolverResult
     {
         // TODO create factories?
-        $this->methodCallFinder = new MethodCallFinder($latteContext);
+        $this->methodCallFinder = new MethodCallFinder($latteContext, $this->reflectionProvider, $this->lattePhpDocResolver);
         $this->methodFinder = new MethodFinder($latteContext, $this->methodCallFinder);
         $this->variableFinder = new VariableFinder($latteContext, $this->methodCallFinder);
         $this->componentFinder = new ComponentFinder($latteContext, $this->methodCallFinder);

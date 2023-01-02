@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class VariableFinder
 {
@@ -56,14 +55,6 @@ final class VariableFinder
     /**
      * @return Variable[]
      */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @return Variable[]
-     */
     private function findInClasses(string $className): array
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
@@ -85,20 +76,25 @@ final class VariableFinder
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$className][$methodName] = true;
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
         }
 
-        $collectedVariables = $this->assignedVariables[$className][$methodName] ?? [];
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
+            return []; // stop recursion
+        } else {
+            $alreadyFound[$declaringClass][$methodName] = true;
+        }
+
+        $collectedVariables = $this->assignedVariables[$declaringClass][$methodName] ?? [];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledMethod) {
             $collectedVariables = VariablesHelper::union($collectedVariables, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
         }
 
-        $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$className][$methodName] ?? []);
+        $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
 
         return $collectedVariables;
     }
