@@ -13,18 +13,16 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
 use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
-use PhpParser\Node\Stmt;
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
-use PHPStan\Parser\Parser;
 
 final class Postprocessor
 {
-    private Parser $parser;
-
     private NodeVisitorStorage $nodeVisitorStorage;
 
     private Standard $printerStandard;
@@ -36,14 +34,12 @@ final class Postprocessor
     private VariableCollectorStorage $variableCollectorStorage;
 
     public function __construct(
-        Parser $parser,
         NodeVisitorStorage $nodeVisitorStorage,
         Standard $printerStandard,
         TypeToPhpDoc $typeToPhpDoc,
         DynamicFilterVariables $dynamicFilterVariables,
         VariableCollectorStorage $variableCollectorStorage
     ) {
-        $this->parser = $parser;
         $this->nodeVisitorStorage = $nodeVisitorStorage;
         $this->printerStandard = $printerStandard;
         $this->typeToPhpDoc = $typeToPhpDoc;
@@ -107,18 +103,19 @@ final class Postprocessor
     }
 
     /**
-     * @return Stmt[]
+     * @return Node[]
      */
     private function findNodes(string $phpContent): array
     {
         $parserFactory = new ParserFactory();
         $phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
-        $phpStmts = $phpParser->parse($phpContent);
+        $phpStmts = (array)$phpParser->parse($phpContent);
 
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new ParentConnectingVisitor());
+        $nodeTraverser->addVisitor(new NameResolver());
         $newPhpStmts = $nodeTraverser->traverse($phpStmts);
 
-        return (array)$newPhpStmts;
+        return $newPhpStmts;
     }
 }
