@@ -16,6 +16,8 @@ use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitor\ParentConnectingVisitor;
+use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use PHPStan\Parser\Parser;
 
@@ -109,6 +111,14 @@ final class Postprocessor
      */
     private function findNodes(string $phpContent): array
     {
-        return $this->parser->parseString($phpContent);
+        $parserFactory = new ParserFactory();
+        $phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        $phpStmts = $phpParser->parse($phpContent);
+
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor(new ParentConnectingVisitor());
+        $newPhpStmts = $nodeTraverser->traverse($phpStmts);
+
+        return (array)$newPhpStmts;
     }
 }
