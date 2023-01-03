@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class FormFinder
 {
@@ -49,14 +48,6 @@ final class FormFinder
     /**
      * @return CollectedForm[]
      */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @return CollectedForm[]
-     */
     private function findInParents(string $className): array
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
@@ -77,14 +68,19 @@ final class FormFinder
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
+        }
+
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
             return []; // stop recursion
         } else {
-            $alreadyFound[$className][$methodName] = true;
+            $alreadyFound[$declaringClass][$methodName] = true;
         }
 
         $collectedForms = [
-            $this->collectedForms[$className][$methodName] ?? [],
+            $this->collectedForms[$declaringClass][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);

@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
+use Efabrica\PHPStanLatte\Helper\ComponentsHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class ComponentFinder
 {
     /**
      * @var array<string, array<string, Component[]>>
      */
-    private array $collectedComponents = [];
+    private array $assignedComponents = [];
+
+    /**
+     * @var array<string, array<string, Component[]>>
+     */
+    private array $declaredComponents = [];
 
     private MethodCallFinder $methodCallFinder;
 
@@ -23,24 +28,31 @@ final class ComponentFinder
     {
         $this->methodCallFinder = $methodCallFinder;
 
+        /** @var array<string, Component[]> $componentsWithTypes */
         $componentsWithTypes = [];
         $collectedComponents = $latteContext->getCollectedData(CollectedComponent::class);
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
             $methodName = $collectedComponent->getMethodName();
-            if (!isset($this->collectedComponents[$className][$methodName])) {
-                $this->collectedComponents[$className][$methodName] = [];
-            }
             if (!isset($componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()])) {
                 $componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()] = [];
             }
             $componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()][] = $collectedComponent->getComponent();
 
-            $this->collectedComponents[$className][$methodName][] = $collectedComponent->getComponent();
+            if ($collectedComponent->isDeclared()) {
+                $this->declaredComponents[$className][$methodName] = ComponentsHelper::merge($this->declaredComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
+            } else {
+                $this->assignedComponents[$className][$methodName] = ComponentsHelper::union($this->assignedComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
+            }
         }
 
         foreach ($componentsWithTypes as $componentType => $components) {
-            $subcomponents = array_merge($this->collectedComponents[$componentType][''] ?? [], $this->collectedComponents[$componentType]['__construct'] ?? []);
+            $subcomponents = array_merge(
+                $this->assignedComponents[$componentType][''] ?? [],
+                $this->assignedComponents[$componentType]['__construct'] ?? [],
+                $this->declaredComponents[$componentType][''] ?? [],
+                $this->declaredComponents[$componentType]['__construct'] ?? []
+            );
             foreach ($components as $component) {
                 $component->setSubcomponents($subcomponents);
             }
@@ -52,9 +64,8 @@ final class ComponentFinder
      */
     public function find(string $className, string $methodName): array
     {
-        return array_merge(
-            $this->collectedComponents[$className][''] ?? [],
-            $this->findInParents($className),
+        return ComponentsHelper::merge(
+            $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
             $this->findInMethodCalls($className, $methodName),
         );
@@ -63,26 +74,19 @@ final class ComponentFinder
     /**
      * @return Component[]
      */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @return Component[]
-     */
-    private function findInParents(string $className)
+    private function findInClasses(string $className): array
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
 
-        $collectedComponents = [];
+        $assignedComponents = $this->assignedComponents[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $collectedComponents = array_merge(
-                $this->collectedComponents[$parentClass][''] ?? [],
-                $collectedComponents
-            );
+            $assignedComponents = ComponentsHelper::union($this->assignedComponents[$parentClass][''] ?? [], $assignedComponents);
         }
-        return $collectedComponents;
+        $declaredComponents = $this->declaredComponents[$className][''] ?? [];
+        foreach ($classReflection->getParentClassNames() as $parentClass) {
+            $declaredComponents = ComponentsHelper::merge($this->declaredComponents[$parentClass][''] ?? [], $declaredComponents);
+        }
+        return ComponentsHelper::merge($assignedComponents, $declaredComponents);
     }
 
     /**
@@ -91,21 +95,26 @@ final class ComponentFinder
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$className][$methodName] = true;
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
         }
 
-        $collectedComponents = [
-            $this->collectedComponents[$className][$methodName] ?? [],
-        ];
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
+            return []; // stop recursion
+        } else {
+            $alreadyFound[$declaringClass][$methodName] = true;
+        }
+
+        $collectedComponents = $this->assignedComponents[$declaringClass][$methodName] ?? [];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
         foreach ($methodCalls as $calledMethod) {
-            $collectedComponents[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
+            $collectedComponents = ComponentsHelper::union($collectedComponents, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
         }
 
-        return array_merge(...$collectedComponents);
+        $collectedComponents = ComponentsHelper::merge($collectedComponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
+
+        return $collectedComponents;
     }
 }

@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethod;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class MethodFinder
 {
@@ -32,19 +31,9 @@ final class MethodFinder
         return $this->collectedMethods[$className][$methodName] ?? CollectedMethod::unknown($className, $methodName);
     }
 
-    public function findByMethod(ReflectionMethod $method): CollectedMethod
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
     public function hasAnyAlwaysTerminated(string $className, string $methodName): bool
     {
         return $this->findAnyAlwaysTerminatedInMethodCalls($className, $methodName);
-    }
-
-    public function hasAnyAlwaysTerminatedByMethod(ReflectionMethod $method): bool
-    {
-        return $this->hasAnyAlwaysTerminated($method->getDeclaringClass()->getName(), $method->getName());
     }
 
     /**

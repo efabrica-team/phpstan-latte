@@ -21,6 +21,8 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->title = 'foo';
         $this->bar();
         $this->baz();
+        $this->overwritten();
+        $this->overwrittenThroughtParent();
         $this->getTemplate()->viaGetTemplate = 'foobar';
         $this->template->stringLists = $this->stringLists;
         $localStrings = ['foo', 'bar', 'baz'];
@@ -37,9 +39,19 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->fromOtherAction = 'from other action';
     }
 
-    private function bar(): void
+    protected function bar(): void
     {
         $this->template->variableFromOtherMethod = 'bar';
+    }
+
+    protected function overwritten(): void
+    {
+        $this->template->overwritting = 'overwritting';
+    }
+
+    protected function parentOverwritten(): void
+    {
+        $this->template->parentOverwritting = 'overwritting';
     }
 
     public function actionDirectRender(): void

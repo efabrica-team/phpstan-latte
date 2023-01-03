@@ -28,6 +28,11 @@ abstract class ParentPresenter extends Presenter
     {
         $this->template->variableFromParentAction = 'barbaz';
         $this->addComponent(new Form(), 'parentDefaultForm');
+        $this->bar();
+    }
+
+    protected function bar(): void
+    {
     }
 
     protected function baz(): void
@@ -35,6 +40,21 @@ abstract class ParentPresenter extends Presenter
         $this->template->variableFromParent = 'baz';
         $var = 'xxx';
         $this->template->varFromVariable = $var;
+    }
+
+    protected function overwritten(): void
+    {
+        $this->template->overwritted = 'overwritted';
+    }
+
+    protected function overwrittenThroughtParent(): void
+    {
+        $this->parentOverwritten();
+    }
+
+    protected function parentOverwritten(): void
+    {
+        $this->template->parentOverwritted = 'overwritted';
     }
 
     protected function createComponentParentForm(): Form

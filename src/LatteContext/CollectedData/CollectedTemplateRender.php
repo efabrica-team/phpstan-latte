@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -17,6 +18,9 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     /** @var Variable[] */
     private array $variables;
 
+    /** @var Component[] */
+    private array $components;
+
     private string $className;
 
     private string $methodName;
@@ -28,11 +32,13 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     /**
      * @param null|string|false $templatePath (false = resolve error)
      * @param Variable[] $variables
+     * @param Component[] $components
      */
-    public function __construct($templatePath, array $variables, string $className, string $methodName, string $file, int $line)
+    public function __construct($templatePath, array $variables, array $components, string $className, string $methodName, string $file, int $line)
     {
         $this->templatePath = $templatePath;
         $this->variables = $variables;
+        $this->components = $components;
         $this->className = $className;
         $this->methodName = $methodName;
         $this->file = $file;
@@ -53,6 +59,14 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     public function getVariables(): array
     {
         return $this->variables;
+    }
+
+    /**
+     * @return Component[]
+     */
+    public function getComponents(): array
+    {
+        return $this->components;
     }
 
     public function getClassName(): string
@@ -77,23 +91,25 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
 
     public function withError(): self
     {
-        return new CollectedTemplateRender(false, $this->variables, $this->className, $this->methodName, $this->file, $this->line);
+        return new CollectedTemplateRender(false, $this->variables, $this->components, $this->className, $this->methodName, $this->file, $this->line);
     }
 
     public function withTemplatePath(?string $templatePath): self
     {
-        return new CollectedTemplateRender($templatePath, $this->variables, $this->className, $this->methodName, $this->file, $this->line);
+        return new CollectedTemplateRender($templatePath, $this->variables, $this->components, $this->className, $this->methodName, $this->file, $this->line);
     }
 
     /**
      * @param false|string|null $path
      * @param Variable[] $variables
+     * @param Component[] $components
      */
-    public static function build(Node $node, Scope $scope, $path, array $variables = []): self
+    public static function build(Node $node, Scope $scope, $path, array $variables = [], array $components = []): self
     {
         return new self(
             $path,
             $variables,
+            $components,
             $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
             $scope->getFile(),

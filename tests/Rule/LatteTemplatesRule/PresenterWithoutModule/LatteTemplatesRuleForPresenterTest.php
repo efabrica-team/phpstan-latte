@@ -95,6 +95,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Variable $overwritted might not be defined.',
+                61,
+                'default.latte',
+            ],
+            [
+                'Variable $parentOverwritted might not be defined.',
+                63,
+                'default.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',

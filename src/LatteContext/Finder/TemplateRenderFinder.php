@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class TemplateRenderFinder
 {
@@ -75,27 +74,24 @@ final class TemplateRenderFinder
     }
 
     /**
-     * @return CollectedTemplateRender[]
-     */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
      * @param array<string, array<string, true>> $alreadyFound
      * @return CollectedTemplateRender[]
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
+        }
+
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
             return []; // stop recursion
         } else {
-            $alreadyFound[$className][$methodName] = true;
+            $alreadyFound[$declaringClass][$methodName] = true;
         }
 
         $collectedTemplateRenders = [
-            $this->collectedTemplateRenders[$className][$methodName] ?? [],
+            $this->collectedTemplateRenders[$declaringClass][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);

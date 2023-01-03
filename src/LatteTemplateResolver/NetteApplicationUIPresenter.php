@@ -46,11 +46,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             if (!isset($actions[$actionName])) {
                 $actions[$actionName] = $actions[$actionName] = $this->createActionDefinition($reflectionClass, $actionName);
             }
-            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionMethod);
+            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $reflectionMethod);
 
             // alternative renders (changed by setView in startup or action* method)
             $setViewCalls = array_merge(
-                $this->methodCallFinder->findCalledOfTypeByMethod($reflectionMethod, self::CALL_SET_VIEW),
+                $this->methodCallFinder->findCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
                 $this->methodCallFinder->findCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
             );
             $defaultRenderReached = true;
@@ -61,7 +61,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 $actions[$actionViewName]['defaultTemplate'] = $this->findDefaultTemplateFilePath($reflectionClass, $view);
                 $renderMethod = $reflectionClass->getMethod('render' . ucfirst($view));
                 if ($renderMethod !== null) {
-                    $this->updateActionDefinitionByMethod($actions[$actionViewName], $renderMethod);
+                    $this->updateActionDefinitionByMethod($actions[$actionViewName], $reflectionClass, $renderMethod);
                 }
                 if (!$setViewCall->isCalledConditionally()) {
                     $defaultRenderReached = false;
@@ -71,7 +71,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             if ($defaultRenderReached) {
                 $renderMethod = $reflectionClass->getMethod('render' . ucfirst($actionName));
                 if ($renderMethod !== null) {
-                    $this->updateActionDefinitionByMethod($actions[$actionName], $renderMethod);
+                    $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $renderMethod);
                 }
             } else {
                 unset($actions[$actionName]); // view is always changed
@@ -85,7 +85,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             if (!isset($actions[$actionName])) {
                 $actions[$actionName] = $this->createActionDefinition($reflectionClass, $actionName);
             }
-            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionMethod);
+            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $reflectionMethod);
         }
 
         $result = new LatteTemplateResolverResult();
@@ -166,17 +166,17 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
     /**
      * @phpstan-param ActionDefinition $actionDefinition
      */
-    private function updateActionDefinitionByMethod(&$actionDefinition, ReflectionMethod $reflectionMethod): void
+    private function updateActionDefinitionByMethod(&$actionDefinition, ReflectionClass $reflectionClass, ReflectionMethod $reflectionMethod): void
     {
         $actionDefinition['line'] = $reflectionMethod->getStartLine();
-        $actionDefinition['variables'] = VariablesHelper::union($actionDefinition['variables'], $this->variableFinder->findByMethod($reflectionMethod));
-        $actionDefinition['components'] = array_merge($actionDefinition['components'], $this->componentFinder->findByMethod($reflectionMethod));
-        $actionDefinition['forms'] = array_merge($actionDefinition['forms'], $this->formFinder->findByMethod($reflectionMethod));
-        $actionDefinition['filters'] = array_merge($actionDefinition['filters'], $this->filterFinder->findByMethod($reflectionMethod));
-        $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $this->templateRenderFinder->findByMethod($reflectionMethod));
-        $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $this->templatePathFinder->findByMethod($reflectionMethod));
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $this->methodCallFinder->hasAnyTerminatingCallsByMethod($reflectionMethod);
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $this->methodFinder->hasAnyAlwaysTerminatedByMethod($reflectionMethod);
+        $actionDefinition['variables'] = VariablesHelper::union($actionDefinition['variables'], $this->variableFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['components'] = array_merge($actionDefinition['components'], $this->componentFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['forms'] = array_merge($actionDefinition['forms'], $this->formFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['filters'] = array_merge($actionDefinition['filters'], $this->filterFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $this->templateRenderFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $this->templatePathFinder->find($reflectionClass->getName(), $reflectionMethod->getName()));
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $this->methodCallFinder->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName());
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $this->methodFinder->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName());
     }
 
     private function findDefaultTemplateFilePath(ReflectionClass $reflectionClass, string $actionName): ?string

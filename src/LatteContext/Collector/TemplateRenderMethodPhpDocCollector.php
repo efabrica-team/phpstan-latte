@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -63,9 +64,17 @@ final class TemplateRenderMethodPhpDocCollector extends AbstractLatteContextColl
             $variables[$name] = new Variable($name, $type);
         }
 
+        $components = [];
+        foreach ($lattePhpDoc->getComponentsWithParents() as $name => $type) {
+            if ($name === '') {
+                continue; // method annotation without component name not allowed
+            }
+            $components[$name] = new Component($name, $type);
+        }
+
         $templateRenders = [];
         foreach ($lattePhpDoc->getTemplatePathsWithParents() as $templatePath) {
-            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $templatePath, $variables);
+            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $templatePath, $variables, $components);
         }
 
         return $templateRenders;
