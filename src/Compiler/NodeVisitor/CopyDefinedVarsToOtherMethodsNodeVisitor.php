@@ -7,12 +7,13 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 
 final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
@@ -49,10 +50,10 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
 
                 $stmts = (array)$classStmt->stmts;
                 foreach ($stmts as $stmt) {
-                    $this->definedVarsStatements[] = $stmt;
-                    if ($this->isMarkerExpression($stmt)) {
+                    if ($this->isEndOfTemplateHead($stmt)) {
                         break;
                     }
+                    $this->definedVarsStatements[] = $stmt;
                 }
             }
         }
@@ -66,7 +67,7 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
         }
 
         if (LatteVersion::isLatte2() && $this->nameResolver->resolve($node) === 'main' ||
-            LatteVersion::isLatte3() && $this->nameResolver->resolve($node) === 'prepare'
+            $this->nameResolver->resolve($node) === 'prepare'
         ) {
             return null;
         }
@@ -76,20 +77,24 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
         return $node;
     }
 
-    private function isMarkerExpression(Node $stmt): bool
+    private function isEndOfTemplateHead(Node $statement): bool
     {
-        if (!$stmt instanceof Expression) {
-            return false;
+        if ($statement instanceof Return_) {
+            if ($statement->expr instanceof FuncCall) {
+                // return get_defined_vars();
+                if ($this->nameResolver->resolve($statement->expr) === 'get_defined_vars') {
+                    return true;
+                }
+            }
         }
-
-        if (!$stmt->expr instanceof Assign) {
-            return false;
+        if ($statement instanceof If_) {
+            if ($statement->cond instanceof MethodCall) {
+                // if ($this->getParentName()) { ... }
+                if ($this->nameResolver->resolve($statement->cond) === 'getParentName') {
+                    return true;
+                }
+            }
         }
-
-        if (!$stmt->expr->var instanceof Variable) {
-            return false;
-        }
-
-        return $this->nameResolver->resolve($stmt->expr->var->name) === '___marker___';
+        return false;
     }
 }

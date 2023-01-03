@@ -11,8 +11,10 @@ use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 
@@ -49,7 +51,6 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Actual
             }
         }
 
-        $statements = (array)$node->stmts;
         $variableStatements = [];
         foreach ($combinedVariables as $variable) {
             if (in_array($variable->getName(), $methodParams, true)) {
@@ -67,7 +68,15 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Actual
 
             $variableStatements[] = $docNop;
         }
-        $node->stmts = array_merge($variableStatements, $statements);
+
+        $variableStatements[] = new Expression(
+            new Assign(
+                new VariableExpr('this->params'),
+                new VariableExpr('this->params')
+            )
+        );
+
+        $node->stmts = array_merge($variableStatements, (array)$node->stmts);
         return $node;
     }
 }
