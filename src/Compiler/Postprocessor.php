@@ -57,7 +57,6 @@ final class Postprocessor
 
     public function postProcess(string $phpContent, Template $template): string
     {
-//        return $phpContent;
         $filters = [];
         foreach ($template->getFilters() as $filter) {
             $filters[$filter->getName()] = $filter->getTypeAsString();
