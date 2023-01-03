@@ -103,6 +103,22 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->params;
     }
 
+    public function withCurrentClassName(string $currentClassName): self
+    {
+        if ($this->calledClassName !== 'this' && $this->calledClassName !== 'static') {
+            return $this;
+        }
+        return new self(
+            $this->callerClassName,
+            $this->callerMethodName,
+            $currentClassName,
+            $this->calledMethodName,
+            $this->isCalledConditionally,
+            $this->type,
+            $this->params
+        );
+    }
+
     /**
      * @param array<string, string|int|float|bool> $params
      */
@@ -115,9 +131,9 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         array $params = []
     ): self {
         /** @var Node $parentNode */
-        $parentNode = $node->getAttribute('parent');
+        $parentNode = $node->getAttribute('parent') ?? $node;
         /** @var Node $parentNode */
-        $grandparentNode = $parentNode->getAttribute('parent');
+        $grandparentNode = $parentNode->getAttribute('parent') ?? $parentNode;
         return new self(
             $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',

@@ -66,15 +66,18 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
             return null;
         }
 
-        $actualClassName = $classReflection->getName();
-        $declaringClassName = $this->calledClassResolver->resolveDeclaring($node, $scope);
+        $calledClassName = $this->calledClassResolver->resolve($node, $scope);
         $calledMethodName = $this->nameResolver->resolve($node);
 
-        if ($declaringClassName === null || $calledMethodName === null) {
+        if ($calledClassName === null || $calledMethodName === null) {
             return null;
         }
 
-        if ((new ObjectType($declaringClassName))->isInstanceOf('Nette\Application\UI\Presenter')->no()) {
+        if ($calledClassName === 'this' || $calledClassName === 'self' || $calledClassName === 'static') {
+            $calledClassName = $classReflection->getName();
+        }
+
+        if ((new ObjectType($calledClassName))->isInstanceOf('Nette\Application\UI\Presenter')->no()) {
             return null;
         }
 
@@ -91,7 +94,7 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
                 $methodCalls[] = CollectedMethodCall::build(
                     $node,
                     $scope,
-                    $declaringClassName,
+                    $calledClassName,
                     $calledMethodName,
                     NetteApplicationUIPresenter::CALL_SET_VIEW,
                     ['view' => $view]

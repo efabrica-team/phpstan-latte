@@ -65,9 +65,8 @@ final class CollectedVariable extends CollectedLatteContextObject
 
     public static function build(Node $node, Scope $scope, string $name, Type $type, bool $declared = false): self
     {
-        $classReflection = $scope->getTraitReflection() ?: $scope->getClassReflection();
         return new self(
-            $classReflection !== null ? $classReflection->getName() : '',
+            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
             new Variable($name, $type),
             $declared

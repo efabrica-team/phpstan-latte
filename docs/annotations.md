@@ -6,6 +6,7 @@ You can use these annotations:
 * [`@phpstan-latte-ignore`](#phpstan-latte-ignore)
 * [`@phpstan-latte-template`](#phpstan-latte-template)
 * [`@phpstan-latte-var`](#phpstan-latte-var)
+* [`@phpstan-latte-component`](#phpstan-latte-component)
 
 Note: Annotations affects only class in which they are written. If child class overwrittes something by annotations it will not affect inherited methods because they are evaluated in context of parent class.
 
@@ -189,9 +190,9 @@ class MyControl extends Control
 ```
 
 ## `@phpstan-latte-var`
-Allowed context: variable assign, method call, render call, method, class
+Allowed context: variable assign, render call, method, class
 
-Value specifies what template or templates should be resolved and checked in given context.
+Value specifies variables and their types in given context.
 
 Multiple annotations can be used on single element or at different levels to set multiple variables.
 
@@ -332,3 +333,84 @@ class MyControl extends Control
     }
 }
 ```
+
+## `@phpstan-latte-component`
+Allowed context: call to `addComponent`, component assign, render call, method, class
+
+Value specifies components and their types in given context.
+
+Multiple annotations can be used on single element or at different levels to set multiple components.
+
+### Behaviour
+
+Behaviour is identical to [`@phpstan-latte-var`](#phpstan-latte-var)
+
+### Examples
+
+```php
+class MyControl extends Control
+{
+    public function render(): void {
+        /** @phpstan-latte-component SomeControl $myComponent */
+        $this['myComponent'] = $this->control; // <-- myComponent in template will have type SomeControl
+        $this->template->render(__DIR__ . '/MyControl.latte');
+    }
+}
+```
+
+
+```php
+class MyControl extends Control
+{
+    public function render(mixed $param): void {
+        /** @phpstan-latte-component SomeControl */ // <-- component name is optional when annotation is used on assignemnt
+        $this['myComponent'] = $this->control; // <-- myComponent in template will have type SomeControl
+        $this->template->render(__DIR__ . '/MyControl.latte');
+    }
+}
+```
+
+```php
+class MyControl extends Control
+{
+    public function render(mixed $param): void {
+        /** @phpstan-latte-component SomeControl $myComponent */
+        $this->addComponent($this->control, 'myComponent'); // <-- myComponent in template will have type SomeControl
+        $this->template->render(__DIR__ . '/MyControl.latte');
+    }
+}
+```
+
+```php
+class MyControl extends Control
+{
+    public function render(mixed $param): void {
+        /** @phpstan-latte-component SomeControl */ // <-- component name is optional when annotation is used on addComponent
+        $this->addComponent($this->control, 'myComponent'); // <-- myComponent in template will have type SomeControl
+        $this->template->render(__DIR__ . '/MyControl.latte');
+    }
+}
+```
+
+```php
+class MyControl extends Control
+{
+    public function render(mixed $param): void {
+        /** @phpstan-latte-var string $myVar */ // <-- you can explicitly set name of component
+        $this[$param] = $this->control; // <-- myComponent in template will have type SomeControl
+        $this->template->render(__DIR__ . '/MyControl.latte');
+    }
+}
+```
+
+```php
+class MyControl extends Control
+{
+    /** @phpstan-latte-component SomeControl */ // <-- myComponent in template will have type SomeControl
+    public function createComponentMyComponent() {
+        // ...
+    }
+}
+```
+
+Usage on method or class is same as with [`@phpstan-latte-var`](#phpstan-latte-var)

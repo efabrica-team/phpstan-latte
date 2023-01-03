@@ -8,7 +8,6 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedFilter;
 use Efabrica\PHPStanLatte\Template\Filter;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 
 final class FilterFinder
 {
@@ -50,14 +49,6 @@ final class FilterFinder
     /**
      * @return Filter[]
      */
-    public function findByMethod(ReflectionMethod $method): array
-    {
-        return $this->find($method->getDeclaringClass()->getName(), $method->getName());
-    }
-
-    /**
-     * @return Filter[]
-     */
     private function findInParents(string $className): array
     {
         $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
@@ -78,14 +69,19 @@ final class FilterFinder
      */
     private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
     {
-        if (isset($alreadyFound[$className][$methodName])) {
+        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
+        }
+
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
             return []; // stop recursion
         } else {
-            $alreadyFound[$className][$methodName] = true;
+            $alreadyFound[$declaringClass][$methodName] = true;
         }
 
         $collectedFilters = [
-            $this->collectedFilters[$className][$methodName] ?? [],
+            $this->collectedFilters[$declaringClass][$methodName] ?? [],
         ];
 
         $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);

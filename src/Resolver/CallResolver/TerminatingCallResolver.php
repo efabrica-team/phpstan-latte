@@ -38,7 +38,16 @@ final class TerminatingCallResolver
             return false;
         }
 
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection === null) {
+            return false;
+        }
+
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
+        if ($calledClassName === 'this' || $calledClassName === 'self' || $calledClassName === 'static') {
+            $calledClassName = $classReflection->getName();
+        }
+
         $calledMethodName = $this->nameResolver->resolve($node->name);
         if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
             return false;
