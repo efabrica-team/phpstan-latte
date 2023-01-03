@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
@@ -38,14 +37,6 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Actual
     public function enterNode(Node $node): ?Node
     {
         if (!$node instanceof ClassMethod) {
-            return null;
-        }
-
-        if (
-            // TODO use name resolver
-            LatteVersion::isLatte2() && $node->name->name !== 'main' ||
-            LatteVersion::isLatte3() && $node->name->name !== 'prepare'
-        ) {
             return null;
         }
 

@@ -10,6 +10,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
@@ -30,31 +31,35 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
     {
         // reset defined vars
         $this->definedVarsStatements = [];
-        return null;
-    }
+        foreach ($nodes as $node) {
+            if (!$node instanceof Class_) {
+                continue;
+            }
+            $classStmts = $node->stmts;
+            foreach ($classStmts as $classStmt) {
+                if (!$classStmt instanceof ClassMethod) {
+                    continue;
+                }
 
-    public function enterNode(Node $node)
-    {
-        if (!$node instanceof ClassMethod) {
-            return null;
-        }
+                if (LatteVersion::isLatte2() && $this->nameResolver->resolve($classStmt) !== 'main' ||
+                    LatteVersion::isLatte3() && $this->nameResolver->resolve($classStmt) !== 'prepare'
+                ) {
+                    continue;
+                }
 
-        if (LatteVersion::isLatte2() && $this->nameResolver->resolve($node) === 'main' ||
-            LatteVersion::isLatte3() && $this->nameResolver->resolve($node) === 'prepare'
-        ) {
-            $stmts = (array)$node->stmts;
-            foreach ($stmts as $stmt) {
-                $this->definedVarsStatements[] = $stmt;
-                if ($this->isMarkerExpression($stmt)) {
-                    break;
+                $stmts = (array)$classStmt->stmts;
+                foreach ($stmts as $stmt) {
+                    $this->definedVarsStatements[] = $stmt;
+                    if ($this->isMarkerExpression($stmt)) {
+                        break;
+                    }
                 }
             }
         }
-
         return null;
     }
 
-    public function leaveNode(Node $node): ?Node
+    public function enterNode(Node $node): ?Node
     {
         if (!$node instanceof ClassMethod) {
             return null;

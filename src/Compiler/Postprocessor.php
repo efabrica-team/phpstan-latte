@@ -79,7 +79,7 @@ final class Postprocessor
 
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $priority => $nodeVisitors) {
             $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $template);
-            if ($priority === 300) { // just as back compatibility
+            if ($priority === 200) { // just as back compatibility
                 // TODO create visitors for forms
                 $phpContent = $this->addFormClasses($phpContent, $template->getForms());
             }
