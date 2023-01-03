@@ -36,7 +36,8 @@ final class RemoveExtractParamsNodeVisitor extends NodeVisitorAbstract implement
             return NodeTraverser::REMOVE_NODE;
         }
 
-        // todo arg this->params
+        // todo arg this->params or $ʟ_args
+        // todo we could also remove unset($ʟ_args)
 
         return null;
     }

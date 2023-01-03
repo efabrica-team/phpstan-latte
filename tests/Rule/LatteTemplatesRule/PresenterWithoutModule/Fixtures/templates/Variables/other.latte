@@ -1,7 +1,10 @@
+{var $headerVar = "something"}
+
 {block content}
 
 {$fromOtherAction}
 {$fromRenderDefault}
 {$nonExistingVariable}
+{$headerVar}
 
 {include @partial.latte, renamedFromOtherAction: $fromOtherAction}
