@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ArrayDimFetch;
@@ -23,6 +24,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
@@ -146,31 +148,34 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
      */
     public function afterTraverse(array $nodes): array
     {
-        $componentType = '\Nette\ComponentModel\IComponent';
+        $componentType = '\Nette\Forms\Controls\BaseControl';
+        $componentTypePlaceholder = '%%TYPE%%';
         foreach ($this->forms as $formName => $form) {
             $className = $this->formClassNames[$formName] ?? null;
             if ($className === null) {
                 continue;
             }
+            $controlAssign = new Expression(new Assign(new Variable('control'), new StaticCall(
+                new Name('parent'),
+                new Identifier('offsetGet'),
+                [
+                    new Arg(new Variable('name')),
+                ]
+            )));
+            $controlAssign->setDocComment(new Doc('/** @var \Nette\Forms\Controls\BaseControl $control */'));
             $method = (new Method('offsetGet'))
                 ->addParam(new Param('name'))
                 ->addStmts([
-                    new Return_(
-                        new StaticCall(
-                            new Name('parent'),
-                            new Identifier('offsetGet'),
-                            [
-                                new Arg(new Variable('name')),
-                            ]
-                        )
-                    ),
+                    $controlAssign,
+                    new Return_(new Variable('control')),
                 ])
                 ->makePublic()
                 ->setReturnType($componentType);
-            $comment = '@return ' . $componentType;
+            $comment = '@return ' . $componentTypePlaceholder;
             foreach ($form->getFormFields() as $formField) {
-                $comment = str_replace($componentType, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentType . ')', $comment);
+                $comment = str_replace($componentTypePlaceholder, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentTypePlaceholder . ')', $comment);
             }
+            $comment = str_replace($componentTypePlaceholder, $componentType, $comment);
             $method->setDocComment('/** ' . $comment . ' */');
             $builderClass = (new Class_($className))->extend($form->getType()->describe(VerbosityLevel::typeOnly()))
                 ->addStmts([$method]);
