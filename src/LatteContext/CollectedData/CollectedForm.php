@@ -18,7 +18,7 @@ final class CollectedForm extends CollectedLatteContextObject
     private Type $type;
 
     /** @var CollectedFormField[] */
-    private array $formFields;
+    private array $formFields = [];
 
     /**
      * @param class-string $className
@@ -30,7 +30,9 @@ final class CollectedForm extends CollectedLatteContextObject
         $this->methodName = $methodName;
         $this->name = $name;
         $this->type = $type;
-        $this->formFields = $formFields;
+        foreach ($formFields as $formField) {
+            $this->formFields[$formField->getName()] = $formField;
+        }
     }
 
     public function getClassName(): string
@@ -59,5 +61,10 @@ final class CollectedForm extends CollectedLatteContextObject
     public function getFormFields(): array
     {
         return $this->formFields;
+    }
+
+    public function getFormField(string $name): ?CollectedFormField
+    {
+        return $this->formFields[$name] ?? null;
     }
 }

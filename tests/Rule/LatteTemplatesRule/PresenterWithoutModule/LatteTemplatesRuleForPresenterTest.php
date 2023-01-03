@@ -338,6 +338,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Form field with name "second_submit_label" probably does not exist.',
+                13,
+                'default.latte',
+            ],
+            [
                 'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
                 20,
                 'default.latte',
