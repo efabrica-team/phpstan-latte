@@ -63,12 +63,18 @@ final class ErrorBuilder
      */
     public function buildErrors(array $originalErrors, string $templatePath, ?string $context = null): array
     {
+        $errorSignatures = [];
         $errors = [];
         foreach ($originalErrors as $originalError) {
             $error = $this->buildError($originalError, $templatePath, $context);
             if ($error === null) {
                 continue;
             }
+            $errorSignature = $this->errorSignature($error);
+            if (isset($errorSignatures[$errorSignature])) {
+                continue;
+            }
+            $errorSignatures[$errorSignature] = true;
             $errors[] = $error;
         }
         $this->lineMapper->reset();
@@ -93,6 +99,13 @@ final class ErrorBuilder
             return null;
         }
         return $ruleErrorBuilder->build();
+    }
+
+    private function errorSignature(RuleError $error): string
+    {
+        $values = (array)$error;
+        unset($values['metadata']);
+        return md5((string)json_encode($values));
     }
 
     private function shouldErrorBeIgnored(LatteError $error): bool

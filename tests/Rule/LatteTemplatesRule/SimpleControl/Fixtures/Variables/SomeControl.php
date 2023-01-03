@@ -13,4 +13,10 @@ final class SomeControl extends Control
         $this->template->a = 'a';
         $this->template->render(__DIR__ . '/default.latte');
     }
+
+    public function renderForeach(): void
+    {
+        $this->template->array = ['a'];
+        $this->template->render(__DIR__ . '/foreach.latte');
+    }
 }
