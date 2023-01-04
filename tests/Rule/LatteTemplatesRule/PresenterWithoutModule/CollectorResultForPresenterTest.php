@@ -22,7 +22,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
         $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"VariablesPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"VariablesPresenter"}',
-            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","title","viaGetTemplate","stringLists","localStrings","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","overwritting","parentOverwritting","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
+            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","title","viaGetTemplate","stringLists","localStrings","obj","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","overwritting","parentOverwritting","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
             'TEMPLATE other.latte VariablesPresenter::other ["startup","startupParent","presenter","control","fromOtherAction"] ["parentForm"]',
             'TEMPLATE parent.latte VariablesPresenter::parent ["startup","startupParent","presenter","control","variableFromParentAction","variableFromOtherMethod"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE noAction.latte VariablesPresenter:: ["startup","startupParent","presenter","control"] ["parentForm"]',
