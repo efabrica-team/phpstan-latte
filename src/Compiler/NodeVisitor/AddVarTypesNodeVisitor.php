@@ -11,8 +11,10 @@ use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
-use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable as VariableExpr;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
@@ -70,9 +72,11 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Actual
         }
 
         $variableStatements[] = new Expression(
-            new Assign(
-                new VariableExpr('this->params'),
-                new VariableExpr('this->params')
+            new FuncCall(
+                new Name('reset'),
+                [
+                    new Arg(new VariableExpr('this->params')),
+                ]
             )
         );
 

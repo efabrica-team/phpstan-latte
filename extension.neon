@@ -43,6 +43,17 @@ rules:
     - Efabrica\PHPStanLatte\Rule\LatteCompileErrorsRule
 
 services:
+    latteCurrentPhpVersionRichParser:
+        factory: @latteCachedCurrentPhpVersionRichParser
+        arguments!: []
+
+    latteCachedCurrentPhpVersionRichParser:
+        class: PHPStan\Parser\CachedParser
+        arguments:
+            originalParser: @currentPhpVersionRichParser
+            cachedNodesByStringCountMax: 1024
+        autowired: no
+
     phpstanLatteCompiler:
         class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface
         factory: @Efabrica\PHPStanLatte\Compiler\Compiler\CompilerFactory::create
@@ -59,14 +70,19 @@ services:
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
     - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
-    - Efabrica\PHPStanLatte\Compiler\Postprocessor
+
+    -
+        factory: Efabrica\PHPStanLatte\Compiler\Postprocessor
+        arguments:
+            parser: @latteCurrentPhpVersionRichParser
+
     - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
     -
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
-            parser: @defaultAnalysisParser
+            parser: @latteCurrentPhpVersionRichParser
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
