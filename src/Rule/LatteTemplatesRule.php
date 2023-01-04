@@ -134,9 +134,8 @@ final class LatteTemplatesRule implements Rule
             if ($actualAction !== null) {
                 $context .= '::' . $actualAction;
             }
-            $parentTemplatePath = $template->getParentTemplatePath();
-            if ($parentTemplatePath !== null) {
-                $context .= ' included in ' . $this->relativePathHelper->getRelativePath($parentTemplatePath);
+            foreach ($template->getParentTemplatePaths() as $parentTemplate) {
+                $context .= ' included in ' . $this->relativePathHelper->getRelativePath($parentTemplate);
             }
 
             try {
@@ -178,7 +177,7 @@ final class LatteTemplatesRule implements Rule
                         $template->getComponents(),
                         $template->getForms(),
                         $template->getFilters(),
-                        $template->getPath()
+                        array_merge([$template->getPath()], $template->getParentTemplatePaths())
                     );
                 } elseif ($includedTemplatePath === '') {
                     $errors[] = $this->errorBuilder->buildError(
