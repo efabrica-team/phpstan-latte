@@ -98,6 +98,10 @@ final class LatteTemplatesRule implements Rule
             }
         }
 
+        if (count($errors) > 1000) {
+            $errors[] = RuleErrorBuilder::message('Too many errors in latte.')->build();
+        }
+
         foreach ($this->analysedTemplatesRegistry->getReportedUnanalysedTemplates() as $templatePath) {
             $errors[] = RuleErrorBuilder::message('Latte template ' . pathinfo($templatePath, PATHINFO_BASENAME) . ' was not analysed.')
                 ->file($templatePath)
@@ -157,6 +161,10 @@ final class LatteTemplatesRule implements Rule
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
 
             $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $context));
+
+            if (count($errors) > 1000) {
+                return;
+            }
 
             $dir = dirname($templatePath);
 
