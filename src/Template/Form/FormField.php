@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
+namespace Efabrica\PHPStanLatte\Template\Form;
 
+use JsonSerializable;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
+use ReturnTypeWillChange;
 
-final class CollectedFormField extends CollectedLatteContextObject
+final class FormField implements JsonSerializable
 {
     private string $name;
 
@@ -32,5 +34,14 @@ final class CollectedFormField extends CollectedLatteContextObject
     public function getTypeAsString(): string
     {
         return $this->type->describe(VerbosityLevel::typeOnly());
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+          'name' => $this->name,
+          'type' => $this->getTypeAsString(),
+        ];
     }
 }

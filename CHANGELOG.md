@@ -8,6 +8,8 @@
 - Annotation `@phpstan-latte-var` can be used to specify what variables are available in template.
 - Annotation `@phpstan-latte-component` can be used to specify what components are available in template.
 - Resolves calls to `setView` and `sendTemplate` in presenters
+- Collecting form fields across method calls
+- Collecting form fields added by `addComponent`
  
 ## [0.2.0] - 2022-12-06
 ### Changed

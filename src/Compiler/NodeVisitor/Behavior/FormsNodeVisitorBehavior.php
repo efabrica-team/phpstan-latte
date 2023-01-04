@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 
 trait FormsNodeVisitorBehavior
 {
-    /** @var array<string, CollectedForm> */
+    /** @var array<string, Form> */
     private array $forms = [];
 
     /** @var array<string, string> */
     private array $formClassNames = [];
 
-    private ?CollectedForm $actualForm = null;
+    private ?Form $actualForm = null;
 
     /**
-     * @param CollectedForm[] $forms
+     * @param Form[] $forms
      */
     public function setForms(array $forms): void
     {

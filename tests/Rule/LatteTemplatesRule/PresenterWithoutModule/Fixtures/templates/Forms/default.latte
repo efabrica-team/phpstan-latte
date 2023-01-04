@@ -19,3 +19,24 @@
     {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
     {$form->getRenderer()->someNonExistingCustomMethod($form['submit'])}
 {/form}
+
+{form indirectForm}
+    {input select}
+    {input username}
+    {input password}
+    {input submit}
+{/form}
+
+{form indirectThroughtParentForm}
+    {input select}
+    {input username}
+    {input password}
+    {input submit}
+{/form}
+
+{form indirectFormFields}
+    {input select}
+    {input username}
+    {input password}
+    {input submit}
+{/form}

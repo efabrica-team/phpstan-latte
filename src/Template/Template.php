@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
 use ReturnTypeWillChange;
 
@@ -23,7 +23,7 @@ final class Template implements JsonSerializable
     /** @var Component[] */
     private array $components;
 
-    /** @var CollectedForm[] */
+    /** @var Form[] */
     private array $forms;
 
     /** @var Filter[] */
@@ -36,7 +36,7 @@ final class Template implements JsonSerializable
      * @param ?class-string $actualClass
      * @param Variable[] $variables
      * @param Component[] $components
-     * @param CollectedForm[] $forms
+     * @param Form[] $forms
      * @param Filter[] $filters
      * @param array<string> $parentTemplatePaths
      */
@@ -95,7 +95,7 @@ final class Template implements JsonSerializable
     }
 
     /**
-     * @return CollectedForm[]
+     * @return Form[]
      */
     public function getForms(): array
     {
