@@ -170,7 +170,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     new Return_(new Variable('control')),
                 ])
                 ->makePublic()
-                ->setReturnType($componentType);
+                ->setReturnType('Nette\ComponentModel\IComponent');
             $comment = '@return ' . $componentTypePlaceholder;
             foreach ($form->getFormFields() as $formField) {
                 $comment = str_replace($componentTypePlaceholder, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentTypePlaceholder . ')', $comment);
