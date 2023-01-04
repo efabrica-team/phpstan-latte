@@ -89,14 +89,16 @@ final class LatteTemplatesRule implements Rule
         $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);
 
         $errors = $latteContext->getErrors();
-
+        $templates = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $result = $latteTemplateResolver->resolve($collectedResolvedNode, $latteContext);
                 $errors = array_merge($errors, $result->getErrors());
-                $this->analyseTemplates($result->getTemplates(), $errors);
+                $templates = array_merge($templates, $result->getTemplates());
             }
         }
+
+        $this->analyseTemplates($templates, $errors);
 
         if (count($errors) > 1000) {
             $errors[] = RuleErrorBuilder::message('Too many errors in latte.')->build();

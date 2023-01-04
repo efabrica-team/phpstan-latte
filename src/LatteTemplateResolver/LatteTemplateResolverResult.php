@@ -19,7 +19,7 @@ use function is_string;
 
 final class LatteTemplateResolverResult
 {
-  /** @var Template[]  */
+  /** @var array<string, Template>  */
     private array $templates;
 
   /** @var RuleError[]  */
@@ -36,7 +36,7 @@ final class LatteTemplateResolverResult
     }
 
   /**
-   * @return Template[]
+   * @return array<string, Template>
    */
     public function getTemplates(): array
     {
