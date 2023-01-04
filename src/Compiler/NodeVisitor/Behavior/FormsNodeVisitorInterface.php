@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 
 interface FormsNodeVisitorInterface
 {
     /**
-     * @param CollectedForm[] $forms
+     * @param Form[] $forms
      */
     public function setForms(array $forms): void;
 

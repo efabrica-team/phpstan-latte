@@ -4,39 +4,30 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedFormField;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use PhpParser\Node;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\VerbosityLevel;
 
 /**
  * @extends AbstractLatteContextCollector<Node, CollectedForm>
  */
 final class FormCollector extends AbstractLatteContextCollector
 {
-    private ValueResolver $valueResolver;
-
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        ValueResolver $valueResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
         parent::__construct($nameResolver, $reflectionProvider);
-        $this->valueResolver = $valueResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
@@ -93,88 +84,13 @@ final class FormCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $formClassReflection = $this->reflectionProvider->getClass($returnType->describe(VerbosityLevel::typeOnly()));
-        $formFields = [];
-        foreach ($node->stmts ?: [] as $stmt) {
-            if (!$stmt instanceof Expression) {
-                continue;
-            }
-
-            $methodCall = $this->findMethodCallForExpression($stmt);
-            if ($methodCall === null) {
-                continue;
-            }
-
-            /** @var non-empty-string|null $formMethodName */
-            $formMethodName = $this->nameResolver->resolve($methodCall->name);
-            if ($formMethodName === null) {
-                continue;
-            }
-
-            if (!$formClassReflection->hasMethod($formMethodName)) {
-                continue;
-            }
-
-            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
-
-            $formFieldParametersAcceptor = $formFieldReflectionMethod->getVariants()[0] ?? null;
-            if ($formFieldParametersAcceptor === null) {
-                continue;
-            }
-
-            $formFieldMethodReturnType = $formFieldParametersAcceptor->getReturnType();
-            if (!$formFieldMethodReturnType instanceof ObjectType) {
-                continue;
-            }
-
-            if (!$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Container')->yes() && !$formFieldMethodReturnType->isInstanceOf('Nette\Forms\Controls\BaseControl')->yes()) {
-                continue;
-            }
-
-            $fieldNameArg = $methodCall->getArgs()[0] ?? null;
-            if ($fieldNameArg === null) {
-                continue;
-            }
-
-            $fieldNames = $this->valueResolver->resolve($fieldNameArg->value, $scope);
-            if ($fieldNames === null) {
-                continue;
-            }
-
-            foreach ($fieldNames as $fieldName) {
-                if (!is_string($fieldName)) {
-                    continue;
-                }
-                $formFields[] = new CollectedFormField($fieldName, $formFieldMethodReturnType);
-            }
-        }
-
         $formName = lcfirst(str_replace('createComponent', '', $methodName));
         return [new CollectedForm(
             $classReflection->getName(),
             '',
-            $formName,
-            $returnType,
-            $formFields
+            $classReflection->getName(),
+            $methodName,
+            new Form($formName, $returnType)
         )];
-    }
-
-    private function findMethodCallForExpression(Expression $expression): ?MethodCall
-    {
-        $methodCall = null;
-        if ($expression->expr instanceof MethodCall) {
-            $methodCall = $this->findMethodCall($expression->expr);
-        } elseif ($expression->expr instanceof Assign && $expression->expr->expr instanceof MethodCall) {
-            $methodCall = $expression->expr->expr;
-        }
-        return $methodCall;
-    }
-
-    private function findMethodCall(MethodCall $methodCall): ?MethodCall
-    {
-        if ($methodCall->var instanceof MethodCall) {
-            return $this->findMethodCall($methodCall->var);
-        }
-        return $methodCall;
     }
 }

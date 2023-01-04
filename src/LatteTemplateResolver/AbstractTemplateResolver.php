@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteContext\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FilterFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\FormFieldFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FormFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodFinder;
@@ -36,6 +37,8 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
 
     protected FilterFinder $filterFinder;
 
+    protected FormFieldFinder $formFieldFinder;
+
     protected FormFinder $formFinder;
 
     protected TemplatePathFinder $templatePathFinder;
@@ -57,7 +60,8 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->variableFinder = new VariableFinder($latteContext, $this->methodCallFinder);
         $this->componentFinder = new ComponentFinder($latteContext, $this->methodCallFinder);
         $this->filterFinder = new FilterFinder($latteContext, $this->methodCallFinder);
-        $this->formFinder = new FormFinder($latteContext, $this->methodCallFinder);
+        $this->formFieldFinder = new FormFieldFinder($latteContext, $this->methodCallFinder);
+        $this->formFinder = new FormFinder($latteContext, $this->methodCallFinder, $this->formFieldFinder);
         $this->templatePathFinder = new TemplatePathFinder($latteContext, $this->methodCallFinder, $this->pathResolver);
         $this->templateRenderFinder = new TemplateRenderFinder($latteContext, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);
 

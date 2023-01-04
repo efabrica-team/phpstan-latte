@@ -6,10 +6,10 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Helper\ComponentsHelper;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use InvalidArgumentException;
@@ -70,7 +70,7 @@ final class LatteTemplateResolverResult
      * @param CollectedTemplateRender[] $templateRenders
      * @param Variable[] $variables
      * @param Component[] $components
-     * @param CollectedForm[] $forms
+     * @param Form[] $forms
      * @param Filter[] $filters
      * @param class-string $className
      */
@@ -95,7 +95,7 @@ final class LatteTemplateResolverResult
     /**
      * @param Variable[] $variables
      * @param Component[] $components
-     * @param CollectedForm[] $forms
+     * @param Form[] $forms
      * @param Filter[] $filters
      * @param class-string $className
      */

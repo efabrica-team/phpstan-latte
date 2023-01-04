@@ -6,9 +6,9 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
@@ -138,7 +138,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
     abstract protected function getClassGlobalComponents(ReflectionClass $reflectionClass): array;
 
     /**
-     * @return CollectedForm[]
+     * @return Form[]
      */
     abstract protected function getClassGlobalForms(ReflectionClass $reflectionClass): array;
 

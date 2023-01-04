@@ -6,10 +6,10 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedForm;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
@@ -17,7 +17,7 @@ use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * @phpstan-type ActionDefinition array{variables: Variable[], components: Component[], forms: CollectedForm[], filters: Filter[], line: int, renders: CollectedTemplateRender[], defaultTemplate: ?string, templatePaths: array<?string>, terminated: bool}
+ * @phpstan-type ActionDefinition array{variables: Variable[], components: Component[], forms: Form[], filters: Filter[], line: int, renders: CollectedTemplateRender[], defaultTemplate: ?string, templatePaths: array<?string>, terminated: bool}
  */
 final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 {
