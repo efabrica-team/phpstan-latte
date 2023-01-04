@@ -23,9 +23,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Type\VerbosityLevel;
@@ -108,11 +107,11 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                         break;
                     }
 
-                    $rootParentNode = $parentNode;
-
-                    if ($rootParentNode instanceof Echo_ || $rootParentNode instanceof If_) {
+                    if ($parentNode instanceof ClassMethod) {
                         break;
                     }
+
+                    $rootParentNode = $parentNode;
                 }
                 $this->errorFieldNodes[] = [
                     'node' => $rootParentNode,

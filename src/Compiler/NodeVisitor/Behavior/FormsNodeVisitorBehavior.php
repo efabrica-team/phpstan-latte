@@ -21,6 +21,7 @@ trait FormsNodeVisitorBehavior
      */
     public function setForms(array $forms): void
     {
+        $this->forms = [];
         foreach ($forms as $form) {
             $formName = $form->getName();
 
