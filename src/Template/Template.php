@@ -29,7 +29,8 @@ final class Template implements JsonSerializable
     /** @var Filter[] */
     private array $filters;
 
-    private ?string $parentTemplatePath;
+    /** @var array<string> */
+    private array $parentTemplatePaths;
 
     /**
      * @param ?class-string $actualClass
@@ -37,6 +38,7 @@ final class Template implements JsonSerializable
      * @param Component[] $components
      * @param CollectedForm[] $forms
      * @param Filter[] $filters
+     * @param array<string> $parentTemplatePaths
      */
     public function __construct(
         string $path,
@@ -46,7 +48,7 @@ final class Template implements JsonSerializable
         array $components,
         array $forms,
         array $filters,
-        ?string $parentTemplatePath = null
+        array $parentTemplatePaths = []
     ) {
         $this->path = $path;
         $this->actualClass = $actualClass;
@@ -55,7 +57,7 @@ final class Template implements JsonSerializable
         $this->components = $components;
         $this->forms = $forms;
         $this->filters = $filters;
-        $this->parentTemplatePath = $parentTemplatePath;
+        $this->parentTemplatePaths = $parentTemplatePaths;
     }
 
     public function getPath(): string
@@ -108,9 +110,12 @@ final class Template implements JsonSerializable
         return $this->filters;
     }
 
-    public function getParentTemplatePath(): ?string
+    /**
+     * @return array<string>
+     */
+    public function getParentTemplatePaths(): array
     {
-        return $this->parentTemplatePath;
+        return $this->parentTemplatePaths;
     }
 
     #[ReturnTypeWillChange]
@@ -123,7 +128,7 @@ final class Template implements JsonSerializable
             'variables' => $this->variables,
             'components' => $this->components,
             'filters' => $this->filters,
-            'parentTemplatePath' => $this->parentTemplatePath,
+            'parentTemplatePaths' => $this->parentTemplatePaths,
         ];
     }
 }
