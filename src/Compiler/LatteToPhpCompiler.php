@@ -37,7 +37,7 @@ final class LatteToPhpCompiler
         $phpContent = $this->postprocessor->postProcess($phpContent, $template);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
         $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
-        $contextHash = md5(json_encode($template) . $context);
+        $contextHash = md5($template->getSignatureHash() . $context);
 
         $replacedPath = getcwd() ?: '';
         if (strpos($templateDir, $replacedPath) === 0) {
