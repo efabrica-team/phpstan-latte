@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\CustomForm;
 use Nette\Application\UI\Form;
+use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 
 final class FormsPresenter extends ParentPresenter
@@ -105,7 +106,7 @@ final class FormsPresenter extends ParentPresenter
         return $form;
     }
 
-    protected function createIndirectFormFields(Form $form): void
+    protected function createIndirectFormFields(Container $form): void
     {
         $form->addSelect('select', 'Select', ['item1', 'item2', 'item3']);
         $form->addCheckbox('checkbox', 'Checkbox');
