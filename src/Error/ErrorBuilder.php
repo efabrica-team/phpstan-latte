@@ -15,6 +15,7 @@ final class ErrorBuilder
 {
     /** @var string[] */
     private array $errorPatternsToIgnore = [
+        '/No error to ignore is reported on line .*/',
         '/Function __latteCompileError not found./', // do not check fake function used to pass compile errors
         '/PHPStanLatteTemplate/', // errors connected with compiled template class
         '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself

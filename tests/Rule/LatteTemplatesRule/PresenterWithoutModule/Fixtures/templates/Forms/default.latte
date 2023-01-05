@@ -44,3 +44,10 @@
 {form notExisting}
     {input username}
 {/form}
+
+{form firstForm}
+    {var $name = "text"}
+    {input $name}
+    {var $textarea = $form['textarea']}
+    {input $textarea}
+{/form}

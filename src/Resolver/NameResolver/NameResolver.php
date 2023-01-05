@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -28,6 +29,9 @@ final class NameResolver
         }
         if ($node instanceof Name || $node instanceof Identifier) {
             return $this->resolve((string)$node);
+        }
+        if ($node instanceof Variable) {
+            return $this->resolve($node->name);
         }
         if ($node instanceof FuncCall || $node instanceof MethodCall || $node instanceof StaticCall) {
             return $this->resolve($node->name);
