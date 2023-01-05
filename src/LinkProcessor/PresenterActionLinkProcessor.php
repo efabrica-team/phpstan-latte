@@ -57,6 +57,9 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
             $presenterClassName = $presenterFactory->getPresenterClass($presenterWithModule);
         } catch (InvalidPresenterException $e) {
             $presenterClassName = $presenterFactory->formatPresenterClass($presenterWithModule);
+            if ($presenterClassName === '') {
+                return [];
+            }
             try {
                 (new BetterReflection())->reflector()->reflectClass($presenterClassName);
             } catch (IdentifierNotFound $notFoundException) {
