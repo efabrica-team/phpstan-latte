@@ -33,6 +33,7 @@ final class ErrorBuilder
         '/Parameter #2 \$parent of class (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator) constructor expects (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null, mixed given\./', // creating caching iterator
         '/Cannot access property (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./', // inner foreach cause that phpstan thinks there is null in CachingIterator
         '/Cannot call method (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./',  // inner foreach cause that phpstan thinks there is null in CachingIterator
+        '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./',   // latte 3 internal error
     ];
 
     /** @var ErrorTransformerInterface[] */
