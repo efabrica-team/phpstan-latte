@@ -65,7 +65,7 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if (!$formType->isInstanceOf('Nette\Forms\Form')->yes()) {
+        if (!$formType->isInstanceOf('Nette\Forms\Container')->yes()) {
             return null;
         }
 
