@@ -1,6 +1,6 @@
 {form firstForm}
-    {input text}
-    {input textarea}
+    {input text} <label n:name="text">Text</label><input n:name="text">
+    {input textarea id => "myId"}
     {input password}
     {input submit, ['class' => 'btn']}
 {/form}
@@ -9,7 +9,7 @@
     {input select}
     {input username}
     {input password}
-    {input checkbox}{label checkbox /}
+    {input checkbox}{label checkbox /} <label n:name="checkbox"><input n:name="checkbox">Checkbox</label>
     {input second_submit, ['class' => 'btn']}{label second_submit_label /}
 {/form}
 
@@ -39,4 +39,8 @@
     {input username}
     {input password}
     {input submit}
+{/form}
+
+{form notExisting}
+    {input username}
 {/form}

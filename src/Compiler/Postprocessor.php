@@ -16,6 +16,7 @@ use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\PrettyPrinter\Standard;
 use PHPStan\Parser\Parser;
 
@@ -58,11 +59,11 @@ final class Postprocessor
 
         $this->dynamicFilterVariables->addFilters($filters);
 
-        $addVarTypeFromCollectorStorageNodeVisitor = new AddVarTypesNodeVisitor($this->variableCollectorStorage->collectVariables(), $this->typeToPhpDoc);
-        $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeFromCollectorStorageNodeVisitor);
-
         $addVarTypeNodeVisitor = new AddVarTypesNodeVisitor($template->getVariables(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeNodeVisitor);
+
+        $addVarTypeFromCollectorStorageNodeVisitor = new AddVarTypesNodeVisitor($this->variableCollectorStorage->collectVariables(), $this->typeToPhpDoc);
+        $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addVarTypeFromCollectorStorageNodeVisitor);
 
         $addTypeToComponentNodeVisitor = new AddTypeToComponentNodeVisitor($template->getComponents(), $this->typeToPhpDoc);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(100, $addTypeToComponentNodeVisitor);
@@ -85,6 +86,7 @@ final class Postprocessor
     {
         $phpStmts = $this->findNodes($phpContent);
         $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor(new ParentConnectingVisitor()); // symplify/phpstan-rules compatibility
         foreach ($nodeVisitors as $nodeVisitor) {
             $this->setupVisitor($nodeVisitor, $template);
             $nodeTraverser->addVisitor($nodeVisitor);

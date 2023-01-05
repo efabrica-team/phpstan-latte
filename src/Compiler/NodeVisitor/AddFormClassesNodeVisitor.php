@@ -8,26 +8,32 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorBehavior
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Template\Form\Form;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
 use PhpParser\Builder\Param;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
 final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisitorInterface
@@ -64,15 +70,31 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
             $dimFetch = $assign->expr;
 
+            if (!$this->isUiControl($dimFetch->var)) {
+                return null;
+            }
+
             if (!$dimFetch->dim instanceof String_) {
                 return null;
             }
+
             $formNameString = $dimFetch->dim;
             $formName = $formNameString->value;
 
             $formClassName = $this->formClassNames[$formName] ?? null;
             if ($formClassName === null) {
-                return null;
+                $this->actualForm = new Form($formName, new ObjectType('Nette\Forms\Form'));
+                $error = new Error('Form with name "' . $formName . '" probably does not exist.');
+                return new Assign(
+                    new Variable('form'),
+                    new ArrayDimFetch(
+                        new Array_([
+                            new ArrayItem(new New_(new Name('Nette\Forms\Form'))),
+                            new ArrayItem($error->toNode()->expr),
+                        ]),
+                        new LNumber(0)
+                    )
+                );
             }
             $this->actualForm = $this->forms[$formName] ?? null;
             return new Assign(new Variable('form'), new New_(new Name($formClassName)));
@@ -98,6 +120,14 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 return null;
             }
 
+            if (!$node->var->args[0] instanceof Arg) {
+                return null;
+            }
+
+            if (!$this->isFormsStack($node->var->args[0]->value)) {
+                return null;
+            }
+
             $fieldName = $node->dim->value;
             $formField = $this->actualForm->getFormField($fieldName);
             if ($formField === null) {
@@ -107,10 +137,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     if ($parentNode === null) {
                         break;
                     }
-
                     $rootParentNode = $parentNode;
-
-                    if ($rootParentNode instanceof Echo_ || $rootParentNode instanceof If_) {
+                    if ($parentNode instanceof Stmt) {
                         break;
                     }
                 }
@@ -182,5 +210,63 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             $nodes[] = $builderClass->getNode();
         }
         return $nodes;
+    }
+
+    private function isUiControl(Expr $expr): bool
+    {
+        if (!$expr instanceof PropertyFetch) {
+            return false;
+        }
+
+        if (!$expr->name instanceof Identifier) {
+            return false;
+        }
+
+        if ($this->nameResolver->resolve($expr->name) !== 'uiControl') {
+            return false;
+        }
+
+        if (!$expr->var instanceof PropertyFetch) {
+            return false;
+        }
+
+        if (!$expr->var->name instanceof Identifier) {
+            return false;
+        }
+
+        if ($this->nameResolver->resolve($expr->var->name) !== 'global') {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isFormsStack(Expr $expr): bool
+    {
+        if (!$expr instanceof PropertyFetch) {
+            return false;
+        }
+
+        if (!$expr->name instanceof Identifier) {
+            return false;
+        }
+
+        if ($this->nameResolver->resolve($expr->name) !== 'formsStack') {
+            return false;
+        }
+
+        if (!$expr->var instanceof PropertyFetch) {
+            return false;
+        }
+
+        if (!$expr->var->name instanceof Identifier) {
+            return false;
+        }
+
+        if ($this->nameResolver->resolve($expr->var->name) !== 'global') {
+            return false;
+        }
+
+        return true;
     }
 }
