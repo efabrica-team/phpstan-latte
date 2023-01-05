@@ -19,6 +19,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
             __DIR__ . '/config.neon',
+            __DIR__ . '/mapping.neon',
         ];
     }
 
