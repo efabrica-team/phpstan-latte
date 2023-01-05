@@ -20,10 +20,10 @@ use function is_string;
 final class LatteTemplateResolverResult
 {
   /** @var array<string, Template>  */
-    private array $templates;
+    private array $templates = [];
 
   /** @var RuleError[]  */
-    private array $errors;
+    private array $errors = [];
 
   /**
    * @param Template[] $templates
@@ -31,7 +31,9 @@ final class LatteTemplateResolverResult
    */
     public function __construct(array $templates = [], array $errors = [])
     {
-        $this->templates = $templates;
+        foreach ($templates as $template) {
+            $this->addTemplate($template);
+        }
         $this->errors = $errors;
     }
 
@@ -53,7 +55,7 @@ final class LatteTemplateResolverResult
 
     public function addTemplate(Template $template): void
     {
-        $this->templates[md5((string)json_encode($template))] = $template;
+        $this->templates[$template->getSignatureHash()] = $template;
     }
 
     public function addError(RuleError $error): void

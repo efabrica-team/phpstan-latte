@@ -179,7 +179,7 @@ final class LatteTemplatesRule implements Rule
                         $includedTemplatePath = $dir . '/' . $includedTemplatePath;
                     }
                     $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
-                    $includeTemplates[] = new Template(
+                    $includeTemplate = new Template(
                         $includedTemplatePath,
                         $actualClass,
                         $actualAction,
@@ -189,6 +189,7 @@ final class LatteTemplatesRule implements Rule
                         $template->getFilters(),
                         array_merge([$template->getPath()], $template->getParentTemplatePaths())
                     );
+                    $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;
                 } elseif ($includedTemplatePath === '') {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Empty path to included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
