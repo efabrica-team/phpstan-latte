@@ -24,6 +24,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -33,6 +34,7 @@ use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
@@ -108,9 +110,6 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             if ($this->actualForm === null) {
                 return null;
             }
-            if (!$node->dim instanceof String_) {
-                return null;
-            }
 
             if (!$node->var instanceof FuncCall) {
                 return null;
@@ -128,24 +127,19 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 return null;
             }
 
-            $fieldName = $node->dim->value;
-            $formField = $this->actualForm->getFormField($fieldName);
-            if ($formField === null) {
-                $rootParentNode = $node;
-                while (true) {
-                    $parentNode = $rootParentNode->getAttribute('parent');
-                    if ($parentNode === null) {
-                        break;
-                    }
-                    $rootParentNode = $parentNode;
-                    if ($parentNode instanceof Stmt) {
-                        break;
-                    }
+            if ($node->dim instanceof String_) {
+                $fieldName = $node->dim->value;
+                $formField = $this->actualForm->getFormField($fieldName);
+                if ($formField === null) {
+                    $this->errorFieldNodes[] = [
+                        'node' => $this->findParentStmt($node),
+                        'field' => $fieldName,
+                    ];
+                    return null;
                 }
-                $this->errorFieldNodes[] = [
-                    'node' => $rootParentNode,
-                    'field' => $fieldName,
-                ];
+            } elseif ($node->dim instanceof Variable) {
+                // dynamic field
+            } else {
                 return null;
             }
 
@@ -167,7 +161,34 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
         }
 
+        // dynamic inputs
+        if ($node instanceof Expression && $node->expr instanceof Assign &&
+            ($node->expr->expr instanceof Ternary || ($node->expr->expr instanceof Assign && $node->expr->expr->expr instanceof Ternary))
+        ) {
+            $varName = $this->nameResolver->resolve($node->expr->var);
+            if ($varName === 'ʟ_input' || $varName === '_input') {
+                $node->setDocComment(new Doc('/** @var Nette\Forms\Controls\BaseControl ' . $varName . ' @phpstan-ignore-next-line */'));
+                return $node;
+            }
+        }
+
         return null;
+    }
+
+    private function findParentStmt(Node $node): Stmt
+    {
+        $rootParentNode = $node;
+        while (true) {
+            $parentNode = $rootParentNode->getAttribute('parent');
+            if ($parentNode === null) {
+                throw new ShouldNotHappenException('Could not find parent statement.');
+            }
+            $rootParentNode = $parentNode;
+            if ($parentNode instanceof Stmt) {
+                break;
+            }
+        }
+        return $rootParentNode;
     }
 
     /**
