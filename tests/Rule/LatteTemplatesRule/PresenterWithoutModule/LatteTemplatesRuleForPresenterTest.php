@@ -353,6 +353,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 20,
                 'default.latte',
             ],
+            [
+                'Form with name "notExisting" probably does not exist.',
+                44,
+                'default.latte',
+            ],
+            [
+                'Form field with name "username" probably does not exist.',
+                45,
+                'default.latte',
+            ],
         ]);
     }
 

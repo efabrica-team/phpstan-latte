@@ -15,6 +15,7 @@ final class ErrorBuilder
 {
     /** @var string[] */
     private array $errorPatternsToIgnore = [
+        '/No error to ignore is reported on line .*/',
         '/Function __latteCompileError not found./', // do not check fake function used to pass compile errors
         '/PHPStanLatteTemplate/', // errors connected with compiled template class
         '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
@@ -26,6 +27,7 @@ final class ErrorBuilder
         '/Parameter #1 \$blocks of method Nette\\\\Bridges\\\\ApplicationLatte\\\\SnippetDriver::renderSnippets\(\) expects .*/', # nette internal error
         '/Parameter #3 \$blocks of static method Nette\\\\Bridges\\\\ApplicationLatte\\\\UIRuntime::initialize\(\) expects .*/', # nette internal error
         '/Cannot call method getParent\(\) on Latte\\\\Essential\\\\CachingIterator\|null\./', # latte internal error
+        '/Cannot call method attributes\(\) on Nette\\\\Utils\\\\Html\|null\./', # latte internal error
         '/Only booleans are allowed in an if condition, bool\|null given\./', // latte code don't pass phpstan/strict-rules
         '/Instanceof between .* and Nette\\\\Application\\\\UI\\\\Renderable will always evaluate to true\./', // latte code don't pass phpstan/strict-rules
         '/Parameter #2 \$parent of class (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator) constructor expects (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null, mixed given\./', // creating caching iterator

@@ -9,6 +9,8 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 
 final class DefaultTemplateVariables implements VariableCollectorInterface
 {
@@ -26,6 +28,9 @@ final class DefaultTemplateVariables implements VariableCollectorInterface
         $variables[] = new Variable('ʟ_ifc', new ArrayType(new MixedType(), new MixedType()));
         $variables[] = new Variable('ʟ_try', new ArrayType(new MixedType(), new MixedType()));
         $variables[] = new Variable('ʟ_loc', new ArrayType(new MixedType(), new MixedType()));
+        $variables[] = new Variable('ʟ_tmp', new MixedType());
+        $variables[] = new Variable('ʟ_input', new ObjectType('Nette\Forms\Controls\BaseControl'));
+        $variables[] = new Variable('ʟ_label', TypeCombinator::addNull(new UnionType([new ObjectType('Nette\Utils\Html'), new StringType()])));
 
         // nette\security bridge
         $variables[] = new Variable('user', new ObjectType('Nette\Security\User'));
