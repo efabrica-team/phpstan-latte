@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
@@ -67,7 +68,7 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
                     }
                 }
             }
-        } elseif ($node instanceof New_) {
+        } elseif ($node instanceof New_ && !$node->class instanceof Expr) {
             $newClassName = $this->nameResolver->resolve($node->class);
             if ($newClassName !== null && $newClassName !== 'self' && $newClassName !== 'static') {
                 $classReflection = $this->reflectionProvider->getClass($newClassName);
