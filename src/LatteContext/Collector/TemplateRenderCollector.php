@@ -109,7 +109,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
         }
 
         /** @var string[] $paths */
-        $paths = $this->valueResolver->resolve($includeTemplatePathArgument->value, $scope);
+        $paths = $this->valueResolver->resolveStrings($includeTemplatePathArgument->value, $scope);
 
         $includeTemplateParamsArgument = $node->getArgs()[1] ?? null;
 

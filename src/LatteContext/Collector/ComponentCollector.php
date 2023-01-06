@@ -162,10 +162,7 @@ final class ComponentCollector extends AbstractLatteContextCollector
     {
         $componentArgType = $scope->getType($componentArg);
 
-        $names = $this->valueResolver->resolve($componentNameArg, $scope) ?? [];
-        $names = array_filter($names, function ($val) {
-            return is_string($val);
-        });
+        $names = $this->valueResolver->resolveStrings($componentNameArg, $scope) ?? [];
 
         $components = [];
 

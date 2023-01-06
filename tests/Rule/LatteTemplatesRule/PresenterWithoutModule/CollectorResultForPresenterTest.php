@@ -14,6 +14,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
             __DIR__ . '/config.neon',
+            __DIR__ . '/mapping.neon',
         ];
     }
 
