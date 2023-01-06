@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\Rule;
 use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
-use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
@@ -82,11 +81,8 @@ final class LatteTemplatesRule implements Rule
      */
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
-        $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
-
-        $processedFiles = array_unique(array_keys($resolvedNodes));
-        $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->analysedTemplatesRegistry->getExistingTemplates(), $this->latteTemplateResolvers);
+        $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
 
         $errors = $latteContext->getErrors();
         $templates = [];

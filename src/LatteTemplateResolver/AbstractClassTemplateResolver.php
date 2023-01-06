@@ -19,7 +19,7 @@ use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
-abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
+abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver implements LatteNodeTemplateResolverInterface
 {
     private const PARAM_CLASS_NAME = 'className';
 
@@ -54,7 +54,7 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver
 
         foreach ($this->getSupportedClasses() as $supportedClass) {
             if ($objectType->isInstanceOf($supportedClass)->yes()) {
-                return new CollectedResolvedNode(static::class, [self::PARAM_CLASS_NAME => $className]);
+                return new CollectedResolvedNode(static::class, $scope->getFile(), [self::PARAM_CLASS_NAME => $className]);
             }
         }
 
