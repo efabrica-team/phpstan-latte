@@ -93,7 +93,7 @@ final class ComponentFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return Component[]
      */
-    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
     {
         $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -108,9 +108,16 @@ final class ComponentFinder
 
         $collectedComponents = $this->assignedComponents[$declaringClass][$methodName] ?? [];
 
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
         foreach ($methodCalls as $calledMethod) {
-            $collectedComponents = ComponentsHelper::union($collectedComponents, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
+            $collectedComponents = ComponentsHelper::union($collectedComponents,
+                $this->findInMethodCalls(
+                    $calledMethod->getCalledClassName(),
+                    $calledMethod->getCalledMethodName(),
+                    $calledMethod->getCurrentClassName(),
+                    $alreadyFound
+                )
+            );
         }
 
         $collectedComponents = ComponentsHelper::merge($collectedComponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);

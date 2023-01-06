@@ -74,7 +74,7 @@ final class VariableFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return Variable[]
      */
-    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
     {
         $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -89,9 +89,16 @@ final class VariableFinder
 
         $collectedVariables = $this->assignedVariables[$declaringClass][$methodName] ?? [];
 
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
         foreach ($methodCalls as $calledMethod) {
-            $collectedVariables = VariablesHelper::union($collectedVariables, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
+            $collectedVariables = VariablesHelper::union($collectedVariables,
+                $this->findInMethodCalls(
+                    $calledMethod->getCalledClassName(),
+                    $calledMethod->getCalledMethodName(),
+                    $calledMethod->getCurrentClassName(),
+                    $alreadyFound
+                )
+            );
         }
 
         $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);

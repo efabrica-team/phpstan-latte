@@ -64,7 +64,7 @@ final class FormFieldFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return FormField[]
      */
-    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
     {
         $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -79,9 +79,16 @@ final class FormFieldFinder
 
         $collectedFormFields = $this->assignedFormFields[$declaringClass][$methodName] ?? [];
 
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
         foreach ($methodCalls as $calledMethod) {
-            $collectedFormFields = FormFieldHelper::union($collectedFormFields, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
+            $collectedFormFields = FormFieldHelper::union($collectedFormFields,
+                $this->findInMethodCalls(
+                    $calledMethod->getCalledClassName(),
+                    $calledMethod->getCalledMethodName(),
+                    $calledMethod->getCurrentClassName(),
+                    $alreadyFound
+                )
+            );
         }
 
         return $collectedFormFields;

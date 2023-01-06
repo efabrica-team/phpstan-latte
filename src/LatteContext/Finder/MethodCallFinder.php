@@ -64,7 +64,7 @@ final class MethodCallFinder
     /**
      * @return CollectedMethodCall[]
      */
-    public function findCalled(string $className, string $methodName): array
+    public function findCalled(string $className, string $methodName, string $currentClassName = null): array
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -73,7 +73,7 @@ final class MethodCallFinder
         $calledMethods = $this->collectedMethodCalled[$declaringClass][$methodName] ?? [];
         $result = [];
         foreach ($calledMethods as $calledMethod) {
-            $calledMethod = $calledMethod->withCurrentClassName($className);
+            $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($currentClassName ?? $className));
             if ($this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
                 continue;
             }
@@ -104,7 +104,7 @@ final class MethodCallFinder
     /**
      * @param array<string, array<string, true>> $alreadyFound
      */
-    private function findAnyTerminatingCallsInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): bool
+    private function findAnyTerminatingCallsInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): bool
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -121,7 +121,12 @@ final class MethodCallFinder
 
         $methodCalls = $this->findCalled($className, $methodName);
         foreach ($methodCalls as $calledMethod) {
-            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyTerminatingCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
+            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyTerminatingCallsInMethodCalls(
+                $calledMethod->getCalledClassName(),
+                $calledMethod->getCalledMethodName(),
+                $calledMethod->getCurrentClassName(),
+                $alreadyFound
+            );
         }
 
         return $hasTerminatingCalls;
@@ -135,7 +140,7 @@ final class MethodCallFinder
     /**
      * @param array<string, array<string, true>> $alreadyFound
      */
-    private function findAnyOutputCallsInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): bool
+    private function findAnyOutputCallsInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): bool
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -152,7 +157,12 @@ final class MethodCallFinder
 
         $methodCalls = $this->findCalled($className, $methodName);
         foreach ($methodCalls as $calledMethod) {
-            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyOutputCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
+            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyOutputCallsInMethodCalls(
+                $calledMethod->getCalledClassName(),
+                $calledMethod->getCalledMethodName(),
+                $calledMethod->getCurrentClassName(),
+                $alreadyFound
+            );
         }
 
         return $hasTerminatingCalls;

@@ -77,7 +77,7 @@ final class TemplatePathFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return array<?string>
      */
-    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
     {
         $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -94,9 +94,14 @@ final class TemplatePathFinder
             $this->collectedTemplatePaths[$declaringClass][$methodName] ?? [],
         ];
 
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
         foreach ($methodCalls as $calledMethod) {
-            $collectedTemplatePaths[] = $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
+            $collectedTemplatePaths[] = $this->findInMethodCalls(
+                $calledMethod->getCalledClassName(),
+                $calledMethod->getCalledMethodName(),
+                $calledMethod->getCurrentClassName(),
+                $alreadyFound
+            );
         }
 
         return array_merge(...$collectedTemplatePaths);

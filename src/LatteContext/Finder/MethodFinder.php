@@ -39,7 +39,7 @@ final class MethodFinder
     /**
      * @param array<string, array<string, true>> $alreadyFound
      */
-    private function findAnyAlwaysTerminatedInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): bool
+    private function findAnyAlwaysTerminatedInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): bool
     {
         if (isset($alreadyFound[$className][$methodName])) {
             return false; // stop recursion
@@ -49,9 +49,14 @@ final class MethodFinder
 
         $alwaysTerminated = $this->find($className, $methodName)->isAlwaysTerminated();
 
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
+        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
         foreach ($methodCalls as $calledMethod) {
-            $alwaysTerminated = $alwaysTerminated || $this->findAnyAlwaysTerminatedInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
+            $alwaysTerminated = $alwaysTerminated || $this->findAnyAlwaysTerminatedInMethodCalls(
+                $calledMethod->getCalledClassName(),
+                $calledMethod->getCalledMethodName(),
+                $calledMethod->getCurrentClassName(),
+                $alreadyFound
+            );
         }
 
         return $alwaysTerminated;
