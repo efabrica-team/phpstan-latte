@@ -119,16 +119,13 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $fieldNames = $this->valueResolver->resolve($fieldNameArg->value, $scope);
+        $fieldNames = $this->valueResolver->resolveStrings($fieldNameArg->value, $scope);
         if ($fieldNames === null) {
             return null;
         }
 
         $formFields = [];
         foreach ($fieldNames as $fieldName) {
-            if (!is_string($fieldName)) {
-                continue;
-            }
             $formFields[] = new CollectedFormField(
                 $classReflection->getName(),
                 $methodName,

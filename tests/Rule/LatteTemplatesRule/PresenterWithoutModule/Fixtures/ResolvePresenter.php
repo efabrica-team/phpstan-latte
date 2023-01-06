@@ -99,5 +99,7 @@ final class ResolvePresenter extends Presenter
     {
         $class = uniqid();
         new $class();
+        $class = ParentPresenter::class;
+        new $class();
     }
 }

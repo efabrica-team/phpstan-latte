@@ -73,7 +73,7 @@ final class FilterCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $filterNames = $this->valueResolver->resolve($args[0]->value, $scope);
+        $filterNames = $this->valueResolver->resolveStrings($args[0]->value, $scope);
         if ($filterNames === null || $filterNames === []) {
             return null;
         }
@@ -85,9 +85,6 @@ final class FilterCollector extends AbstractLatteContextCollector
 
         $collectedFilters = [];
         foreach ($filterNames as $filterName) {
-            if (!is_string($filterName)) {
-                continue;
-            }
             $collectedFilters[] = new CollectedFilter(
                 $classReflection->getName(),
                 $functionName,
