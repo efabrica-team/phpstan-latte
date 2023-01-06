@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Collector\Finder;
 
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
+use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteCustomTemplateResolverInterface;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteFileTemplateResolverInterface;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use PHPStan\Node\CollectedDataNode;
@@ -31,19 +32,25 @@ final class ResolvedNodeFinder
      */
     public function __construct(CollectedDataNode $collectedDataNode, array $existingTemplates, array $latteTemplateResolvers)
     {
-        $collectedResolvedNodes = [];
+        // node resolvers
+        $collectedResolvedNodes = ResolvedNodeCollector::loadData($collectedDataNode, CollectedResolvedNode::class);
+
+        // file resolvers
         foreach ($existingTemplates as $templateFile) {
             foreach ($latteTemplateResolvers as $latteTemplateResolver) {
                 if ($latteTemplateResolver instanceof LatteFileTemplateResolverInterface) {
-                    $collectedResolvedNode = $latteTemplateResolver->collect($templateFile);
-                    if ($collectedResolvedNode) {
-                        $collectedResolvedNodes[] = $collectedResolvedNode;
-                    }
+                    $collectedResolvedNodes = array_merge($collectedResolvedNodes, $latteTemplateResolver->collect($templateFile));
                 }
             }
         }
 
-        $collectedResolvedNodes = array_merge($collectedResolvedNodes, ResolvedNodeCollector::loadData($collectedDataNode, CollectedResolvedNode::class));
+        // custom resolvers
+        foreach ($latteTemplateResolvers as $latteTemplateResolver) {
+            if ($latteTemplateResolver instanceof LatteCustomTemplateResolverInterface) {
+                $collectedResolvedNodes = array_merge($collectedResolvedNodes, $latteTemplateResolver->collect());
+            }
+        }
+
         foreach ($collectedResolvedNodes as $collectedResolvedNode) {
             $resolver = $collectedResolvedNode->getResolver();
             if (!isset($this->collectedResolvedNodes[$resolver])) {

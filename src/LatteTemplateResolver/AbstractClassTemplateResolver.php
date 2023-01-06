@@ -23,42 +23,42 @@ abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver im
 {
     private const PARAM_CLASS_NAME = 'className';
 
-    public function collect(Node $node, Scope $scope): ?CollectedResolvedNode
+    public function collect(Node $node, Scope $scope): array
     {
         $classReflection = $scope->getClassReflection();
         if ($classReflection === null) {
-            return null;
+            return [];
         }
 
         if (!$node instanceof InClassNode) {
-            return null;
+            return [];
         }
 
         $class = $node->getOriginalNode();
         if (!$class instanceof Class_) {
-            return null;
+            return [];
         }
 
         $className = (string)$class->namespacedName;
         if (!$className) {
-            return null;
+            return [];
         }
 
         $objectType = new ObjectType($className);
 
         foreach ($this->getIgnoredClasses() as $ignoredClass) {
             if ($objectType->isInstanceOf($ignoredClass)->yes()) {
-                return null;
+                return [];
             }
         }
 
         foreach ($this->getSupportedClasses() as $supportedClass) {
             if ($objectType->isInstanceOf($supportedClass)->yes()) {
-                return new CollectedResolvedNode(static::class, $scope->getFile(), [self::PARAM_CLASS_NAME => $className]);
+                return [new CollectedResolvedNode(static::class, $scope->getFile(), [self::PARAM_CLASS_NAME => $className])];
             }
         }
 
-        return null;
+        return [];
     }
 
     /**

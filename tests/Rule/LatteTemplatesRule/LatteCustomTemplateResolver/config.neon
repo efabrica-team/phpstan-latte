@@ -1,0 +1,2 @@
+services:
+    - \Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteCustomTemplateResolver\Fixtures\TestingCustomTemplateResolver

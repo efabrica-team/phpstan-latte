@@ -8,6 +8,8 @@ use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 
 interface LatteFileTemplateResolverInterface extends LatteTemplateResolverInterface
 {
-    /** Try collect node in actual scope */
-    public function collect(string $templateFile): ?CollectedResolvedNode;
+    /**
+     * @return CollectedResolvedNode[]
+     */
+    public function collect(string $templateFile): array;
 }

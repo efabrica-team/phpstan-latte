@@ -44,10 +44,7 @@ final class ResolvedNodeCollector extends AbstractCollector
     {
         $resolvedNodes = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
-            $resolvedNode = $latteTemplateResolver->collect($node, $scope);
-            if ($resolvedNode !== null) {
-                $resolvedNodes[] = $resolvedNode;
-            }
+            $resolvedNodes = array_merge($resolvedNodes, $latteTemplateResolver->collect($node, $scope));
         }
         if (count($resolvedNodes) > 0 && $this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;

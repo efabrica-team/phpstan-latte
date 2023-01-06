@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteFileTemplateResolver;
+namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteCustomTemplateResolver;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTest;
 
-final class CollectorResultForFileTemplateResolverTest extends CollectorResultTest
+final class CollectorResultForCustomTemplateResolverTest extends CollectorResultTest
 {
     public static function getAdditionalConfigFiles(): array
     {
@@ -21,8 +21,10 @@ final class CollectorResultForFileTemplateResolverTest extends CollectorResultTe
     {
         $this->analyse([__DIR__ . '/Fixtures/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'NODE TestingFileTemplateResolver {"template":"/LatteFileTemplateResolver/Fixtures/templates/default.latte"}',
+            'NODE TestingCustomTemplateResolver {"template":"/LatteCustomTemplateResolver/Fixtures/templates/default.latte"}',
             'TEMPLATE default.latte Control::resolved ["someVariable"] []',
+            'NODE TestingCustomTemplateResolver {"template":"/LatteCustomTemplateResolver/Fixtures/templates/other.latte"}',
+            'TEMPLATE other.latte Control::resolved ["someVariable"] []',
         ]);
     }
 }
