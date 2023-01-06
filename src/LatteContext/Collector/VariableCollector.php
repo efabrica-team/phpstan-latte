@@ -5,15 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
-use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
+use Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\VariableCollectorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
-use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
 use PhpParser\Node;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
@@ -22,23 +16,19 @@ use PHPStan\Reflection\ReflectionProvider;
  */
 final class VariableCollector extends AbstractLatteContextCollector
 {
-    private TypeResolver $typeResolver;
+    /** @var VariableCollectorInterface[] */
+    private array $variableCollectors;
 
-    private TemplateTypeResolver $templateTypeResolver;
-
-    private LattePhpDocResolver $lattePhpDocResolver;
-
+    /**
+     * @param VariableCollectorInterface[] $variableCollectors
+     */
     public function __construct(
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        TypeResolver $typeResolver,
-        TemplateTypeResolver $templateTypeResolver,
-        LattePhpDocResolver $lattePhpDocResolver
+        array $variableCollectors
     ) {
         parent::__construct($nameResolver, $reflectionProvider);
-        $this->typeResolver = $typeResolver;
-        $this->templateTypeResolver = $templateTypeResolver;
-        $this->lattePhpDocResolver = $lattePhpDocResolver;
+        $this->variableCollectors = $variableCollectors;
     }
 
     public function getNodeType(): string
@@ -61,55 +51,16 @@ final class VariableCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        $collectedVariables = [];
+        foreach ($this->variableCollectors as $variableCollector) {
+            if (!$variableCollector->isSupported($node)) {
+                continue;
+            }
+            $collectedVariables[] = $variableCollector->collect($node, $scope);
+        }
+        return array_merge(...$collectedVariables);
+
         // TODO add other variable assign resolvers - $template->setParameters(), $template->render(path, parameters) etc.
 
-        if (!$node instanceof Assign) {
-            return null;
-        }
-
-        if ($node->var instanceof Variable) {
-            $var = $node->var;
-            $nameNode = $node->var->name;
-        } elseif ($node->var instanceof PropertyFetch) {
-            $var = $node->var->var;
-            $nameNode = $node->var->name;
-        } else {
-            return null;
-        }
-
-        if ($nameNode instanceof Expr) {
-            $variableName = null;
-        } else {
-            $variableName = is_string($nameNode) ? $nameNode : $nameNode->name;
-        }
-
-        $assignVariableType = $scope->getType($var);
-        if (!$this->templateTypeResolver->resolve($assignVariableType)) {
-            return null;
-        }
-
-        $variableType = $this->typeResolver->resolveAsConstantType($node->expr, $scope);
-        if ($variableType === null) {
-            $variableType = $scope->getType($node->expr);
-        }
-
-        if ($variableName !== null) {
-            $variables = [CollectedVariable::build($node, $scope, $variableName, $variableType)];
-        } else {
-            $variables = [];
-        }
-
-        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
-        if ($lattePhpDoc->isIgnored()) {
-            return null;
-        }
-        if ($lattePhpDoc->hasVariables()) {
-            $variables = [];
-            foreach ($lattePhpDoc->getVariables([$variableName]) as $name => $type) {
-                $variables[] = CollectedVariable::build($node, $scope, $name, $type);
-            }
-        }
-
-        return $variables;
     }
 }

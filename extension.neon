@@ -138,6 +138,7 @@ services:
 
     # Latte context collectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentMethodPhpDocCollector
