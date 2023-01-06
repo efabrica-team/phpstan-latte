@@ -48,7 +48,6 @@ abstract class AbstractAssignVariableCollector implements VariableCollectorInter
             }
         }
 
-
         return $variables;
     }
 

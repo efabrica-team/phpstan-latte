@@ -52,6 +52,9 @@ final class VariableCollector extends AbstractLatteContextCollector
         }
 
         $collectedVariables = [];
+
+        // TODO add other variable assign resolvers - $template->setParameters(), $template->render(path, parameters) etc.
+
         foreach ($this->variableCollectors as $variableCollector) {
             if (!$variableCollector->isSupported($node)) {
                 continue;
@@ -59,8 +62,5 @@ final class VariableCollector extends AbstractLatteContextCollector
             $collectedVariables[] = $variableCollector->collect($node, $scope);
         }
         return array_merge(...$collectedVariables);
-
-        // TODO add other variable assign resolvers - $template->setParameters(), $template->render(path, parameters) etc.
-
     }
 }
