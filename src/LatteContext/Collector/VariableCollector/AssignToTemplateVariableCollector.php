@@ -20,16 +20,16 @@ final class AssignToTemplateVariableCollector extends AbstractAssignVariableColl
 
     private TemplateTypeResolver $templateTypeResolver;
 
-    public function __construct(TypeResolver $typeResolver, TemplateTypeResolver $templateTypeResolver, LattePhpDocResolver $lattePhpDocResolver)
-    {
+    public function __construct(
+        TypeResolver $typeResolver,
+        TemplateTypeResolver $templateTypeResolver,
+        LattePhpDocResolver $lattePhpDocResolver
+    ) {
         parent::__construct($lattePhpDocResolver);
         $this->typeResolver = $typeResolver;
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
-    /**
-     * @return CollectedVariable[]
-     */
     public function collectVariables(Assign $node, Scope $scope): array
     {
         if ($node->var instanceof Variable) {

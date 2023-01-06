@@ -138,7 +138,6 @@ services:
 
     # Latte context collectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
-    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\ComponentMethodPhpDocCollector
@@ -153,6 +152,11 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\FormCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
     - Efabrica\PHPStanLatte\LatteContext\Collector\NetteApplicationUIPresenterCollector
+
+    # Latte context subcollectors
+    # Variable subcollectors
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToArrayOfTemplateVariablesCollector
 
     # Variable collectors
     variableCollectorStorage:
