@@ -80,36 +80,13 @@ final class FormFinder
     }
 
     /**
-     * @param array<string, array<string, true>> $alreadyFound
      * @return CollectedForm[]
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return [];
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $collectedForms = [
-            $this->collectedForms[$declaringClass][$methodName] ?? [],
-        ];
-
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
-        foreach ($methodCalls as $calledMethod) {
-            $collectedForms[] = $this->findInMethodCalls(
-                $calledMethod->getCalledClassName(),
-                $calledMethod->getCalledMethodName(),
-                $calledMethod->getCurrentClassName(),
-                $alreadyFound
-            );
-        }
-
-        return array_merge(...$collectedForms);
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge($this->collectedForms[$declaringClass][$methodName] ?? [], ...$fromCalled);
+        };
+        return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

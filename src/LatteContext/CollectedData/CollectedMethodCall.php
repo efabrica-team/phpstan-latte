@@ -119,7 +119,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
             return $this;
         }
         $calledClassName = $classReflection->getName();
-        if($this->calledClassName === 'parent') {
+        if ($this->calledClassName === 'parent') {
             $parentClassReflection = $classReflection->getParentClass();
             if ($parentClassReflection !== null) {
                 $calledClassName = $parentClassReflection->getName();

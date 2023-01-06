@@ -36,29 +36,12 @@ final class MethodFinder
         return $this->findAnyAlwaysTerminatedInMethodCalls($className, $methodName);
     }
 
-    /**
-     * @param array<string, array<string, true>> $alreadyFound
-     */
-    private function findAnyAlwaysTerminatedInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): bool
+    private function findAnyAlwaysTerminatedInMethodCalls(string $className, string $methodName, string $currentClassName = null): bool
     {
-        if (isset($alreadyFound[$className][$methodName])) {
-            return false; // stop recursion
-        } else {
-            $alreadyFound[$className][$methodName] = true;
-        }
-
-        $alwaysTerminated = $this->find($className, $methodName)->isAlwaysTerminated();
-
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
-        foreach ($methodCalls as $calledMethod) {
-            $alwaysTerminated = $alwaysTerminated || $this->findAnyAlwaysTerminatedInMethodCalls(
-                $calledMethod->getCalledClassName(),
-                $calledMethod->getCalledMethodName(),
-                $calledMethod->getCurrentClassName(),
-                $alreadyFound
-            );
-        }
-
-        return $alwaysTerminated;
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge([$this->find($declaringClass, $methodName)->isAlwaysTerminated()], ...$fromCalled);
+        };
+        $isAlwaysTerminated = $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
+        return in_array(true, $isAlwaysTerminated, true);
     }
 }

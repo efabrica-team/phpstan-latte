@@ -71,38 +71,15 @@ final class VariableFinder
     }
 
     /**
-     * @param array<string, array<string, true>> $alreadyFound
      * @return Variable[]
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return [];
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $collectedVariables = $this->assignedVariables[$declaringClass][$methodName] ?? [];
-
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
-        foreach ($methodCalls as $calledMethod) {
-            $collectedVariables = VariablesHelper::union($collectedVariables,
-                $this->findInMethodCalls(
-                    $calledMethod->getCalledClassName(),
-                    $calledMethod->getCalledMethodName(),
-                    $calledMethod->getCurrentClassName(),
-                    $alreadyFound
-                )
-            );
-        }
-
-        $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
-
-        return $collectedVariables;
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            $collectedVariables = VariablesHelper::union($this->assignedVariables[$declaringClass][$methodName] ?? [], ...$fromCalled);
+            $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
+            return $collectedVariables;
+        };
+        return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

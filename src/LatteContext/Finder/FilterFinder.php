@@ -64,36 +64,13 @@ final class FilterFinder
     }
 
     /**
-     * @param array<string, array<string, true>> $alreadyFound
      * @return Filter[]
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return [];
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $collectedFilters = [
-            $this->collectedFilters[$declaringClass][$methodName] ?? [],
-        ];
-
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName, $currentClassName);
-        foreach ($methodCalls as $calledMethod) {
-            $collectedFilters[] = $this->findInMethodCalls(
-                $calledMethod->getCalledClassName(),
-                $calledMethod->getCalledMethodName(),
-                $calledMethod->getCurrentClassName(),
-                $alreadyFound
-            );
-        }
-
-        return array_merge(...$collectedFilters);
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge($this->collectedFilters[$declaringClass][$methodName] ?? [], ...$fromCalled);
+        };
+        return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }
