@@ -15,6 +15,7 @@ final class ErrorBuilder
 {
     /** @var string[] */
     private array $errorPatternsToIgnore = [
+        '/No error to ignore is reported on line .*/',
         '/Function __latteCompileError not found./', // do not check fake function used to pass compile errors
         '/PHPStanLatteTemplate/', // errors connected with compiled template class
         '/Method Nette\\\\Application\\\\UI\\\\Renderable::redrawControl\(\) invoked with 2 parameters, 0 required\./', // we will not test latte compiler itself
@@ -32,6 +33,7 @@ final class ErrorBuilder
         '/Parameter #2 \$parent of class (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator) constructor expects (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null, mixed given\./', // creating caching iterator
         '/Cannot access property (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./', // inner foreach cause that phpstan thinks there is null in CachingIterator
         '/Cannot call method (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./',  // inner foreach cause that phpstan thinks there is null in CachingIterator
+        '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./',   // latte 3 internal error
     ];
 
     /** @var ErrorTransformerInterface[] */
