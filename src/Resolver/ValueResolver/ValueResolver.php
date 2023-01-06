@@ -104,4 +104,16 @@ final class ValueResolver
             return null;
         }
     }
+
+    /**
+     * @return string[]|null
+     */
+    public function resolveStrings(Expr $expr, Scope $scope): ?array
+    {
+        $values = $this->resolve($expr, $scope);
+        if ($values === null) {
+            return null;
+        }
+        return array_filter($values, 'is_string');
+    }
 }

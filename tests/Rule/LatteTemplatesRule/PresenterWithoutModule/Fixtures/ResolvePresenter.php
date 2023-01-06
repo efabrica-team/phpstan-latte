@@ -94,4 +94,12 @@ final class ResolvePresenter extends Presenter
         $this->template->send = 'send';
         $this->sendTemplate(new DefaultTemplate(new Engine()));
     }
+
+    public function dynamicClassName()
+    {
+        $class = uniqid();
+        new $class();
+        $class = ParentPresenter::class;
+        new $class();
+    }
 }

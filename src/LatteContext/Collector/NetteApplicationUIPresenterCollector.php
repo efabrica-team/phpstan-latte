@@ -82,15 +82,12 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
         }
 
         if (in_array($calledMethodName, ['setView'], true)) {
-            $views = $this->valueResolver->resolve($node->getArgs()[0]->value, $scope);
+            $views = $this->valueResolver->resolveStrings($node->getArgs()[0]->value, $scope);
             if ($views === null) {
                 return null;
             }
             $methodCalls = [];
             foreach ($views as $view) {
-                if (!is_string($view)) {
-                    continue;
-                }
                 $methodCalls[] = CollectedMethodCall::build(
                     $node,
                     $scope,

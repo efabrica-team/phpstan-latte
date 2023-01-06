@@ -7,7 +7,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
@@ -22,6 +24,8 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
     /** @var string[] */
     private array $collectedPaths;
 
+    private ValueResolver $valueResolver;
+
     private CalledClassResolver $calledClassResolver;
 
     /**
@@ -32,6 +36,7 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
         array $analysedPaths,
         array $collectedPaths,
         NameResolver $nameResolver,
+        ValueResolver $valueResolver,
         ReflectionProvider $reflectionProvider,
         CalledClassResolver $calledClassResolver
     ) {
@@ -46,6 +51,7 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
                 $this->collectedPaths[] = $realPath;
             }
         }
+        $this->valueResolver = $valueResolver;
         $this->calledClassResolver = $calledClassResolver;
         $this->reflectionProvider = $reflectionProvider;
     }
@@ -68,12 +74,18 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
                 }
             }
         } elseif ($node instanceof New_) {
-            $newClassName = $this->nameResolver->resolve($node->class);
-            if ($newClassName !== null && $newClassName !== 'self' && $newClassName !== 'static') {
-                $classReflection = $this->reflectionProvider->getClass($newClassName);
-                if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
-                    if ($this->isInCollectedPaths($classReflection->getFileName())) {
-                        $relatedFiles[] = $classReflection->getFileName();
+            if ($node->class instanceof Expr) {
+                $newClassNames = $this->valueResolver->resolveStrings($node->class, $scope) ?? [];
+            } else {
+                $newClassNames = [$this->nameResolver->resolve($node->class)];
+            }
+            foreach ($newClassNames as $newClassName) {
+                if ($newClassName !== null && $newClassName !== 'self' && $newClassName !== 'static') {
+                    $classReflection = $this->reflectionProvider->getClass($newClassName);
+                    if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
+                        if ($this->isInCollectedPaths($classReflection->getFileName())) {
+                            $relatedFiles[] = $classReflection->getFileName();
+                        }
                     }
                 }
             }
