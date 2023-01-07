@@ -153,6 +153,11 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
     - Efabrica\PHPStanLatte\LatteContext\Collector\NetteApplicationUIPresenterCollector
 
+    # Latte context subcollectors
+    # Variable subcollectors
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToArrayOfTemplateVariablesCollector
+
     # Variable collectors
     variableCollectorStorage:
         factory: Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage

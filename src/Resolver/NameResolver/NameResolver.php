@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Resolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
@@ -31,6 +32,9 @@ final class NameResolver
             return $this->resolve((string)$node);
         }
         if ($node instanceof Variable) {
+            return $this->resolve($node->name);
+        }
+        if ($node instanceof PropertyFetch) {
             return $this->resolve($node->name);
         }
         if ($node instanceof FuncCall || $node instanceof MethodCall || $node instanceof StaticCall) {
