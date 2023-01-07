@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 
-interface LatteNodeTemplateResolverInterface extends LatteTemplateResolverInterface
+interface NodeLatteTemplateResolverInterface extends LatteTemplateResolverInterface
 {
     /**
      * @return CollectedResolvedNode[]

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\Collector;
 
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteNodeTemplateResolverInterface;
+use Efabrica\PHPStanLatte\LatteTemplateResolver\NodeLatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -16,13 +16,13 @@ use PHPStan\Analyser\Scope;
  */
 final class ResolvedNodeCollector extends AbstractCollector
 {
-    /** @var LatteNodeTemplateResolverInterface[] */
+    /** @var NodeLatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
     /**
-     * @param LatteNodeTemplateResolverInterface[] $latteTemplateResolvers
+     * @param NodeLatteTemplateResolverInterface[] $latteTemplateResolvers
      */
     public function __construct(
         array $latteTemplateResolvers,

@@ -19,7 +19,7 @@ use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
 
-abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver implements LatteNodeTemplateResolverInterface
+abstract class AbstractClassTemplateResolver extends AbstractTemplateResolver implements NodeLatteTemplateResolverInterface
 {
     private const PARAM_CLASS_NAME = 'className';
 

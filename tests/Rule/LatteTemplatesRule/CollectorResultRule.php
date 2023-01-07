@@ -6,11 +6,9 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteFileTemplateResolverInterface;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
-use Nette\Utils\Finder;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -18,7 +16,6 @@ use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use ReflectionClass;
 
 /**
  * @implements Rule<CollectedDataNode>
@@ -53,18 +50,7 @@ final class CollectorResultRule implements Rule
     {
         $errors = [];
 
-        $templateFiles = [];
-        foreach ($this->latteTemplateResolvers as $resolver) {
-            if (!$resolver instanceof LatteFileTemplateResolverInterface) {
-                continue;
-            }
-            $resolverDir = dirname((new ReflectionClass($resolver))->getFileName());
-            foreach (Finder::findFiles('*.latte')->from($resolverDir) as $file) {
-                $templateFiles[] = (string)$file;
-            }
-        }
-
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $templateFiles, $this->latteTemplateResolvers);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
         $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {

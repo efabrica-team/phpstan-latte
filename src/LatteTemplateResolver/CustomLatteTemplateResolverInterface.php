@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 
-interface LatteCustomTemplateResolverInterface extends LatteTemplateResolverInterface
+interface CustomLatteTemplateResolverInterface extends LatteTemplateResolverInterface
 {
     /**
      * @return CollectedResolvedNode[]

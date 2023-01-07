@@ -81,7 +81,7 @@ final class LatteTemplatesRule implements Rule
      */
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->analysedTemplatesRegistry->getExistingTemplates(), $this->latteTemplateResolvers);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
         $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
 
         $errors = $latteContext->getErrors();
