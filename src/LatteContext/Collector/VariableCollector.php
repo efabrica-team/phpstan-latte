@@ -53,7 +53,7 @@ final class VariableCollector extends AbstractLatteContextCollector
 
         $collectedVariables = [];
 
-        // TODO add other variable assign resolvers - $template->setParameters(), $template->render(path, parameters) etc.
+        // TODO add other variable subcollectors - $template->setParameters() etc.
 
         foreach ($this->variableCollectors as $variableCollector) {
             if (!$variableCollector->isSupported($node)) {
