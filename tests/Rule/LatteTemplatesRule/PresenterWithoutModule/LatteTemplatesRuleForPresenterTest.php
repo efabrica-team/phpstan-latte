@@ -107,48 +107,53 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Dumped type: ' . VariablesPresenter::class,
-                66,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'first item'",
+                'Variable $calledParentSecondOverwritted might not be defined.',
                 68,
                 'default.latte',
             ],
             [
-                "Dumped type: 'second item'",
-                69,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'first item'",
-                70,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'second item'",
+                'Dumped type: ' . VariablesPresenter::class,
                 71,
                 'default.latte',
             ],
             [
-                'Dumped type: mixed',
-                72,
-                'default.latte',
-            ],
-            [
-                'Dumped type: mixed',
+                "Dumped type: 'first item'",
                 73,
                 'default.latte',
             ],
             [
-                'Dumped type: string',
+                "Dumped type: 'second item'",
                 74,
                 'default.latte',
             ],
             [
-                'Dumped type: int',
+                "Dumped type: 'first item'",
                 75,
+                'default.latte',
+            ],
+            [
+                "Dumped type: 'second item'",
+                76,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                77,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                78,
+                'default.latte',
+            ],
+            [
+                'Dumped type: string',
+                79,
+                'default.latte',
+            ],
+            [
+                'Dumped type: int',
+                80,
                 'default.latte',
             ],
             [
