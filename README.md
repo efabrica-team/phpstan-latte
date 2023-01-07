@@ -42,7 +42,9 @@ includes:
 
 There are cases that cannot be resolved automatically by static analysis. 
 
-In these cases annotations line `@phpstan-latte-ignore` could be used to guide resolvers to analyse latte templates correctly.
+In these cases annotations line `@phpstan-latte-ignore` or `@phpstan-latte-var` could be used to guide resolvers to analyse latte templates correctly.
+
+[How to use annotations](docs/annotations.md)
 
 ## Development
 
