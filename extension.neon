@@ -157,6 +157,7 @@ services:
     # Variable subcollectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToArrayOfTemplateVariablesCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\SetParametersToTemplateVariableCollector
 
     # Variable collectors
     variableCollectorStorage:

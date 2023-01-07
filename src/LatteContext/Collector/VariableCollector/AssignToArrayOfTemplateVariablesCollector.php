@@ -38,7 +38,7 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractAssignVari
                 continue;
             }
 
-            if (!$this->isTemplateType($arrayItemValue, $scope)) {
+            if (!$this->templateTypeResolver->resolveByNodeAndScope($arrayItemValue, $scope)) {
                 continue;
             }
 

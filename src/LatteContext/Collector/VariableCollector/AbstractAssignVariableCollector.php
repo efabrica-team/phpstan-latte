@@ -10,8 +10,6 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 
 abstract class AbstractAssignVariableCollector implements VariableCollectorInterface
@@ -20,7 +18,7 @@ abstract class AbstractAssignVariableCollector implements VariableCollectorInter
 
     private NameResolver $nameResolver;
 
-    private TemplateTypeResolver $templateTypeResolver;
+    protected TemplateTypeResolver $templateTypeResolver;
 
     public function __construct(
         LattePhpDocResolver $lattePhpDocResolver,
@@ -62,23 +60,6 @@ abstract class AbstractAssignVariableCollector implements VariableCollectorInter
         }
 
         return $variables;
-    }
-
-    protected function isTemplateType(Node $node, Scope $scope): bool
-    {
-        $var = null;
-        if ($node instanceof Variable) {
-            $var = $node;
-        } elseif ($node instanceof PropertyFetch) {
-            $var = $node->var;
-        }
-
-        if ($var === null) {
-            return false;
-        }
-
-        $assignVariableType = $scope->getType($var);
-        return $this->templateTypeResolver->resolve($assignVariableType);
     }
 
     protected function getVariableName(Node $node): ?string

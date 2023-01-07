@@ -39,7 +39,9 @@ final class VariablesPresenter extends ParentPresenter
 
     public function renderDefault(): void
     {
-        $this->template->fromRenderDefault = 'from render default';
+        $this->template->setParameters([
+            'fromRenderDefault' => 'from render default',
+        ]);
     }
 
     public function actionOther(): void
