@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CustomLatteTemplateResolver\Fixtures;
 
-use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractTemplateResolver;
+use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\CustomLatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverResult;
 use Efabrica\PHPStanLatte\Template\Template;
@@ -14,7 +13,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Application\UI\Control;
 use PHPStan\Type\StringType;
 
-final class TestingCustomTemplateResolver extends AbstractTemplateResolver implements CustomLatteTemplateResolverInterface
+final class TestingCustomTemplateResolver implements CustomLatteTemplateResolverInterface
 {
     private const TEMPLATE_PARAM = 'template';
 
@@ -26,7 +25,7 @@ final class TestingCustomTemplateResolver extends AbstractTemplateResolver imple
         ];
     }
 
-    protected function getResult(CollectedResolvedNode $resolvedNode, LatteContextData $latteContext): LatteTemplateResolverResult
+    public function resolve(CollectedResolvedNode $resolvedNode, LatteContext $latteContext): LatteTemplateResolverResult
     {
         $result = new LatteTemplateResolverResult();
         $result->addTemplate(new Template(

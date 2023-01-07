@@ -2,17 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
+namespace Efabrica\PHPStanLatte\LatteTemplateResolver\Nette;
 
+use Efabrica\PHPStanLatte\LatteContext\LatteContext;
+use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
+use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIPresenterLatteContextResolver;
+use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassStandaloneTemplateResolver;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 
 final class NetteApplicationUIPresenterStandalone extends AbstractClassStandaloneTemplateResolver
 {
-    use NetteApplicationUIPresenterGlobals;
-
     public function getSupportedClasses(): array
     {
         return ['Nette\Application\UI\Presenter'];
+    }
+
+    protected function getClassContextResolver(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteContextResolverInterface
+    {
+        return new NetteApplicationUIPresenterLatteContextResolver($reflectionClass, $latteContext);
     }
 
     protected function getTemplatePathPatterns(ReflectionClass $reflectionClass, string $dir): array

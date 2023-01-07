@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
+namespace Efabrica\PHPStanLatte\LatteContext;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
 use Efabrica\PHPStanLatte\LatteContext\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FilterFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FormFieldFinder;
@@ -19,42 +18,38 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PHPStan\Reflection\ReflectionProvider;
 
-abstract class AbstractTemplateResolver implements LatteTemplateResolverInterface
+final class LatteContext
 {
     private ReflectionProvider $reflectionProvider;
 
     private PathResolver $pathResolver;
 
-    protected LattePhpDocResolver $lattePhpDocResolver;
+    private LattePhpDocResolver $lattePhpDocResolver;
 
-    protected MethodFinder $methodFinder;
+    private MethodFinder $methodFinder;
 
-    protected MethodCallFinder $methodCallFinder;
+    private MethodCallFinder $methodCallFinder;
 
-    protected VariableFinder $variableFinder;
+    private VariableFinder $variableFinder;
 
-    protected ComponentFinder $componentFinder;
+    private ComponentFinder $componentFinder;
 
-    protected FilterFinder $filterFinder;
+    private FilterFinder $filterFinder;
 
-    protected FormFieldFinder $formFieldFinder;
+    private FormFieldFinder $formFieldFinder;
 
-    protected FormFinder $formFinder;
+    private FormFinder $formFinder;
 
-    protected TemplatePathFinder $templatePathFinder;
+    private TemplatePathFinder $templatePathFinder;
 
-    protected TemplateRenderFinder $templateRenderFinder;
+    private TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         $this->reflectionProvider = $reflectionProvider;
         $this->pathResolver = $pathResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
-    }
 
-    public function resolve(CollectedResolvedNode $resolvedNode, LatteContextData $latteContext): LatteTemplateResolverResult
-    {
-        // TODO create factories?
         $this->methodCallFinder = new MethodCallFinder($latteContext, $this->reflectionProvider, $this->lattePhpDocResolver);
         $this->methodFinder = new MethodFinder($latteContext, $this->methodCallFinder);
         $this->variableFinder = new VariableFinder($latteContext, $this->methodCallFinder);
@@ -64,12 +59,53 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->formFinder = new FormFinder($latteContext, $this->methodCallFinder, $this->formFieldFinder);
         $this->templatePathFinder = new TemplatePathFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
         $this->templateRenderFinder = new TemplateRenderFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
-
-        return $this->getResult($resolvedNode, $latteContext);
     }
 
     /**
-     * @return LatteTemplateResolverResult
+     * @return MethodFinder
      */
-    abstract protected function getResult(CollectedResolvedNode $resolvedNode, LatteContextData $latteContext): LatteTemplateResolverResult;
+    public function methodFinder(): MethodFinder
+    {
+        return $this->methodFinder;
+    }
+
+    public function methodCallFinder(): MethodCallFinder
+    {
+        return $this->methodCallFinder;
+    }
+
+    public function variableFinder(): VariableFinder
+    {
+        return $this->variableFinder;
+    }
+
+    public function componentFinder(): ComponentFinder
+    {
+        return $this->componentFinder;
+    }
+
+    public function filterFinder(): FilterFinder
+    {
+        return $this->filterFinder;
+    }
+
+    public function formFieldFinder(): FormFieldFinder
+    {
+        return $this->formFieldFinder;
+    }
+
+    public function formFinder(): FormFinder
+    {
+        return $this->formFinder;
+    }
+
+    public function templatePathFinder(): TemplatePathFinder
+    {
+        return $this->templatePathFinder;
+    }
+
+    public function templateRenderFinder(): TemplateRenderFinder
+    {
+        return $this->templateRenderFinder;
+    }
 }
