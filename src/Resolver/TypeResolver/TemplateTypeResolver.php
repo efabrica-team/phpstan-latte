@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Resolver\TypeResolver;
 
+use PhpParser\Node;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Expr\Variable;
+use PHPStan\Analyser\Scope;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -22,5 +27,24 @@ final class TemplateTypeResolver
             }
         }
         return false;
+    }
+
+    public function resolveByNodeAndScope(Node $node, Scope $scope): bool
+    {
+        $var = null;
+        if ($node instanceof Variable) {
+            $var = $node;
+        } elseif ($node instanceof MethodCall) {
+            $var = $node->var;
+        } elseif ($node instanceof PropertyFetch) {
+            $var = $node->var;
+        }
+
+        if ($var === null) {
+            return false;
+        }
+
+        $type = $scope->getType($var);
+        return $this->resolve($type);
     }
 }

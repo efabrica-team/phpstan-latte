@@ -33,7 +33,7 @@ final class AssignToTemplateVariableCollector extends AbstractAssignVariableColl
             return [];
         }
 
-        if (!$this->isTemplateType($node->var, $scope)) {
+        if (!$this->templateTypeResolver->resolveByNodeAndScope($node->var, $scope)) {
             return [];
         }
 
