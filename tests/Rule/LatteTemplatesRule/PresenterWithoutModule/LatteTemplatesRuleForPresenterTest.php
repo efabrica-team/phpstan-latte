@@ -157,46 +157,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                "Dumped type: 'first item'",
-                68,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'second item'",
-                69,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'first item'",
-                70,
-                'default.latte',
-            ],
-            [
-                "Dumped type: 'second item'",
-                71,
-                'default.latte',
-            ],
-            [
-                'Dumped type: mixed',
-                72,
-                'default.latte',
-            ],
-            [
-                'Dumped type: mixed',
-                73,
-                'default.latte',
-            ],
-            [
-                'Dumped type: string',
-                74,
-                'default.latte',
-            ],
-            [
-                'Dumped type: int',
-                75,
-                'default.latte',
-            ],
-            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',
