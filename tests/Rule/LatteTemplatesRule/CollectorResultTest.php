@@ -22,6 +22,7 @@ abstract class CollectorResultTest extends LatteTemplatesRuleTest
             if ($namespace) {
                 $message = str_replace($namespace . '\\', '', $message);
             }
+            $message = str_replace(__DIR__, '', $message);
             return $message;
         }, $actualErrors);
         sort($actualErrors);

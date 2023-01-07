@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
-use Efabrica\PHPStanLatte\Collector\Collector\ResolvedNodeCollector;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
@@ -51,10 +50,8 @@ final class CollectorResultRule implements Rule
     {
         $errors = [];
 
-        $resolvedNodes = $collectedDataNode->get(ResolvedNodeCollector::class);
-        $processedFiles = array_unique(array_keys($resolvedNodes));
-        $latteContext = $this->latteContextAnalyser->analyseFiles($processedFiles);
-        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode);
+        $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
+        $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $resolver = $this->shortClassName($collectedResolvedNode->getResolver());

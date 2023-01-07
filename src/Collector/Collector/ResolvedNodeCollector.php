@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\Collector;
 
 use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedResolvedNode;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
+use Efabrica\PHPStanLatte\LatteTemplateResolver\NodeLatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -16,13 +16,13 @@ use PHPStan\Analyser\Scope;
  */
 final class ResolvedNodeCollector extends AbstractCollector
 {
-    /** @var LatteTemplateResolverInterface[] */
+    /** @var NodeLatteTemplateResolverInterface[] */
     private array $latteTemplateResolvers;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
     /**
-     * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
+     * @param NodeLatteTemplateResolverInterface[] $latteTemplateResolvers
      */
     public function __construct(
         array $latteTemplateResolvers,
@@ -44,10 +44,7 @@ final class ResolvedNodeCollector extends AbstractCollector
     {
         $resolvedNodes = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
-            $resolvedNode = $latteTemplateResolver->collect($node, $scope);
-            if ($resolvedNode !== null) {
-                $resolvedNodes[] = $resolvedNode;
-            }
+            $resolvedNodes = array_merge($resolvedNodes, $latteTemplateResolver->collect($node, $scope));
         }
         if (count($resolvedNodes) > 0 && $this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;

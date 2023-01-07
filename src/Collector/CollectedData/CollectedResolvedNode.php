@@ -7,11 +7,13 @@ namespace Efabrica\PHPStanLatte\Collector\CollectedData;
 use PHPStan\ShouldNotHappenException;
 
 /**
- * @phpstan-type CollectedResolvedNodeArray array{resolver: string, params: array<string, string>}
+ * @phpstan-type CollectedResolvedNodeArray array{resolver: string, analysedFile: string, params: array<string, string>}
  */
 final class CollectedResolvedNode extends CollectedValueObject
 {
     private string $resolver;
+
+    private string $analysedFile;
 
     /** @var array<string, string> */
     protected array $params;
@@ -19,15 +21,21 @@ final class CollectedResolvedNode extends CollectedValueObject
    /**
     * @param array<string, string> $params
     */
-    final public function __construct(string $resolver, array $params)
+    final public function __construct(string $resolver, string $analysedFile, array $params)
     {
         $this->resolver = $resolver;
+        $this->analysedFile = $analysedFile;
         $this->params = $params;
     }
 
     public function getResolver(): string
     {
         return $this->resolver;
+    }
+
+    public function getAnalysedFile(): string
+    {
+        return $this->analysedFile;
     }
 
   /**
@@ -53,6 +61,7 @@ final class CollectedResolvedNode extends CollectedValueObject
     {
         return [
             'resolver' => $this->resolver,
+            'analysedFile' => $this->analysedFile,
             'params' => $this->params,
         ];
     }
@@ -62,6 +71,6 @@ final class CollectedResolvedNode extends CollectedValueObject
      */
     public static function fromArray(array $item): self
     {
-        return new CollectedResolvedNode($item['resolver'], $item['params']);
+        return new CollectedResolvedNode($item['resolver'], $item['analysedFile'], $item['params']);
     }
 }
