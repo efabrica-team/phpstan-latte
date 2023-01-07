@@ -107,8 +107,53 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Variable $calledParentSecondOverwritted might not be defined.',
+                68,
+                'default.latte',
+            ],
+            [
                 'Dumped type: ' . VariablesPresenter::class,
-                66,
+                71,
+                'default.latte',
+            ],
+            [
+                "Dumped type: 'first item'",
+                73,
+                'default.latte',
+            ],
+            [
+                "Dumped type: 'second item'",
+                74,
+                'default.latte',
+            ],
+            [
+                "Dumped type: 'first item'",
+                75,
+                'default.latte',
+            ],
+            [
+                "Dumped type: 'second item'",
+                76,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                77,
+                'default.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                78,
+                'default.latte',
+            ],
+            [
+                'Dumped type: string',
+                79,
+                'default.latte',
+            ],
+            [
+                'Dumped type: int',
+                80,
                 'default.latte',
             ],
             [

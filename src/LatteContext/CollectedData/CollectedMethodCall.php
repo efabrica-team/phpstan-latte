@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ClassReflection;
 
 final class CollectedMethodCall extends CollectedLatteContextObject
 {
@@ -29,6 +30,8 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     /** @var array<string, string|int|float|bool> */
     private array $params;
 
+    private ?string $currentClassName;
+
     /**
      * @param array<string, string|int|float|bool> $params
      */
@@ -39,7 +42,8 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         string $calledMethodName,
         bool $isCalledConditionally,
         string $type = self::CALL,
-        array $params = []
+        array $params = [],
+        ?string $currentClassName = null
     ) {
         $this->callerClassName = $callerClassName;
         $this->callerMethodName = $callerMethodName;
@@ -48,6 +52,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         $this->isCalledConditionally = $isCalledConditionally;
         $this->type = $type;
         $this->params = $params;
+        $this->currentClassName = $currentClassName;
     }
 
     public function getCallerClassName(): string
@@ -103,19 +108,32 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->params;
     }
 
-    public function withCurrentClassName(string $currentClassName): self
+    public function getCurrentClassName(): ?string
     {
-        if ($this->calledClassName !== 'this' && $this->calledClassName !== 'static') {
+        return $this->currentClassName;
+    }
+
+    public function withCurrentClass(ClassReflection $classReflection): self
+    {
+        if (!in_array($this->calledClassName, ['this', 'self', 'static', 'parent'], true)) {
             return $this;
+        }
+        $calledClassName = $classReflection->getName();
+        if ($this->calledClassName === 'parent') {
+            $parentClassReflection = $classReflection->getParentClass();
+            if ($parentClassReflection !== null) {
+                $calledClassName = $parentClassReflection->getName();
+            }
         }
         return new self(
             $this->callerClassName,
             $this->callerMethodName,
-            $currentClassName,
+            $calledClassName,
             $this->calledMethodName,
             $this->isCalledConditionally,
             $this->type,
-            $this->params
+            $this->params,
+            $classReflection->getName()
         );
     }
 
