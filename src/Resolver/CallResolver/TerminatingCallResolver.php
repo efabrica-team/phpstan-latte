@@ -44,8 +44,10 @@ final class TerminatingCallResolver
         }
 
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);
-        if ($calledClassName === 'this' || $calledClassName === 'self' || $calledClassName === 'static') {
+        if (in_array($calledClassName, ['this', 'self', 'static', 'parent'], true)) {
             $calledClassName = $classReflection->getName();
+        } elseif ($calledClassName === 'parent' && $classReflection->getParentClass()) {
+            $calledClassName = $classReflection->getParentClass()->getName();
         }
 
         $calledMethodName = $this->nameResolver->resolve($node->name);

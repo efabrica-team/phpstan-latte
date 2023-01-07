@@ -52,6 +52,9 @@ final class MethodCallFinder
         }
     }
 
+    /**
+     * @return class-string|null
+     */
     public function getDeclaringClass(string $className, string $methodName): ?string
     {
         $classReflection = $this->reflectionProvider->getClass($className);
@@ -64,7 +67,7 @@ final class MethodCallFinder
     /**
      * @return CollectedMethodCall[]
      */
-    public function findCalled(string $className, string $methodName): array
+    public function findCalled(string $className, string $methodName, string $currentClassName = null): array
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -73,7 +76,7 @@ final class MethodCallFinder
         $calledMethods = $this->collectedMethodCalled[$declaringClass][$methodName] ?? [];
         $result = [];
         foreach ($calledMethods as $calledMethod) {
-            $calledMethod = $calledMethod->withCurrentClassName($className);
+            $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($currentClassName ?? $className));
             if ($this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
                 continue;
             }
@@ -83,12 +86,55 @@ final class MethodCallFinder
     }
 
     /**
+     * @template T
+     * @param callable(class-string, string, array<T[]>): T[] $callback
+     * @return T[]
+     */
+    public function traverseCalled(callable $callback, string $className, string $methodName, string $currentClassName = null): array
+    {
+        return $this->traverseInMethodCalls($callback, $className, $methodName, $currentClassName);
+    }
+
+    /**
+     * @template T
+     * @param callable(class-string, string, array<T[]>): T[] $callback
+     * @param array<string, array<string, true>> $alreadyFound
+     * @return T[]
+     */
+    private function traverseInMethodCalls(callable $callback, string $className, string $methodName, string $currentClassName = null, array &$alreadyFound = []): array
+    {
+        $declaringClass = $this->getDeclaringClass($className, $methodName);
+        if (!$declaringClass) {
+            return [];
+        }
+
+        if (isset($alreadyFound[$declaringClass][$methodName])) {
+            return []; // stop recursion
+        } else {
+            $alreadyFound[$declaringClass][$methodName] = true;
+        }
+
+        $fromCalled = [];
+        foreach ($this->findCalledOfType($className, $methodName, CollectedMethodCall::CALL, $currentClassName) as $calledMethod) {
+            $fromCalled[] = $this->traverseInMethodCalls(
+                $callback,
+                $calledMethod->getCalledClassName(),
+                $calledMethod->getCalledMethodName(),
+                $calledMethod->getCurrentClassName(),
+                $alreadyFound
+            );
+        }
+
+        return $callback($declaringClass, $methodName, $fromCalled);
+    }
+
+    /**
      * @return CollectedMethodCall[]
      */
-    public function findCalledOfType(string $className, string $methodName, string $type): array
+    public function findCalledOfType(string $className, string $methodName, string $type, string $currentClassName = null): array
     {
         $calledByType = [];
-        foreach ($this->findCalled($className, $methodName) as $called) {
+        foreach ($this->findCalled($className, $methodName, $currentClassName) as $called) {
             if ($called->getType() === $type) {
                 $calledByType[] = $called;
             }
@@ -96,65 +142,21 @@ final class MethodCallFinder
         return $calledByType;
     }
 
-    public function hasAnyTerminatingCalls(string $className, string $methodName): bool
+    public function hasAnyTerminatingCalls(string $className, string $methodName, string $currentClassName = null): bool
     {
-        return $this->findAnyTerminatingCallsInMethodCalls($className, $methodName);
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge([$this->hasTerminatingCalls[$declaringClass][$methodName] ?? false], ...$fromCalled);
+        };
+        $hasTerminatingCalls = $this->traverseCalled($callback, $className, $methodName, $currentClassName);
+        return in_array(true, $hasTerminatingCalls, true);
     }
 
-    /**
-     * @param array<string, array<string, true>> $alreadyFound
-     */
-    private function findAnyTerminatingCallsInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): bool
+    public function hasAnyOutputCalls(string $className, string $methodName, string $currentClassName = null): bool
     {
-        $declaringClass = $this->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return false;
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return false; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $hasTerminatingCalls = $this->hasTerminatingCalls[$declaringClass][$methodName] ?? false;
-
-        $methodCalls = $this->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledMethod) {
-            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyTerminatingCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
-        }
-
-        return $hasTerminatingCalls;
-    }
-
-    public function hasAnyOutputCalls(string $className, string $methodName): bool
-    {
-        return $this->findAnyOutputCallsInMethodCalls($className, $methodName);
-    }
-
-    /**
-     * @param array<string, array<string, true>> $alreadyFound
-     */
-    private function findAnyOutputCallsInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): bool
-    {
-        $declaringClass = $this->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return false;
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return false; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $hasTerminatingCalls = $this->hasOutputCalls[$declaringClass][$methodName] ?? false;
-
-        $methodCalls = $this->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledMethod) {
-            $hasTerminatingCalls = $hasTerminatingCalls || $this->findAnyOutputCallsInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound);
-        }
-
-        return $hasTerminatingCalls;
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge([$this->hasOutputCalls[$declaringClass][$methodName] ?? false], ...$fromCalled);
+        };
+        $hasOutputCalls = $this->traverseCalled($callback, $className, $methodName, $currentClassName);
+        return in_array(true, $hasOutputCalls, true);
     }
 }

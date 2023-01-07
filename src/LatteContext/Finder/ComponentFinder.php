@@ -90,31 +90,15 @@ final class ComponentFinder
     }
 
     /**
-     * @param array<string, array<string, true>> $alreadyFound
      * @return Component[]
      */
-    private function findInMethodCalls(string $className, string $methodName, array &$alreadyFound = []): array
+    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $declaringClass = $this->methodCallFinder->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return [];
-        }
-
-        if (isset($alreadyFound[$declaringClass][$methodName])) {
-            return []; // stop recursion
-        } else {
-            $alreadyFound[$declaringClass][$methodName] = true;
-        }
-
-        $collectedComponents = $this->assignedComponents[$declaringClass][$methodName] ?? [];
-
-        $methodCalls = $this->methodCallFinder->findCalled($className, $methodName);
-        foreach ($methodCalls as $calledMethod) {
-            $collectedComponents = ComponentsHelper::union($collectedComponents, $this->findInMethodCalls($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName(), $alreadyFound));
-        }
-
-        $collectedComponents = ComponentsHelper::merge($collectedComponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
-
-        return $collectedComponents;
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            $collectedCmponents = ComponentsHelper::union($this->assignedComponents[$declaringClass][$methodName] ?? [], ...$fromCalled);
+            $collectedVariables = ComponentsHelper::merge($collectedCmponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
+            return $collectedVariables;
+        };
+        return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

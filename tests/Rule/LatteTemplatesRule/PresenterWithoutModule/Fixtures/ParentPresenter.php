@@ -57,6 +57,17 @@ abstract class ParentPresenter extends Presenter
         $this->template->parentOverwritted = 'overwritted';
     }
 
+    protected function calledParentOverwritten(): void
+    {
+        $this->template->calledParentOverwritted = 'overwritted';
+        $this->calledParentSecondOverwritten();
+    }
+
+    protected function calledParentSecondOverwritten(): void
+    {
+        $this->template->calledParentSecondOverwritted = 'overwritted';
+    }
+
     protected function createComponentParentForm(): Form
     {
         $form = new Form();

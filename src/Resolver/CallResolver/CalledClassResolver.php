@@ -30,7 +30,7 @@ final class CalledClassResolver
 
         if ($node instanceof StaticCall) {
             $calledClassName = $this->nameResolver->resolve($node->class);
-            if ($calledClassName === 'parent') {
+            if ($calledClassName === 'parent' && $this->nameResolver->resolve($node) !== $scope->getFunctionName()) {
                 $classReflection = $classReflection->getParentClass();
                 if ($classReflection === null) {
                     return null;

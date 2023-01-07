@@ -73,7 +73,7 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
             return null;
         }
 
-        if ($calledClassName === 'this' || $calledClassName === 'self' || $calledClassName === 'static') {
+        if (!in_array($calledClassName, ['this', 'self', 'static', 'parent'], true)) {
             $calledClassName = $classReflection->getName();
         }
 
