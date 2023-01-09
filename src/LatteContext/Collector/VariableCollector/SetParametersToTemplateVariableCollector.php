@@ -35,14 +35,14 @@ final class SetParametersToTemplateVariableCollector implements VariableCollecto
     /**
      * @param MethodCall $node
      */
-    public function collect(Node $node, Scope $scope): array
+    public function collect(Node $node, Scope $scope): ?array
     {
         if ($this->nameResolver->resolve($node) !== 'setParameters') {
-            return [];
+            return null;
         }
 
         if (!$this->templateTypeResolver->resolveByNodeAndScope($node, $scope)) {
-            return [];
+            return null;
         }
 
         if (!isset($node->args[0]) || !$node->args[0] instanceof Arg) {

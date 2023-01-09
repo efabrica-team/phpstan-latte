@@ -5,35 +5,47 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
-use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
+use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PHPStan\Analyser\Scope;
 
-final class AssignToTemplateVariableCollector extends AbstractAssignVariableCollector
+final class AssignToTemplateVariableCollector implements VariableCollectorInterface
 {
+    private NameResolver $nameResolver;
+
+    private TemplateTypeResolver $templateTypeResolver;
+
     private TypeResolver $typeResolver;
 
     public function __construct(
-        LattePhpDocResolver $lattePhpDocResolver,
         NameResolver $nameResolver,
-        TypeResolver $typeResolver,
-        TemplateTypeResolver $templateTypeResolver
+        TemplateTypeResolver $templateTypeResolver,
+        TypeResolver $typeResolver
     ) {
-        parent::__construct($lattePhpDocResolver, $nameResolver, $templateTypeResolver);
+        $this->nameResolver = $nameResolver;
+        $this->templateTypeResolver = $templateTypeResolver;
         $this->typeResolver = $typeResolver;
     }
 
-    public function collectVariables(Assign $node, Scope $scope): array
+    public function isSupported(Node $node): bool
     {
-        $variableName = $this->getVariableName($node->var);
-        if ($variableName === null) {
-            return [];
+        return $node instanceof Assign;
+    }
+
+    /**
+     * @param Assign $node
+     */
+    public function collect(Node $node, Scope $scope): ?array
+    {
+        if (!$this->templateTypeResolver->resolveByNodeAndScope($node->var, $scope)) {
+            return null;
         }
 
-        if (!$this->templateTypeResolver->resolveByNodeAndScope($node->var, $scope)) {
+        $variableName = $this->nameResolver->resolve($node->var);
+        if ($variableName === null) {
             return [];
         }
 
