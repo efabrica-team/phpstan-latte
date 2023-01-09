@@ -43,13 +43,16 @@ final class VariableFinder
     /**
      * @return Variable[]
      */
-    public function find(string $className, string $methodName): array
+    public function find(string $className, string ...$methodNames): array
     {
-        return VariablesHelper::merge(
+        $foundVariables = [
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName)
-        );
+        ];
+        foreach ($methodNames as $methodName) {
+            $foundVariables[] = $this->findInMethodCalls($className, $methodName);
+        }
+        return VariablesHelper::merge(...$foundVariables);
     }
 
     /**

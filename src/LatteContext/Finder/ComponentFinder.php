@@ -62,13 +62,16 @@ final class ComponentFinder
     /**
      * @return Component[]
      */
-    public function find(string $className, string $methodName): array
+    public function find(string $className, string ...$methodNames): array
     {
-        return ComponentsHelper::merge(
+        $foundComponents = [
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName),
-        );
+        ];
+        foreach ($methodNames as $methodName) {
+            $foundComponents[] = $this->findInMethodCalls($className, $methodName);
+        }
+        return ComponentsHelper::merge(...$foundComponents);
     }
 
     /**
