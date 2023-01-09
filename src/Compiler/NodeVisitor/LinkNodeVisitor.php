@@ -95,8 +95,9 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
 
         $targetName = ltrim($targetName, '/');
         // remove anchor
-        if (str_contains($targetName, '#')) {
-            $targetName = substr($targetName, 0, strpos($targetName, '#'));
+        $hashPosition = strpos($targetName, '#');
+        if ($hashPosition !== false) {
+            $targetName = substr($targetName, 0, $hashPosition);
         }
 
         // ignore links to this, it requires parameters from request which is not available in static analysis
