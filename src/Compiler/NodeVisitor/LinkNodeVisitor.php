@@ -94,6 +94,16 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
         }
 
         $targetName = ltrim($targetName, '/');
+        // remove anchor
+        $hashPosition = strpos($targetName, '#');
+        if ($hashPosition !== false) {
+            $targetName = substr($targetName, 0, $hashPosition);
+        }
+
+        // ignore links to this, it requires parameters from request which is not available in static analysis
+        if ($targetName === 'this') {
+            return null;
+        }
 
         $linkProcessor = $this->linkProcessorFactory->create($targetName);
         if (!$linkProcessor instanceof LinkProcessorInterface) {
