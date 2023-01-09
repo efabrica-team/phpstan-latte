@@ -113,17 +113,21 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->currentClassName;
     }
 
-    public function withCurrentClass(ClassReflection $classReflection): self
+    public function withCurrentClass(ClassReflection $callerReflection, string $currentClassName): self
     {
         if (!in_array($this->calledClassName, ['this', 'self', 'static', 'parent'], true)) {
             return $this;
         }
-        $calledClassName = $classReflection->getName();
         if ($this->calledClassName === 'parent') {
-            $parentClassReflection = $classReflection->getParentClass();
-            if ($parentClassReflection !== null) {
-                $calledClassName = $parentClassReflection->getName();
+            $parentClassReflection = $callerReflection->getParentClass();
+            if ($parentClassReflection === null) {
+                return $this;
             }
+            $calledClassName = $parentClassReflection->getName();
+        } elseif ($this->calledClassName === 'self') {
+            $calledClassName = $callerReflection->getName();
+        } else {
+            $calledClassName = $currentClassName;
         }
         return new self(
             $this->callerClassName,
@@ -133,7 +137,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
             $this->isCalledConditionally,
             $this->type,
             $this->params,
-            $classReflection->getName()
+            $currentClassName
         );
     }
 

@@ -13,6 +13,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
         return [
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
+            __DIR__ . '/config.neon',
         ];
     }
 
@@ -285,6 +286,27 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'Variable $nonExistingVariable might not be defined.',
                 3,
                 'default.latte',
+            ],
+        ]);
+    }
+
+    public function testHierarchy(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                1,
+                'default.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                1,
+                'parent.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                1,
+                'grandParent.latte',
             ],
         ]);
     }

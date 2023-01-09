@@ -1,0 +1,4 @@
+parameters:
+    latte:
+        collectedPaths:
+            - tests/Rule/LatteTemplatesRule/SimpleControl/Fixtures
