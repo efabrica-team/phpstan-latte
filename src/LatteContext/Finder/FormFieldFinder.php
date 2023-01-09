@@ -37,13 +37,16 @@ final class FormFieldFinder
     /**
      * @return FormField[]
      */
-    public function find(string $className, string $methodName): array
+    public function find(string $className, string ...$methodNames): array
     {
-        return FormFieldHelper::merge(
+        $foundFormFields = [
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName),
-        );
+        ];
+        foreach ($methodNames as $methodName) {
+            $foundFormFields[] = $this->findInMethodCalls($className, $methodName);
+        }
+        return FormFieldHelper::merge(...$foundFormFields);
     }
 
     /**

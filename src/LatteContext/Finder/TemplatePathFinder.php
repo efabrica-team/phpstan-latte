@@ -46,14 +46,17 @@ final class TemplatePathFinder
     /**
      * @return array<?string>
      */
-    public function find(string $className, string $methodName): array
+    public function find(string $className, string ...$methodNames): array
     {
-        return array_merge(
+        $foundTemplatePaths = [
             $this->collectedTemplatePaths[$className][''] ?? [],
             $this->findInParents($className),
             $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName),
-        );
+        ];
+        foreach ($methodNames as $methodName) {
+            $foundTemplatePaths[] = $this->findInMethodCalls($className, $methodName);
+        }
+        return array_merge(...$foundTemplatePaths);
     }
 
     /**

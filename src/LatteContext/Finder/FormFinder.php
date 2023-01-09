@@ -39,14 +39,17 @@ final class FormFinder
     /**
      * @return Form[]
      */
-    public function find(string $className, string $methodName): array
+    public function find(string $className, string ...$methodNames): array
     {
-        /** @var CollectedForm[] $collectedForms */
-        $collectedForms = array_merge(
+        $foundForms = [
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
-            $this->findInMethodCalls($className, $methodName),
-        );
+        ];
+        foreach ($methodNames as $methodName) {
+            $foundForms[] = $this->findInMethodCalls($className, $methodName);
+        }
+        /** @var CollectedForm[] $collectedForms */
+        $collectedForms = array_merge(...$foundForms);
 
         $forms = [];
         foreach ($collectedForms as $collectedForm) {
