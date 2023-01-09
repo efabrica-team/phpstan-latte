@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
+use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
@@ -13,12 +16,32 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\MixedType;
 
-final class AssignToArrayOfTemplateVariablesCollector extends AbstractAssignVariableCollector
+final class AssignToArrayOfTemplateVariablesCollector implements VariableCollectorInterface
 {
-    public function collectVariables(Assign $node, Scope $scope): array
+    private NameResolver $nameResolver;
+
+    protected TemplateTypeResolver $templateTypeResolver;
+
+    public function __construct(
+        NameResolver $nameResolver,
+        TemplateTypeResolver $templateTypeResolver
+    ) {
+        $this->nameResolver = $nameResolver;
+        $this->templateTypeResolver = $templateTypeResolver;
+    }
+
+    public function isSupported(Node $node): bool
+    {
+        return $node instanceof Assign;
+    }
+
+    /**
+     * @param Assign $node
+     */
+    public function collect(Node $node, Scope $scope): ?array
     {
         if (!($node->var instanceof Array_ || $node->var instanceof List_)) {
-            return [];
+            return null;
         }
 
         /** @var ArrayItem[] $arrayItems */
@@ -31,9 +54,10 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractAssignVari
         }
 
         $variables = [];
+        $containsTemplateVariable = false;
         foreach ($arrayItems as $key => $arrayItem) {
             $arrayItemValue = $arrayItem->value;
-            $variableName = $this->getVariableName($arrayItemValue);
+            $variableName = $this->nameResolver->resolve($arrayItemValue);
             if ($variableName === null) {
                 continue;
             }
@@ -42,9 +66,11 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractAssignVari
                 continue;
             }
 
+            $containsTemplateVariable = true;
             $variableType = $types[$key] ?? new MixedType();
             $variables[] = CollectedVariable::build($node, $scope, $variableName, $variableType);
         }
-        return $variables;
+
+        return $containsTemplateVariable ? $variables : null;
     }
 }

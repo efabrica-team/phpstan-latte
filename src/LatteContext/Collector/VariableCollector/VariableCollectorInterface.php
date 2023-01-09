@@ -13,7 +13,7 @@ interface VariableCollectorInterface
     public function isSupported(Node $node): bool;
 
     /**
-     * @return CollectedVariable[]
+     * @return CollectedVariable[]|null null = not a variables node
      */
-    public function collect(Node $node, Scope $scope): array;
+    public function collect(Node $node, Scope $scope): ?array;
 }

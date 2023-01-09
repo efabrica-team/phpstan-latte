@@ -6,16 +6,20 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\VariableCollectorInterface;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * @extends AbstractLatteContextCollector<Node, CollectedVariable>
  */
 final class VariableCollector extends AbstractLatteContextCollector
 {
+    private LattePhpDocResolver $lattePhpDocResolver;
+
     /** @var VariableCollectorInterface[] */
     private array $variableCollectors;
 
@@ -25,10 +29,12 @@ final class VariableCollector extends AbstractLatteContextCollector
     public function __construct(
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
+        LattePhpDocResolver $lattePhpDocResolver,
         array $variableCollectors
     ) {
         parent::__construct($nameResolver, $reflectionProvider);
         $this->variableCollectors = $variableCollectors;
+        $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
@@ -51,13 +57,43 @@ final class VariableCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
+            return null;
+        }
+
+        $isVariablesNode = false;
         $collectedVariables = [];
         foreach ($this->variableCollectors as $variableCollector) {
             if (!$variableCollector->isSupported($node)) {
                 continue;
             }
-            $collectedVariables[] = $variableCollector->collect($node, $scope);
+            $variables = $variableCollector->collect($node, $scope);
+            if ($variables === null) {
+                continue;
+            }
+            $isVariablesNode = true;
+            foreach ($variables as $variable) {
+                $name = $variable->getVariableName();
+                if (isset($collectedVariables[$name])) {
+                    $type = TypeCombinator::union($collectedVariables[$name]->getVariableType(), $variable->getVariableType());
+                    $collectedVariables[$name] = CollectedVariable::build($node, $scope, $name, $type);
+                } else {
+                    $collectedVariables[$name] = $variable;
+                }
+            }
         }
-        return array_merge(...$collectedVariables);
+
+        if (!$isVariablesNode) {
+            return null;
+        }
+
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->hasVariables()) {
+            foreach ($lattePhpDoc->getVariables(array_keys($collectedVariables)) as $name => $type) {
+                $collectedVariables[$name] = CollectedVariable::build($node, $scope, $name, $type);
+            }
+        }
+
+        return array_values($collectedVariables);
     }
 }

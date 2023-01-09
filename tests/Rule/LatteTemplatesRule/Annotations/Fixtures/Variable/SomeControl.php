@@ -17,6 +17,14 @@ final class SomeControl extends Control
         $this->template->render(__DIR__ . '/SomeControl.render.latte', ['explicitParam' => 'a']);
     }
 
+    public function renderIrrelevant()
+    {
+        /** @phpstan-latte-var VarA $myVar */
+        $this->getUniqueId();
+        // COLLECT: TEMPLATE SomeControl.renderIrrelevant.latte SomeControl::renderIrrelevant ["presenter","control","explicitParam"] []
+        $this->template->render(__DIR__ . '/SomeControl.renderIrrelevant.latte', ['explicitParam' => 'a']);
+    }
+
     /** @phpstan-latte-var VarA $methodVar */
     public function renderMethod()
     {
@@ -53,7 +61,7 @@ final class SomeControl extends Control
     {
         /** @phpstan-latte-var VarA $secondVar */
         $this->template->myVar = $param;
-        // COLLECT: TEMPLATE SomeControl.renderAssignDifferent.latte SomeControl::renderAssignDifferent ["presenter","control","secondVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderAssignDifferent.latte SomeControl::renderAssignDifferent ["presenter","control","myVar","secondVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderAssignDifferent.latte', ['explicitParam' => 'a']);
     }
 
@@ -74,6 +82,31 @@ final class SomeControl extends Control
         $this->template->myVar = $param;
         // COLLECT: TEMPLATE SomeControl.renderAssignMultiple.latte SomeControl::renderAssignMultiple ["presenter","control","myVar","secondVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderAssignMultiple.latte', ['explicitParam' => 'a']);
+    }
+
+    public function renderAssignToArray($param)
+    {
+        $items = ['value', 'value'];
+        /**
+         * @phpstan-latte-var VarA $myVar
+         * @phpstan-latte-var VarA
+         * @phpstan-latte-var VarA $secondVar
+         */
+        [$this->template->myVar, $this->template->myVar2] = $items;
+        // COLLECT: TEMPLATE SomeControl.renderAssignToArray.latte SomeControl::renderAssignToArray ["presenter","control","myVar","myVar2","secondVar","explicitParam"] []
+        $this->template->render(__DIR__ . '/SomeControl.renderAssignToArray.latte', ['explicitParam' => 'a']);
+    }
+
+    public function renderSetParameters($param)
+    {
+        /**
+         * @phpstan-latte-var VarA $myVar
+         * @phpstan-latte-var VarA
+         * @phpstan-latte-var VarA $secondVar
+         */
+        $this->template->setParameters(['myVar' => 'value', 'myVar2' => 'value']);
+        // COLLECT: TEMPLATE SomeControl.renderSetParameters.latte SomeControl::renderSetParameters ["presenter","control","myVar","myVar2","secondVar","explicitParam"] []
+        $this->template->render(__DIR__ . '/SomeControl.renderSetParameters.latte', ['explicitParam' => 'a']);
     }
 
     public function renderShadowExplicitParam()
@@ -112,7 +145,7 @@ final class SomeControl extends Control
         $this->template->render(__DIR__ . '/SomeControl.renderIndirect.latte', ['explicitParam' => 'a']);
     }
 
-    /** @phpstan-latte-var VarA $myVar*/
+    /** @phpstan-latte-var VarA $myVar */
     private function setVariablesMethod($param)
     {
         $this->template->myVar = $param;
