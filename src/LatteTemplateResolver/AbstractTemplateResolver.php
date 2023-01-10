@@ -62,8 +62,8 @@ abstract class AbstractTemplateResolver implements LatteTemplateResolverInterfac
         $this->filterFinder = new FilterFinder($latteContext, $this->methodCallFinder);
         $this->formFieldFinder = new FormFieldFinder($latteContext, $this->methodCallFinder);
         $this->formFinder = new FormFinder($latteContext, $this->methodCallFinder, $this->formFieldFinder);
-        $this->templatePathFinder = new TemplatePathFinder($latteContext, $this->methodCallFinder, $this->pathResolver);
-        $this->templateRenderFinder = new TemplateRenderFinder($latteContext, $this->methodCallFinder, $this->templatePathFinder, $this->pathResolver);
+        $this->templatePathFinder = new TemplatePathFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
+        $this->templateRenderFinder = new TemplateRenderFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
 
         return $this->getResult($resolvedNode, $latteContext);
     }

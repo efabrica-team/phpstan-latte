@@ -17,13 +17,16 @@ final class TemplateRenderFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    private MethodFinder $methodFinder;
+
     private TemplatePathFinder $templatePathFinder;
 
     private PathResolver $pathResolver;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
+        $this->methodFinder = $methodFinder;
         $this->templatePathFinder = $templatePathFinder;
         $this->pathResolver = $pathResolver;
 
@@ -38,7 +41,7 @@ final class TemplateRenderFinder
             if ($templatePath === false) {
                 $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender;
             } else {
-                $templatePaths = $this->pathResolver->expand($templatePath);
+                $templatePaths = $this->pathResolver->expand($templatePath, $this->methodFinder);
                 if ($templatePaths === null) {
                     $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withError();
                 } else {

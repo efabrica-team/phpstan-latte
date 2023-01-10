@@ -10,9 +10,9 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethod;
 final class MethodFinder
 {
     /**
-     * @var array<string, array<string, CollectedMethod>>>
+     * @var array<string, array<string, CollectedMethod[]>>>
      */
-    private array $collectedMethods;
+    private array $collectedMethods = [];
 
     private MethodCallFinder $methodCallFinder;
 
@@ -22,13 +22,19 @@ final class MethodFinder
 
         $collectedMethods = $latteContext->getCollectedData(CollectedMethod::class);
         foreach ($collectedMethods as $collectedMethod) {
-            $this->collectedMethods[$collectedMethod->getClassName()][$collectedMethod->getMethodName()] = $collectedMethod;
+            $className = $collectedMethod->getClassName();
+            $methodName = $collectedMethod->getMethodName();
+            if (!isset($this->collectedMethods[$className][$methodName])) {
+                $this->collectedMethods[$className][$methodName] = [];
+            }
+            $this->collectedMethods[$className][$methodName][] = $collectedMethod;
         }
     }
 
     public function find(string $className, string $methodName): CollectedMethod
     {
-        return $this->collectedMethods[$className][$methodName] ?? CollectedMethod::unknown($className, $methodName);
+        $className = $this->methodCallFinder->getDeclaringClass($className, $methodName) ?? $className;
+        return CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
     }
 
     public function hasAnyAlwaysTerminated(string $className, string $methodName): bool

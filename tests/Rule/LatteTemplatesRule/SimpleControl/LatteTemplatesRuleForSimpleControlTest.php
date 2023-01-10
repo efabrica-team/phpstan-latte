@@ -288,4 +288,57 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
         ]);
     }
+
+    public function testTraitOverriding(): void
+    {
+        $this->analyse(
+            [
+                __DIR__ . '/Fixtures/TraitOverriding/SomeControl.php',
+                __DIR__ . '/Fixtures/TraitOverriding/SomeControlWithTemplatePathBehavior.php',
+                __DIR__ . '/Fixtures/TraitOverriding/BaseControl.php',
+            ],
+            [
+            [
+                'Dumped type: \'a\'',
+                1,
+                'base.latte',
+            ],
+            [
+                'Dumped type: \'b\'',
+                2,
+                'base.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                3,
+                'base.latte',
+            ],
+            [
+                'Variable $c might not be defined.',
+                3,
+                'base.latte',
+            ],
+            [
+                'Dumped type: \'c\'',
+                1,
+                'trait.latte',
+            ],
+            [
+                'Dumped type: \'d\'',
+                2,
+                'trait.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                3,
+                'trait.latte',
+            ],
+            [
+                'Variable $c might not be defined.',
+                3,
+                'trait.latte',
+            ],
+            ]
+        );
+    }
 }
