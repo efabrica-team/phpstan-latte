@@ -12,7 +12,7 @@ interface TemplatePathCollectorInterface
     public function isSupported(Node $node): bool;
 
     /**
-     * @return string[]
+     * @return string[]|null
      */
-    public function collect(Node $node, Scope $scope): array;
+    public function collect(Node $node, Scope $scope): ?array;
 }

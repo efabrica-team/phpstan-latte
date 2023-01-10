@@ -60,19 +60,29 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $paths = [];
+        $paths = null;
+        $isCollected = false;
         foreach ($this->templatePathCollectors as $templatePathCollector) {
             if (!$templatePathCollector->isSupported($node)) {
                 continue;
             }
-            $paths = array_merge($paths, $templatePathCollector->collect($node, $scope));
+            $isCollected = true;
+            $collectedPaths = $templatePathCollector->collect($node, $scope);
+            if (is_array($collectedPaths) && $collectedPaths !== []) {
+                $paths = array_merge($paths === null ? [] : $paths, $collectedPaths);
+            }
+        }
+
+        if ($isCollected === false) {
+            return null;
         }
 
         $actualClassName = $classReflection->getName();
-        if ($paths === []) {
+        if ($paths === null) {
             // failed to resolve
             return [new CollectedTemplatePath($actualClassName, $functionName, null)];
         }
+        $paths = array_unique($paths);
         $templatePaths = [];
         foreach ($paths as $path) {
             $templatePaths[] = new CollectedTemplatePath($actualClassName, $functionName, $path);
