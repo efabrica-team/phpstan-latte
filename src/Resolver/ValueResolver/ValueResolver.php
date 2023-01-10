@@ -10,7 +10,6 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
@@ -21,12 +20,12 @@ use PHPStan\Type\UnionType;
 final class ValueResolver
 {
     /**
-     * @param mixed $unknownValuePlaceholder
+     * @param callable(Expr, Scope): mixed $fallbackEvaluator
      * @return mixed[]|null
      */
-    public function resolve(Expr $expr, Scope $scope, $unknownValuePlaceholder = null)
+    public function resolve(Expr $expr, Scope $scope, $fallbackEvaluator = null)
     {
-        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($scope, $unknownValuePlaceholder) {
+        $constExprEvaluator = new ConstExprEvaluator(function (Expr $expr) use ($scope, $fallbackEvaluator) {
             $actualFile = $scope->getFile();
 
             $type = $scope->getType($expr);
@@ -48,15 +47,11 @@ final class ValueResolver
             }
 
             if ($expr instanceof Cast) {
-                $options = $this->resolve($expr->expr, $scope, $unknownValuePlaceholder);
+                $options = $this->resolve($expr->expr, $scope, $fallbackEvaluator);
                 if ($options === null || count($options) !== 1) {
                     throw new ConstExprEvaluationException();
                 }
                 return $options[0];
-            }
-
-            if ($expr instanceof Variable && $unknownValuePlaceholder) {
-                return $unknownValuePlaceholder;
             }
 
             if ($expr instanceof FuncCall) {
@@ -82,7 +77,11 @@ final class ValueResolver
                 return call_user_func_array($functionName, $arguments);
             }
 
-            throw new ConstExprEvaluationException();
+            if ($fallbackEvaluator !== null) {
+                return $fallbackEvaluator($expr, $scope);
+            } else {
+                throw new ConstExprEvaluationException();
+            }
         });
 
         $type = $scope->getType($expr);

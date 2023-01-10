@@ -18,11 +18,14 @@ final class TemplatePathFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    private MethodFinder $methodFinder;
+
     private PathResolver $pathResolver;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, PathResolver $pathResolver)
+    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
+        $this->methodFinder = $methodFinder;
         $this->pathResolver = $pathResolver;
 
         $collectedTemplatePaths = $latteContext->getCollectedData(CollectedTemplatePath::class);
@@ -32,7 +35,7 @@ final class TemplatePathFinder
             if (!isset($this->collectedTemplatePaths[$className][$methodName])) {
                 $this->collectedTemplatePaths[$className][$methodName] = [];
             }
-            $templatePaths = $this->pathResolver->expand($collectedTemplatePath->getTemplatePath());
+            $templatePaths = $this->pathResolver->expand($collectedTemplatePath->getTemplatePath(), $this->methodFinder);
             if ($templatePaths !== null) {
                 foreach ($templatePaths as $templatePath) {
                     $this->collectedTemplatePaths[$className][$methodName][] = $templatePath;

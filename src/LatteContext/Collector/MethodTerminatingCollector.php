@@ -15,7 +15,7 @@ use PHPStan\Node\ExecutionEndNode;
 /**
  * @extends AbstractLatteContextCollector<ExecutionEndNode, CollectedMethod>
  */
-final class MethodCollector extends AbstractLatteContextCollector
+final class MethodTerminatingCollector extends AbstractLatteContextCollector
 {
     public function getNodeType(): string
     {

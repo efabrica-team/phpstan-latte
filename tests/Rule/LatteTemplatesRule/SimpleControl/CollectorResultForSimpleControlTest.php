@@ -73,6 +73,13 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE complexType.latte SomeControl::renderComplexType ["presenter","control","a","b"] []',
             'TEMPLATE throwSometimes.latte SomeControl::renderThrowSometimes ["presenter","control"] []',
             'TEMPLATE default.latte SomeControl::renderIgnoredRender ["presenter","control"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderMethodCall ["presenter","control"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderMethodCallPart ["presenter","control"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderStaticMethodCall ["presenter","control"] []',
+            'TEMPLATE methodCall.aa.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
+            'TEMPLATE methodCall.ab.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
+            'TEMPLATE methodCall.ba.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
+            'TEMPLATE methodCall.bb.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
         ]);
     }
 }

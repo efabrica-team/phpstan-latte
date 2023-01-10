@@ -147,4 +147,44 @@ final class SomeControl extends Control
     public function notRender(): void
     {
     }
+
+    public function renderMethodCall(): void
+    {
+        $this->template->render($this->getTemplatePath());
+    }
+
+    private function getTemplatePath(): string
+    {
+        return __DIR__ . '/methodCall.latte';
+    }
+
+    public function renderMethodCallPart(): void
+    {
+        $this->template->render(__DIR__ . '/' . $this->getTemplatePathPart());
+    }
+
+    private function getTemplatePathPart(): string
+    {
+        return 'methodCall.latte';
+    }
+
+    public function renderStaticMethodCall(): void
+    {
+        $this->template->render(self::staticGetTemplatePath());
+    }
+
+    private static function staticGetTemplatePath(): string
+    {
+        return __DIR__ . '/methodCall.latte';
+    }
+
+    public function renderMethodCallMulti(bool $param): void
+    {
+        $this->template->render(__DIR__ . '/methodCall.' . $this->getTemplatePathMulti($param) . $this->getTemplatePathMulti($param) . '.latte');
+    }
+
+    private function getTemplatePathMulti(bool $param): string
+    {
+        return $param ? 'a' : 'b';
+    }
 }
