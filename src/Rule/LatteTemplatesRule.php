@@ -12,6 +12,7 @@ use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
@@ -48,6 +49,8 @@ final class LatteTemplatesRule implements Rule
 
     private LatteContextAnalyser $latteContextAnalyser;
 
+    private LatteContextFactory $latteContextFactory;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
@@ -59,7 +62,8 @@ final class LatteTemplatesRule implements Rule
         RuleRegistry $rulesRegistry,
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
-        LatteContextAnalyser $latteContextAnalyser
+        LatteContextAnalyser $latteContextAnalyser,
+        LatteContextFactory $latteContextFactory
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -69,6 +73,7 @@ final class LatteTemplatesRule implements Rule
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
         $this->latteContextAnalyser = $latteContextAnalyser;
+        $this->latteContextFactory = $latteContextFactory;
     }
 
     public function getNodeType(): string
@@ -82,9 +87,10 @@ final class LatteTemplatesRule implements Rule
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
-        $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
+        $latteContextData = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
+        $latteContext = $this->latteContextFactory->create($latteContextData);
 
-        $errors = $latteContext->getErrors();
+        $errors = $latteContextData->getErrors();
         $templates = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
