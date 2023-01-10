@@ -68,7 +68,7 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
             }
             $isCollected = true;
             $collectedPaths = $templatePathCollector->collect($node, $scope);
-            if (is_array($collectedPaths) && $collectedPaths !== []) {
+            if (is_array($collectedPaths)) {
                 $paths = array_merge($paths === null ? [] : $paths, $collectedPaths);
             }
         }

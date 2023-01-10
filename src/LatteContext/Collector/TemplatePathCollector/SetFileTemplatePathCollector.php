@@ -41,17 +41,17 @@ final class SetFileTemplatePathCollector implements TemplatePathCollectorInterfa
     {
         $calledMethodName = $this->nameResolver->resolve($node);
         if (!in_array($calledMethodName, ['setFile'], true)) {
-            return null;
+            return [];
         }
 
         $callerType = $scope->getType($node->var);
         if (!$this->templateTypeResolver->resolve($callerType)) {
-            return null;
+            return [];
         }
 
         $arg = $node->getArgs()[0] ?? null;
         if (!$arg) {
-            return null;
+            return [];
         }
 
         return $this->pathResolver->resolve($arg->value, $scope);
