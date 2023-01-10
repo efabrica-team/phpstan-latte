@@ -213,23 +213,17 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
 
             if ($methodCallVar instanceof StaticCall && $this->nameResolver->resolve($methodCallVar->class) === 'Nette\Bridges\FormsLatte\Runtime' && $this->nameResolver->resolve($methodCallVar->name) === 'item') {
-                $controlVarName = 'ʟ_control';
-                $htmlVarName = 'ʟ_html';
-                $getControlMethodCall = array_pop($methodCalls);
-                $getControlMethodCall->var = new Variable($controlVarName);
-
-                $newMethodCallVar = new Variable($htmlVarName);
+                $varName = 'ʟ_input';
+                $newMethodCallVar = new Variable($varName);
                 $newMethodCall = null;
-                $methodCalls = array_reverse($methodCalls);
-                foreach ($methodCalls as $methodCall) {
+                foreach (array_reverse($methodCalls) as $methodCall) {
                     $newMethodCall = $newMethodCallVar = new MethodCall($newMethodCallVar, $methodCall->name, $methodCall->args);
                 }
 
-                return array_filter([
-                    new Expression(new Assign(new Variable($controlVarName), $methodCallVar), ['comments' => [new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $controlVarName . ' */')]]),
-                    new Expression(new Assign(new Variable($htmlVarName), $getControlMethodCall), ['comments' => [new Doc('/** @var Nette\Utils\Html $' . $htmlVarName . ' */')]]),
-                    $newMethodCall ? new Echo_([$newMethodCall]) : null,
-                ]);
+                return [
+                    new Expression(new Assign(new Variable($varName), $methodCallVar), ['comments' => [new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' */')]]),
+                    new Echo_([$newMethodCall]),
+                ];
             }
         }
 
