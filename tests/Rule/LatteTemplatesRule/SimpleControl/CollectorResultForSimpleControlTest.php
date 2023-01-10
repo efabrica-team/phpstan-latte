@@ -13,6 +13,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
         return [
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
+            __DIR__ . '/config.neon',
         ];
     }
 
@@ -80,6 +81,16 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE methodCall.ab.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
             'TEMPLATE methodCall.ba.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
             'TEMPLATE methodCall.bb.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
+        ]);
+    }
+
+    public function testHierarchy(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","some","parent","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE parent.latte SomeControl::renderParent ["presenter","control","parent","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE grandParent.latte SomeControl::renderGrandParent ["presenter","control","grandParent","data","parentData","grandParentData"] []',
         ]);
     }
 }

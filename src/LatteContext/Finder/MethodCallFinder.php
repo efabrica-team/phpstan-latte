@@ -76,7 +76,7 @@ final class MethodCallFinder
         $calledMethods = $this->collectedMethodCalled[$declaringClass][$methodName] ?? [];
         $result = [];
         foreach ($calledMethods as $calledMethod) {
-            $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($currentClassName ?? $className));
+            $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($declaringClass), $currentClassName ?? $className);
             if ($this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
                 continue;
             }
