@@ -39,7 +39,17 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                         ->line($reflectionMethod->getStartLine()));
                 }
             }
-            $result->addTemplatesFromRenders($templateRenders, $variables, $components, $forms, $filters, $reflectionClass->getName(), $reflectionMethod->getName());
+            foreach ($templateRenders as $templateRender) {
+                $result->addTemplateFromRender(
+                    $templateRender,
+                    $variables,
+                    $components,
+                    $forms,
+                    $filters,
+                    $reflectionClass->getName(),
+                    $reflectionMethod->getName()
+                );
+            }
         }
         return $result;
     }

@@ -11,8 +11,7 @@ class NetteApplicationUIPresenterLatteContextResolver extends ClassLatteContextR
     public function getVariables(): array
     {
         return VariablesHelper::merge(
-            $this->latteContext->variableFinder()->find($this->getClassName(), 'startup'),
-            $this->latteContext->variableFinder()->find($this->getClassName(), 'beforeRender'),
+            $this->latteContext->variableFinder()->find($this->getClassName(), 'startup', 'beforeRender'),
             [
                 new Variable('presenter', $this->getClassType()),
                 new Variable('control', $this->getClassType()),

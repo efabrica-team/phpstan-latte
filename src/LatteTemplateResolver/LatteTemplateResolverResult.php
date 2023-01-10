@@ -12,10 +12,8 @@ use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\Variable;
-use InvalidArgumentException;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use function is_string;
 
 final class LatteTemplateResolverResult
 {
@@ -69,32 +67,6 @@ final class LatteTemplateResolverResult
     }
 
     /**
-     * @param CollectedTemplateRender[] $templateRenders
-     * @param Variable[] $variables
-     * @param Component[] $components
-     * @param Form[] $forms
-     * @param Filter[] $filters
-     * @param class-string $className
-     */
-    public function addTemplatesFromRenders(array $templateRenders, array $variables, array $components, array $forms, array $filters, string $className, string $action): void
-    {
-        foreach ($templateRenders as $templateRender) {
-            $templatePath = $templateRender->getTemplatePath();
-            if ($templatePath === false) {
-                $this->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
-                    ->file($templateRender->getFile())
-                    ->line($templateRender->getLine()));
-            } elseif ($templatePath === null) {
-                $this->addErrorFromBuilder(RuleErrorBuilder::message("Latte template was not set for $className::$action")
-                    ->file($templateRender->getFile())
-                    ->line($templateRender->getLine()));
-            } else {
-                $this->addTemplateFromRender($templateRender, $variables, $components, $forms, $filters, $className, $action);
-            }
-        }
-    }
-
-    /**
      * @param Variable[] $variables
      * @param Component[] $components
      * @param Form[] $forms
@@ -104,8 +76,16 @@ final class LatteTemplateResolverResult
     public function addTemplateFromRender(CollectedTemplateRender $templateRender, array $variables, array $components, array $forms, array $filters, string $className, string $action): void
     {
         $templatePath = $templateRender->getTemplatePath();
-        if (!is_string($templatePath)) {
-            throw new InvalidArgumentException('Cannot add template from CollectedTemplate render without resolved template.');
+        if ($templatePath === false) {
+            $this->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
+                ->file($templateRender->getFile())
+                ->line($templateRender->getLine()));
+            return;
+        } elseif ($templatePath === null) {
+            $this->addErrorFromBuilder(RuleErrorBuilder::message("Latte template was not set for $className::$action")
+                ->file($templateRender->getFile())
+                ->line($templateRender->getLine()));
+            return;
         }
 
         $this->addTemplate(new Template(

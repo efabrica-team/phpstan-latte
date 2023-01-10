@@ -103,15 +103,17 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $result = new LatteTemplateResolverResult();
         foreach ($actions as $actionName => $actionDefinition) {
             // explicit render calls
-            $result->addTemplatesFromRenders(
-                $actionDefinition['renders'],
-                $actionDefinition['variables'],
-                $actionDefinition['components'],
-                $actionDefinition['forms'],
-                $actionDefinition['filters'],
-                $reflectionClass->getName(),
-                $actionName
-            );
+            foreach ($actionDefinition['renders'] as $templateRender) {
+                $result->addTemplateFromRender(
+                    $templateRender,
+                    $actionDefinition['variables'],
+                    $actionDefinition['components'],
+                    $actionDefinition['forms'],
+                    $actionDefinition['filters'],
+                    $reflectionClass->getName(),
+                    $actionName
+                );
+            }
 
             // default render with set template path
             foreach ($actionDefinition['templatePaths'] as $template) {

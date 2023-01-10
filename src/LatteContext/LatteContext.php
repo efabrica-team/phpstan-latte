@@ -20,6 +20,8 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class LatteContext
 {
+    private LatteContextData $latteContextData;
+
     private ReflectionProvider $reflectionProvider;
 
     private PathResolver $pathResolver;
@@ -44,26 +46,29 @@ final class LatteContext
 
     private TemplateRenderFinder $templateRenderFinder;
 
-    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
+    public function __construct(LatteContextData $latteContextData, ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
+        $this->latteContextData = $latteContextData;
         $this->reflectionProvider = $reflectionProvider;
         $this->pathResolver = $pathResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
 
-        $this->methodCallFinder = new MethodCallFinder($latteContext, $this->reflectionProvider, $this->lattePhpDocResolver);
-        $this->methodFinder = new MethodFinder($latteContext, $this->methodCallFinder);
-        $this->variableFinder = new VariableFinder($latteContext, $this->methodCallFinder);
-        $this->componentFinder = new ComponentFinder($latteContext, $this->methodCallFinder);
-        $this->filterFinder = new FilterFinder($latteContext, $this->methodCallFinder);
-        $this->formFieldFinder = new FormFieldFinder($latteContext, $this->methodCallFinder);
-        $this->formFinder = new FormFinder($latteContext, $this->methodCallFinder, $this->formFieldFinder);
-        $this->templatePathFinder = new TemplatePathFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
-        $this->templateRenderFinder = new TemplateRenderFinder($latteContext, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
+        $this->methodCallFinder = new MethodCallFinder($latteContextData, $this->reflectionProvider, $this->lattePhpDocResolver);
+        $this->methodFinder = new MethodFinder($latteContextData, $this->methodCallFinder);
+        $this->variableFinder = new VariableFinder($latteContextData, $this->methodCallFinder);
+        $this->componentFinder = new ComponentFinder($latteContextData, $this->methodCallFinder);
+        $this->filterFinder = new FilterFinder($latteContextData, $this->methodCallFinder);
+        $this->formFieldFinder = new FormFieldFinder($latteContextData, $this->methodCallFinder);
+        $this->formFinder = new FormFinder($latteContextData, $this->methodCallFinder, $this->formFieldFinder);
+        $this->templatePathFinder = new TemplatePathFinder($latteContextData, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
+        $this->templateRenderFinder = new TemplateRenderFinder($latteContextData, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
     }
 
-    /**
-     * @return MethodFinder
-     */
+    public function getLatteContextData(): LatteContextData
+    {
+        return $this->latteContextData;
+    }
+
     public function methodFinder(): MethodFinder
     {
         return $this->methodFinder;
