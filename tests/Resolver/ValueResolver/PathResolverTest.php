@@ -6,12 +6,12 @@ namespace Efabrica\PHPStanLatte\Tests\Resolver\ValueResolver;
 
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Nette\Utils\Finder;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Testing\PHPStanTestCase;
-use Symfony\Component\Finder\Finder;
 
 final class PathResolverTest extends PHPStanTestCase
 {
@@ -52,7 +52,7 @@ final class PathResolverTest extends PHPStanTestCase
 
     public function fixtures(): iterable
     {
-        foreach (Finder::create()->in(__DIR__ . '/Fixtures')->name('path.*.fixture') as $file) {
+        foreach (Finder::findFiles('path.*.fixture')->in(__DIR__ . '/Fixtures') as $file) {
             yield [(string)$file];
         }
     }
