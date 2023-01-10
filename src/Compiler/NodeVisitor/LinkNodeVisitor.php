@@ -92,7 +92,7 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
         try {
             $targetName = (new ConstExprEvaluator())->evaluateDirectly($target);
         } catch (ConstExprEvaluationException $e) {
-            $targetName = null;
+            return null;
         }
         if (!is_string($targetName)) {
             return null;
