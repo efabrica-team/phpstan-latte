@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory;
 use Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorInterface;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Nette\Application\InvalidPresenterException;
+use PhpParser\ConstExprEvaluationException;
 use PhpParser\ConstExprEvaluator;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
@@ -88,7 +89,11 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
         $linkArgs = $methodCall->getArgs();
         $target = $linkArgs[0]->value;
 
-        $targetName = (new ConstExprEvaluator())->evaluateDirectly($target);
+        try {
+            $targetName = (new ConstExprEvaluator())->evaluateDirectly($target);
+        } catch (ConstExprEvaluationException $e) {
+            return null;
+        }
         if (!is_string($targetName)) {
             return null;
         }
