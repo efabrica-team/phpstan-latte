@@ -109,6 +109,20 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $this->actualForm = null;
                     return $node;
                 }
+
+                /**
+                 * Replace:
+                 * <code>
+                 * \Nette\Bridges\FormsLatte\Runtime::item('foobar')
+                 * </code>
+                 *
+                 * With:
+                 * <code>
+                 * $form['foobar']
+                 * <code>
+                 *
+                 * if foobar exists in actual form
+                 */
                 if ($this->nameResolver->resolve($node->name) === 'item') {
                     if ($this->actualForm === null) {
                         return null;
@@ -202,6 +216,19 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
         }
 
+        /**
+         * Replace:
+         * <code>
+         * echo \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global)->getControl();
+         * </code>
+         *
+         * With:
+         * <code>
+         * /** @var Nette\Forms\Controls\BaseControl $ʟ_input
+         * $ʟ_input = \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global);
+         * echo $ʟ_input->getControl();
+         * </code>
+         */
         if ($node instanceof Echo_ && ($node->exprs[0] ?? null) instanceof MethodCall) {
             /** @var MethodCall $methodCall */
             $methodCall = $node->exprs[0];
