@@ -2,7 +2,7 @@
     {input text} <label n:name="text">Text</label><input n:name="text">
     {input textarea id => "myId"}
     {input password}
-    {input submit, ['class' => 'btn']}
+    {input submit, 'class' => 'btn'}
 {/form}
 
 {form secondForm}
@@ -10,7 +10,7 @@
     {input username}
     {input password}
     {input checkbox}{label checkbox /} <label n:name="checkbox"><input n:name="checkbox">Checkbox</label>
-    {input second_submit, ['class' => 'btn']}{label second_submit_label /}
+    {input second_submit, 'class' => 'btn'}{label second_submit_label /}
 {/form}
 
 {form customForm}
@@ -49,5 +49,5 @@
     {var $name = "text"}
     {input $name}
     {var $textarea = $form['textarea']}
-    {input $textarea}
+    {input $textarea, 'class' => 'textarea'}
 {/form}

@@ -21,6 +21,7 @@ use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
@@ -31,6 +32,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
@@ -101,10 +103,52 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             $this->actualForm = $this->forms[$formName] ?? null;
             return new Assign(new Variable('form'), new New_(new Name($formClassName)));
         } elseif ($node instanceof StaticCall) {
-            if ($this->nameResolver->resolve($node) === 'renderFormEnd') {
-                $node->args[0] = new Arg(new Variable('form'));
-                $this->actualForm = null;
-                return $node;
+            if ($this->nameResolver->resolve($node->class) === 'Nette\Bridges\FormsLatte\Runtime') {
+                if ($this->nameResolver->resolve($node->name) === 'renderFormEnd') {
+                    $node->args[0] = new Arg(new Variable('form'));
+                    $this->actualForm = null;
+                    return $node;
+                }
+
+                /**
+                 * Replace:
+                 * <code>
+                 * \Nette\Bridges\FormsLatte\Runtime::item('foobar')
+                 * </code>
+                 *
+                 * With:
+                 * <code>
+                 * $form['foobar']
+                 * <code>
+                 *
+                 * if foobar exists in actual form
+                 */
+                if ($this->nameResolver->resolve($node->name) === 'item') {
+                    if ($this->actualForm === null) {
+                        return null;
+                    }
+                    $itemArgument = $node->getArgs()[0] ?? null;
+                    $itemArgumentValue = $itemArgument ? $itemArgument->value : null;
+
+                    if ($itemArgumentValue instanceof String_) {
+                        $fieldName = $itemArgumentValue->value;
+                        $formField = $this->actualForm->getFormField($fieldName);
+                        if ($formField === null) {
+                            $this->errorFieldNodes[] = [
+                                'node' => $this->findParentStmt($node),
+                                'field' => $fieldName,
+                            ];
+                            return null;
+                        }
+                    } elseif ($itemArgumentValue instanceof Variable) {
+                        return null;
+                    }
+                    return new ArrayDimFetch(
+                        new Variable('form'),
+                        $itemArgumentValue,
+                        $node->getAttributes()
+                    );
+                }
             }
         } elseif ($node instanceof ArrayDimFetch) {
             if ($this->actualForm === null) {
@@ -167,8 +211,46 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         ) {
             $varName = $this->nameResolver->resolve($node->expr->var);
             if ($varName === 'ʟ_input' || $varName === '_input') {
-                $node->setDocComment(new Doc('/** @var Nette\Forms\Controls\BaseControl ' . $varName . ' @phpstan-ignore-next-line */'));
+                $node->setDocComment(new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' @phpstan-ignore-next-line */'));
                 return $node;
+            }
+        }
+
+        /**
+         * Replace:
+         * <code>
+         * echo \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global)->getControl();
+         * </code>
+         *
+         * With:
+         * <code>
+         * /** @var Nette\Forms\Controls\BaseControl $ʟ_input
+         * $ʟ_input = \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global);
+         * echo $ʟ_input->getControl();
+         * </code>
+         */
+        if ($node instanceof Echo_ && ($node->exprs[0] ?? null) instanceof MethodCall) {
+            /** @var MethodCall $methodCall */
+            $methodCall = $node->exprs[0];
+            $methodCallVar = $methodCall->var;
+            $methodCalls[] = $methodCall;
+            while ($methodCallVar instanceof MethodCall) {
+                $methodCalls[] = $methodCallVar;
+                $methodCallVar = $methodCallVar->var;
+            }
+
+            if ($methodCallVar instanceof StaticCall && $this->nameResolver->resolve($methodCallVar->class) === 'Nette\Bridges\FormsLatte\Runtime' && $this->nameResolver->resolve($methodCallVar->name) === 'item') {
+                $varName = 'ʟ_input';
+                $newMethodCallVar = new Variable($varName);
+                $newMethodCall = null;
+                foreach (array_reverse($methodCalls) as $methodCall) {
+                    $newMethodCall = $newMethodCallVar = new MethodCall($newMethodCallVar, $methodCall->name, $methodCall->args);
+                }
+
+                return [
+                    new Expression(new Assign(new Variable($varName), $methodCallVar), ['comments' => [new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' */')]]),
+                    new Echo_([$newMethodCall]),
+                ];
             }
         }
 
