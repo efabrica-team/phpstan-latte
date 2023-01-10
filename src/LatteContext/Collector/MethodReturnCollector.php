@@ -40,11 +40,17 @@ final class MethodReturnCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        $returnType = $scope->getType($node->expr);
+
+        if ($returnType->getConstantStrings() === []) {
+            return null; // we only use constatn string return types in PathResolver
+        }
+
         return [new CollectedMethod(
             $actualClassName,
             $methodName,
             false,
-            $scope->getType($node->expr)
+            $returnType
         )];
     }
 }

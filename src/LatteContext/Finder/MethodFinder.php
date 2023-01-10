@@ -12,7 +12,7 @@ final class MethodFinder
     /**
      * @var array<string, array<string, CollectedMethod[]>>>
      */
-    private array $collectedMethods;
+    private array $collectedMethods = [];
 
     private MethodCallFinder $methodCallFinder;
 
@@ -33,6 +33,7 @@ final class MethodFinder
 
     public function find(string $className, string $methodName): CollectedMethod
     {
+        $className = $this->methodCallFinder->getDeclaringClass($className, $methodName) ?? $className;
         return CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
     }
 

@@ -138,6 +138,10 @@ final class PathResolver
             return array_merge(...$expandedPaths);
         }
 
+        if ($path === '*') {
+            return null;
+        }
+
         // expand wildcard
         if (strpos($path, '*') !== false) {
             $dirWithoutWildcards = (string)Strings::before((string)Strings::before($path, '*'), '/', -1);

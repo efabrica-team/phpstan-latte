@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\TraitOverriding;
 
-final class SomeControl extends BaseControl
+final class SomeControlWithTemplatePathBehavior extends BaseControl
 {
     use TemplatePathBehavior;
 
