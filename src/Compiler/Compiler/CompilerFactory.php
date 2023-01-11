@@ -24,6 +24,11 @@ final class CompilerFactory
     /** @var Extension[]  */
     protected array $extensions;
 
+    private ?CompilerInterface $compiler = null;
+
+    /** @var array<string, Engine> */
+    private static $engines = [];
+
     /**
      * @param array<string, string|array{string, string}> $filters
      * @param string[] $macros
@@ -45,11 +50,20 @@ final class CompilerFactory
 
     public function create(): CompilerInterface
     {
+        if ($this->compiler !== null) {
+            return $this->compiler;
+        }
+
         $engine = null;
         if ($this->engineBootstrap !== null) {
-            $engine = require $this->engineBootstrap;
-            if (!$engine instanceof Engine) {
-                throw new InvalidArgumentException('engineBootstrap must return Latte\Engine');
+            if (isset(self::$engines[$this->engineBootstrap])) {
+                $engine = self::$engines[$this->engineBootstrap];
+            } else {
+                $engine = require $this->engineBootstrap;
+                if (!$engine instanceof Engine) {
+                    throw new InvalidArgumentException('Bootstrap file must return instance of Latte\Engine');
+                }
+                self::$engines[$this->engineBootstrap] = $engine;
             }
         }
 
@@ -57,12 +71,14 @@ final class CompilerFactory
             if (count($this->extensions) > 0) {
                 throw new InvalidArgumentException('You cannot use configuration option latte > extensions with Latte 2');
             }
-            return new Latte2Compiler($engine, $this->strictMode, $this->filters, $this->macros);
+            $this->compiler = new Latte2Compiler($engine, $this->strictMode, $this->filters, $this->macros);
         } else {
             if (count($this->macros) > 0) {
                 throw new InvalidArgumentException('You cannot use configuration option latte > macros with Latte 3');
             }
-            return new Latte3Compiler($engine, $this->strictMode, $this->filters, $this->extensions);
+            $this->compiler = new Latte3Compiler($engine, $this->strictMode, $this->filters, $this->extensions);
         }
+
+        return $this->compiler;
     }
 }
