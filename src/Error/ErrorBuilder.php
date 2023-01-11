@@ -35,6 +35,7 @@ final class ErrorBuilder
         '/Cannot call method (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./',  // inner foreach cause that phpstan thinks there is null in CachingIterator
         '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./',   // latte 3 internal error
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|string\./',
+        '/Method Nette\\\\Forms\\\\Controls\\\\BaseControl::getControlPart\(\) invoked with 1 parameter, 0 required\./', // dynamic checkbox is typehinted as BaseControl
     ];
 
     /** @var ErrorTransformerInterface[] */
