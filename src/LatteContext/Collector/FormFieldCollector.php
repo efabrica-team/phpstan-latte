@@ -15,6 +15,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\UnionType;
 
 /**
  * @extends AbstractLatteContextCollector<Node, CollectedFormField>
@@ -103,9 +104,10 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             }
 
             $formFieldType = $formFieldParametersAcceptor->getReturnType();
-
             $fieldNameArg = $node->getArgs()[0] ?? null;
-            $fieldNameDefaultType = $formFieldParametersAcceptor->getParameters()[0]->getDefaultValue();
+
+            $formFieldParameters = $formFieldParametersAcceptor->getParameters();
+            $fieldNameDefaultType = isset($formFieldParameters[0]) ? $formFieldParameters[0]->getDefaultValue() : null;
             if ($fieldNameDefaultType instanceof ConstantStringType) {
                 $fieldNameDefault = trim($fieldNameDefaultType->getValue(), '"\'');
             } else {
@@ -113,14 +115,26 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             }
         }
 
-        if (!$formFieldType instanceof ObjectType) {
+        $formFieldTypes = [];
+        if ($formFieldType instanceof ObjectType) {
+            $formFieldTypes[] = $formFieldType;
+        } elseif ($formFieldType instanceof UnionType) {
+            $formFieldTypes = $formFieldType->getTypes();
+        }
+
+        if ($formFieldTypes === []) {
             return null;
         }
 
-        if (!$formFieldType->isInstanceOf('Nette\Forms\Container')->yes() &&
-            !$formFieldType->isInstanceOf('Nette\Forms\Control')->yes()
-        ) {
-            return null;
+        foreach ($formFieldTypes as $formFieldTypeToCheck) {
+            if (!$formFieldTypeToCheck instanceof ObjectType) {
+                return null;
+            }
+            if (!$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Container')->yes() &&
+                !$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Control')->yes()
+            ) {
+                return null;
+            }
         }
 
         if ($fieldNameArg !== null) {
