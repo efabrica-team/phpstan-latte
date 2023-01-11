@@ -9,7 +9,7 @@ use Nette\Forms\Controls\TextInput;
 
 /**
  * @method CustomFormRenderer getRenderer()
- * @method TextInput addCustomText(string $name, ?string $label = null, ?int $cols = null, ?int $maxLength = null)
+ * @method TextInput addCustomText(string $name = 'custom_default', ?string $label = null, ?int $cols = null, ?int $maxLength = null)
  */
 class CustomForm extends Form
 {

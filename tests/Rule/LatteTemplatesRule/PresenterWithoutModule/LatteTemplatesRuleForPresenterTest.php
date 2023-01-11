@@ -396,17 +396,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
-                20,
+                21,
                 'default.latte',
             ],
             [
                 'Form with name "notExisting" probably does not exist.',
-                44,
+                45,
                 'default.latte',
             ],
             [
                 'Form field with name "username" probably does not exist.',
-                45,
+                46,
                 'default.latte',
             ],
         ]);

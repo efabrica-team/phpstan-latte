@@ -13,6 +13,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -86,6 +87,7 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             }
             $formFieldType = $scope->getType($componentArg->value);
             $fieldNameArg = $node->getArgs()[1] ?? null;
+            $fieldNameDefault = null;
         } else {
             // other form methods
             $formClassReflection = $this->reflectionProvider->getClass($formType->getClassName());
@@ -103,6 +105,12 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             $formFieldType = $formFieldParametersAcceptor->getReturnType();
 
             $fieldNameArg = $node->getArgs()[0] ?? null;
+            $fieldNameDefaultType = $formFieldParametersAcceptor->getParameters()[0]->getDefaultValue();
+            if ($fieldNameDefaultType instanceof ConstantStringType) {
+                $fieldNameDefault = trim($fieldNameDefaultType->getValue(), '"\'');
+            } else {
+                $fieldNameDefault = null;
+            }
         }
 
         if (!$formFieldType instanceof ObjectType) {
@@ -115,12 +123,14 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if ($fieldNameArg === null) {
-            return null;
-        }
-
-        $fieldNames = $this->valueResolver->resolveStrings($fieldNameArg->value, $scope);
-        if ($fieldNames === null) {
+        if ($fieldNameArg !== null) {
+            $fieldNames = $this->valueResolver->resolveStrings($fieldNameArg->value, $scope);
+            if ($fieldNames === null) {
+                return null;
+            }
+        } elseif ($fieldNameDefault !== null) {
+            $fieldNames = [$fieldNameDefault];
+        } else {
             return null;
         }
 
