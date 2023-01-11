@@ -15,16 +15,15 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
     {
         $result = new LatteTemplateResolverResult();
         $standaloneTemplateFiles = $this->findStandaloneTemplates($reflectionClass);
-        $classContextResolver = $this->getClassContextResolver($reflectionClass, $latteContext);
         foreach ($standaloneTemplateFiles as $standaloneTemplateFile) {
             $result->addTemplate(new Template(
                 $standaloneTemplateFile,
                 $reflectionClass->getName(),
                 null,
-                $classContextResolver->getVariables(),
-                $classContextResolver->getComponents(),
-                $classContextResolver->getForms(),
-                $classContextResolver->getFilters()
+                $this->getClassGlobalVariables($reflectionClass, $latteContext),
+                $this->getClassGlobalComponents($reflectionClass, $latteContext),
+                $this->getClassGlobalForms($reflectionClass, $latteContext),
+                $this->getClassGlobalFilters($reflectionClass, $latteContext)
             ));
         }
         return $result;
