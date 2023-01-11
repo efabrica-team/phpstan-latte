@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.3.0] - 2022-12-06
 ### Added
 - Annotation `@phpstan-latte-ignore` can be used to ignore render calls, variable assignments, component creation, whole methods or classes.
 - Annotation `@phpstan-latte-template` can be used to specify what template is used to render.
@@ -10,7 +11,9 @@
 - Resolves calls to `setView` and `sendTemplate` in presenters
 - Collecting form fields across method calls
 - Collecting form fields added by `addComponent`
- 
+- Interface for Custom resolvers
+- Subcollectors for variables and template paths
+
 ## [0.2.0] - 2022-12-06
 ### Changed
 - Used collectors to find all variables, components, method calls and templates to analyse
@@ -43,6 +46,7 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/efabrica-team/phpstan-latte/compare/0b29bd7924d89c16d68d804fecdf5427197f2497...0.1.0
