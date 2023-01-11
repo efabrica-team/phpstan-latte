@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethodCall;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
-use Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter;
+use Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;

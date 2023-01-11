@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
+use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -27,15 +28,19 @@ final class CollectorResultRule implements Rule
 
     private LatteContextAnalyser $latteContextAnalyser;
 
+    private LatteContextFactory $latteContextFactory;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      */
     public function __construct(
         array $latteTemplateResolvers,
-        LatteContextAnalyser $latteContextAnalyser
+        LatteContextAnalyser $latteContextAnalyser,
+        LatteContextFactory $latteContextFactory
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteContextAnalyser = $latteContextAnalyser;
+        $this->latteContextFactory = $latteContextFactory;
     }
 
     public function getNodeType(): string
@@ -51,7 +56,8 @@ final class CollectorResultRule implements Rule
         $errors = [];
 
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
-        $latteContext = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
+        $latteContextData = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
+        $latteContext = $this->latteContextFactory->create($latteContextData);
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
                 $resolver = $this->shortClassName($collectedResolvedNode->getResolver());

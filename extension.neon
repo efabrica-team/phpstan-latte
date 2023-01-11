@@ -85,9 +85,9 @@ services:
             parser: @latteCurrentPhpVersionRichParser
 
     # Latte template resolvers
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenter
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIPresenterStandalone
-    - Efabrica\PHPStanLatte\LatteTemplateResolver\NetteApplicationUIControl
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenterStandalone
+    - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIControl
 
     # Type resolvers
     - Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver
@@ -136,6 +136,8 @@ services:
         tags:
             - phpstan.collector
 
+    - Efabrica\PHPStanLatte\LatteContext\LatteContextFactory
+
     # Latte context collectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableMethodPhpDocCollector
@@ -159,6 +161,9 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToTemplateVariableCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\AssignToArrayOfTemplateVariablesCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\SetParametersToTemplateVariableCollector
+
+    # TemplatePath subcollectors
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector\SetFileTemplatePathCollector
 
     # Variable collectors
     variableCollectorStorage:

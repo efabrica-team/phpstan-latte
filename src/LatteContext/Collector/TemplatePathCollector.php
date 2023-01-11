@@ -5,46 +5,43 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplatePath;
+use Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector\TemplatePathCollectorInterface;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
-use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PhpParser\Node;
-use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<MethodCall, CollectedTemplatePath>
+ * @extends AbstractLatteContextCollector<Node, CollectedTemplatePath>
  */
 final class TemplatePathCollector extends AbstractLatteContextCollector
 {
-    private TemplateTypeResolver $templateTypeResolver;
-
-    private PathResolver $pathResolver;
+    /** @var TemplatePathCollectorInterface[] */
+    private array $templatePathCollectors;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
+    /**
+     * @param TemplatePathCollectorInterface[] $templatePathCollectors
+     */
     public function __construct(
+        array $templatePathCollectors,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        TemplateTypeResolver $templateTypeResolver,
-        PathResolver $pathResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
         parent::__construct($nameResolver, $reflectionProvider);
-        $this->templateTypeResolver = $templateTypeResolver;
-        $this->pathResolver = $pathResolver;
+        $this->templatePathCollectors = $templatePathCollectors;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
     public function getNodeType(): string
     {
-        return MethodCall::class;
+        return Node::class;
     }
 
     /**
-     * @param MethodCall $node
      * @phpstan-return null|CollectedTemplatePath[]
      */
     public function collectData(Node $node, Scope $scope): ?array
@@ -59,32 +56,33 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        $actualClassName = $classReflection->getName();
-
-        $calledMethodName = $this->nameResolver->resolve($node);
-        if (!in_array($calledMethodName, ['setFile'], true)) {
-            return null;
-        }
-
-        $callerType = $scope->getType($node->var);
-        if (!$this->templateTypeResolver->resolve($callerType)) {
-            return null;
-        }
-
-        $arg = $node->getArgs()[0] ?? null;
-        if (!$arg) {
-            return null;
-        }
-
         if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
         }
 
-        $paths = $this->pathResolver->resolve($arg->value, $scope);
+        $paths = null;
+        $isCollected = false;
+        foreach ($this->templatePathCollectors as $templatePathCollector) {
+            if (!$templatePathCollector->isSupported($node)) {
+                continue;
+            }
+            $isCollected = true;
+            $collectedPaths = $templatePathCollector->collect($node, $scope);
+            if (is_array($collectedPaths)) {
+                $paths = array_merge($paths === null ? [] : $paths, $collectedPaths);
+            }
+        }
+
+        if ($isCollected === false) {
+            return null;
+        }
+
+        $actualClassName = $classReflection->getName();
         if ($paths === null) {
             // failed to resolve
             return [new CollectedTemplatePath($actualClassName, $functionName, null)];
         }
+        $paths = array_unique($paths);
         $templatePaths = [];
         foreach ($paths as $path) {
             $templatePaths[] = new CollectedTemplatePath($actualClassName, $functionName, $path);
