@@ -50,7 +50,7 @@ final class LatteToPhpCompiler
         }
         $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
         file_put_contents($compileFilePath, $phpContent);
-        return $compileFilePath;
+        return realpath($compileFilePath) ?: '';
     }
 
     private function normalizeCompileDir(string $compileDir): string
@@ -64,6 +64,6 @@ final class LatteToPhpCompiler
             }
             $newCompileDirParts[] = $compileDirPart;
         }
-        return implode('/', $newCompileDirParts);
+        return '/' . implode('/', $newCompileDirParts);
     }
 }

@@ -62,7 +62,7 @@ final class TableErrorFormatter implements ErrorFormatter
         /** @var array<string, Error[]> $fileErrors */
         $fileErrors = [];
         foreach ($analysisResult->getFileSpecificErrors() as $fileSpecificError) {
-            $key = $this->relativePathHelper->getRelativePath(realpath($fileSpecificError->getFile()));
+            $key = $this->relativePathHelper->getRelativePath(realpath($fileSpecificError->getFile()) ?: '');
             /** @var string|null $context */
             $context = $fileSpecificError->getMetadata()['context'] ?? null;
             if ($context !== null) {
@@ -84,7 +84,7 @@ final class TableErrorFormatter implements ErrorFormatter
                     $message .= "\n💡 " . $tip;
                 }
                 if (is_string($this->editorUrl)) {
-                    $editorFile = $error->getTraitFilePath() ?? $error->getFilePath();
+                    $editorFile = realpath($error->getTraitFilePath() ?? $error->getFilePath()) ?: '';
                     $url = str_replace(['%file%', '%relFile%', '%line%'], [$editorFile, $this->simpleRelativePathHelper->getRelativePath($editorFile), (string) $error->getLine()], $this->editorUrl);
                     $message .= "\n✏️  <href=" . $url . '>' . $this->relativePathHelper->getRelativePath($editorFile) . '</>';
                 }
