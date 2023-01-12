@@ -2,17 +2,26 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Collect FormField name default value
+- Ignore error BaseControl::getControlPart() invoked with 1 parameter, 0 required
+
+### Fixed
+- Type of $presenter variable in Control templates
+- Prevent multiple require of engin bootstrap
+- export-ignore unneeded files
+
 ## [0.3.0] - 2022-12-06
 ### Added
 - Annotation `@phpstan-latte-ignore` can be used to ignore render calls, variable assignments, component creation, whole methods or classes.
 - Annotation `@phpstan-latte-template` can be used to specify what template is used to render.
 - Annotation `@phpstan-latte-var` can be used to specify what variables are available in template.
 - Annotation `@phpstan-latte-component` can be used to specify what components are available in template.
-- Resolves calls to `setView` and `sendTemplate` in presenters
+- Resolve calls to `setView` and `sendTemplate` in presenters
 - Collecting form fields across method calls
 - Collecting form fields added by `addComponent`
 - Interface for Custom resolvers
-- Subcollectors for variables and template paths
+- Sub collectors for variables and template paths
 
 ## [0.2.0] - 2022-12-06
 ### Changed
