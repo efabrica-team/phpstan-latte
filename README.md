@@ -1,6 +1,7 @@
-# PHPStan latte
-PHPStan extension to check compiled latte templates in context of Presenter or Component etc.
-It is based on Tomas Votruba's [blog series](https://tomasvotruba.com/blog/stamp-static-analysis-of-templates/) and his packages symplify and reveal.
+# PHPStan Latte extension
+PHPStan extension to check compiled Latte templates in context of a Presenter or a Component etc. Templates are compiled to PHP code which is then analyzed with PHPStan rules according to a configured [rule level](https://phpstan.org/user-guide/rule-levels) and rules from loaded extensions.
+
+The extension is based on Tomas Votruba's [blog series](https://tomasvotruba.com/blog/stamp-static-analysis-of-templates/) and his packages symplify and reveal.
 
 ![Preview](docs/preview.png)
 
