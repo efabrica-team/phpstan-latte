@@ -497,7 +497,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testLinks(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], [
+        $expectedErrors = [
             [
                 'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
                 7,
@@ -639,7 +639,20 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 75,
                 'default.latte',
             ],
-        ]);
+            [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                91,
+                'default.latte',
+            ],
+        ];
+        if (PHP_VERSION_ID < 80000) {
+            $expectedErrors[] = [
+                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
+                90,
+                'default.latte',
+            ];
+        }
+        $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], $expectedErrors);
     }
 
     public function testRecursion(): void

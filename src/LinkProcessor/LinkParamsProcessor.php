@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\BetterReflection\BetterReflection;
+use ReflectionProperty;
 
 final class LinkParamsProcessor
 {
@@ -55,11 +56,13 @@ final class LinkParamsProcessor
             }
         }
 
-        $i = 0;
-        $reflectionMethod = (new BetterReflection())->reflector()->reflectClass($class)->getMethod($method);
+        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($class);
+        $reflectionMethod = $reflectionClass->getMethod($method);
         if ($reflectionMethod === null) {
             throw new InvalidArgumentException("Method $class::$method not found");
         }
+
+        $i = 0;
         $methodParameters = [];
         foreach ($reflectionMethod->getParameters() as $param) {
             $name = $param->getName();
@@ -80,6 +83,19 @@ final class LinkParamsProcessor
                 $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue([]));
             } else {
                 $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue(null));
+            }
+        }
+
+        // remove persistent parameters
+        foreach ($reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (in_array($property->getName(), $methodParameters, true)) {
+                continue;
+            }
+            if (preg_match_all('#[\s*]@persistent(?:\(\s*([^)]*)\s*\)|\s|$)#', (string) $property->getDocComment(), $m)) {
+                unset($transferredParams[$property->getName()]);
+            }
+            if (PHP_VERSION_ID >= 80000 && $property->getAttributesByInstance('Nette\Application\Attributes\Persistent')) {
+                unset($transferredParams[$property->getName()]);
             }
         }
 
