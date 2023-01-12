@@ -142,7 +142,7 @@ final class LatteTemplatesRule implements Rule
                 $context .= '::' . $actualAction;
             }
             foreach ($template->getParentTemplatePaths() as $parentTemplate) {
-                $context .= ' included in ' . $this->relativePathHelper->getRelativePath($parentTemplate);
+                $context .= ' included in ' . $this->relativePathHelper->getRelativePath(realpath($parentTemplate) ?: '');
             }
 
             try {
