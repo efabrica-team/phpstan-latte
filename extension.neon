@@ -69,7 +69,7 @@ services:
 
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%)
+    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%, ::md5(::json_encode(%latte%)))
 
     -
         factory: Efabrica\PHPStanLatte\Compiler\Postprocessor
