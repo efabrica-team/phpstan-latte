@@ -44,12 +44,26 @@ final class LatteToPhpCompiler
             $templateDir = substr($templateDir, strlen($replacedPath));
         }
 
-        $compileDir = $this->tmpDir . '/' . $templateDir;
+        $compileDir = $this->normalizeCompileDir($this->tmpDir . '/' . $templateDir);
         if (!file_exists($compileDir)) {
             mkdir($compileDir, 0777, true);
         }
         $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
         file_put_contents($compileFilePath, $phpContent);
         return $compileFilePath;
+    }
+
+    private function normalizeCompileDir(string $compileDir): string
+    {
+        $compileDirParts = array_filter(explode('/', $compileDir));
+        $newCompileDirParts = [];
+        foreach ($compileDirParts as $compileDirPart) {
+            if ($compileDirPart === '..') {
+                array_pop($newCompileDirParts);
+                continue;
+            }
+            $newCompileDirParts[] = $compileDirPart;
+        }
+        return implode('/', $newCompileDirParts);
     }
 }

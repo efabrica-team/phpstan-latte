@@ -62,7 +62,7 @@ final class TableErrorFormatter implements ErrorFormatter
         /** @var array<string, Error[]> $fileErrors */
         $fileErrors = [];
         foreach ($analysisResult->getFileSpecificErrors() as $fileSpecificError) {
-            $key = $this->relativePathHelper->getRelativePath($fileSpecificError->getFile());
+            $key = $this->relativePathHelper->getRelativePath(realpath($fileSpecificError->getFile()));
             /** @var string|null $context */
             $context = $fileSpecificError->getMetadata()['context'] ?? null;
             if ($context !== null) {
