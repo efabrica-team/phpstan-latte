@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Helper\ComponentsHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\BetterReflection\BetterReflection;
 
 final class ComponentFinder
@@ -40,9 +40,9 @@ final class ComponentFinder
             $componentsWithTypes[$collectedComponent->getComponent()->getTypeAsString()][] = $collectedComponent->getComponent();
 
             if ($collectedComponent->isDeclared()) {
-                $this->declaredComponents[$className][$methodName] = ComponentsHelper::merge($this->declaredComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
+                $this->declaredComponents[$className][$methodName] = ItemCombinator::merge($this->declaredComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
             } else {
-                $this->assignedComponents[$className][$methodName] = ComponentsHelper::union($this->assignedComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
+                $this->assignedComponents[$className][$methodName] = ItemCombinator::union($this->assignedComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
             }
         }
 
@@ -71,7 +71,7 @@ final class ComponentFinder
         foreach ($methodNames as $methodName) {
             $foundComponents[] = $this->findInMethodCalls($className, $methodName);
         }
-        return ComponentsHelper::merge(...$foundComponents);
+        return ItemCombinator::merge(...$foundComponents);
     }
 
     /**
@@ -83,13 +83,13 @@ final class ComponentFinder
 
         $assignedComponents = $this->assignedComponents[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $assignedComponents = ComponentsHelper::union($this->assignedComponents[$parentClass][''] ?? [], $assignedComponents);
+            $assignedComponents = ItemCombinator::union($this->assignedComponents[$parentClass][''] ?? [], $assignedComponents);
         }
         $declaredComponents = $this->declaredComponents[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $declaredComponents = ComponentsHelper::merge($this->declaredComponents[$parentClass][''] ?? [], $declaredComponents);
+            $declaredComponents = ItemCombinator::merge($this->declaredComponents[$parentClass][''] ?? [], $declaredComponents);
         }
-        return ComponentsHelper::merge($assignedComponents, $declaredComponents);
+        return ItemCombinator::merge($assignedComponents, $declaredComponents);
     }
 
     /**
@@ -97,10 +97,14 @@ final class ComponentFinder
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
+
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            $collectedCmponents = ComponentsHelper::union($this->assignedComponents[$declaringClass][$methodName] ?? [], ...$fromCalled);
-            $collectedVariables = ComponentsHelper::merge($collectedCmponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
-            return $collectedVariables;
+            /** @var array<Component[]> $fromCalled */
+            /** @var Component[] $collectedComponents */
+            $collectedComponents = $this->assignedComponents[$declaringClass][$methodName] ?? [];
+            $collectedComponents = ItemCombinator::union($collectedComponents, ...$fromCalled);
+            $collectedComponents = ItemCombinator::merge($collectedComponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
+            return $collectedComponents;
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }

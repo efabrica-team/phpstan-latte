@@ -9,7 +9,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class Filter implements JsonSerializable
+final class Filter implements NameTypeItem, JsonSerializable
 {
     private string $name;
 

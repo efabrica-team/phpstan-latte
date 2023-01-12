@@ -4,29 +4,22 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver\Nette;
 
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIPresenterLatteContextResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassTemplateResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverResult;
-use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Filter;
-use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Template;
-use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * @uses Variable
- * @uses Component
- * @uses Form
- * @uses Filter
+ * @uses TemplateContext
  * @uses CollectedTemplateRender
- * @phpstan-type ActionDefinition array{variables: Variable[], components: Component[], forms: Form[], filters: Filter[], line: int, renders: CollectedTemplateRender[], defaultTemplate: ?string, templatePaths: array<?string>, terminated: bool}
+ * @phpstan-type ActionDefinition array{templateContext: TemplateContext, line: int, renders: CollectedTemplateRender[], defaultTemplate: ?string, templatePaths: array<?string>, terminated: bool}
  */
 final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 {
@@ -104,15 +97,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         foreach ($actions as $actionName => $actionDefinition) {
             // explicit render calls
             foreach ($actionDefinition['renders'] as $templateRender) {
-                $result->addTemplateFromRender(
-                    $templateRender,
-                    $actionDefinition['variables'],
-                    $actionDefinition['components'],
-                    $actionDefinition['forms'],
-                    $actionDefinition['filters'],
-                    $reflectionClass->getName(),
-                    $actionName
-                );
+                $result->addTemplateFromRender($templateRender, $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
             }
 
             // default render with set template path
@@ -124,15 +109,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                     ->line($actionDefinition['line']));
                     continue;
                 }
-                $result->addTemplate(new Template(
-                    $template,
-                    $reflectionClass->getName(),
-                    $actionName,
-                    $actionDefinition['variables'],
-                    $actionDefinition['components'],
-                    $actionDefinition['forms'],
-                    $actionDefinition['filters'],
-                ));
+                $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
             }
 
             // default render with default template
@@ -145,15 +122,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 }
                 continue;
             }
-            $result->addTemplate(new Template(
-                $actionDefinition['defaultTemplate'],
-                $reflectionClass->getName(),
-                $actionName,
-                $actionDefinition['variables'],
-                $actionDefinition['components'],
-                $actionDefinition['forms'],
-                $actionDefinition['filters'],
-            ));
+            $result->addTemplate(new Template($actionDefinition['defaultTemplate'], $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
         }
 
         return $result;
@@ -165,10 +134,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
     private function createActionDefinition(ReflectionClass $reflectionClass, LatteContext $latteContext, string $actionName): array
     {
         return [
-            'variables' => $this->getClassGlobalVariables($reflectionClass, $latteContext),
-            'components' => $this->getClassGlobalComponents($reflectionClass, $latteContext),
-            'forms' => $this->getClassGlobalForms($reflectionClass, $latteContext),
-            'filters' => $this->getClassGlobalFilters($reflectionClass, $latteContext),
+            'templateContext' => $this->getClassGlobalTemplateContext($reflectionClass, $latteContext),
             'line' => -1,
             'renders' => [],
             'defaultTemplate' => $this->findDefaultTemplateFilePath($reflectionClass, $actionName),
@@ -182,11 +148,8 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
      */
     private function updateActionDefinitionByMethod(&$actionDefinition, ReflectionClass $reflectionClass, ReflectionMethod $reflectionMethod, LatteContext $latteContext): void
     {
+        $actionDefinition['templateContext'] = $actionDefinition['templateContext']->union($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
         $actionDefinition['line'] = $reflectionMethod->getStartLine();
-        $actionDefinition['variables'] = VariablesHelper::union($actionDefinition['variables'], $latteContext->variableFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['components'] = array_merge($actionDefinition['components'], $latteContext->componentFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['forms'] = array_merge($actionDefinition['forms'], $latteContext->formFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['filters'] = array_merge($actionDefinition['filters'], $latteContext->filterFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
         $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
         $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $latteContext->templatePathFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
         $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodCallFinder()->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName());

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template\Form;
 
-use Efabrica\PHPStanLatte\Helper\FormFieldHelper;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
+use Efabrica\PHPStanLatte\Template\NameTypeItem;
 use JsonSerializable;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class Form implements JsonSerializable
+final class Form implements NameTypeItem, JsonSerializable
 {
     private string $name;
 
@@ -67,7 +68,7 @@ final class Form implements JsonSerializable
         return new self(
             $this->name,
             $this->type,
-            FormFieldHelper::union($this->formFields, $formFields)
+            ItemCombinator::union($this->formFields, $formFields)
         );
     }
 

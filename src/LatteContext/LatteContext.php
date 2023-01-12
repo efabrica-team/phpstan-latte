@@ -16,6 +16,7 @@ use Efabrica\PHPStanLatte\LatteContext\Finder\TemplateRenderFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\VariableFinder;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class LatteContext
@@ -112,5 +113,15 @@ final class LatteContext
     public function templateRenderFinder(): TemplateRenderFinder
     {
         return $this->templateRenderFinder;
+    }
+
+    public function getMethodTemplateContext(string $className, string $methodName): TemplateContext
+    {
+        return new TemplateContext(
+            $this->variableFinder()->find($className, $methodName),
+            $this->componentFinder()->find($className, $methodName),
+            $this->formFinder()->find($className, $methodName),
+            $this->filterFinder()->find($className, $methodName)
+        );
     }
 }

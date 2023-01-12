@@ -2,15 +2,15 @@
 
 namespace Efabrica\PHPStanLatte\LatteContext\Resolver\Nette;
 
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\ClassLatteContextResolver;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 
 class NetteApplicationUIPresenterLatteContextResolver extends ClassLatteContextResolver
 {
     public function getVariables(): array
     {
-        return VariablesHelper::merge(
+        return ItemCombinator::merge(
             $this->latteContext->variableFinder()->find($this->getClassName(), 'startup', 'beforeRender'),
             [
                 new Variable('presenter', $this->getClassType()),

@@ -17,46 +17,26 @@ final class Template implements JsonSerializable
 
     private ?string $actualAction;
 
-    /** @var Variable[] */
-    private array $variables;
-
-    /** @var Component[] */
-    private array $components;
-
-    /** @var Form[] */
-    private array $forms;
-
-    /** @var Filter[] */
-    private array $filters;
+    private TemplateContext $templateContext;
 
     /** @var array<string> */
     private array $parentTemplatePaths;
 
     /**
      * @param ?class-string $actualClass
-     * @param Variable[] $variables
-     * @param Component[] $components
-     * @param Form[] $forms
-     * @param Filter[] $filters
      * @param array<string> $parentTemplatePaths
      */
     public function __construct(
         string $path,
         ?string $actualClass,
         ?string $actualAction,
-        array $variables,
-        array $components,
-        array $forms,
-        array $filters,
+        TemplateContext $templateContext,
         array $parentTemplatePaths = []
     ) {
         $this->path = $path;
         $this->actualClass = $actualClass;
         $this->actualAction = $actualAction;
-        $this->variables = $variables;
-        $this->components = $components;
-        $this->forms = $forms;
-        $this->filters = $filters;
+        $this->templateContext = $templateContext;
         $this->parentTemplatePaths = $parentTemplatePaths;
     }
 
@@ -78,12 +58,17 @@ final class Template implements JsonSerializable
         return $this->actualAction;
     }
 
+    public function getTemplateContext(): TemplateContext
+    {
+        return $this->templateContext;
+    }
+
     /**
      * @return Variable[]
      */
     public function getVariables(): array
     {
-        return $this->variables;
+        return $this->templateContext->getVariables();
     }
 
     /**
@@ -91,7 +76,7 @@ final class Template implements JsonSerializable
      */
     public function getComponents(): array
     {
-        return $this->components;
+        return $this->templateContext->getComponents();
     }
 
     /**
@@ -99,7 +84,7 @@ final class Template implements JsonSerializable
      */
     public function getForms(): array
     {
-        return $this->forms;
+        return $this->templateContext->getForms();
     }
 
     /**
@@ -107,7 +92,7 @@ final class Template implements JsonSerializable
      */
     public function getFilters(): array
     {
-        return $this->filters;
+        return $this->templateContext->getFilters();
     }
 
     /**
@@ -130,9 +115,7 @@ final class Template implements JsonSerializable
             'path' => $this->path,
             'actualClass' => $this->actualClass,
             'actualAction' => $this->actualAction,
-            'variables' => $this->variables,
-            'components' => $this->components,
-            'filters' => $this->filters,
+            'templateContext' => $this->templateContext,
             'parentTemplatePaths' => $this->parentTemplatePaths,
         ];
     }

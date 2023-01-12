@@ -16,17 +16,10 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
             return new LatteTemplateResolverResult();
         }
 
-        $globalVariables = $this->getClassGlobalVariables($reflectionClass, $latteContext);
-        $globalComponents = $this->getClassGlobalComponents($reflectionClass, $latteContext);
-        $globalForms = $this->getClassGlobalForms($reflectionClass, $latteContext);
-        $globalFilters = $this->getClassGlobalFilters($reflectionClass, $latteContext);
-
         $result = new LatteTemplateResolverResult();
         foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
-            $variables = array_merge($globalVariables, $latteContext->variableFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-            $components = array_merge($globalComponents, $latteContext->componentFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-            $forms = array_merge($globalForms, $latteContext->formFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-            $filters = array_merge($globalFilters, $latteContext->filterFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
+            $templateContext = $this->getClassGlobalTemplateContext($reflectionClass, $latteContext)
+                ->merge($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
 
             $templateRenders = $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName());
             if (count($templateRenders) === 0) {
@@ -40,15 +33,7 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                 }
             }
             foreach ($templateRenders as $templateRender) {
-                $result->addTemplateFromRender(
-                    $templateRender,
-                    $variables,
-                    $components,
-                    $forms,
-                    $filters,
-                    $reflectionClass->getName(),
-                    $reflectionMethod->getName()
-                );
+                $result->addTemplateFromRender($templateRender, $templateContext, $reflectionClass->getName(), $reflectionMethod->getName());
             }
         }
         return $result;
