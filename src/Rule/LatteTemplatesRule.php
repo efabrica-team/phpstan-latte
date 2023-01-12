@@ -10,7 +10,6 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
@@ -185,10 +184,7 @@ final class LatteTemplatesRule implements Rule
                         $includedTemplatePath,
                         $actualClass,
                         $actualAction,
-                        VariablesHelper::merge($template->getVariables(), $collectedTemplateRender->getVariables()),
-                        $template->getComponents(),
-                        $template->getForms(),
-                        $template->getFilters(),
+                        $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
                         array_merge([$template->getPath()], $template->getParentTemplatePaths())
                     );
                     $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Helper\FormFieldHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
 use Efabrica\PHPStanLatte\Template\Form\FormField;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\BetterReflection\BetterReflection;
 
 final class FormFieldFinder
@@ -46,7 +46,7 @@ final class FormFieldFinder
         foreach ($methodNames as $methodName) {
             $foundFormFields[] = $this->findInMethodCalls($className, $methodName);
         }
-        return FormFieldHelper::merge(...$foundFormFields);
+        return ItemCombinator::merge(...$foundFormFields);
     }
 
     /**
@@ -58,7 +58,7 @@ final class FormFieldFinder
 
         $assignedFormFields = $this->assignedFormFields[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $assignedFormFields = FormFieldHelper::union($this->assignedFormFields[$parentClass][''] ?? [], $assignedFormFields);
+            $assignedFormFields = ItemCombinator::union($this->assignedFormFields[$parentClass][''] ?? [], $assignedFormFields);
         }
         return $assignedFormFields;
     }
@@ -69,7 +69,10 @@ final class FormFieldFinder
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            return FormFieldHelper::union($this->assignedFormFields[$declaringClass][$methodName] ?? [], ...$fromCalled);
+            /** @var array<FormField[]> $fromCalled */
+            /** @var FormField[] $formFields */
+            $formFields = $this->assignedFormFields[$declaringClass][$methodName] ?? [];
+            return ItemCombinator::union($formFields, ...$fromCalled);
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }

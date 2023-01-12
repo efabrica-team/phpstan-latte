@@ -12,6 +12,7 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
@@ -172,6 +173,16 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
     protected function getClassGlobalFilters(ReflectionClass $reflectionClass, LatteContext $latteContext): array
     {
         return $this->getClassContextResolver($reflectionClass, $latteContext)->getFilters();
+    }
+
+    protected function getClassGlobalTemplateContext(ReflectionClass $reflectionClass, LatteContext $latteContext): TemplateContext
+    {
+        return new TemplateContext(
+            $this->getClassGlobalVariables($reflectionClass, $latteContext),
+            $this->getClassGlobalComponents($reflectionClass, $latteContext),
+            $this->getClassGlobalForms($reflectionClass, $latteContext),
+            $this->getClassGlobalFilters($reflectionClass, $latteContext)
+        );
     }
 
     abstract protected function getClassResult(ReflectionClass $resolveClass, LatteContext $latteContext): LatteTemplateResolverResult;

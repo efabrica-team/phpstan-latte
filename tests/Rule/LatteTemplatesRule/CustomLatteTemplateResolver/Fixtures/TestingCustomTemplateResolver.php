@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\CustomLatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverResult;
 use Efabrica\PHPStanLatte\Template\Template;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Application\UI\Control;
 use PHPStan\Type\StringType;
@@ -32,10 +33,9 @@ final class TestingCustomTemplateResolver implements CustomLatteTemplateResolver
             $resolvedNode->getParam(self::TEMPLATE_PARAM),
             Control::class,
             'resolved',
-            [new Variable('someVariable', new StringType())],
-            [],
-            [],
-            []
+            new TemplateContext(
+                [new Variable('someVariable', new StringType())],
+            ),
         ));
         return $result;
     }

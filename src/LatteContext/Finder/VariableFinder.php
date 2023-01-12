@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\BetterReflection\BetterReflection;
 
@@ -33,9 +33,9 @@ final class VariableFinder
             $className = $variable->getClassName();
             $methodName = $variable->getMethodName();
             if ($variable->isDeclared()) {
-                $this->declaredVariables[$className][$methodName] = VariablesHelper::merge($this->declaredVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
+                $this->declaredVariables[$className][$methodName] = ItemCombinator::merge($this->declaredVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
             } else {
-                $this->assignedVariables[$className][$methodName] = VariablesHelper::union($this->assignedVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
+                $this->assignedVariables[$className][$methodName] = ItemCombinator::union($this->assignedVariables[$className][$methodName] ?? [], [$variable->getVariable()]);
             }
         }
     }
@@ -52,7 +52,7 @@ final class VariableFinder
         foreach ($methodNames as $methodName) {
             $foundVariables[] = $this->findInMethodCalls($className, $methodName);
         }
-        return VariablesHelper::merge(...$foundVariables);
+        return ItemCombinator::merge(...$foundVariables);
     }
 
     /**
@@ -64,13 +64,13 @@ final class VariableFinder
 
         $assignedVariables = $this->assignedVariables[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $assignedVariables = VariablesHelper::union($this->assignedVariables[$parentClass][''] ?? [], $assignedVariables);
+            $assignedVariables = ItemCombinator::union($this->assignedVariables[$parentClass][''] ?? [], $assignedVariables);
         }
         $declaredVariables = $this->declaredVariables[$className][''] ?? [];
         foreach ($classReflection->getParentClassNames() as $parentClass) {
-            $declaredVariables = VariablesHelper::merge($this->declaredVariables[$parentClass][''] ?? [], $declaredVariables);
+            $declaredVariables = ItemCombinator::merge($this->declaredVariables[$parentClass][''] ?? [], $declaredVariables);
         }
-        return VariablesHelper::merge($assignedVariables, $declaredVariables);
+        return ItemCombinator::merge($assignedVariables, $declaredVariables);
     }
 
     /**
@@ -79,8 +79,11 @@ final class VariableFinder
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            $collectedVariables = VariablesHelper::union($this->assignedVariables[$declaringClass][$methodName] ?? [], ...$fromCalled);
-            $collectedVariables = VariablesHelper::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
+            /** @var array<Variable[]> $fromCalled */
+            /** @var Variable[] $collectedVariables */
+            $collectedVariables = $this->assignedVariables[$declaringClass][$methodName] ?? [];
+            $collectedVariables = ItemCombinator::union($collectedVariables, ...$fromCalled);
+            $collectedVariables = ItemCombinator::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
             return $collectedVariables;
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);

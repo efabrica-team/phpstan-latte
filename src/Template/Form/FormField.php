@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template\Form;
 
+use Efabrica\PHPStanLatte\Template\NameTypeItem;
 use JsonSerializable;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class FormField implements JsonSerializable
+final class FormField implements NameTypeItem, JsonSerializable
 {
     private string $name;
 

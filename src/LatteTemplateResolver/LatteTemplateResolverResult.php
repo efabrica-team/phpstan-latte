@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Helper\ComponentsHelper;
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
-use Efabrica\PHPStanLatte\Template\Component;
-use Efabrica\PHPStanLatte\Template\Filter;
-use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Template\Template;
-use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -67,13 +62,9 @@ final class LatteTemplateResolverResult
     }
 
     /**
-     * @param Variable[] $variables
-     * @param Component[] $components
-     * @param Form[] $forms
-     * @param Filter[] $filters
      * @param class-string $className
      */
-    public function addTemplateFromRender(CollectedTemplateRender $templateRender, array $variables, array $components, array $forms, array $filters, string $className, string $action): void
+    public function addTemplateFromRender(CollectedTemplateRender $templateRender, TemplateContext $templateContext, string $className, string $action): void
     {
         $templatePath = $templateRender->getTemplatePath();
         if ($templatePath === false) {
@@ -92,10 +83,9 @@ final class LatteTemplateResolverResult
             $templatePath,
             $className,
             $action,
-            VariablesHelper::merge($variables, $templateRender->getVariables()),
-            ComponentsHelper::merge($components, $templateRender->getComponents()),
-            $forms,
-            $filters
+            $templateContext
+                ->mergeVariables($templateRender->getVariables())
+                ->mergeComponents($templateRender->getComponents())
         ));
     }
 }

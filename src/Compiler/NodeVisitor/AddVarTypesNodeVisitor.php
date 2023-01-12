@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
-use Efabrica\PHPStanLatte\Helper\VariablesHelper;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
@@ -44,7 +44,7 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Actual
             return null;
         }
 
-        $combinedVariables = VariablesHelper::union($this->variables);
+        $combinedVariables = ItemCombinator::union($this->variables);
 
         $methodParams = [];
         foreach ($node->params as $param) {
