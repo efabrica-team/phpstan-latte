@@ -4,8 +4,21 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
+use Nette\Application\Attributes\Persistent;
+
 final class LinksPresenter extends ParentPresenter
 {
+    /** @persistent */
+    public string $persistentConflict = '';
+
+    /** @persistent */
+    public string $persistent1 = '';
+
+    #[Persistent]
+    public string $persistent2 = '';
+
+    public $notPersistent = null;
+
     public function actionDefault(): void
     {
     }
@@ -32,5 +45,10 @@ final class LinksPresenter extends ParentPresenter
 
     public function actionArrayParam(array $ids, bool $option = false): void
     {
+    }
+
+    public function persistentConflict($persistentConflict)
+    {
+        $this->redirect('default');
     }
 }
