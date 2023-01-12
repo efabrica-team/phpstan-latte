@@ -132,6 +132,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
                     if ($itemArgumentValue instanceof String_) {
                         $fieldName = $itemArgumentValue->value;
+                        // TODO remove when container are supported
+                        $fieldNameParts = explode('-', $fieldName);
+                        $fieldName = end($fieldNameParts);
                         $formField = $this->actualForm->getFormField($fieldName);
                         if ($formField === null) {
                             $this->errorFieldNodes[] = [
@@ -173,6 +176,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
             if ($node->dim instanceof String_) {
                 $fieldName = $node->dim->value;
+                // TODO remove when container are supported
+                $fieldNameParts = explode('-', $fieldName);
+                $fieldName = end($fieldNameParts);
                 $formField = $this->actualForm->getFormField($fieldName);
                 if ($formField === null) {
                     $this->errorFieldNodes[] = [
