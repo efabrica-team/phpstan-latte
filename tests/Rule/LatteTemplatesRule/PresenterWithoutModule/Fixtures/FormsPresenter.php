@@ -119,4 +119,22 @@ final class FormsPresenter extends ParentPresenter
         $submit = new SubmitButton();
         $form->addComponent($submit, 'submit');
     }
+
+    protected function createComponentContainerForm(): Form
+    {
+        $form = new Form();
+
+        $part1 = $form->addContainer('part1');
+        $part1->addText('text1', 'Text 1');
+        $part1->addSubmit('submit1', 'Submit 1');
+
+        $part2 = $form->addContainer('part2');
+        $part2->addText('text2', 'Text 2');
+        $part2->addSubmit('submit2', 'Submit 2');
+
+        $form->onSuccess[] = function (Form $form, array $values): void {
+        };
+
+        return $form;
+    }
 }
