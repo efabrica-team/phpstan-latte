@@ -63,11 +63,21 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
 
     public function collectData(Node $node, Scope $scope): ?array
     {
+//        var_dump('class name');
+//        var_dump($scope->getClassReflection() ? $scope->getClassReflection()->getName() : null);
+
         $relatedFiles = [];
         if ($node instanceof InClassNode) {
+//            var_dump('in class node');
             $classReflection = $scope->getClassReflection();
             if ($classReflection !== null) {
+//                var_dump('parents');
+//                var_dump(array_map(function ($parent) {
+//                    return $parent->getName();
+//                }, $classReflection->getParents()));
                 foreach ($classReflection->getParents() as $parentClassReflection) {
+//                    var_dump('parent class file');
+//                    var_dump($parentClassReflection->getFileName());
                     if ($this->isInCollectedPaths($parentClassReflection->getFileName())) {
                         $relatedFiles[] = $parentClassReflection->getFileName();
                     }
@@ -79,6 +89,9 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             } else {
                 $newClassNames = [$this->nameResolver->resolve($node->class)];
             }
+
+//            var_dump($newClassNames);
+
             foreach ($newClassNames as $newClassName) {
                 if ($newClassName !== null && !in_array($newClassName, ['this', 'self', 'static', 'parent'], true)) {
                     $classReflection = $this->reflectionProvider->getClass($newClassName);
@@ -91,6 +104,9 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             }
         } elseif ($node instanceof CallLike) {
             $calledClassName = $this->calledClassResolver->resolve($node, $scope);
+
+//            var_dump($calledClassName);
+
             if ($calledClassName !== null && !in_array($calledClassName, ['this', 'self', 'static', 'parent'], true)) {
                 $classReflection = $this->reflectionProvider->getClass($calledClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
@@ -101,15 +117,25 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             }
         }
 
-        $relatedFiles = array_unique(array_filter($relatedFiles));
+        $relatedFiles = array_map('realpath', array_unique(array_filter($relatedFiles)));
+
+//        print_R($relatedFiles);
+
         return [new CollectedRelatedFiles($scope->getFile(), $relatedFiles)];
     }
 
     private function isInCollectedPaths(?string $path): bool
     {
+//        var_dump('Path: ' . $path);
+
         if ($path === null) {
             return false;
         }
+        $path = realpath($path);
+        if ($path === false) {
+            return false;
+        }
+
         foreach ($this->collectedPaths as $collectedPath) {
             if (str_starts_with($path, $collectedPath)) {
                 return true;
