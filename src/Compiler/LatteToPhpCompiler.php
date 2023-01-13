@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
+use Composer\InstalledVersions;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Template\Template;
 use InvalidArgumentException;
+use Latte\Engine;
 
 final class LatteToPhpCompiler
 {
     private string $tmpDir;
+
+    private string $cacheKey;
 
     private CompilerInterface $compiler;
 
@@ -18,10 +22,16 @@ final class LatteToPhpCompiler
 
     public function __construct(
         ?string $tmpDir,
+        string $cacheKey,
         CompilerInterface $compiler,
         Postprocessor $postprocessor
     ) {
         $this->tmpDir = $tmpDir ?? sys_get_temp_dir() . '/phpstan-latte';
+        $this->cacheKey = $cacheKey . md5(
+            Engine::VERSION_ID .
+            PHP_VERSION_ID .
+            (class_exists(InstalledVersions::class) ? json_encode(InstalledVersions::getAllRawData()) : '')
+        );
         $this->compiler = $compiler;
         $this->postprocessor = $postprocessor;
     }
@@ -37,7 +47,12 @@ final class LatteToPhpCompiler
         $phpContent = $this->postprocessor->postProcess($phpContent, $template);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
         $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
-        $contextHash = md5($template->getSignatureHash() . $context);
+        $contextHash = md5(
+            $templateContent .
+            $template->getSignatureHash() .
+            $context .
+            $this->cacheKey
+        );
 
         $replacedPath = getcwd() ?: '';
         if (strpos($templateDir, $replacedPath) === 0) {
