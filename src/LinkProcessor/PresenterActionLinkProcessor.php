@@ -107,14 +107,14 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
      */
     private function prepareMethodNames(string $presenterClassName, string $actionName, array $linkParams): array
     {
-        $presenterClassreflection = (new BetterReflection())->reflector()->reflectClass($presenterClassName);
+        $presenterClassReflection = (new BetterReflection())->reflector()->reflectClass($presenterClassName);
 
         $methodNames = [];
         $methodExists = false;
         // both methods have to have same parameters, so we check them both if exist
         foreach (['action', 'render'] as $type) {
             $methodName = $type . ucfirst($actionName);
-            if ($presenterClassreflection->hasMethod($methodName)) {
+            if ($presenterClassReflection->hasMethod($methodName)) {
                 $methodExists = true;
                 $methodNames[] = $methodName;
             }

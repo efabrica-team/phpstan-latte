@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Error\Error;
 
 final class CallActionWithParametersMissingCorrespondingMethodErrorTransformer implements ErrorTransformerInterface
 {
-    private const CALL_ACTION_WITH_PARAMETERS_REGEX = '/Call to an undefined method (?<presenter>.*)::(?<method>.*)WithParametersMissingCorrespondingMethod\(\)/';
+    private const CALL_ACTION_WITH_PARAMETERS_REGEX = '/Method (?<presenter>.*)::(?<method>.*)WithParametersMissingCorrespondingMethod not found/';
 
     public function transform(Error $error): Error
     {

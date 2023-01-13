@@ -644,6 +644,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 91,
                 'default.latte',
             ],
+            [
+                'Invalid link: Unable to pass parameters to "' . LinksPresenter::class . '::nonExistingMethod()", missing corresponding method.',
+                94,
+                'default.latte',
+                'Add method actionNonExistingMethod or renderNonExistingMethod with corresponding parameters to presenter Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter',
+            ],
         ];
         if (PHP_VERSION_ID < 80000) {
             $expectedErrors[] = [
