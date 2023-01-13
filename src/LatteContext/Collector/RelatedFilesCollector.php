@@ -14,6 +14,7 @@ use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
@@ -68,8 +69,9 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             $classReflection = $scope->getClassReflection();
             if ($classReflection !== null) {
                 foreach ($classReflection->getParents() as $parentClassReflection) {
-                    if ($this->isInCollectedPaths($parentClassReflection->getFileName())) {
-                        $relatedFiles[] = $parentClassReflection->getFileName();
+                    $filename = $this->getFilename($parentClassReflection);
+                    if ($this->isInCollectedPaths($filename)) {
+                        $relatedFiles[] = $filename;
                     }
                 }
             }
@@ -83,8 +85,9 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
                 if ($newClassName !== null && !in_array($newClassName, ['this', 'self', 'static', 'parent'], true)) {
                     $classReflection = $this->reflectionProvider->getClass($newClassName);
                     if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
-                        if ($this->isInCollectedPaths($classReflection->getFileName())) {
-                            $relatedFiles[] = $classReflection->getFileName();
+                        $filename = $this->getFilename($classReflection);
+                        if ($this->isInCollectedPaths($filename)) {
+                            $relatedFiles[] = $filename;
                         }
                     }
                 }
@@ -94,8 +97,9 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
             if ($calledClassName !== null && !in_array($calledClassName, ['this', 'self', 'static', 'parent'], true)) {
                 $classReflection = $this->reflectionProvider->getClass($calledClassName);
                 if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
-                    if ($this->isInCollectedPaths($classReflection->getFileName())) {
-                        $relatedFiles[] = $classReflection->getFileName();
+                    $filename = $this->getFilename($classReflection);
+                    if ($this->isInCollectedPaths($filename)) {
+                        $relatedFiles[] = $filename;
                     }
                 }
             }
@@ -105,11 +109,22 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
         return [new CollectedRelatedFiles($scope->getFile(), $relatedFiles)];
     }
 
+    private function getFilename(ClassReflection $classReflection): ?string
+    {
+        $filename = $classReflection->getFileName();
+        if ($filename === null) {
+            return null;
+        }
+        $realpath = realpath($filename);
+        return $realpath === false ? null : $realpath;
+    }
+
     private function isInCollectedPaths(?string $path): bool
     {
         if ($path === null) {
             return false;
         }
+
         foreach ($this->collectedPaths as $collectedPath) {
             if (str_starts_with($path, $collectedPath)) {
                 return true;
