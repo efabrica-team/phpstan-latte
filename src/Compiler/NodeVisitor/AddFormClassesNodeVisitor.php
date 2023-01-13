@@ -135,7 +135,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                         // TODO remove when container are supported
                         $fieldNameParts = explode('-', $fieldName);
                         $fieldName = end($fieldNameParts);
-                        $formField = $this->actualForm->getFormField($fieldName);
+                        $formField = $this->actualForm->getControl($fieldName);
                         if ($formField === null) {
                             $this->errorFieldNodes[] = [
                                 'node' => $this->findParentStmt($node),
@@ -179,7 +179,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 // TODO remove when container are supported
                 $fieldNameParts = explode('-', $fieldName);
                 $fieldName = end($fieldNameParts);
-                $formField = $this->actualForm->getFormField($fieldName);
+                $formField = $this->actualForm->getControl($fieldName);
                 if ($formField === null) {
                     $this->errorFieldNodes[] = [
                         'node' => $this->findParentStmt($node),
@@ -309,7 +309,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 ->makePublic()
                 ->setReturnType('Nette\ComponentModel\IComponent');
             $comment = '@return ' . $componentTypePlaceholder;
-            foreach ($form->getFormFields() as $formField) {
+            foreach ($form->getControls() as $formField) {
                 $comment = str_replace($componentTypePlaceholder, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentTypePlaceholder . ')', $comment);
             }
             $comment = str_replace($componentTypePlaceholder, $componentType, $comment);

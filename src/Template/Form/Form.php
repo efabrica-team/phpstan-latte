@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template\Form;
 
+use Efabrica\PHPStanLatte\Template\Form\Behavior\ControlHolderBehavior;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\NameTypeItem;
 use JsonSerializable;
@@ -11,25 +12,27 @@ use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class Form implements NameTypeItem, JsonSerializable
+final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializable
 {
+    use ControlHolderBehavior;
+
     private string $name;
 
     private Type $type;
 
-    /** @var FormField[] */
-    private array $formFields = [];
+    /** @var Group[] */
+    private array $groups;
 
     /**
-     * @param FormField[] $formFields
+     * @param ControlInterface[] $controls
+     * @param Group[] $groups
      */
-    public function __construct(string $name, Type $type, array $formFields = [])
+    public function __construct(string $name, Type $type, array $controls = [], array $groups = [])
     {
         $this->name = $name;
         $this->type = $type;
-        foreach ($formFields as $formField) {
-            $this->formFields[$formField->getName()] = $formField;
-        }
+        $this->addControls($controls);
+        $this->groups = $groups;
     }
 
     public function getName(): string
@@ -48,27 +51,27 @@ final class Form implements NameTypeItem, JsonSerializable
     }
 
     /**
-     * @return FormField[]
+     * @return Group[]
      */
-    public function getFormFields(): array
+    public function getGroups(): array
     {
-        return $this->formFields;
+        return $this->groups;
     }
 
-    public function getFormField(string $name): ?FormField
+    public function getGroup(string $name): ?Group
     {
-        return $this->formFields[$name] ?? null;
+        return $this->groups[$name] ?? null;
     }
 
     /**
-     * @param FormField[] $formFields
+     * @param ControlInterface[] $controls
      */
-    public function withFields(array $formFields): self
+    public function withControls(array $controls): self
     {
         return new self(
             $this->name,
             $this->type,
-            ItemCombinator::union($this->formFields, $formFields)
+            ItemCombinator::union($this->controls, $controls)
         );
     }
 
@@ -78,7 +81,7 @@ final class Form implements NameTypeItem, JsonSerializable
         return [
           'name' => $this->name,
           'type' => $this->getTypeAsString(),
-          'formFields' => $this->formFields,
+          'controls' => $this->controls,
         ];
     }
 }

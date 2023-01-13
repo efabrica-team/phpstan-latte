@@ -6,14 +6,14 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
-use Efabrica\PHPStanLatte\Template\Form\FormField;
+use Efabrica\PHPStanLatte\Template\Form\Field;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\BetterReflection\BetterReflection;
 
 final class FormFieldFinder
 {
     /**
-     * @var array<string, array<string, FormField[]>>
+     * @var array<string, array<string, Field[]>>
      */
     private array $assignedFormFields = [];
 
@@ -35,7 +35,7 @@ final class FormFieldFinder
     }
 
     /**
-     * @return FormField[]
+     * @return Field[]
      */
     public function find(string $className, string ...$methodNames): array
     {
@@ -50,7 +50,7 @@ final class FormFieldFinder
     }
 
     /**
-     * @return FormField[]
+     * @return Field[]
      */
     private function findInClasses(string $className): array
     {
@@ -64,13 +64,13 @@ final class FormFieldFinder
     }
 
     /**
-     * @return FormField[]
+     * @return Field[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            /** @var array<FormField[]> $fromCalled */
-            /** @var FormField[] $formFields */
+            /** @var array<Field[]> $fromCalled */
+            /** @var Field[] $formFields */
             $formFields = $this->assignedFormFields[$declaringClass][$methodName] ?? [];
             return ItemCombinator::union($formFields, ...$fromCalled);
         };
