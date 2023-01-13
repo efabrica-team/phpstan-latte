@@ -36,6 +36,7 @@ final class ErrorBuilder
         '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./',   // latte 3 internal error
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|string\./',
         '/Method Nette\\\\Forms\\\\Controls\\\\BaseControl::getControlPart\(\) invoked with 1 parameter, 0 required\./', // dynamic checkbox is typehinted as BaseControl
+        '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
     ];
 
     /** @var ErrorTransformerInterface[] */

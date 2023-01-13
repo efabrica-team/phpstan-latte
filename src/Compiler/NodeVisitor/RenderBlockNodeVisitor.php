@@ -10,9 +10,9 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\BinaryOp\Plus;
-use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Param;
@@ -135,7 +135,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
                 continue;
             }
             $variableName = $this->nameResolver->resolve($blockMethodParam->var->name);
-            $methodCallArgs[] = new Arg($params[$pos] ?? $params[$variableName] ?? new ConstFetch(new Name('null')));
+            $methodCallArgs[] = new Arg($params[$pos] ?? $params[$variableName] ?? new New_(new Name('MissingBlockParameter')));
         }
 
         return new MethodCall(new Variable('this'), $blockMethodName, $methodCallArgs);

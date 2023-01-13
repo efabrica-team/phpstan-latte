@@ -242,38 +242,43 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: float|null',
+                'Dumped type: float',
                 8,
                 'define.latte',
             ],
             [
-                'Dumped type: int|null',
+                'Dumped type: array<stdClass>',
+                10,
+                'define.latte',
+            ],
+            [
+                'Dumped type: int',
                 9,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
-                13,
+                14,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string|null, int given.',
-                13,
+                14,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
-                14,
+                15,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string|null, int given.',
-                14,
+                15,
                 'define.latte',
             ],
             [
                 'Dumped type: \'some string\'',
-                16,
+                17,
                 'define.latte',
             ],
         ]);
