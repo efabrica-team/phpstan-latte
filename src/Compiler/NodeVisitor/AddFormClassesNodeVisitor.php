@@ -260,6 +260,24 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
         }
 
+        /**
+         * Replace:
+         * <code>
+         * end($this->global->formsStack)
+         * </code>
+         *
+         * With
+         * <code>
+         * $form
+         * </code>
+         */
+        if ($node instanceof FuncCall && $this->nameResolver->resolve($node) === 'end') {
+            $arg = $node->getArgs()[0] ?? null;
+            if ($arg instanceof Arg && $this->isFormsStack($arg->value)) {
+                return new Variable('form');
+            }
+        }
+
         return null;
     }
 

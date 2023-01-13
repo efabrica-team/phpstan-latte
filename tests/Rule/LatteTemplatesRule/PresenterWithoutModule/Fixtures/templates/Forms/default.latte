@@ -5,13 +5,13 @@
     {input submit, 'class' => 'btn'}
 {/form}
 
-{form secondForm}
+<form n:name="secondForm">
     {input select}
     {input username}
     {input password}
     {input checkbox}{label checkbox /} <label n:name="checkbox"><input n:name="checkbox">Checkbox</label>
     {input second_submit, 'class' => 'btn'}{label second_submit_label /}
-{/form}
+</form>
 
 {form customForm}
 {*    {$form->getRenderer()->renderControls($form->getGroup('General'), true) |noescape}*}
