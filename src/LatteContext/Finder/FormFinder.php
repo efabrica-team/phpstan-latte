@@ -62,7 +62,7 @@ final class FormFinder
                 $createdClassName,
                 $collectedForm->getCreatedMethodName()
             );
-            $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withFields($formFields);
+            $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withControls($formFields);
         }
 
         return $forms;

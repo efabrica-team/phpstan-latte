@@ -10,7 +10,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class FormField implements NameTypeItem, JsonSerializable
+final class Field implements NameTypeItem, ControlInterface, JsonSerializable
 {
     private string $name;
 

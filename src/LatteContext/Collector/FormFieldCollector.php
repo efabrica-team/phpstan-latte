@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
-use Efabrica\PHPStanLatte\Template\Form\FormField;
+use Efabrica\PHPStanLatte\Template\Form\Field;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -153,7 +153,7 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             $formFields[] = new CollectedFormField(
                 $classReflection->getName(),
                 $methodName,
-                new FormField($fieldName, $formFieldType)
+                new Field($fieldName, $formFieldType)
             );
         }
         return $formFields;
