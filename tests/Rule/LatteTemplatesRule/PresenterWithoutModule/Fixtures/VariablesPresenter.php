@@ -27,7 +27,7 @@ final class VariablesPresenter extends ParentPresenter
         $this->getTemplate()->viaGetTemplate = 'foobar';
         $this->template->stringLists = $this->stringLists;
         $localStrings = ['foo', 'bar', 'baz'];
-        $this->template->localStrings = $localStrings;
+        $this->template->add('localStrings', $localStrings);
         $this->template->obj = $this;
 
         $items = ['first item', 'second item'];
