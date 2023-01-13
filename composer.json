@@ -5,6 +5,7 @@
         "php": ">=7.4 <8.3",
         "ext-json": "*",
         "phpstan/phpstan": "^1.9.4",
+        "phpstan/phpstan-nette": "^1.2",
         "latte/latte": "^2.11.6 | ^3.0.4",
         "nette/utils": "^3.2",
         "nette/finder": "^2.5"
