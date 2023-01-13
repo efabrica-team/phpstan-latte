@@ -1,4 +1,4 @@
-{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123}
+{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123, \stdClass[] $paramArray = []}
     {php \PhpStan\dumpType($paramObject)}
     {php \PhpStan\dumpType($paramString)}
     {php \PhpStan\dumpType($paramNullable)}
@@ -7,9 +7,10 @@
     {php \PhpStan\dumpType($paramNoTypeDefault)}
     {php \PhpStan\dumpType($paramFloat)}
     {php \PhpStan\dumpType($paramInteger)}
+    {php \PhpStan\dumpType($paramArray)}
 {/define}
 
-{include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger}
+{include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger, 'paramArray' => $knownArray}
 {include my-block 'paramObject' => $knownString, 'paramString' => $knownInteger}
 {include my-block $knownString, $knownInteger, 'paramInteger' => $knownInteger}
 

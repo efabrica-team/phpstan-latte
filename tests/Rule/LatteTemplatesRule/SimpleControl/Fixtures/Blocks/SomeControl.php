@@ -15,6 +15,7 @@ final class SomeControl extends Control
         $this->template->knownString = 'a';
         $this->template->knownFloat = 1.23;
         $this->template->knownInteger = 123;
+        $this->template->knownArray = [new stdClass(), new stdClass()];
         $this->template->paramString = 'some string';
 
         $this->template->setFile(__DIR__ . '/define.latte');

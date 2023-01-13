@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorIn
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp\Coalesce;
@@ -76,10 +77,6 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract impleme
         if ($parameters) {
             $nodeComment .= "\n/**\n";
             for ($i = 0; $i < count($parameters[0]); $i++) {
-                // Type is always nullable - all params are optional in latte
-                $type = ltrim(trim($parameters['type'][$i]), '?');
-                $nodeComment .= ' * @param ' . ($type ? '?' . $type . ' ' : '') . '$' . $parameters['variable'][$i] . "\n";
-
                 /** @var string|null $defaultValue */
                 $defaultValue = $parameters['default'][$i] ?: null;
                 if ($defaultValue !== null && str_starts_with('\'', $defaultValue)) {
@@ -90,9 +87,16 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract impleme
                     } else {
                         $default = new LNumber(intval($defaultValue));
                     }
+                } elseif ($defaultValue === '[]') {
+                    $default = new Array_();
                 } else {
                     $default = new ConstFetch(new Name('null'));
                 }
+
+                // Type is always nullable - all params are optional in latte unless they have default value
+                $type = ltrim(trim($parameters['type'][$i]), '?');
+                $nodeComment .= ' * @param ' . ($type && !$defaultValue ? '?' : '') . ($type ? $type . ' ' : '') . '$' . $parameters['variable'][$i] . "\n";
+
                 $node->params[] = new Param(new Variable($parameters['variable'][$i]), $default);
             }
             $nodeComment .= '*/';
