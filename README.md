@@ -8,8 +8,8 @@ The extension is based on Tomas Votruba's [blog series](https://tomasvotruba.com
 ## Features
 
 - Supports Latte 2 and Latte 3
-- Templates are analysed in context in which they are rendered (one tempalte can be analysed with different contexts if it is used on multiple places)
-- Automatically collects all existing template variables, components, forms, render calls,... from PHP code.
+- Templates are analysed in context in which they are rendered (one template can be analysed with different contexts if it is used on multiple places)
+- Automatically collects all existing template variables, components, simple forms, render calls,... from PHP code.
 - Analyses existence and parameters of filters.
 - Can analyse existence and parameters of links (if you configure `applicationMapping`).
 - Can use pre-configured latte engine from your application container (no need to configure manually)
@@ -29,6 +29,14 @@ Add this line to your phpstan.neon:
 ```neon
 includes:
     - vendor/efabrica/phpstan-latte/rules.neon
+```
+
+It is recommended to use this extension with [phpstan-nette](https://github.com/phpstan/phpstan-nette) extension for better analysis of templates.
+Add also these lines to your phpstan.neon:
+```neon
+includes:
+    - vendor/phpstan/phpstan-nette/extension.neon
+    - vendor/phpstan/phpstan-nette/rules.neon
 ```
 
 ## Configuration
