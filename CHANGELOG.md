@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.4.0] - 2023-01-16
 ### Added
 - Collect FormField name default value
 - Ignore error BaseControl::getControlPart() invoked with 1 parameter, 0 required
@@ -15,8 +16,9 @@
 - Prevent multiple require of engin bootstrap
 - export-ignore unneeded files
 - Paths in outputs (relative paths used)
+- Catching and transforming Invalid link error 
 
-## [0.3.0] - 2022-12-06
+## [0.3.0] - 2023-01-11
 ### Added
 - Annotation `@phpstan-latte-ignore` can be used to ignore render calls, variable assignments, component creation, whole methods or classes.
 - Annotation `@phpstan-latte-template` can be used to specify what template is used to render.
@@ -60,7 +62,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/efabrica-team/phpstan-latte/compare/0b29bd7924d89c16d68d804fecdf5427197f2497...0.1.0
