@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
@@ -48,10 +49,13 @@ final class LatteTemplatesRule implements Rule
 
     private LatteContextAnalyser $latteContextAnalyser;
 
+    private LatteContextAnalyser $latteIncludeAnalyser;
+
     private LatteContextFactory $latteContextFactory;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
+     * @param TemplateRenderCollector[] $templateRenderCollectors
      */
     public function __construct(
         array $latteTemplateResolvers,
@@ -62,7 +66,8 @@ final class LatteTemplatesRule implements Rule
         ErrorBuilder $errorBuilder,
         RelativePathHelper $relativePathHelper,
         LatteContextAnalyser $latteContextAnalyser,
-        LatteContextFactory $latteContextFactory
+        LatteContextFactory $latteContextFactory,
+        array $templateRenderCollectors
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -72,6 +77,7 @@ final class LatteTemplatesRule implements Rule
         $this->errorBuilder = $errorBuilder;
         $this->relativePathHelper = $relativePathHelper;
         $this->latteContextAnalyser = $latteContextAnalyser;
+        $this->latteIncludeAnalyser = $latteContextAnalyser->withCollectors($templateRenderCollectors);
         $this->latteContextFactory = $latteContextFactory;
     }
 
@@ -171,8 +177,7 @@ final class LatteTemplatesRule implements Rule
             $dir = dirname($templatePath);
 
             $includeTemplates = [];
-            // TODO optimization - run only template render collectors
-            $collectedTemplateRenders = $this->latteContextAnalyser->analyseFile($compileFilePath)->getCollectedData(CollectedTemplateRender::class);
+            $collectedTemplateRenders = $this->latteIncludeAnalyser->analyseFile($compileFilePath)->getCollectedData(CollectedTemplateRender::class);
             foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath) && $includedTemplatePath !== '') {

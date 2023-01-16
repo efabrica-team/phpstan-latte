@@ -147,4 +147,14 @@ class LatteContextAnalyser
         }
         return $files;
     }
+
+    /**
+     * @param AbstractLatteContextCollector[] $collectors
+     */
+    public function withCollectors(array $collectors): self
+    {
+        $clone = clone $this;
+        $clone->collectors = $collectors;
+        return $clone;
+    }
 }
