@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Error;
 
-use Efabrica\PHPStanLatte\Compiler\LineMapper;
 use Efabrica\PHPStanLatte\Error\Error as LatteError;
+use Efabrica\PHPStanLatte\Error\LineMapper\LineMap;
+use Efabrica\PHPStanLatte\Error\LineMapper\LineMapper;
 use Efabrica\PHPStanLatte\Error\Transformer\ErrorTransformerInterface;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\RuleError;
@@ -67,12 +68,12 @@ final class ErrorBuilder
      * @param Error[] $originalErrors
      * @return RuleError[]
      */
-    public function buildErrors(array $originalErrors, string $templatePath, ?string $context = null): array
+    public function buildErrors(array $originalErrors, string $templatePath, ?string $compiledTemplatePath, ?string $context = null): array
     {
         $errorSignatures = [];
         $errors = [];
         foreach ($originalErrors as $originalError) {
-            $error = $this->buildError($originalError, $templatePath, $context);
+            $error = $this->buildError($originalError, $templatePath, $compiledTemplatePath, $context);
             if ($error === null) {
                 continue;
             }
@@ -83,12 +84,13 @@ final class ErrorBuilder
             $errorSignatures[$errorSignature] = true;
             $errors[] = $error;
         }
-        $this->lineMapper->reset();
         return $errors;
     }
 
-    public function buildError(Error $originalError, string $templatePath, ?string $context = null): ?RuleError
+    public function buildError(Error $originalError, string $templatePath, ?string $compiledTemplatePath, ?string $context = null): ?RuleError
     {
+        $lineMap = $compiledTemplatePath ? $this->lineMapper->getLineMap($compiledTemplatePath) : new LineMap();
+
         $error = new LatteError($originalError->getMessage(), $originalError->getTip());
         $error = $this->transformError($error);
 
@@ -96,7 +98,7 @@ final class ErrorBuilder
             ->file($templatePath)
             ->metadata(array_merge($originalError->getMetadata(), ['context' => $context === '' ? null : $context]));
         if ($originalError->getLine()) {
-            $ruleErrorBuilder->line($this->lineMapper->get($originalError->getLine()));
+            $ruleErrorBuilder->line($lineMap->get($originalError->getLine()));
         }
         if ($error->getTip()) {
             $ruleErrorBuilder->tip($error->getTip());

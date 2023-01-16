@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
+namespace Efabrica\PHPStanLatte\Error\LineMapper;
 
-use Efabrica\PHPStanLatte\Compiler\LineMapper;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
 final class LineNumberNodeVisitor extends NodeVisitorAbstract
 {
-    private LineMapper $lineMapper;
+    private LineMap $lineMap;
 
-    public function __construct(LineMapper $lineMapper)
+    public function __construct(LineMap $lineMap)
     {
-        $this->lineMapper = $lineMapper;
+        $this->lineMap = $lineMap;
     }
 
     public function enterNode(Node $node): ?Node
@@ -37,7 +36,7 @@ final class LineNumberNodeVisitor extends NodeVisitorAbstract
                 continue;
             }
 
-            $this->lineMapper->add($node->getStartLine(), $latteLine);
+            $this->lineMap->add($node->getStartLine(), $latteLine);
         }
 
         return null;

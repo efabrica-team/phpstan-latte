@@ -187,4 +187,9 @@ final class SomeControl extends Control
     {
         return $param ? 'a' : 'b';
     }
+
+    public function renderWrongFile(): void
+    {
+        $this->template->render(__DIR__ . '/error.latte');
+    }
 }

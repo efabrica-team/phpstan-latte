@@ -2,12 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Efabrica\PHPStanLatte\Compiler;
+namespace Efabrica\PHPStanLatte\Error\LineMapper;
 
-final class LineMapper
+final class LineMap
 {
     /** @var array<int, int> */
     private array $lines = [];
+
+    /**
+     * @param array<int, int> $lines
+     */
+    public function __construct(array $lines = [])
+    {
+        $this->lines = $lines;
+    }
 
     public function add(int $original, int $latte): void
     {
@@ -31,5 +39,13 @@ final class LineMapper
     public function reset(): void
     {
         $this->lines = [];
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function getLines(): array
+    {
+        return $this->lines;
     }
 }

@@ -155,7 +155,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template, $context);
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, $context));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, null, $context));
                 continue;
             }
 
@@ -168,7 +168,7 @@ final class LatteTemplatesRule implements Rule
             );
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
 
-            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $context));
+            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $compileFilePath, $context));
 
             if (count($errors) > 1000) {
                 return;
@@ -184,24 +184,34 @@ final class LatteTemplatesRule implements Rule
                     if ($includedTemplatePath[0] !== '/') {
                         $includedTemplatePath = $dir . '/' . $includedTemplatePath;
                     }
-                    $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
-                    $includeTemplate = new Template(
-                        $includedTemplatePath,
-                        $actualClass,
-                        $actualAction,
-                        $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
-                        array_merge([$template->getPath()], $template->getParentTemplatePaths())
-                    );
-                    $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;
+                    if (!is_file($includedTemplatePath)) {
+                        $errors[] = $this->errorBuilder->buildError(
+                            new Error('Included latte template ' . $includedTemplatePath . ' does not exist.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
+                            $templatePath,
+                            $compileFilePath
+                        );
+                    } else {
+                        $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
+                        $includeTemplate = new Template(
+                            $includedTemplatePath,
+                            $actualClass,
+                            $actualAction,
+                            $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
+                            array_merge([$template->getPath()], $template->getParentTemplatePaths())
+                        );
+                        $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;
+                    }
                 } elseif ($includedTemplatePath === '') {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Empty path to included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
-                        $templatePath
+                        $templatePath,
+                        $compileFilePath
                     );
                 } elseif ($includedTemplatePath === false) {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Cannot resolve included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
-                        $templatePath
+                        $templatePath,
+                        $compileFilePath
                     );
                 }
             }
