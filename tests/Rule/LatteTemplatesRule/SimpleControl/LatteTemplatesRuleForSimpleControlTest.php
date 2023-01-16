@@ -124,9 +124,9 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'param_b.latte',
             ],
             [
-                'Template file "' . __DIR__ . '/Fixtures/MultipleRenderMethods/invalid_file.latte" doesn\'t exist.',
-                -1,
-                'invalid_file.latte',
+                'Rendered latte template ' . __DIR__ . '/Fixtures/MultipleRenderMethods/invalid_file.latte does not exist.',
+                41,
+                'SomeControl.php',
             ],
         ]);
     }
@@ -155,6 +155,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     public function testResolve(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/Resolve/SomeControl.php'], [
+            [
+                'Included latte template ' . __DIR__ . '/Fixtures/Resolve/not-existing.latte does not exist.',
+                2,
+                'default.latte',
+            ],
+
             [
                 'Variable $nonExistingVariable might not be defined.',
                 3,
@@ -194,6 +200,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'Variable $nonExistingVariable might not be defined.',
                 1,
                 'throwSometimes.latte',
+            ],
+            [
+                'Rendered latte template ' . __DIR__ . '/Fixtures/Resolve/error.latte does not exist.',
+                193,
+                'SomeControl.php',
             ],
         ]);
     }
