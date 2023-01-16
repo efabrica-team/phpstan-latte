@@ -55,6 +55,11 @@ In these cases annotations line `@phpstan-latte-ignore` or `@phpstan-latte-var` 
 
 [How to use annotations](docs/annotations.md)
 
+## How to extend this extension
+
+This extension supports only common built-in methods for resolving paths to latte files, collecting variables, components, forms etc.
+However, we know that in a wild there are applications which use their own methods for these purposes. That's why we create this extension extensible. See more about this topic [here](docs/extension.md).
+
 ## Development
 
 [Changelog](CHANGELOG.md)
