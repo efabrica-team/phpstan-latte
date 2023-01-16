@@ -3,6 +3,12 @@
 This extension supports only common built-in methods for resolving paths to latte files, collecting variables, components, forms etc.
 However, we know that in a wild there are applications which use their own methods for these purposes. That's why we create this extension extensible.
 
+- [Variable collectors](#variable-collectors)
+- [Template path collectors](#template-path-collectors)
+- [Node visitors](#node-visitors)
+    - [Actual class](#actual-class)
+    - [Forms](#forms)
+
 ## Variable collectors
 VariableCollector is a service used to collect variables which can be used in compiled template.
 It uses several sub collectors which basically finds:
@@ -15,7 +21,7 @@ Then register it as a new service in config file.
 
 ## Template path collectors
 TemplatePathCollector is a service which is used to find path to latte templates.
-Now there is only one collector which finds `$template->setTemplate($path)`. So if you use some other way how to tell where the latte template is, feel free to implement [`TemplatePathCollectorInterface`](../src/LatteContext/Collector/TemplatePathCollector/TemplatePathCollectorInterface.php). Don't forget to register this new service in config file.
+Now there is only one collector which finds `$template->setFile($path)`. So if you use some other way how to tell where the latte template is, feel free to implement [`TemplatePathCollectorInterface`](../src/LatteContext/Collector/TemplatePathCollector/TemplatePathCollectorInterface.php). Don't forget to register this new service in config file.
 
 ## Node visitors
 Last but not least, we have to prepare code for PHPStan to analyse it. When Nette compiles the latte template to PHP, the final class is little messy. We use [PHP parser](https://github.com/nikic/PHP-Parser/) and its [NodeVisitor](https://github.com/nikic/PHP-Parser/blob/4.x/doc/component/Walking_the_AST.markdown#node-visitors) to clean it up.
@@ -52,7 +58,7 @@ final class MyNodeVisitor extends NodeVisitorAbstract implements ActualClassNode
 ```
 
 ### Forms
-To get list of forms registered to actual Presenter or Control, you can use `FormsNodeVisitorInterface` with `FormsNodeVisitorBehavior`.
+To get list of forms available in template of actual Presenter or Control, you can use `FormsNodeVisitorInterface` with `FormsNodeVisitorBehavior`.
 
 ```php
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorBehavior;
