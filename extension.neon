@@ -69,14 +69,17 @@ services:
 
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
-    - Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler(%latte.tmpDir%, ::md5(::json_encode(%latte%)))
-
+    -
+        class: Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
+        arguments:
+            tmpDir: %latte.tmpDir%
+            cacheKey: ::md5(::json_encode(%latte%))
+            debugMode: %debugMode%
     -
         factory: Efabrica\PHPStanLatte\Compiler\Postprocessor
         arguments:
             parser: @latteCurrentPhpVersionRichParser
 
-    - Efabrica\PHPStanLatte\Compiler\LineMapper
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
     -
@@ -120,7 +123,6 @@ services:
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())
-            - addNodeVisitor(10000, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LineNumberNodeVisitor())
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
@@ -174,6 +176,7 @@ services:
     - Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables()
 
     # Error builder
+    - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(@latteCurrentPhpVersionRichParser, %debugMode%)
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.applicationMapping%)
 
     # Error transformers

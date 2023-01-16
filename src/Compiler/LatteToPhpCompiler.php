@@ -20,11 +20,14 @@ final class LatteToPhpCompiler
 
     private Postprocessor $postprocessor;
 
+    private bool $debugMode;
+
     public function __construct(
         ?string $tmpDir,
         string $cacheKey,
         CompilerInterface $compiler,
-        Postprocessor $postprocessor
+        Postprocessor $postprocessor,
+        bool $debugMode = false
     ) {
         $this->tmpDir = $tmpDir ?? sys_get_temp_dir() . '/phpstan-latte';
         $this->cacheKey = $cacheKey . md5(
@@ -34,6 +37,7 @@ final class LatteToPhpCompiler
         );
         $this->compiler = $compiler;
         $this->postprocessor = $postprocessor;
+        $this->debugMode = $debugMode;
     }
 
     public function compileFile(Template $template, string $context = ''): string
@@ -43,8 +47,6 @@ final class LatteToPhpCompiler
             throw new InvalidArgumentException('Template file "' . $templatePath . '" doesn\'t exist.');
         }
         $templateContent = file_get_contents($templatePath) ?: '';
-        $phpContent = $this->compiler->compile($templateContent, $template->getActualClass(), $context);
-        $phpContent = $this->postprocessor->postProcess($phpContent, $template);
         $templateDir = pathinfo($templatePath, PATHINFO_DIRNAME);
         $templateFileName = pathinfo($templatePath, PATHINFO_BASENAME);
         $contextHash = md5(
@@ -64,6 +66,14 @@ final class LatteToPhpCompiler
             mkdir($compileDir, 0777, true);
         }
         $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
+
+        if (!$this->debugMode && file_exists($compileFilePath)) {
+            return realpath($compileFilePath) ?: '';
+        }
+
+        $phpContent = $this->compiler->compile($templateContent, $template->getActualClass(), $context);
+        $phpContent = $this->postprocessor->postProcess($phpContent, $template);
+
         file_put_contents($compileFilePath, $phpContent);
         return realpath($compileFilePath) ?: '';
     }

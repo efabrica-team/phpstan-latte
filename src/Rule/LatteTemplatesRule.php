@@ -149,7 +149,7 @@ final class LatteTemplatesRule implements Rule
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template, $context);
                 require($compileFilePath); // load type definitions from compiled template
             } catch (Throwable $e) {
-                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, $context));
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, null, $context));
                 continue;
             }
 
@@ -162,7 +162,7 @@ final class LatteTemplatesRule implements Rule
             );
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
 
-            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $context));
+            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $compileFilePath, $context));
 
             if (count($errors) > 1000) {
                 return;
@@ -191,12 +191,14 @@ final class LatteTemplatesRule implements Rule
                 } elseif ($includedTemplatePath === '') {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Empty path to included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
-                        $templatePath
+                        $templatePath,
+                        $compileFilePath
                     );
                 } elseif ($includedTemplatePath === false) {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Cannot resolve included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
-                        $templatePath
+                        $templatePath,
+                        $compileFilePath
                     );
                 }
             }
