@@ -179,15 +179,23 @@ final class LatteTemplatesRule implements Rule
                     if ($includedTemplatePath[0] !== '/') {
                         $includedTemplatePath = $dir . '/' . $includedTemplatePath;
                     }
-                    $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
-                    $includeTemplate = new Template(
-                        $includedTemplatePath,
-                        $actualClass,
-                        $actualAction,
-                        $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
-                        array_merge([$template->getPath()], $template->getParentTemplatePaths())
-                    );
-                    $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;
+                    if (!is_file($includedTemplatePath)) {
+                        $errors[] = $this->errorBuilder->buildError(
+                            new Error('Included latte template ' . $includedTemplatePath . ' does not exist.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
+                            $templatePath,
+                            $compileFilePath
+                        );
+                    } else {
+                        $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
+                        $includeTemplate = new Template(
+                            $includedTemplatePath,
+                            $actualClass,
+                            $actualAction,
+                            $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
+                            array_merge([$template->getPath()], $template->getParentTemplatePaths())
+                        );
+                        $includeTemplates[$includeTemplate->getSignatureHash()] = $includeTemplate;
+                    }
                 } elseif ($includedTemplatePath === '') {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Empty path to included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),

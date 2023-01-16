@@ -48,7 +48,6 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
             'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
             'TEMPLATE test.latte SomeControl::renderTest ["presenter","control","c","d"] []',
-            'TEMPLATE invalid_file.latte SomeControl::renderTemplateFileNotFound ["presenter","control"] []',
             'TEMPLATE param_a.latte SomeControl::renderWildcard ["presenter","control","a","c"] []',
             'TEMPLATE param_b.latte SomeControl::renderWildcard ["presenter","control","a","c"] []',
         ]);

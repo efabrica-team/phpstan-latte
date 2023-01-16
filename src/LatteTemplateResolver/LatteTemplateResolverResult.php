@@ -77,6 +77,11 @@ final class LatteTemplateResolverResult
                 ->file($templateRender->getFile())
                 ->line($templateRender->getLine()));
             return;
+        } elseif (!is_file($templatePath)) {
+            $this->addErrorFromBuilder(RuleErrorBuilder::message('Rendered latte template ' . $templatePath . ' does not exist.')
+                ->file($templateRender->getFile())
+                ->line($templateRender->getLine()));
+            return;
         }
 
         $this->addTemplate(new Template(
