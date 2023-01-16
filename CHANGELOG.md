@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Compiled template cache for better performance of repeated analysis
+- Better error messages for render/include of non existing template files
+
+## Fixed
+- Performance issues
+
 ## [0.4.0] - 2023-01-16
 ### Added
 - Collect FormField name default value
