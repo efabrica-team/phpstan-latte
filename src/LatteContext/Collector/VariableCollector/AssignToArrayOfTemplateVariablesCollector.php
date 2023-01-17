@@ -9,7 +9,6 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\List_;
 use PHPStan\Analyser\Scope;
@@ -44,9 +43,6 @@ final class AssignToArrayOfTemplateVariablesCollector implements VariableCollect
             return null;
         }
 
-        /** @var ArrayItem[] $arrayItems */
-        $arrayItems = (array)$node->var->items;
-
         $types = [];
         $expressionTypes = $scope->getType($node->expr);
         if ($expressionTypes instanceof ConstantArrayType) {
@@ -55,7 +51,12 @@ final class AssignToArrayOfTemplateVariablesCollector implements VariableCollect
 
         $variables = [];
         $containsTemplateVariable = false;
+
+        $arrayItems = (array)$node->var->items;
         foreach ($arrayItems as $key => $arrayItem) {
+            if ($arrayItem === null) {
+                continue;
+            }
             $arrayItemValue = $arrayItem->value;
             $variableName = $this->nameResolver->resolve($arrayItemValue);
             if ($variableName === null) {
