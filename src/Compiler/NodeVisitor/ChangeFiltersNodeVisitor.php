@@ -6,8 +6,6 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Helper\FilterHelper;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -23,10 +21,8 @@ use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
 
-final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
+final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract
 {
-    use ActualClassNodeVisitorBehavior;
-
     /** @var array<string, string|array{string, string}|array{object, string}|callable> */
     private array $filters;
 
