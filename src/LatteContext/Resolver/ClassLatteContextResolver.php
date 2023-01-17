@@ -3,6 +3,7 @@
 namespace Efabrica\PHPStanLatte\LatteContext\Resolver;
 
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Type\ObjectType;
 
@@ -36,6 +37,16 @@ class ClassLatteContextResolver implements LatteContextResolverInterface
     public function getFilters(): array
     {
         return $this->latteContext->filterFinder()->find($this->getClassName());
+    }
+
+    protected function getTemplateContext(ReflectionClass $reflectionClass, LatteContext $latteContext): TemplateContext
+    {
+        return new TemplateContext(
+            $this->getVariables(),
+            $this->getComponents(),
+            $this->getForms(),
+            $this->getFilters()
+        );
     }
 
     protected function getClassName(): string
