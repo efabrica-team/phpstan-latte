@@ -5,6 +5,7 @@
 ### Added
 - Compiled template cache for better performance of repeated analysis
 - Better error messages for render/include of non existing template files
+- PHPStan extension installer support
 
 ## Fixed
 - Performance issues

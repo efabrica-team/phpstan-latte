@@ -20,6 +20,13 @@
         "nikic/php-parser": "^4.15",
         "efabrica/coding-standard": "^0.4"
     },
+    "extra": {
+        "phpstan": {
+            "includes": [
+                "rules.neon"
+            ]
+        }
+    },
     "autoload": {
         "psr-4": {
             "Efabrica\\PHPStanLatte\\": "src/"
