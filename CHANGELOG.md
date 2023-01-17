@@ -8,6 +8,7 @@
 
 ## Fixed
 - Performance issues
+- Errors for skipped items in array deconstruct 
 
 ## [0.4.0] - 2023-01-16
 ### Added

@@ -30,9 +30,9 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->add('localStrings', $localStrings);
         $this->template->obj = $this;
 
-        $items = ['first item', 'second item'];
-        [$this->template->array1, $this->template->array2] = $items;
-        list($this->template->list1, $this->template->list2) = $items;
+        $items = ['first item', 'second item', 'third item'];
+        [$this->template->array1, $this->template->array2,] = $items;
+        list($this->template->list1, $this->template->list2,) = $items;
 
         [$this->template->array1WithoutType, $this->template->array2WithoutType] = $this->itemsToArrayAssignWithoutTypes();
         list($this->template->list1WithType, $this->template->list2WithType) = $this->itemsToArrayAssignWithTypes();
