@@ -1,9 +1,9 @@
 {
     "name": "efabrica/phpstan-latte",
     "license": ["MIT"],
-	"keywords": [
-		"static analysis"
-	],
+    "keywords": [
+        "static analysis"
+    ],
     "require": {
         "php": ">=7.4 <8.3",
         "ext-json": "*",
