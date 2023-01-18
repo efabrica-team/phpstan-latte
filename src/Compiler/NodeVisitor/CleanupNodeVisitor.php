@@ -24,7 +24,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\VerbosityLevel;
 
 final class CleanupNodeVisitor extends NodeVisitorAbstract
 {
@@ -66,6 +65,8 @@ final class CleanupNodeVisitor extends NodeVisitorAbstract
         };
 
         $this->nodeScopeResolver->processNodes($nodes, $scope, $nodeCallback);
+
+        return null;
     }
 
     public function leaveNode(Node $node)
@@ -73,7 +74,6 @@ final class CleanupNodeVisitor extends NodeVisitorAbstract
         if ($node instanceof If_) {
             if ($node->cond instanceof Assign) {
                 if ($node->cond->expr instanceof MethodCall) {
-
                     if ($this->nameResolver->resolve($node->cond->expr) !== 'getLabel') {
                         return null;
                     }
