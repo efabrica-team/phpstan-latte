@@ -10,19 +10,21 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {
+    private ReflectionProvider $reflectionProvider;
+
     private PresenterFactoryFaker $presenterFactoryFaker;
 
     private LinkParamsProcessor $linkParamsProcessor;
 
     private ?string $actualClass = null;
 
-    public function __construct(PresenterFactoryFaker $presenterFactoryFaker, LinkParamsProcessor $linkParamsProcessor)
+    public function __construct(ReflectionProvider $reflectionProvider, PresenterFactoryFaker $presenterFactoryFaker, LinkParamsProcessor $linkParamsProcessor)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->presenterFactoryFaker = $presenterFactoryFaker;
         $this->linkParamsProcessor = $linkParamsProcessor;
     }
@@ -60,9 +62,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
             if ($presenterClassName === '') {
                 return [];
             }
-            try {
-                (new BetterReflection())->reflector()->reflectClass($presenterClassName);
-            } catch (IdentifierNotFound $notFoundException) {
+            if (!$this->reflectionProvider->hasClass($presenterClassName)) {
                 if ($this->actualClass === null) {
                     return [];
                 }
@@ -107,7 +107,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
      */
     private function prepareMethodNames(string $presenterClassName, string $actionName, array $linkParams): array
     {
-        $presenterClassReflection = (new BetterReflection())->reflector()->reflectClass($presenterClassName);
+        $presenterClassReflection = $this->reflectionProvider->getClass($presenterClassName);
 
         $methodNames = [];
         $methodExists = false;

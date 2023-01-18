@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplatePath;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class TemplatePathFinder
 {
@@ -16,14 +16,17 @@ final class TemplatePathFinder
      */
     private array $collectedTemplatePaths = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
     private MethodFinder $methodFinder;
 
     private PathResolver $pathResolver;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, PathResolver $pathResolver)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, PathResolver $pathResolver)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
         $this->methodFinder = $methodFinder;
         $this->pathResolver = $pathResolver;
@@ -67,10 +70,10 @@ final class TemplatePathFinder
      */
     private function findInParents(string $className)
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $collectedTemplatePaths = [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $collectedTemplatePaths = array_merge(
                 $this->collectedTemplatePaths[$parentClass][''] ?? [],
                 $collectedTemplatePaths
