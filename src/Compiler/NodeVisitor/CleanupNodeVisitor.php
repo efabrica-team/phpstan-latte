@@ -6,9 +6,11 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Else_;
 use PhpParser\Node\Stmt\Expression;
@@ -16,18 +18,77 @@ use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use PhpParser\PrettyPrinter\Standard;
+use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\Scope;
+use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\ScopeFactory;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\VerbosityLevel;
 
 final class CleanupNodeVisitor extends NodeVisitorAbstract
 {
+    private const METHOD_CALL_CALLER_TYPE = 'method_call_caller_type';
+
     private NameResolver $nameResolver;
 
-    public function __construct(NameResolver $nameResolver)
-    {
+    private ScopeFactory $scopeFactory;
+
+    private Standard $printerStandard;
+
+    private NodeScopeResolver $nodeScopeResolver;
+
+    public function __construct(
+        NameResolver $nameResolver,
+        ScopeFactory $scopeFactory,
+        Standard $printerStandard,
+        NodeScopeResolver $nodeScopeResolver
+    ) {
         $this->nameResolver = $nameResolver;
+        $this->scopeFactory = $scopeFactory;
+        $this->printerStandard = $printerStandard;
+        $this->nodeScopeResolver = clone $nodeScopeResolver;
+    }
+
+    public function beforeTraverse(array $nodes)
+    {
+        $content = $this->printerStandard->prettyPrintFile($nodes);
+        $filename = sys_get_temp_dir() . '/phpstan-latte-' . md5($content) . '.php';
+        file_put_contents($filename, $content);
+        require_once $filename;
+        $scope = $this->scopeFactory->create(ScopeContext::create($filename));
+
+        $nodeCallback = function (Node $node, Scope $scope): void {
+            if ($node instanceof MethodCall) {
+                $type = $scope->getType($node->var);
+                $node->setAttribute(self::METHOD_CALL_CALLER_TYPE, $type);
+            }
+        };
+
+        $this->nodeScopeResolver->processNodes($nodes, $scope, $nodeCallback);
     }
 
     public function leaveNode(Node $node)
     {
+        if ($node instanceof If_) {
+            if ($node->cond instanceof Assign) {
+                if ($node->cond->expr instanceof MethodCall) {
+
+                    if ($this->nameResolver->resolve($node->cond->expr) !== 'getLabel') {
+                        return null;
+                    }
+                    $type = $node->cond->expr->getAttribute(self::METHOD_CALL_CALLER_TYPE);
+                    if (!$type instanceof ObjectType) {
+                        return null;
+                    }
+
+                    if ($type->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes()) {
+                        return array_merge([new Expression($node->cond)], $node->stmts);
+                    }
+                }
+            }
+        }
+
         if ($node instanceof Expression) {
             // if only one expr in Expression is Variable, we can remove it
             if ($node->expr instanceof Variable) {
