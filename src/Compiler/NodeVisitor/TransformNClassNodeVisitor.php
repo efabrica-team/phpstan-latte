@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Assign;
@@ -25,10 +23,8 @@ use PhpParser\NodeVisitorAbstract;
  * to:
  * <code> echo ' class="' . \implode(" ", ['class1', $var ? 'class2' : \null]) . '"'; </code>
  */
-final class TransformNClassNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
+final class TransformNClassNodeVisitor extends NodeVisitorAbstract
 {
-    use ActualClassNodeVisitorBehavior;
-
     public function enterNode(Node $node): ?Node
     {
         if (!$node instanceof Ternary) {

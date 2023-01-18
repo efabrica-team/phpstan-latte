@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorBehavior;
-use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -20,10 +18,8 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 
-final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements ActualClassNodeVisitorInterface
+final class AddVarTypesNodeVisitor extends NodeVisitorAbstract
 {
-    use ActualClassNodeVisitorBehavior;
-
     /** @var Variable[] */
     private array $variables;
 
