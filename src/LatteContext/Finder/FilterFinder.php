@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedFilter;
 use Efabrica\PHPStanLatte\Template\Filter;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class FilterFinder
 {
@@ -16,10 +16,13 @@ final class FilterFinder
      */
     private array $collectedFilters = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
         $collectedFilters = $latteContext->getCollectedData(CollectedFilter::class);
@@ -55,10 +58,10 @@ final class FilterFinder
      */
     private function findInParents(string $className): array
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $collectedFilters = [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $collectedFilters = array_merge(
                 $this->collectedFilters[$parentClass][''] ?? [],
                 $collectedFilters

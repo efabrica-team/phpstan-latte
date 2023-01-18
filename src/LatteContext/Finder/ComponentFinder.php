@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class ComponentFinder
 {
@@ -22,10 +22,13 @@ final class ComponentFinder
      */
     private array $declaredComponents = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
         /** @var array<string, Component[]> $componentsWithTypes */
@@ -79,14 +82,14 @@ final class ComponentFinder
      */
     private function findInClasses(string $className): array
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $assignedComponents = $this->assignedComponents[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $assignedComponents = ItemCombinator::union($this->assignedComponents[$parentClass][''] ?? [], $assignedComponents);
         }
         $declaredComponents = $this->declaredComponents[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $declaredComponents = ItemCombinator::merge($this->declaredComponents[$parentClass][''] ?? [], $declaredComponents);
         }
         return ItemCombinator::merge($assignedComponents, $declaredComponents);

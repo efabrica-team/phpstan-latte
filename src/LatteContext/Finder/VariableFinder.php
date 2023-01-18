@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class VariableFinder
 {
@@ -22,10 +22,13 @@ final class VariableFinder
      */
     private array $declaredVariables = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
         $collectedVriables = $latteContext->getCollectedData(CollectedVariable::class);
@@ -60,14 +63,14 @@ final class VariableFinder
      */
     private function findInClasses(string $className): array
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $assignedVariables = $this->assignedVariables[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $assignedVariables = ItemCombinator::union($this->assignedVariables[$parentClass][''] ?? [], $assignedVariables);
         }
         $declaredVariables = $this->declaredVariables[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $declaredVariables = ItemCombinator::merge($this->declaredVariables[$parentClass][''] ?? [], $declaredVariables);
         }
         return ItemCombinator::merge($assignedVariables, $declaredVariables);

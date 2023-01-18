@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
 use Efabrica\PHPStanLatte\Template\Form\Field;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFieldFinder
 {
@@ -17,10 +17,13 @@ final class FormFieldFinder
      */
     private array $assignedFormFields = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
         $collectedForms = $latteContext->getCollectedData(CollectedFormField::class);
@@ -54,10 +57,10 @@ final class FormFieldFinder
      */
     private function findInClasses(string $className): array
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $assignedFormFields = $this->assignedFormFields[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $assignedFormFields = ItemCombinator::union($this->assignedFormFields[$parentClass][''] ?? [], $assignedFormFields);
         }
         return $assignedFormFields;
