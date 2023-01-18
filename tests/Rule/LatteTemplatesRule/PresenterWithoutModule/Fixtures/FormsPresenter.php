@@ -34,6 +34,11 @@ final class FormsPresenter extends ParentPresenter
         $form->setTranslator(null);
         $form->addSelect('select', 'Select', ['item1', 'item2', 'item3']);
         $form->addCheckbox('checkbox', 'Checkbox');
+        $form->addCheckboxList('checkbox_list', 'Checkbox list', [
+            'item1' => 'First item',
+            'item2' => 'Second item',
+            'item3' => 'Third item',
+        ]);
         $form->addText('username', 'Username')
             ->setRequired()
             ->addRule(Form::EMAIL);
