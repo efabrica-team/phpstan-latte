@@ -39,7 +39,7 @@ class ClassLatteContextResolver implements LatteContextResolverInterface
         return $this->latteContext->filterFinder()->find($this->getClassName());
     }
 
-    protected function getTemplateContext(ReflectionClass $reflectionClass, LatteContext $latteContext): TemplateContext
+    public function getTemplateContext(): TemplateContext
     {
         return new TemplateContext(
             $this->getVariables(),
