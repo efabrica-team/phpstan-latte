@@ -10,7 +10,10 @@ use PHPStan\Analyser\Scope;
 
 interface VariableCollectorInterface
 {
-    public function isSupported(Node $node): bool;
+    /**
+     * @return array<class-string<Node>>
+     */
+    public function getNodeTypes(): array;
 
     /**
      * @return CollectedVariable[]|null null = not a variables node

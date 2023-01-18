@@ -16,7 +16,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedForm>
+ * @extends AbstractLatteContextCollector<CollectedForm>
  */
 final class FormCollector extends AbstractLatteContextCollector
 {
@@ -31,12 +31,13 @@ final class FormCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        return [ClassMethod::class];
     }
 
     /**
+     * @param ClassMethod $node
      * @phpstan-return null|CollectedForm[]
      */
     public function collectData(Node $node, Scope $scope): ?array
@@ -46,11 +47,7 @@ final class FormCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if ($node instanceof ClassMethod) {
-            return $this->findCreateComponent($node, $classReflection, $scope);
-        }
-
-        return null;
+        return $this->findCreateComponent($node, $classReflection, $scope);
     }
 
     /**

@@ -27,9 +27,9 @@ final class SetParametersToTemplateVariableCollector implements VariableCollecto
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof MethodCall;
+        return [MethodCall::class];
     }
 
     /**

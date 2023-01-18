@@ -30,9 +30,9 @@ final class AddToTemplateVariableCollector implements VariableCollectorInterface
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof MethodCall;
+        return [MethodCall::class];
     }
 
     /**

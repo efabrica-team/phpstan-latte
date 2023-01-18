@@ -28,8 +28,7 @@ class LatteContextAnalyser
 
     private FileHelper $fileHelper;
 
-    /** @var AbstractLatteContextCollector[] */
-    private array $collectors;
+    private LatteContextCollectorRegistry $collectorRegistry;
 
     /**
      * @param AbstractLatteContextCollector[] $collectors
@@ -48,7 +47,7 @@ class LatteContextAnalyser
         $this->fileHelper = $fileHelper;
         // $this->nodeScopeResolver->setAnalysedFiles(null); TODO when changes in PHPStan are merged
         $this->parser = $parser;
-        $this->collectors = $collectors;
+        $this->collectorRegistry = new LatteContextCollectorRegistry($collectors);
     }
 
     /**
@@ -98,10 +97,8 @@ class LatteContextAnalyser
                     if ($node instanceof TraitUse) {
                         $this->nodeScopeResolver->setAnalysedFiles($this->getTraitFiles($node));
                     }
-                    foreach ($this->collectors as $collector) {
-                        if (!is_a($node, $collector->getNodeType())) {
-                            continue;
-                        }
+                    $collectors = $this->collectorRegistry->getCollectorsForNode($node);
+                    foreach ($collectors as $collector) {
                         try {
                             $collectedData = $collector->collectData($node, $scope);
                         } catch (Throwable $e) {
@@ -154,7 +151,7 @@ class LatteContextAnalyser
     public function withCollectors(array $collectors): self
     {
         $clone = clone $this;
-        $clone->collectors = $collectors;
+        $clone->collectorRegistry = new LatteContextCollectorRegistry($collectors);
         return $clone;
     }
 }

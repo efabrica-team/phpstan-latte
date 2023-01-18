@@ -18,7 +18,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\UnionType;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedFormField>
+ * @extends AbstractLatteContextCollector<CollectedFormField>
  */
 final class FormFieldCollector extends AbstractLatteContextCollector
 {
@@ -37,12 +37,13 @@ final class FormFieldCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        return [MethodCall::class];
     }
 
     /**
+     * @param MethodCall $node
      * @phpstan-return null|CollectedFormField[]
      */
     public function collectData(Node $node, Scope $scope): ?array

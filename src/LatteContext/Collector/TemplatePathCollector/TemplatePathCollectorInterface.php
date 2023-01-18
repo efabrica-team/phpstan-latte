@@ -9,7 +9,10 @@ use PHPStan\Analyser\Scope;
 
 interface TemplatePathCollectorInterface
 {
-    public function isSupported(Node $node): bool;
+    /**
+     * @return array<class-string<Node>>
+     */
+    public function getNodeTypes(): array;
 
     /**
      * @return string[]|null

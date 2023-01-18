@@ -29,9 +29,9 @@ final class AssignToArrayOfTemplateVariablesCollector implements VariableCollect
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof Assign;
+        return [Assign::class];
     }
 
     /**

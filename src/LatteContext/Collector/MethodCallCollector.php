@@ -15,7 +15,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<CallLike, CollectedMethodCall>
+ * @extends AbstractLatteContextCollector<CollectedMethodCall>
  */
 final class MethodCallCollector extends AbstractLatteContextCollector
 {
@@ -38,9 +38,9 @@ final class MethodCallCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return CallLike::class;
+        return [CallLike::class];
     }
 
     /**

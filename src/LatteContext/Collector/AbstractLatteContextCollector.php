@@ -9,7 +9,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @template N of Node
  * @template T of CollectedLatteContextObject
  */
 abstract class AbstractLatteContextCollector
@@ -27,12 +26,12 @@ abstract class AbstractLatteContextCollector
     }
 
     /**
-     * @return class-string<N>
+     * @return array<class-string<Node>>
      */
-    abstract public function getNodeType(): string;
+    abstract public function getNodeTypes(): array;
 
     /**
-     * @param N $node
+     * @param Node $node
      * @phpstan-return null|T[]
      */
     abstract public function collectData(Node $node, Scope $scope): ?array;

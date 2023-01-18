@@ -30,9 +30,9 @@ final class AssignToTemplateVariableCollector implements VariableCollectorInterf
         $this->typeResolver = $typeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof Assign;
+        return [Assign::class];
     }
 
     /**
