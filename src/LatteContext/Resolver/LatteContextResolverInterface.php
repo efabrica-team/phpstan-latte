@@ -5,6 +5,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Resolver;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use Efabrica\PHPStanLatte\Template\TemplateContext;
 use Efabrica\PHPStanLatte\Template\Variable;
 
 interface LatteContextResolverInterface
@@ -28,4 +29,6 @@ interface LatteContextResolverInterface
      * @return Filter[]
      */
     public function getFilters(): array;
+
+    public function getTemplateContext(): TemplateContext;
 }
