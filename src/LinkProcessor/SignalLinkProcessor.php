@@ -8,19 +8,22 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 /**
  * not working as expected because in handle methods you don't have to pass parameters if they are same as in actual request
  */
 final class SignalLinkProcessor implements LinkProcessorInterface
 {
+    private ReflectionProvider $reflectionProvider;
+
     private LinkParamsProcessor $linkParamsProcessor;
 
     private ?string $actualClass = null;
 
-    public function __construct(LinkParamsProcessor $linkParamsProcessor)
+    public function __construct(ReflectionProvider $reflectionProvider, LinkParamsProcessor $linkParamsProcessor)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->linkParamsProcessor = $linkParamsProcessor;
     }
 
@@ -44,7 +47,7 @@ final class SignalLinkProcessor implements LinkProcessorInterface
         if ($this->actualClass === null) {
             return [];
         }
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($this->actualClass);
+        $classReflection = $this->reflectionProvider->getClass($this->actualClass);
         $variable = new Variable('control');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
         if ($this->actualClass !== null && $classReflection->hasMethod($methodName)) {

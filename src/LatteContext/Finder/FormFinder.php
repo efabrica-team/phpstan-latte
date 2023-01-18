@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Form\Form;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFinder
 {
@@ -16,12 +16,15 @@ final class FormFinder
      */
     private array $collectedForms = [];
 
+    private ReflectionProvider $reflectionProvider;
+
     private MethodCallFinder $methodCallFinder;
 
     private FormFieldFinder $formFieldFinder;
 
-    public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, FormFieldFinder $formFieldFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder, FormFieldFinder $formFieldFinder)
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
         $this->formFieldFinder = $formFieldFinder;
 
@@ -54,7 +57,7 @@ final class FormFinder
         $forms = [];
         foreach ($collectedForms as $collectedForm) {
             $createdClassName = $collectedForm->getCreatedClassName();
-            $parentClassNames = (new BetterReflection())->reflector()->reflectClass($className)->getParentClassNames();
+            $parentClassNames = $this->reflectionProvider->getClass($className)->getParentClassesNames();
             if (in_array($createdClassName, $parentClassNames)) {
                 $createdClassName = $className;
             }
@@ -73,10 +76,10 @@ final class FormFinder
      */
     private function findInClasses(string $className): array
     {
-        $classReflection = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
         $collectedForms = $this->collectedForms[$className][''] ?? [];
-        foreach ($classReflection->getParentClassNames() as $parentClass) {
+        foreach ($classReflection->getParentClassesNames() as $parentClass) {
             $collectedForms = array_merge($this->collectedForms[$parentClass][''] ?? [], $collectedForms);
         }
         return $collectedForms;
