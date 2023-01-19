@@ -140,8 +140,18 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'SomeControl.php',
             ],
             [
-                'Cannot automatically resolve latte template from expression.',
+                'Cannot resolve latte template for SomeControl::renderNotEvaluated().',
+                15,
+                'SomeControl.php',
+            ],
+            [
+                'Cannot resolve rendered latte template.',
                 17,
+                'SomeControl.php',
+            ],
+            [
+                'Cannot resolve latte template for SomeControl::renderNotEvaluatedVar().',
+                20,
                 'SomeControl.php',
             ],
             [

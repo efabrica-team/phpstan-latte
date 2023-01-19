@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\ResolvePresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\VariablesPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\CustomFormRenderer;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\SomeControl;
@@ -751,12 +750,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'setFile.changed.latte',
             ],
             [
-                'Latte template was not set for ' . ResolvePresenter::class . '::sendTemplateDefault',
+                'Cannot resolve rendered latte template.',
                 89,
                 'ResolvePresenter.php',
             ],
             [
-                'Cannot automatically resolve latte template from expression.',
+                'Cannot automatically resolve template used by sendTemplate().',
                 95,
                 'ResolvePresenter.php',
             ],

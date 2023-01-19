@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -22,7 +23,10 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                 ->merge($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
 
             $templateRenders = $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName());
-            if (count($templateRenders) === 0) {
+            $validTemplateRenders = array_filter($templateRenders, function (CollectedTemplateRender $templateRender) {
+                return $templateRender->getTemplatePath() !== null;
+            });
+            if (count($validTemplateRenders) === 0) {
                 if (!$latteContext->methodCallFinder()->hasAnyOutputCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
                     !$latteContext->methodCallFinder()->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
                     !$latteContext->methodFinder()->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName())

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
@@ -25,7 +26,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 
 /**
- * @extends AbstractLatteContextCollector<CollectedTemplateRender>
+ * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedError>
  */
 final class TemplateRenderCollector extends AbstractLatteContextCollector
 {
@@ -59,7 +60,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRender[]
+     * @phpstan-return null|array<CollectedTemplateRender|CollectedError>
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -84,7 +85,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRender[]
+     * @phpstan-return null|array<CollectedTemplateRender|CollectedError>
      */
     public function processNodeInCompiledLatte(Node $node, Scope $scope): ?array
     {
@@ -127,7 +128,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedTemplateRender[]
+     * @phpstan-return null|array<CollectedTemplateRender|CollectedError>
      */
     public function processNodeInPhp(Node $node, Scope $scope): ?array
     {
@@ -174,12 +175,12 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
      * @param array<?string> $paths
      * @param Variable[] $variables
      * @param Component[] $components
-     * @return null|CollectedTemplateRender[]
+     * @return null|array<CollectedTemplateRender|CollectedError>
      */
     private function buildTemplateRenders(Node $node, Scope $scope, ?array $paths, array $variables, array $components = []): ?array
     {
         if ($paths === null) {
-            return [CollectedTemplateRender::build($node, $scope, false, $variables, $components)];
+            return [CollectedError::build($node, $scope, 'Cannot automatically resolve latte template from expression.')];
         }
         $templateRenders = [];
         foreach ($paths as $path) {

@@ -38,17 +38,13 @@ final class TemplateRenderFinder
                 $this->collectedTemplateRenders[$className][$methodName] = [];
             }
             $templatePath = $collectedTemplateRender->getTemplatePath();
-            if ($templatePath === false) {
-                $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender;
-            } else {
-                $templatePaths = $this->pathResolver->expand($templatePath, $this->methodFinder);
-                if ($templatePaths === null) {
-                    $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withError();
-                } else {
-                    foreach ($templatePaths as $templatePath) {
-                        $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withTemplatePath($templatePath);
-                    }
+            $templatePaths = $this->pathResolver->expand($templatePath, $this->methodFinder);
+            if ($templatePaths !== null) {
+                foreach ($templatePaths as $templatePath) {
+                    $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withTemplatePath($templatePath);
                 }
+            } else {
+                $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withTemplatePath(null);
             }
         }
     }

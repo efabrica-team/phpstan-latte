@@ -12,7 +12,7 @@ use PHPStan\Reflection\ReflectionProvider;
 final class TemplatePathFinder
 {
     /**
-     * @var array<string, array<string, array<?string>>>
+     * @var array<string, array<string, array<string>>>
      */
     private array $collectedTemplatePaths = [];
 
@@ -40,17 +40,15 @@ final class TemplatePathFinder
             }
             $templatePaths = $this->pathResolver->expand($collectedTemplatePath->getTemplatePath(), $this->methodFinder);
             if ($templatePaths !== null) {
-                foreach ($templatePaths as $templatePath) {
+                foreach (array_filter($templatePaths) as $templatePath) {
                     $this->collectedTemplatePaths[$className][$methodName][] = $templatePath;
                 }
-            } else {
-                $this->collectedTemplatePaths[$className][$methodName][] = null;
             }
         }
     }
 
     /**
-     * @return array<?string>
+     * @return array<string>
      */
     public function find(string $className, string ...$methodNames): array
     {
@@ -66,7 +64,7 @@ final class TemplatePathFinder
     }
 
     /**
-     * @return array<?string>
+     * @return array<string>
      */
     private function findInParents(string $className)
     {
@@ -83,7 +81,7 @@ final class TemplatePathFinder
     }
 
     /**
-     * @return array<?string>
+     * @return array<string>
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {

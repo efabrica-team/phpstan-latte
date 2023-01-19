@@ -6,7 +6,6 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextCollector;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\TraitUse;
-use PHPStan\Analyser\Error;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
@@ -14,6 +13,7 @@ use PHPStan\Analyser\ScopeFactory;
 use PHPStan\File\FileHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
 
 class LatteContextAnalyser
@@ -102,7 +102,7 @@ class LatteContextAnalyser
                         try {
                             $collectedData = $collector->collectData($node, $scope);
                         } catch (Throwable $e) {
-                            $fileErrors[] = new Error(get_class($collector) . ' error: ' . $e->getMessage(), $file, $node->getLine(), $e);
+                            $fileErrors[] = RuleErrorBuilder::message(get_class($collector) . ' error: ' . $e->getMessage())->file($file)->line($node->getLine())->build();
                             continue;
                         }
                         if ($collectedData === null || $collectedData === []) {
@@ -114,12 +114,12 @@ class LatteContextAnalyser
                 $scope = $this->scopeFactory->create(ScopeContext::create($file));
                 $this->nodeScopeResolver->processNodes($parserNodes, $scope, $nodeCallback);
             } catch (Throwable $e) {
-                $fileErrors[] = new Error('LatteContextAnalyser error: ' . $e->getMessage(), $file, null, $e);
+                $fileErrors[] = RuleErrorBuilder::message('LatteContextAnalyser error: ' . $e->getMessage())->file($file)->build();
             }
         } elseif (is_dir($file)) {
-            $fileErrors[] = new Error(sprintf('File %s is a directory.', $file), $file, null, false);
+            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s is a directory.', $file))->file($file)->build();
         } else {
-            $fileErrors[] = new Error(sprintf('File %s does not exist.', $file), $file, null, false);
+            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s does not exist.', $file))->file($file)->build();
         }
         return new LatteContextData($fileCollectedData, $fileErrors);
     }

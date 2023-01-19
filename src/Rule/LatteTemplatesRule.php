@@ -95,7 +95,7 @@ final class LatteTemplatesRule implements Rule
         $latteContextData = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
         $latteContext = $this->latteContextFactory->create($latteContextData);
 
-        $errors = $latteContextData->getErrors();
+        $errors = array_merge($latteContextData->getErrors(), $latteContextData->getCollectedErrors());
         $templates = [];
         foreach ($this->latteTemplateResolvers as $latteTemplateResolver) {
             foreach ($resolvedNodeFinder->find(get_class($latteTemplateResolver)) as $collectedResolvedNode) {
@@ -207,7 +207,7 @@ final class LatteTemplatesRule implements Rule
                         $templatePath,
                         $compileFilePath
                     );
-                } elseif ($includedTemplatePath === false) {
+                } elseif ($includedTemplatePath === null) {
                     $errors[] = $this->errorBuilder->buildError(
                         new Error('Cannot resolve included latte template.', $collectedTemplateRender->getFile(), $collectedTemplateRender->getLine()),
                         $templatePath,
