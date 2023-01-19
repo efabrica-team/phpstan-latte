@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
+use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextSubCollector;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
@@ -12,7 +13,10 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PHPStan\Analyser\Scope;
 
-final class AssignToTemplateVariableCollector implements VariableCollectorInterface
+/**
+ * @extends AbstractLatteContextSubCollector<CollectedVariable>
+ */
+final class AssignToTemplateVariableCollector extends AbstractLatteContextSubCollector implements VariableCollectorInterface
 {
     private NameResolver $nameResolver;
 
@@ -30,9 +34,9 @@ final class AssignToTemplateVariableCollector implements VariableCollectorInterf
         $this->typeResolver = $typeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof Assign;
+        return [Assign::class];
     }
 
     /**

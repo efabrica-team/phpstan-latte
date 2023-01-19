@@ -19,10 +19,16 @@ parameters:
         -
             messages:
                 - '#^Creating new PHPStan\\Analyser\\Error is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
-                - '#^Property Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::\$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector does not specify its types: N, T#'
-                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: N, T#'
-                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::withCollectors\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: N, T#'
+                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: T#'
+                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::withCollectors\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: T#'
             path: src/Analyser/LatteContextAnalyser.php
+        -
+            messages:
+                - '#^Property Efabrica\\PHPStanLatte\\Analyser\\LatteContextCollectorRegistry::\$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector does not specify its types: T#'
+                - '#^Property Efabrica\\PHPStanLatte\\Analyser\\LatteContextCollectorRegistry::\$cache with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector does not specify its types: T#'
+                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextCollectorRegistry::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: T#'
+                - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextCollectorRegistry::getCollectorsForNode\(\) return type with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector does not specify its types: T#'
+            path: src/Analyser/LatteContextCollectorRegistry.php
 
         # Latte version conditions
         -

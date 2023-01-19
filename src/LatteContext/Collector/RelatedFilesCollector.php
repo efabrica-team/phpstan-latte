@@ -18,7 +18,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedRelatedFiles>
+ * @extends AbstractLatteContextCollector<CollectedRelatedFiles>
  */
 final class RelatedFilesCollector extends AbstractLatteContextCollector
 {
@@ -57,9 +57,13 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
         $this->reflectionProvider = $reflectionProvider;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        return [
+            InClassNode::class,
+            New_::class,
+            CallLike:: class,
+        ];
     }
 
     public function collectData(Node $node, Scope $scope): ?array

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
-use PhpParser\Node;
-use PHPStan\Analyser\Scope;
+use Efabrica\PHPStanLatte\LatteContext\Collector\LatteContextSubCollectorInterface;
 
-interface VariableCollectorInterface
+/**
+ * @uses CollectedVariable
+ * @extends LatteContextSubCollectorInterface<CollectedVariable>
+ */
+interface VariableCollectorInterface extends LatteContextSubCollectorInterface
 {
-    public function isSupported(Node $node): bool;
-
-    /**
-     * @return CollectedVariable[]|null null = not a variables node
-     */
-    public function collect(Node $node, Scope $scope): ?array;
 }

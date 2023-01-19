@@ -23,7 +23,7 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedComponent>
+ * @extends AbstractLatteContextCollector<CollectedComponent>
  */
 final class ComponentCollector extends AbstractLatteContextCollector
 {
@@ -42,9 +42,13 @@ final class ComponentCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        return [
+            Return_::class,
+            MethodCall::class,
+            Assign::class,
+        ];
     }
 
     /**

@@ -18,7 +18,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
- * @extends AbstractLatteContextCollector<CallLike, CollectedTemplateRender|CollectedMethodCall>
+ * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedMethodCall>
  */
 final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCollector
 {
@@ -41,9 +41,9 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return CallLike::class;
+        return [CallLike::class];
     }
 
     /**

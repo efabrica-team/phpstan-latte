@@ -13,7 +13,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedTemplatePath>
+ * @extends AbstractLatteContextCollector<CollectedTemplatePath>
  */
 final class TemplatePathCollector extends AbstractLatteContextCollector
 {
@@ -36,9 +36,13 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        $nodeTypes = [];
+        foreach ($this->templatePathCollectors as $collector) {
+            $nodeTypes = array_merge($nodeTypes, $collector->getNodeTypes());
+        }
+        return array_unique($nodeTypes);
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector;
 
+use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextSubCollector;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
@@ -11,7 +12,10 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 
-final class SetFileTemplatePathCollector implements TemplatePathCollectorInterface
+/**
+ * @extends AbstractLatteContextSubCollector<string>
+ */
+final class SetFileTemplatePathCollector extends AbstractLatteContextSubCollector implements TemplatePathCollectorInterface
 {
     private NameResolver $nameResolver;
 
@@ -29,9 +33,9 @@ final class SetFileTemplatePathCollector implements TemplatePathCollectorInterfa
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
-    public function isSupported(Node $node): bool
+    public function getNodeTypes(): array
     {
-        return $node instanceof MethodCall;
+        return [MethodCall::class];
     }
 
     /**
