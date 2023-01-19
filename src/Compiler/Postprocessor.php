@@ -71,20 +71,22 @@ final class Postprocessor
         $changeFilterNodeVisitor = new ChangeFiltersNodeVisitor($filters);
         $this->nodeVisitorStorage->addTemporaryNodeVisitor(200, $changeFilterNodeVisitor);
 
+        $phpStmts = $this->findNodes($phpContent);
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
-            $phpContent = $this->processNodeVisitors($phpContent, $nodeVisitors, $template);
+            $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
         }
 
         $this->nodeVisitorStorage->resetTemporaryNodeVisitors();
-        return $phpContent;
+        return $this->printerStandard->prettyPrintFile($phpStmts);
     }
 
     /**
+     * @param Node[] $phpStmts
      * @param NodeVisitor[] $nodeVisitors
+     * @return Node[]
      */
-    private function processNodeVisitors(string $phpContent, array $nodeVisitors, Template $template): string
+    private function processNodeVisitors(array $phpStmts, array $nodeVisitors, Template $template): array
     {
-        $phpStmts = $this->findNodes($phpContent);
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new ParentConnectingVisitor()); // symplify/phpstan-rules compatibility
         foreach ($nodeVisitors as $nodeVisitor) {
@@ -92,8 +94,7 @@ final class Postprocessor
             $nodeTraverser->addVisitor($nodeVisitor);
         }
 
-        $newPhpStmts = $nodeTraverser->traverse($phpStmts);
-        return $this->printerStandard->prettyPrintFile($newPhpStmts);
+        return $nodeTraverser->traverse($phpStmts);
     }
 
     private function setupVisitor(NodeVisitor $nodeVisitor, Template $template): void
