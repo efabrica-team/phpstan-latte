@@ -34,6 +34,7 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\ShouldNotHappenException;
@@ -48,6 +49,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
     /** @var array<array{node: Node, field: string}> */
     private array $errorFieldNodes = [];
+
+    /** @var Node[] */
+    private array $possibleAlwaysTrueLabels = [];
 
     public function __construct(NameResolver $nameResolver)
     {
@@ -187,6 +191,11 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     ];
                     return null;
                 }
+
+                $formFieldType = $formField->getType();
+                if ($formFieldType instanceof ObjectType && ($formFieldType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formFieldType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
+                    $this->possibleAlwaysTrueLabels[] = $this->findParentStmt($node);
+                }
             } elseif ($node->dim instanceof Variable) {
                 // dynamic field
             } else {
@@ -208,6 +217,34 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 $errorNode = $error->toNode();
                 $errorNode->setAttributes($node->getAttributes());
                 return $errorNode;
+            }
+        }
+
+        /**
+         * Replace:
+         * <code>
+         * if ($ʟ_label = $form["foo"]->getLabel()) {
+         *     echo $ʟ_label;
+         * }
+         * </code>
+         *
+         * With:
+         * <code>
+         * $ʟ_label = $form["foo"]->getLabel();
+         * echo $ʟ_label;
+         * </code>
+         *
+         * for RadioList and CheckboxList
+         */
+        if ($node instanceof If_) {
+            foreach ($this->possibleAlwaysTrueLabels as $possibleAlwaysTrueLabel) {
+                if ($possibleAlwaysTrueLabel === $node) {
+                    if ($node->cond instanceof Assign) {
+                        if ($this->nameResolver->resolve($node->cond->var) === 'ʟ_label' && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
+                            return array_merge([new Expression($node->cond)], $node->stmts);
+                        }
+                    }
+                }
             }
         }
 
