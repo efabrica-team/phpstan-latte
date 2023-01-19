@@ -62,6 +62,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
     {
         $this->resetForms();
         $this->errorFieldNodes = [];
+        $this->possibleAlwaysTrueLabels = [];
         return null;
     }
 
