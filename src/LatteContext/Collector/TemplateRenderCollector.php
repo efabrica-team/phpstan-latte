@@ -25,7 +25,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 
 /**
- * @extends AbstractLatteContextCollector<MethodCall, CollectedTemplateRender>
+ * @extends AbstractLatteContextCollector<CollectedTemplateRender>
  */
 final class TemplateRenderCollector extends AbstractLatteContextCollector
 {
@@ -52,9 +52,9 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return MethodCall::class;
+        return [MethodCall::class];
     }
 
     /**

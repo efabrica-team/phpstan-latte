@@ -13,13 +13,13 @@ use PHPStan\Node\ClassMethod;
 use PHPStan\Node\ExecutionEndNode;
 
 /**
- * @extends AbstractLatteContextCollector<ExecutionEndNode, CollectedMethod>
+ * @extends AbstractLatteContextCollector<CollectedMethod>
  */
 final class MethodTerminatingCollector extends AbstractLatteContextCollector
 {
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return ExecutionEndNode::class;
+        return [ExecutionEndNode::class];
     }
 
     /**

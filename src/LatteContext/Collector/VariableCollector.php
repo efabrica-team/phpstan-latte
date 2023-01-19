@@ -14,7 +14,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\TypeCombinator;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedVariable>
+ * @extends AbstractLatteContextCollector<CollectedVariable>
  */
 final class VariableCollector extends AbstractLatteContextCollector
 {
@@ -37,9 +37,13 @@ final class VariableCollector extends AbstractLatteContextCollector
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        $nodeTypes = [];
+        foreach ($this->variableCollectors as $collector) {
+            $nodeTypes = array_merge($nodeTypes, $collector->getNodeTypes());
+        }
+        return array_unique($nodeTypes);
     }
 
     /**

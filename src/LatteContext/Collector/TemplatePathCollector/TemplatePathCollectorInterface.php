@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector;
 
-use PhpParser\Node;
-use PHPStan\Analyser\Scope;
+use Efabrica\PHPStanLatte\LatteContext\Collector\LatteContextSubCollectorInterface;
 
-interface TemplatePathCollectorInterface
+/**
+ * @extends LatteContextSubCollectorInterface<string>
+ */
+interface TemplatePathCollectorInterface extends LatteContextSubCollectorInterface
 {
-    public function isSupported(Node $node): bool;
-
-    /**
-     * @return string[]|null
-     */
-    public function collect(Node $node, Scope $scope): ?array;
 }

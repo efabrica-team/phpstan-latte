@@ -16,7 +16,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<MethodCall, CollectedFilter>
+ * @extends AbstractLatteContextCollector<CollectedFilter>
  */
 final class FilterCollector extends AbstractLatteContextCollector
 {
@@ -39,12 +39,13 @@ final class FilterCollector extends AbstractLatteContextCollector
         $this->valueResolver = $valueResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return MethodCall::class;
+        return [MethodCall::class];
     }
 
     /**
+     * @param MethodCall $node
      * @phpstan-return null|CollectedFilter[]
      */
     public function collectData(Node $node, Scope $scope): ?array

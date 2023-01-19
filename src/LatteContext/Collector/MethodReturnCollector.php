@@ -10,13 +10,13 @@ use PhpParser\Node\Stmt\Return_;
 use PHPStan\Analyser\Scope;
 
 /**
- * @extends AbstractLatteContextCollector<Return_, CollectedMethod>
+ * @extends AbstractLatteContextCollector<CollectedMethod>
  */
 final class MethodReturnCollector extends AbstractLatteContextCollector
 {
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Return_::class;
+        return [Return_::class];
     }
 
     /**

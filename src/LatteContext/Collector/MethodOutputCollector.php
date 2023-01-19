@@ -13,7 +13,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
 /**
- * @extends AbstractLatteContextCollector<Node, CollectedMethodCall>
+ * @extends AbstractLatteContextCollector<CollectedMethodCall>
  */
 final class MethodOutputCollector extends AbstractLatteContextCollector
 {
@@ -32,9 +32,9 @@ final class MethodOutputCollector extends AbstractLatteContextCollector
         $this->outputCallResolver = $outputCallResolver;
     }
 
-    public function getNodeType(): string
+    public function getNodeTypes(): array
     {
-        return Node::class;
+        return [Node::class];
     }
 
     /**

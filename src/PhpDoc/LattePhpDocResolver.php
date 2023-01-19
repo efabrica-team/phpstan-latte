@@ -32,6 +32,15 @@ final class LattePhpDocResolver
 
     private ReflectionProvider $reflectionProvider;
 
+    /** @var array<string, LattePhpDoc> */
+    private array $nodeCache = [];
+
+    /** @var array<string, LattePhpDoc> */
+    private array $methodCache = [];
+
+    /** @var array<string, LattePhpDoc> */
+    private array $classCache = [];
+
     // TODO: Implement caching to prevent repeated parsing of same doc comment
     public function __construct(Lexer $phpDocLexer, TypeParser $typeParser, TypeNodeResolver $typeNodeResolver, FileTypeMapper $fileTypeMapper, ReflectionProvider $reflectionProvider)
     {
@@ -125,39 +134,53 @@ final class LattePhpDocResolver
         if ($scope->getClassReflection() === null) {
             return new LattePhpDoc();
         }
-        $docNode = $node->getDocComment();
-        if ($docNode !== null) {
-            $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
-        } else {
-            $lattePhpDoc = new LattePhpDoc();
-        }
+        $cacheKey = spl_object_hash($node) . spl_object_hash($scope);
+        if (!isset($this->nodeCache[$cacheKey])) {
+            $docNode = $node->getDocComment();
+            if ($docNode !== null) {
+                $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
+            } else {
+                $lattePhpDoc = new LattePhpDoc();
+            }
 
-        if ($scope->getFunctionName() !== null) {
-            $lattePhpDoc->setParentMethod($this->resolveForMethod($scope->getClassReflection()->getName(), $scope->getFunctionName()));
-        } else {
-            $lattePhpDoc->setParentClass($this->resolveForClass($scope->getClassReflection()->getName()));
+            if ($scope->getFunctionName() !== null) {
+                $lattePhpDoc->setParentMethod($this->resolveForMethod(
+                    $scope->getClassReflection()->getName(),
+                    $scope->getFunctionName()
+                ));
+            } else {
+                $lattePhpDoc->setParentClass($this->resolveForClass($scope->getClassReflection()->getName()));
+            }
+            $this->nodeCache[$cacheKey] = $lattePhpDoc;
         }
-        return $lattePhpDoc;
+        return $this->nodeCache[$cacheKey];
     }
 
     public function resolveForMethod(string $className, string $methodName): LattePhpDoc
     {
-        $classReflection = $this->reflectionProvider->getClass($className);
-        try {
-            $commentText = $classReflection->getNativeMethod($methodName)->getDocComment();
-            $lattePhpDoc = $this->resolve($commentText, $classReflection);
-        } catch (MissingMethodFromReflectionException $e) {
-            $lattePhpDoc = new LattePhpDoc(); // probably virtual method added by @method annotation
+        $cacheKey = $className . '::' . $methodName;
+        if (!isset($this->methodCache[$cacheKey])) {
+            $classReflection = $this->reflectionProvider->getClass($className);
+            try {
+                $commentText = $classReflection->getNativeMethod($methodName)->getDocComment();
+                $lattePhpDoc = $this->resolve($commentText, $classReflection);
+            } catch (MissingMethodFromReflectionException $e) {
+                $lattePhpDoc = new LattePhpDoc(); // probably virtual method added by @method annotation
+            }
+            $lattePhpDoc->setParentClass($this->resolveForClass($className));
+            $this->methodCache[$cacheKey] = $lattePhpDoc;
         }
-        $lattePhpDoc->setParentClass($this->resolveForClass($className));
-        return $lattePhpDoc;
+        return $this->methodCache[$cacheKey];
     }
 
     public function resolveForClass(string $className): LattePhpDoc
     {
-        $classReflection = $this->reflectionProvider->getClass($className);
-        $commentText = $classReflection->getNativeReflection()->getDocComment() ?: null;
-        return $this->resolve($commentText, $classReflection);
+        if (!isset($this->classCache[$className])) {
+            $classReflection = $this->reflectionProvider->getClass($className);
+            $commentText = $classReflection->getNativeReflection()->getDocComment() ?: null;
+            $this->classCache[$className] = $this->resolve($commentText, $classReflection);
+        }
+        return $this->classCache[$className];
     }
 
     /**
