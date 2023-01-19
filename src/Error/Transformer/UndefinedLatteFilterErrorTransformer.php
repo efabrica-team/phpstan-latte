@@ -16,7 +16,7 @@ final class UndefinedLatteFilterErrorTransformer implements ErrorTransformerInte
         preg_match(self::UNDEFINED_FILTER_REGEX, $error->getMessage(), $match);
         if (isset($match['undefined_filter'])) {
             $message = 'Undefined latte filter "' . $match['undefined_filter'] . '".';
-            $tip = 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters';
+            $tip = 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters';
             $error->setMessage($message);
             $error->setTip($tip);
         }
