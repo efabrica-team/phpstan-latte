@@ -67,7 +67,7 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
         $paths = null;
         $isCollected = false;
         foreach ($this->templatePathCollectors as $templatePathCollector) {
-            if (!in_array(get_class($node), $templatePathCollector->getNodeTypes())) {
+            if (!$templatePathCollector->isSupported($node)) {
                 continue;
             }
             $isCollected = true;

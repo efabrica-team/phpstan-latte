@@ -68,7 +68,7 @@ final class VariableCollector extends AbstractLatteContextCollector
         $isVariablesNode = false;
         $collectedVariables = [];
         foreach ($this->variableCollectors as $variableCollector) {
-            if (!in_array(get_class($node), $variableCollector->getNodeTypes())) {
+            if (!$variableCollector->isSupported($node)) {
                 continue;
             }
             $variables = $variableCollector->collect($node, $scope);
