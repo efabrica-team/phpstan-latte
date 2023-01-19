@@ -434,7 +434,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Undefined latte filter "nonExistingFilter".',
                 5,
                 'default.latte',
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters',
             ],
             [
                 'Closure invoked with 1 parameter, 2 required.',
@@ -490,7 +490,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Undefined latte filter "actionDefaultFilter".',
                 4,
                 'parent.latte',
-                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/docs/configuration.md#filters',
+                'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters',
             ],
         ]);
     }
