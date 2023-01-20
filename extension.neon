@@ -68,7 +68,7 @@ services:
             extensions: %latte.extensions%
 
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
-    - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(%analysedPaths%, %latte.reportUnanalysedTemplates%)
+    - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(@fileExcluderAnalyse, %analysedPaths%, %latte.reportUnanalysedTemplates%)
     -
         class: Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
         arguments:

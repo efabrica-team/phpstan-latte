@@ -8,3 +8,6 @@ parameters:
         collectedPaths:
             - tests/Rule/LatteTemplatesRule/PresenterWithoutModule/Fixtures
             - tests/Rule/LatteTemplatesRule/PresenterWithoutModule/Source
+
+    excludePaths:
+        - Fixtures/templates/Resolve/unanalysed.latte

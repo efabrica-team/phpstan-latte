@@ -4,6 +4,9 @@ parameters:
             message: '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
             path: src/Analyser/FileAnalyserFactory.php
         -
+            message: '#^Calling PHPStan\\File\\FileExcluder::isExcludedFromAnalysing\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            path: src/Analyser/AnalysedTemplatesRegistry.php
+        -
             messages:
                 - '#^Calling PHPStan\\Analyser\\FileAnalyser\:\:analyseFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
                 - '#^Calling PHPStan\\Analyser\\FileAnalyserResult\:\:getErrors\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'

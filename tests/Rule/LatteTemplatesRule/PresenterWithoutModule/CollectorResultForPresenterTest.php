@@ -116,6 +116,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'TEMPLATE recursion.latte ResolvePresenter::recursion ["presenter","control","variableFromRecursionMethod"] []',
             'TEMPLATE setFile.changed.latte ResolvePresenter::setFile ["presenter","control"] []',
             'TEMPLATE sendTemplate.latte ResolvePresenter::sendTemplate ["presenter","control","send"] []',
+            'TEMPLATE unanalysed.latte ResolvePresenter:: ["presenter","control"] []',
         ]);
     }
 
