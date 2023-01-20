@@ -46,8 +46,6 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
 
     public function beforeTraverse(array $nodes)
     {
-
-
         foreach ($nodes as $node) {
             if (!$node instanceof Class_) {
                 continue;
