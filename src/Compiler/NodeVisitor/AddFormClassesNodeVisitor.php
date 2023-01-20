@@ -47,10 +47,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
     private NameResolver $nameResolver;
 
-    /** @var array<array{node: Node, field: string}> */
+    /** @var array<array{node: string, field: string}> */
     private array $errorFieldNodes = [];
 
-    /** @var Node[] */
+    /** @var string[] */
     private array $possibleAlwaysTrueLabels = [];
 
     public function __construct(NameResolver $nameResolver)
@@ -61,8 +61,6 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
     public function beforeTraverse(array $nodes)
     {
         $this->resetForms();
-        $this->errorFieldNodes = [];
-        $this->possibleAlwaysTrueLabels = [];
         return null;
     }
 
@@ -213,7 +211,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
     public function leaveNode(Node $node)
     {
         foreach ($this->errorFieldNodes as $errorFieldNode) {
-            if ($errorFieldNode['node'] === $node) {
+            if ($errorFieldNode['node'] === spl_object_hash($node)) {
                 $error = new Error('Form field with name "' . $errorFieldNode['field'] . '" probably does not exist.');
                 $errorNode = $error->toNode();
                 $errorNode->setAttributes($node->getAttributes());
@@ -239,7 +237,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          */
         if ($node instanceof If_) {
             foreach ($this->possibleAlwaysTrueLabels as $possibleAlwaysTrueLabel) {
-                if ($possibleAlwaysTrueLabel === $node) {
+                if ($possibleAlwaysTrueLabel === spl_object_hash($node)) {
                     if ($node->cond instanceof Assign) {
                         if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
                             return array_merge([new Expression($node->cond)], $node->stmts);
@@ -319,7 +317,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         return null;
     }
 
-    private function findParentStmt(Node $node): Stmt
+    private function findParentStmt(Node $node): string
     {
         $rootParentNode = $node;
         while (true) {
@@ -332,7 +330,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 break;
             }
         }
-        return $rootParentNode;
+        return spl_object_hash($rootParentNode);
     }
 
     /**
@@ -374,6 +372,14 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 ->addStmts([$method]);
             $nodes[] = $builderClass->getNode();
         }
+
+        // clear cache
+        $this->forms = [];
+        $this->actualForm = null;
+        $this->formClassNames = [];
+        $this->errorFieldNodes = [];
+        $this->possibleAlwaysTrueLabels = [];
+
         return $nodes;
     }
 

@@ -30,8 +30,6 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
 
     public function beforeTraverse(array $nodes)
     {
-        // reset defined vars
-        $this->definedVarsStatements = [];
         foreach ($nodes as $node) {
             if (!$node instanceof Class_) {
                 continue;
@@ -75,6 +73,13 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
         $statements = (array)$node->stmts;
         $node->stmts = array_merge($this->definedVarsStatements, $statements);
         return $node;
+    }
+
+    public function afterTraverse(array $nodes)
+    {
+        // reset defined vars
+        $this->definedVarsStatements = [];
+        return null;
     }
 
     private function isEndOfTemplateHead(Node $statement): bool

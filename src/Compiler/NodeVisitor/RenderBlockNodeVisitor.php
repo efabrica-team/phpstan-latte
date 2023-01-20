@@ -46,8 +46,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
 
     public function beforeTraverse(array $nodes)
     {
-        // reset block methods
-        $this->blockMethods = [];
+
 
         foreach ($nodes as $node) {
             if (!$node instanceof Class_) {
@@ -139,5 +138,12 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
         }
 
         return new MethodCall(new Variable('this'), $blockMethodName, $methodCallArgs);
+    }
+
+    public function afterTraverse(array $nodes)
+    {
+        // reset block methods
+        $this->blockMethods = [];
+        return null;
     }
 }
