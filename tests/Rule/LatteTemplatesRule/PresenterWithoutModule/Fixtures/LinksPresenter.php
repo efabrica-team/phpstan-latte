@@ -51,4 +51,8 @@ final class LinksPresenter extends ParentPresenter
     {
         $this->redirect('default');
     }
+
+    public function handleDelete(string $id): void
+    {
+    }
 }
