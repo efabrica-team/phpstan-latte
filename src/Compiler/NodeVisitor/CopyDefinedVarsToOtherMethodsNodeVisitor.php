@@ -75,13 +75,6 @@ final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
         return $node;
     }
 
-    public function afterTraverse(array $nodes)
-    {
-        // reset defined vars
-        $this->definedVarsStatements = [];
-        return null;
-    }
-
     private function isEndOfTemplateHead(Node $statement): bool
     {
         if ($statement instanceof Return_) {

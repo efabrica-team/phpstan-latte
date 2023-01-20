@@ -137,11 +137,4 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
 
         return new MethodCall(new Variable('this'), $blockMethodName, $methodCallArgs);
     }
-
-    public function afterTraverse(array $nodes)
-    {
-        // reset block methods
-        $this->blockMethods = [];
-        return null;
-    }
 }

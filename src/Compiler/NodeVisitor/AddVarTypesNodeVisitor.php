@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
-use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -18,19 +19,14 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 
-final class AddVarTypesNodeVisitor extends NodeVisitorAbstract
+final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements VariablesNodeVisitorInterface
 {
-    /** @var Variable[] */
-    private array $variables;
+    use VariablesNodeVisitorBehavior;
 
     private TypeToPhpDoc $typeToPhpDoc;
 
-    /**
-     * @param Variable[] $variables
-     */
-    public function __construct(array $variables, TypeToPhpDoc $typeToPhpDoc)
+    public function __construct(TypeToPhpDoc $typeToPhpDoc)
     {
-        $this->variables = $variables;
         $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
