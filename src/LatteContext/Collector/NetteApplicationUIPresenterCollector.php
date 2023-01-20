@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethodCall;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter;
@@ -18,7 +19,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
 /**
- * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedMethodCall>
+ * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedMethodCall|CollectedError>
  */
 final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCollector
 {
@@ -48,7 +49,7 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
 
     /**
      * @param CallLike $node
-     * @phpstan-return null|array<CollectedTemplateRender|CollectedMethodCall>
+     * @phpstan-return null|array<CollectedTemplateRender|CollectedMethodCall|CollectedError>
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -105,8 +106,7 @@ final class NetteApplicationUIPresenterCollector extends AbstractLatteContextCol
             if ($argument === null || $scope->getType($argument)->isNull()->maybe()) {
                 return [CollectedTemplateRender::build($node, $scope, null)];
             } else {
-                // cannot resolve automatically
-                return [CollectedTemplateRender::build($node, $scope, false)];
+                return [CollectedError::build($node, $scope, 'Cannot automatically resolve template used by sendTemplate().')];
             }
         }
 

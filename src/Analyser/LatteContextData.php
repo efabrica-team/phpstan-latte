@@ -4,13 +4,15 @@ declare (strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Analyser;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
-use PHPStan\Analyser\Error;
+use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 
 class LatteContextData
 {
     /**
-     * @var array<Error>
+     * @var array<RuleError>
      */
     private array $errors;
 
@@ -26,7 +28,7 @@ class LatteContextData
 
     /**
      * @param array<CollectedLatteContextObject> $collectedData
-     * @param array<Error> $errors
+     * @param array<RuleError> $errors
      */
     public function __construct(array $collectedData, array $errors)
     {
@@ -38,11 +40,23 @@ class LatteContextData
     }
 
     /**
-     * @return array<Error>
+     * @return array<RuleError>
      */
     public function getErrors(): array
     {
         return $this->errors;
+    }
+
+    /**
+     * @return array<RuleError>
+     */
+    public function getCollectedErrors(): array
+    {
+        $errors = [];
+        foreach ($this->getCollectedData(CollectedError::class) as $collectedError) {
+            $errors[] = RuleErrorBuilder::message($collectedError->getMessage())->file($collectedError->getFile())->line($collectedError->getLine() ?? -1)->build();
+        }
+        return $errors;
     }
 
     /**

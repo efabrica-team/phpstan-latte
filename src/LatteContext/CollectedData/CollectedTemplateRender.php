@@ -12,8 +12,7 @@ use PHPStan\Analyser\Scope;
 
 final class CollectedTemplateRender extends CollectedLatteContextObject
 {
-    /** @var null|string|false */
-    private $templatePath;
+    private ?string $templatePath;
 
     /** @var Variable[] */
     private array $variables;
@@ -30,11 +29,10 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     private int $line;
 
     /**
-     * @param null|string|false $templatePath (false = resolve error)
      * @param Variable[] $variables
      * @param Component[] $components
      */
-    public function __construct($templatePath, array $variables, array $components, string $className, string $methodName, string $file, int $line)
+    public function __construct(?string $templatePath, array $variables, array $components, string $className, string $methodName, string $file, int $line)
     {
         $this->templatePath = $templatePath;
         $this->variables = $variables;
@@ -46,7 +44,7 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     }
 
     /**
-     * @return false|string|null (false = resolve error)
+     * @return ?string
      */
     public function getTemplatePath()
     {
@@ -89,18 +87,13 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
         return $this->line;
     }
 
-    public function withError(): self
-    {
-        return new CollectedTemplateRender(false, $this->variables, $this->components, $this->className, $this->methodName, $this->file, $this->line);
-    }
-
     public function withTemplatePath(?string $templatePath): self
     {
         return new CollectedTemplateRender($templatePath, $this->variables, $this->components, $this->className, $this->methodName, $this->file, $this->line);
     }
 
     /**
-     * @param false|string|null $path
+     * @param ?string $path
      * @param Variable[] $variables
      * @param Component[] $components
      */

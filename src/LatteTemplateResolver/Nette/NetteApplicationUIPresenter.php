@@ -102,7 +102,6 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
             // default render with set template path
             foreach ($actionDefinition['templatePaths'] as $template) {
-                // TODO better location of unresolved expression - must become part of CollectedTemplatePath and CollectedTemplatePathFinder must return ValueObject not only strings
                 if ($template === null) {
                     $result->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
                     ->file($reflectionClass->getFileName() ?? 'unknown')

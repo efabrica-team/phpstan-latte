@@ -10,9 +10,9 @@ final class CollectedTemplatePath extends CollectedLatteContextObject
 
     private string $methodName;
 
-    private ?string $templatePath;
+    private string $templatePath;
 
-    public function __construct(string $className, string $methodName, ?string $templatePath)
+    public function __construct(string $className, string $methodName, string $templatePath)
     {
         $this->className = $className;
         $this->methodName = $methodName;
@@ -29,7 +29,7 @@ final class CollectedTemplatePath extends CollectedLatteContextObject
         return $this->methodName;
     }
 
-    public function getTemplatePath(): ?string
+    public function getTemplatePath(): string
     {
         return $this->templatePath;
     }
