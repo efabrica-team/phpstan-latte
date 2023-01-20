@@ -37,8 +37,8 @@ final class TemplateRenderFinder
             if (!isset($this->collectedTemplateRenders[$className][$methodName])) {
                 $this->collectedTemplateRenders[$className][$methodName] = [];
             }
-            $templatePath = $collectedTemplateRender->getTemplatePath();
-            $templatePaths = $this->pathResolver->expand($templatePath, $this->methodFinder);
+            $collectedTemplatePath = $collectedTemplateRender->getTemplatePath();
+            $templatePaths = $this->pathResolver->expand($collectedTemplatePath, $this->methodFinder);
             if ($templatePaths !== null) {
                 foreach ($templatePaths as $templatePath) {
                     $this->collectedTemplateRenders[$className][$methodName][] = $collectedTemplateRender->withTemplatePath($templatePath);

@@ -112,6 +112,6 @@ final class Postprocessor
      */
     private function findNodes(string $phpContent): array
     {
-        return (array)$this->parser->parseString($phpContent);
+        return $this->parser->parseString($phpContent);
     }
 }

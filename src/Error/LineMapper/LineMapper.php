@@ -49,7 +49,7 @@ final class LineMapper
 
     private function parseLineMap(string $compiledTemplatePath): LineMap
     {
-        $phpStmts = (array)$this->parser->parseFile($compiledTemplatePath);
+        $phpStmts = $this->parser->parseFile($compiledTemplatePath);
         $lineMap = new LineMap();
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new LineNumberNodeVisitor($lineMap));

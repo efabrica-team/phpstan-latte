@@ -85,14 +85,13 @@ final class ValueResolver
         });
 
         $type = $scope->getType($expr);
-
         if ($type instanceof UnionType) {
             $options = [];
-            foreach ($type->getTypes() as $type) {
-                if (!$type instanceof ConstantScalarType) {
+            foreach ($type->getTypes() as $subType) {
+                if (!$subType instanceof ConstantScalarType) {
                     return null;
                 }
-                $options[] = $type->getValue();
+                $options[] = $subType->getValue();
             }
             return $options;
         }

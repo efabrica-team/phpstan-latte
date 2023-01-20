@@ -18,6 +18,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\TypeWithClassName;
+use SplFileInfo;
 
 final class PathResolver
 {
@@ -148,7 +149,7 @@ final class PathResolver
             $pattern = substr($path, strlen($dirWithoutWildcards) + 1);
 
             $paths = [];
-            /** @var string $file */
+            /** @var SplFileInfo $file */
             foreach (Finder::findFiles($pattern)->from($dirWithoutWildcards) as $file) {
                 $paths[] = (string)$file;
             }

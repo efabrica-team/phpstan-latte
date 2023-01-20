@@ -55,9 +55,9 @@ final class AssignToTemplateVariableCollector extends AbstractLatteContextSubCol
             return null;
         }
 
-        $variableName = $this->nameResolver->resolve($node->var);
-        if ($variableName !== null) {
-            $variableNames = [$variableName];
+        $resolvedVariableName = $this->nameResolver->resolve($node->var);
+        if ($resolvedVariableName !== null) {
+            $variableNames = [$resolvedVariableName];
         } elseif ($node->var instanceof PropertyFetch && $node->var->name instanceof Expr) {
             $variableNames = $this->valueResolver->resolveStrings($node->var->name, $scope);
         } else {

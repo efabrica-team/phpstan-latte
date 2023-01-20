@@ -58,7 +58,7 @@ final class FormFinder
         foreach ($collectedForms as $collectedForm) {
             $createdClassName = $collectedForm->getCreatedClassName();
             $parentClassNames = $this->reflectionProvider->getClass($className)->getParentClassesNames();
-            if (in_array($createdClassName, $parentClassNames)) {
+            if (in_array($createdClassName, $parentClassNames, true)) {
                 $createdClassName = $className;
             }
             $formFields = $this->formFieldFinder->find(
