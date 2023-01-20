@@ -8,6 +8,7 @@
 - PHPStan extension installer support
 - Parameter excludePaths can be used to exclude latte templates from analysis
 - PHPDoc cache
+- Collecting dynamic template variables `$this->template->{$name} = $value`
 
 ## Fixed
 - Performance issues
