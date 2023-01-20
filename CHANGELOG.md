@@ -6,6 +6,7 @@
 - Compiled template cache for better performance of repeated analysis
 - Better error messages for render/include of non existing template files
 - PHPStan extension installer support
+- Parameter excludePaths can be used to exclude latte templates from analysis
 - PHPDoc cache
 
 ## Fixed

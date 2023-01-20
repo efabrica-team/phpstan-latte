@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Analyser;
 
 use Nette\Utils\Finder;
+use PHPStan\File\FileExcluder;
 
 final class AnalysedTemplatesRegistry
 {
+    private FileExcluder $fileExcluder;
+
     /** @var string[] */
     private array $analysedPaths = [];
 
@@ -19,13 +22,19 @@ final class AnalysedTemplatesRegistry
     /**
      * @param string[] $analysedPaths
      */
-    public function __construct(array $analysedPaths, bool $reportUnanalysedTemplates)
+    public function __construct(FileExcluder $fileExcluder, array $analysedPaths, bool $reportUnanalysedTemplates)
     {
+        $this->fileExcluder = $fileExcluder;
         $this->analysedPaths = $analysedPaths;
         $this->reportUnanalysedTemplates = $reportUnanalysedTemplates;
         foreach ($this->getExistingTemplates() as $file) {
             $this->templateFiles[$file] = false;
         }
+    }
+
+    public function isExcludedFromAnalysing(string $path): bool
+    {
+        return $this->fileExcluder->isExcludedFromAnalysing($path);
     }
 
     public function templateAnalysed(string $path): void
@@ -45,6 +54,9 @@ final class AnalysedTemplatesRegistry
             }
             /** @var string $file */
             foreach (Finder::findFiles('*.latte')->from($analysedPath) as $file) {
+                if ($this->isExcludedFromAnalysing($file)) {
+                    continue;
+                }
                 $files[] = (string)$file;
             }
         }

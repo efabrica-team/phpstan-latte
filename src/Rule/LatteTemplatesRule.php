@@ -130,6 +130,10 @@ final class LatteTemplatesRule implements Rule
         foreach ($templates as $template) {
             $templatePath = $template->getPath();
 
+            if ($this->analysedTemplatesRegistry->isExcludedFromAnalysing($templatePath)) {
+                continue;
+            }
+
             if (!array_key_exists($templatePath, $alreadyAnalysed)) {
                 $alreadyAnalysed[$templatePath] = 1;
             } elseif ($alreadyAnalysed[$templatePath] <= 3) {
