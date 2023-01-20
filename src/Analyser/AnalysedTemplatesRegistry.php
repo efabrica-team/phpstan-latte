@@ -54,10 +54,11 @@ final class AnalysedTemplatesRegistry
             }
             /** @var string $file */
             foreach (Finder::findFiles('*.latte')->from($analysedPath) as $file) {
-                if ($this->isExcludedFromAnalysing($file)) {
+                $filePath = (string)$file;
+                if ($this->isExcludedFromAnalysing($filePath)) {
                     continue;
                 }
-                $files[] = (string)$file;
+                $files[] = $filePath;
             }
         }
         $files = array_unique($files);
