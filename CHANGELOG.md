@@ -9,6 +9,7 @@
 - Parameter excludePaths can be used to exclude latte templates from analysis
 - PHPDoc cache
 - Collecting dynamic template variables `$this->template->{$name} = $value`
+- Support for union types for components
 
 ## Fixed
 - Performance issues

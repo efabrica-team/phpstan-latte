@@ -21,6 +21,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\UnionType;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedComponent>
@@ -164,14 +165,31 @@ final class ComponentCollector extends AbstractLatteContextCollector
      */
     private function buildComponents(Node $node, Scope $scope, ClassReflection $classReflection, Expr $componentNameArg, Expr $componentArg): ?array
     {
-        $componentArgType = $scope->getType($componentArg);
+        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
+        if ($lattePhpDoc->isIgnored()) {
+            return null;
+        }
 
+        $componentArgType = $scope->getType($componentArg);
         $names = $this->valueResolver->resolveStrings($componentNameArg, $scope) ?? [];
 
-        $components = [];
-
-        // TODO support union types
+        $componentType = null;
         if ($componentArgType instanceof ObjectType && $componentArgType->isInstanceOf('Nette\ComponentModel\IComponent')->yes()) {
+            $componentType = $componentArgType;
+        } elseif ($componentArgType instanceof UnionType) {
+            $componentTypes = [];
+            foreach ($componentArgType->getTypes() as $type) {
+                if ($type instanceof ObjectType && $type->isInstanceOf('Nette\ComponentModel\IComponent')->yes()) {
+                    $componentTypes[] = $type;
+                }
+            }
+            if ($componentTypes !== []) {
+                $componentType = new UnionType($componentTypes);
+            }
+        }
+
+        $components = [];
+        if ($componentType !== null) {
             foreach ($names as $name) {
                 $components[] = new CollectedComponent(
                     $classReflection->getName(),
@@ -181,12 +199,7 @@ final class ComponentCollector extends AbstractLatteContextCollector
             }
         }
 
-        $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
-        if ($lattePhpDoc->isIgnored()) {
-            return null;
-        }
         if ($lattePhpDoc->hasComponents()) {
-            $components = [];
             foreach ($lattePhpDoc->getComponents($names) as $name => $type) {
                 $components[$name] = CollectedComponent::build($node, $scope, $name, $type);
             }
