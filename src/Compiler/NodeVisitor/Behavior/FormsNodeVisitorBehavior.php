@@ -29,16 +29,8 @@ trait FormsNodeVisitorBehavior
             if (isset($this->forms[$formName])) {
                 continue;
             }
-
             $this->forms[$formName] = $form;
-        }
-    }
 
-    public function resetForms(): void
-    {
-        $this->actualForm = null;
-        $this->formClassNames = [];
-        foreach ($this->forms as $formName => $form) {
             $id = md5(uniqid());
             $className = ucfirst($formName) . '_' . $id;
             $this->formClassNames[$formName] = $className;

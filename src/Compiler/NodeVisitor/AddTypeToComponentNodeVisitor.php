@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Error\Error;
-use Efabrica\PHPStanLatte\Template\Component;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
@@ -29,19 +30,14 @@ use PhpParser\NodeVisitorAbstract;
  * $_tmp = $this->global->uiControl->getComponent("someName");
  * </code>
  */
-final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
+final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract implements ComponentsNodeVisitorInterface
 {
-    /** @var Component[] */
-    private array $components;
+    use ComponentsNodeVisitorBehavior;
 
     private TypeToPhpDoc $typeToPhpDoc;
 
-    /**
-     * @param Component[] $components
-     */
-    public function __construct(array $components, TypeToPhpDoc $typeToPhpDoc)
+    public function __construct(TypeToPhpDoc $typeToPhpDoc)
     {
-        $this->components = $components;
         $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
@@ -88,8 +84,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
 
         $tmpVarName = LatteVersion::isLatte2() ? '$_tmp' : '$ʟ_tmp';
 
-        $componentNameParts = explode('-', $componentName);
-        $component = $this->findComponentByName($this->components, $componentNameParts);
+        $component = $this->findComponentByName($this->components, $componentName);
         $componentType = $component !== null ? $this->typeToPhpDoc->toPhpDocString($component->getType()) : 'mixed';
         $safeComponentType = $componentType !== 'mixed' ? $componentType : '\Nette\ComponentModel\IComponent';
         $node->setDocComment(new Doc($originalDocCommentText . "\n" . '/** @var ' . $safeComponentType . ' ' . $tmpVarName . ' */'));
@@ -109,24 +104,5 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract
         }
 
         return [$node];
-    }
-
-    /**
-     * @param Component[] $components
-     * @param string[] $componentNameParts
-     */
-    private function findComponentByName(array $components, array $componentNameParts): ?Component
-    {
-        $componentNamePart = array_shift($componentNameParts);
-        foreach ($components as $component) {
-            if ($component->getName() !== $componentNamePart) {
-                continue;
-            }
-            if (count($componentNameParts) === 0) {
-                return $component;
-            }
-            return $this->findComponentByName($component->getSubcomponents() ?: [], $componentNameParts);
-        }
-        return null;
     }
 }

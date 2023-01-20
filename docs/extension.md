@@ -331,6 +331,69 @@ final class MyNodeVisitor extends NodeVisitorAbstract implements ActualClassNode
 }
 ```
 
+### Variables
+With `VariablesNodeVisitorInterface` and `VariablesNodeVisitorBehavior` you will get all collected variables with global variables to your NodeVisitor.
+
+```php
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
+
+final class MyNodeVisitor extends NodeVisitorAbstract implements VariablesNodeVisitorInterface
+{
+    use VariablesNodeVisitorBehavior;
+    
+    public function enterNode(Node $node)
+    {
+        foreach ($this->variables as $variable) {
+            $this->doSomethingWithVariable($variable);
+        }
+    }
+}
+```
+
+### Components
+Collected components are available with `ComponentsNodeVisitorInterface` and with `ComponentsNodeVisitorBehavior` you will also can use method `findComponentByName` which returns you component matching name or null if component is not found.
+
+```php
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorInterface;
+
+final class MyNodeVisitor extends NodeVisitorAbstract implements ComponentsNodeVisitorInterface
+{
+    use ComponentsNodeVisitorBehavior;
+    
+    public function enterNode(Node $node)
+    {
+        foreach ($this->components as $component) {
+            $this->doSomethingWithComponent($component);
+        }
+        
+        $this->findComponentByName('componentName');
+        $this->findComponentByName('componentName-subcomponentName');
+    }
+}
+```
+
+### Filters
+Global and collected filters are sent to NodeVisitor via `FiltersNodeVisitorInterface` and `FiltersNodeVisitorBehavior`.
+
+```php
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
+
+final class MyNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface
+{
+    use FiltersNodeVisitorBehavior;
+    
+    public function enterNode(Node $node)
+    {
+        foreach ($this->filters as $filter) {
+            $this->doSomethingWithFilter($filter);
+        }
+    }
+}
+```
+
 ### Forms
 To get list of forms available in template of actual Presenter or Control, you can use `FormsNodeVisitorInterface` with `FormsNodeVisitorBehavior`.
 
@@ -341,12 +404,6 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterfac
 final class MyNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisitorInterface
 {
     use FormsNodeVisitorBehavior;
-    
-    public function beforeTraverse(array $nodes)
-    {
-        $this->resetForms();    // Need to reset some properties from previous run
-        return null;
-    }
     
     public function enterNode(Node $node)
     {

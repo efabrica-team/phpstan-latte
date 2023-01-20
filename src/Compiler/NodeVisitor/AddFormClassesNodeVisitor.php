@@ -58,12 +58,6 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         $this->nameResolver = $nameResolver;
     }
 
-    public function beforeTraverse(array $nodes)
-    {
-        $this->resetForms();
-        return null;
-    }
-
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof Assign) {
@@ -372,13 +366,6 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 ->addStmts([$method]);
             $nodes[] = $builderClass->getNode();
         }
-
-        // clear cache
-        $this->forms = [];
-        $this->actualForm = null;
-        $this->formClassNames = [];
-        $this->errorFieldNodes = [];
-        $this->possibleAlwaysTrueLabels = [];
 
         return $nodes;
     }

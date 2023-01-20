@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Helper\FilterHelper;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -21,18 +23,9 @@ use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
 
-final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract
+final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface
 {
-    /** @var array<string, string|array{string, string}|array{object, string}|callable> */
-    private array $filters;
-
-    /**
-     * @param array<string, string|array{string, string}|array{object, string}|callable> $filters
-     */
-    public function __construct(array $filters)
-    {
-        $this->filters = LatteVersion::isLatte2() ? array_change_key_case($filters) : $filters;
-    }
+    use FiltersNodeVisitorBehavior;
 
     public function enterNode(Node $node): ?Node
     {
