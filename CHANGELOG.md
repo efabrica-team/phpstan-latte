@@ -6,10 +6,12 @@
 - Compiled template cache for better performance of repeated analysis
 - Better error messages for render/include of non existing template files
 - PHPStan extension installer support
+- PHPDoc cache
 
 ## Fixed
 - Performance issues
 - Errors for skipped items in array deconstruct 
+- Removed no needed if statemen in compiled template for $formField->getLabel() when $formField is CheckboxList or RadioList 
 
 ## [0.4.0] - 2023-01-16
 ### Added

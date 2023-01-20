@@ -241,7 +241,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             foreach ($this->possibleAlwaysTrueLabels as $possibleAlwaysTrueLabel) {
                 if ($possibleAlwaysTrueLabel === $node) {
                     if ($node->cond instanceof Assign) {
-                        if ($this->nameResolver->resolve($node->cond->var) === 'ʟ_label' && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
+                        if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
                             return array_merge([new Expression($node->cond)], $node->stmts);
                         }
                     }
