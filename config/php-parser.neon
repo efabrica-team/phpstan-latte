@@ -7,7 +7,7 @@ services:
         factory: PHPStan\Parser\CachedParser
         arguments:
             originalParser: @customParser
-            cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
+            cachedNodesByStringCountMax: 128
         autowired: false
 
     pathRoutingParser:
