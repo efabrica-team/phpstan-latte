@@ -1,4 +1,47 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/spaze/phpstan-disallowed-calls/extension.neon
+
 parameters:
+    strictRules:
+        # turn off strict rules
+        allRules: false
+
+        uselessCast: true
+        requireParentConstructorCall: true
+        overwriteVariablesWithLoop: true
+        closureUsesThis: true
+        numericOperandsInArithmeticOperators: true
+        strictCalls: true
+
+    # turn on some strict rules parameters
+    polluteScopeWithLoopInitialAssignments: true
+    polluteScopeWithAlwaysIterableForeach: true
+    checkAlwaysTrueCheckTypeFunctionCall: false
+    checkAlwaysTrueInstanceof: false
+    checkAlwaysTrueStrictComparison: false
+    checkAlwaysTrueLooseComparison: false
+    checkExplicitMixedMissingReturn: false
+    reportMaybesInMethodSignatures: false
+    reportStaticMethodSignatures: false
+    reportMaybesInPropertyPhpDocTypes: false
+
+
+    disallowedFunctionCalls:
+        -
+            function: 'print_r()'
+            message: 'use some logger instead'
+            allowParamsAnywhere:
+                2: true
+        -
+            function: 'var_dump()'
+            message: 'use some logger instead'
+        -
+            function: 'var_export()'
+            message: 'use some logger instead'
+            allowParamsAnywhere:
+                2: true
+
     ignoreErrors:
         -
             message: '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'

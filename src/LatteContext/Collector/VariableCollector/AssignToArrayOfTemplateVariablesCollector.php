@@ -63,16 +63,16 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractLatteConte
         $variables = [];
         $containsTemplateVariable = false;
 
-        $arrayItems = (array)$node->var->items;
+        $arrayItems = $node->var->items;
         foreach ($arrayItems as $key => $arrayItem) {
             if ($arrayItem === null) {
                 continue;
             }
             $arrayItemValue = $arrayItem->value;
 
-            $variableName = $this->nameResolver->resolve($arrayItemValue);
-            if ($variableName !== null) {
-                $variableNames = [$variableName];
+            $resolvedVariableName = $this->nameResolver->resolve($arrayItemValue);
+            if ($resolvedVariableName !== null) {
+                $variableNames = [$resolvedVariableName];
             } elseif ($arrayItemValue instanceof PropertyFetch && $arrayItemValue->name instanceof Expr) {
                 $variableNames = $this->valueResolver->resolveStrings($arrayItemValue->name, $scope);
             } else {

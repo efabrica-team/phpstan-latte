@@ -62,7 +62,7 @@ final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract
         }
 
         $name = $this->nameResolver->resolve($construct->class);
-        if (!in_array($name, ['LR\CachingIterator', 'Latte\Runtime\CachingIterator', 'Latte\Essential\CachingIterator'])) {
+        if (!in_array($name, ['LR\CachingIterator', 'Latte\Runtime\CachingIterator', 'Latte\Essential\CachingIterator'], true)) {
             return null;
         }
 

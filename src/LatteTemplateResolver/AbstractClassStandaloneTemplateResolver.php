@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\Template\Template;
 use Nette\Utils\Finder;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use SplFileInfo;
 
 abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemplateResolver
 {
@@ -39,7 +40,7 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
         $patterns = $this->getTemplatePathPatterns($reflectionClass, $dir);
 
         $standaloneTemplates = [];
-        /** @var string $file */
+        /** @var SplFileInfo $file */
         foreach (Finder::findFiles('*.latte')->from($dir) as $file) {
             $file = (string)$file;
             if (str_contains($file, '@')) {

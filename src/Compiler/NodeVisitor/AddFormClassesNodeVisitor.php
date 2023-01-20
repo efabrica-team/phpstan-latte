@@ -266,10 +266,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          * </code>
          */
         if ($node instanceof Echo_ && ($node->exprs[0] ?? null) instanceof MethodCall) {
-            /** @var MethodCall $methodCall */
-            $methodCall = $node->exprs[0];
-            $methodCallVar = $methodCall->var;
-            $methodCalls[] = $methodCall;
+            /** @var MethodCall $methodCallExpr */
+            $methodCallExpr = $node->exprs[0];
+            $methodCallVar = $methodCallExpr->var;
+            $methodCalls[] = $methodCallExpr;
             while ($methodCallVar instanceof MethodCall) {
                 $methodCalls[] = $methodCallVar;
                 $methodCallVar = $methodCallVar->var;

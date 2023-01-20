@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Analyser;
 
 use Nette\Utils\Finder;
 use PHPStan\File\FileExcluder;
+use SplFileInfo;
 
 final class AnalysedTemplatesRegistry
 {
@@ -52,7 +53,7 @@ final class AnalysedTemplatesRegistry
             if (!is_dir($analysedPath)) {
                 continue;
             }
-            /** @var string $file */
+            /** @var SplFileInfo $file */
             foreach (Finder::findFiles('*.latte')->from($analysedPath) as $file) {
                 $filePath = (string)$file;
                 if ($this->isExcludedFromAnalysing($filePath)) {
