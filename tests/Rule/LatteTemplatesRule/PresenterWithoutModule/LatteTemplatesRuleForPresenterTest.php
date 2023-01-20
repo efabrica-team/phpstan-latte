@@ -518,26 +518,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                13,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                14,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                16,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                17,
-                'default.latte',
-            ],
-            [
                 'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, null given.',
                 20,
                 'default.latte',
@@ -565,26 +545,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Parameter #1 $id of method ' . LinksPresenter::class . '::actionEdit() expects string, array<string, int|string> given.',
                 39,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
-                56,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
-                57,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
-                59,
-                'default.latte',
-            ],
-            [
-                'Method ' . LinksPresenter::class . '::actionEdit() invoked with 3 parameters, 1-2 required.',
-                60,
                 'default.latte',
             ],
             [
@@ -639,24 +599,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                91,
-                'default.latte',
-            ],
-            [
                 'Invalid link: Unable to pass parameters to "' . LinksPresenter::class . '::nonExistingMethod()", missing corresponding method.',
                 94,
                 'default.latte',
                 'Add method actionNonExistingMethod or renderNonExistingMethod with corresponding parameters to presenter Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter',
             ],
         ];
-        if (PHP_VERSION_ID < 80000) {
-            $expectedErrors[] = [
-                'Method ' . LinksPresenter::class . '::actionCreate() invoked with 1 parameter, 0 required.',
-                90,
-                'default.latte',
-            ];
-        }
         $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], $expectedErrors);
     }
 

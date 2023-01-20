@@ -12,6 +12,7 @@
 - Performance issues
 - Errors for skipped items in array deconstruct 
 - Removed no needed if statemen in compiled template for $formField->getLabel() when $formField is CheckboxList or RadioList 
+- Ignore all named extra parameters in links check (Nette appends them to query string)
 
 ## [0.4.0] - 2023-01-16
 ### Added
