@@ -7,6 +7,7 @@
 - Better error messages for render/include of non existing template files
 - PHPStan extension installer support
 - PHPDoc cache
+- Collecting dynamic template variables `$this->template->{$name} = $value`
 
 ## Fixed
 - Performance issues

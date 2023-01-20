@@ -9,8 +9,11 @@ use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextSubCollecto
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TypeResolver;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\PropertyFetch;
 use PHPStan\Analyser\Scope;
 
 /**
@@ -20,16 +23,20 @@ final class AssignToTemplateVariableCollector extends AbstractLatteContextSubCol
 {
     private NameResolver $nameResolver;
 
+    private ValueResolver $valueResolver;
+
     private TemplateTypeResolver $templateTypeResolver;
 
     private TypeResolver $typeResolver;
 
     public function __construct(
         NameResolver $nameResolver,
+        ValueResolver $valueResolver,
         TemplateTypeResolver $templateTypeResolver,
         TypeResolver $typeResolver
     ) {
         $this->nameResolver = $nameResolver;
+        $this->valueResolver = $valueResolver;
         $this->templateTypeResolver = $templateTypeResolver;
         $this->typeResolver = $typeResolver;
     }
@@ -49,7 +56,15 @@ final class AssignToTemplateVariableCollector extends AbstractLatteContextSubCol
         }
 
         $variableName = $this->nameResolver->resolve($node->var);
-        if ($variableName === null) {
+        if ($variableName !== null) {
+            $variableNames = [$variableName];
+        } elseif ($node->var instanceof PropertyFetch && $node->var->name instanceof Expr) {
+            $variableNames = $this->valueResolver->resolveStrings($node->var->name, $scope);
+        } else {
+            return [];
+        }
+
+        if ($variableNames === null) {
             return [];
         }
 
@@ -57,6 +72,11 @@ final class AssignToTemplateVariableCollector extends AbstractLatteContextSubCol
         if ($variableType === null) {
             $variableType = $scope->getType($node->expr);
         }
-        return [CollectedVariable::build($node, $scope, $variableName, $variableType)];
+
+        $collectedVariables = [];
+        foreach ($variableNames as $variableName) {
+            $collectedVariables[] = CollectedVariable::build($node, $scope, $variableName, $variableType);
+        }
+        return $collectedVariables;
     }
 }

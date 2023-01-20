@@ -28,6 +28,8 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->stringLists = $this->stringLists;
         $localStrings = ['foo', 'bar', 'baz'];
         $this->template->add('localStrings', $localStrings);
+        $name = 'dynamic';
+        $this->template->add($name, $name);
         $this->template->obj = $this;
 
         $items = ['first item', 'second item', 'third item'];
@@ -47,7 +49,10 @@ final class VariablesPresenter extends ParentPresenter
 
     public function actionOther(): void
     {
-        $this->template->fromOtherAction = 'from other action';
+        $name = 'fromOtherAction';
+        $this->template->setParameters([
+            $name => 'from other action',
+        ]);
     }
 
     protected function bar(): void

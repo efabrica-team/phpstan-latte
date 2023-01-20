@@ -8,10 +8,13 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextSubCollector;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
+use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\List_;
+use PhpParser\Node\Expr\PropertyFetch;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\MixedType;
@@ -23,13 +26,17 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractLatteConte
 {
     private NameResolver $nameResolver;
 
+    private ValueResolver $valueResolver;
+
     protected TemplateTypeResolver $templateTypeResolver;
 
     public function __construct(
         NameResolver $nameResolver,
+        ValueResolver $valueResolver,
         TemplateTypeResolver $templateTypeResolver
     ) {
         $this->nameResolver = $nameResolver;
+        $this->valueResolver = $valueResolver;
         $this->templateTypeResolver = $templateTypeResolver;
     }
 
@@ -62,8 +69,17 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractLatteConte
                 continue;
             }
             $arrayItemValue = $arrayItem->value;
+
             $variableName = $this->nameResolver->resolve($arrayItemValue);
-            if ($variableName === null) {
+            if ($variableName !== null) {
+                $variableNames = [$variableName];
+            } elseif ($arrayItemValue instanceof PropertyFetch && $arrayItemValue->name instanceof Expr) {
+                $variableNames = $this->valueResolver->resolveStrings($arrayItemValue->name, $scope);
+            } else {
+                continue;
+            }
+
+            if ($variableNames === null) {
                 continue;
             }
 
@@ -73,7 +89,9 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractLatteConte
 
             $containsTemplateVariable = true;
             $variableType = $types[$key] ?? new MixedType();
-            $variables[] = CollectedVariable::build($node, $scope, $variableName, $variableType);
+            foreach ($variableNames as $variableName) {
+                $variables[] = CollectedVariable::build($node, $scope, $variableName, $variableType);
+            }
         }
 
         return $containsTemplateVariable ? $variables : null;
