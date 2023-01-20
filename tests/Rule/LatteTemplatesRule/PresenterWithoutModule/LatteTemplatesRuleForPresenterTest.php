@@ -386,27 +386,27 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Form field with name "second_submit" probably does not exist.',
-                13,
+                15,
                 'default.latte',
             ],
             [
                 'Form field with name "second_submit_label" probably does not exist.',
-                13,
+                15,
                 'default.latte',
             ],
             [
                 'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
-                21,
+                23,
                 'default.latte',
             ],
             [
                 'Form with name "notExisting" probably does not exist.',
-                45,
+                47,
                 'default.latte',
             ],
             [
                 'Form field with name "username" probably does not exist.',
-                46,
+                48,
                 'default.latte',
             ],
         ]);
