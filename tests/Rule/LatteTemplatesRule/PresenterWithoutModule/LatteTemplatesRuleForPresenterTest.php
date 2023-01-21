@@ -604,6 +604,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
                 'Add method actionNonExistingMethod or renderNonExistingMethod with corresponding parameters to presenter Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter',
             ],
+            [
+                'Parameter #1 $id of method ' . LinksPresenter::class . '::handleDelete() expects string, null given.',
+                97,
+                'default.latte',
+            ],
+            [
+                'Method ' . LinksPresenter::class . '::handleDelete() invoked with 2 parameters, 1 required.',
+                98,
+                'default.latte',
+            ],
         ];
         $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], $expectedErrors);
     }

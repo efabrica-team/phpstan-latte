@@ -92,3 +92,8 @@
 <a href="{link create persistentConflict: "persistent"}">Method param conflicts with persistent param</a>
 
 <a href="{link Links:nonExistingMethod param1 => test}">Call non-existing method with params</a>
+
+<a href="{link delete!, 'my-id'}">Correct handle link</a>
+<a href="{link delete!}">Missing required param in handle link</a>
+<a href="{link delete!, 'my-id', 'extra param'}">Extra param in handle link</a>
+<a href="{link delete!, id: 'my-id', extra: 'extra param'}">Extra named param in handle link</a>

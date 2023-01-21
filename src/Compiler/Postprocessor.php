@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterf
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
 use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
@@ -91,7 +92,7 @@ final class Postprocessor
             $nodeVisitor->setActualClass($template->getActualClass());
         }
         if ($nodeVisitor instanceof VariablesNodeVisitorInterface) {
-            $nodeVisitor->setVariables(array_merge($template->getVariables(), $this->variableCollectorStorage->collectVariables()));
+            $nodeVisitor->setVariables(ItemCombinator::merge($this->variableCollectorStorage->collectVariables(), $template->getVariables()));
         }
         if ($nodeVisitor instanceof ComponentsNodeVisitorInterface) {
             $nodeVisitor->setComponents($template->getComponents());
