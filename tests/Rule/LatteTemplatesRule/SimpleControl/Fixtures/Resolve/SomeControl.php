@@ -192,4 +192,17 @@ final class SomeControl extends Control
     {
         $this->template->render(__DIR__ . '/error.latte');
     }
+
+    public function renderCalledNever(): void
+    {
+        $this->neverReturn();
+    }
+
+    /**
+     * @return never
+     */
+    private function neverReturn(): void
+    {
+        die();
+    }
 }
