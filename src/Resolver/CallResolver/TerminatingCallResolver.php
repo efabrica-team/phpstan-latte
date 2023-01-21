@@ -9,6 +9,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 
 final class TerminatingCallResolver
@@ -54,7 +55,8 @@ final class TerminatingCallResolver
         if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
             return false;
         }
-        return $this->isTerminatingMethodCall($calledClassName, $calledMethodName);
+        return $this->isTerminatingMethodCall($calledClassName, $calledMethodName) ||
+            $this->isNeverReturnMethodCall($calledClassName, $calledMethodName, $scope);
     }
 
     public function isTerminatingMethodCall(string $calledClassName, string $calledMethodName): bool
@@ -69,6 +71,20 @@ final class TerminatingCallResolver
             }
         }
 
+        return false;
+    }
+
+    public function isNeverReturnMethodCall(string $calledClassName, string $calledMethodName, Scope $scope): bool
+    {
+        $objectType = new ObjectType($calledClassName);
+        $methodReflection = $objectType->getMethod($calledMethodName, $scope);
+        $variant = $methodReflection->getVariants()[0] ?? null;
+        if ($variant === null) {
+            return false;
+        }
+        if ($variant->getReturnType() instanceof NeverType) {
+            return true;
+        }
         return false;
     }
 }

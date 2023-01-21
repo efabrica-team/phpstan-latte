@@ -37,17 +37,21 @@ final class MethodFinder
         return CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
     }
 
-    public function hasAnyAlwaysTerminated(string $className, string $methodName): bool
-    {
-        return $this->findAnyAlwaysTerminatedInMethodCalls($className, $methodName);
-    }
-
-    private function findAnyAlwaysTerminatedInMethodCalls(string $className, string $methodName, string $currentClassName = null): bool
+    public function isAlwaysTerminated(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
             return array_merge([$this->find($declaringClass, $methodName)->isAlwaysTerminated()], ...$fromCalled);
         };
-        $isAlwaysTerminated = $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
+        $isAlwaysTerminated = $this->methodCallFinder->traverseAlwaysCalled($callback, $className, $methodName);
+        return in_array(true, $isAlwaysTerminated, true);
+    }
+
+    public function hasAnyAlwaysTerminated(string $className, string $methodName): bool
+    {
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            return array_merge([$this->find($declaringClass, $methodName)->isAlwaysTerminated()], ...$fromCalled);
+        };
+        $isAlwaysTerminated = $this->methodCallFinder->traverseCalled($callback, $className, $methodName);
         return in_array(true, $isAlwaysTerminated, true);
     }
 }

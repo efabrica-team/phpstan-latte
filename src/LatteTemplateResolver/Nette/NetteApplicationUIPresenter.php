@@ -151,8 +151,8 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $actionDefinition['line'] = $reflectionMethod->getStartLine();
         $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
         $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $latteContext->templatePathFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodCallFinder()->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName());
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodFinder()->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName());
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodCallFinder()->hasAlwaysTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName());
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodFinder()->isAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName());
     }
 
     private function findDefaultTemplateFilePath(ReflectionClass $reflectionClass, string $actionName): ?string
