@@ -118,6 +118,16 @@ final class VariablesPresenter extends ParentPresenter
         }
     }
 
+    public function actionDifferentRenderIndirect()
+    {
+        $this->changeView();
+    }
+
+    public function changeView()
+    {
+        $this->setView('different');
+    }
+
     public function renderDifferent(): void
     {
         $this->template->fromDifferentRender = 'from different render 1';

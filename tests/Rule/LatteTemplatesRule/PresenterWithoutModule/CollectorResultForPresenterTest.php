@@ -37,6 +37,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'TEMPLATE different.latte VariablesPresenter::differentRenders(different) ["startup","startupParent","presenter","control","fromDifferentRendersAction","fromDifferentRender"] ["parentForm"]',
             'TEMPLATE different2.latte VariablesPresenter::differentRenders(different2) ["startup","startupParent","presenter","control","fromDifferentRendersAction","fromDifferentRender2"] ["parentForm"]',
             'TEMPLATE differentRenderConditional.latte VariablesPresenter::differentRenderConditional ["startup","startupParent","presenter","control"] ["parentForm"]',
+            'TEMPLATE different.latte VariablesPresenter::differentRenderIndirect(different) ["startup","startupParent","presenter","control","fromDifferentRender"] ["parentForm"]',
             'TEMPLATE different.latte VariablesPresenter::differentRenderConditional(different) ["startup","startupParent","presenter","control","fromDifferentRender"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ParentPresenter"}',

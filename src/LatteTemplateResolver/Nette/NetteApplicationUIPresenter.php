@@ -55,10 +55,9 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
             // alternative renders (changed by setView in startup or action* method)
             $setViewCalls = array_merge(
-                $latteContext->methodCallFinder()->findCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
-                $latteContext->methodCallFinder()->findCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
+                $latteContext->methodCallFinder()->findAllCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
+                $latteContext->methodCallFinder()->findAllCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
             );
-            $defaultRenderReached = true;
             foreach ($setViewCalls as $setViewCall) {
                 $view = (string)$setViewCall->getParams()['view'];
                 $actionViewName = $actionName . "($view)";
@@ -68,12 +67,14 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 if ($renderMethod !== null) {
                     $this->updateActionDefinitionByMethod($actions[$actionViewName], $reflectionClass, $renderMethod, $latteContext);
                 }
-                if (!$setViewCall->isCalledConditionally()) {
-                    $defaultRenderReached = false;
-                }
             }
 
-            if ($defaultRenderReached) {
+            $alwaysSetViewCalls = array_merge(
+                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
+                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
+            );
+
+            if (count($alwaysSetViewCalls) === 0) {
                 $renderMethod = $reflectionClass->getMethod('render' . ucfirst($actionName));
                 if ($renderMethod !== null) {
                     $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $renderMethod, $latteContext);
