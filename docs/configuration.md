@@ -101,6 +101,19 @@ parameters:
 
 ## Analyser configuration
 
+### collectedPaths
+Type: `array`
+
+List of paths outside of analysedPaths that are scanned when latte context (variables, components, ...) is collected for template analysis.
+
+Example:
+```neon
+parameters:
+    latte:
+        collectedPaths:
+            - vendor/some/package
+```
+
 ### globalVariables
 Type: `array`
 

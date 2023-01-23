@@ -24,7 +24,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'NODE NetteApplicationUIPresenter {"className":"VariablesPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"VariablesPresenter"}',
             'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","title","viaGetTemplate","stringLists","localStrings","dynamic","obj","array1","array2","list1","list2","array1WithoutType","array2WithoutType","list1WithType","list2WithType","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","overwritting","parentOverwritting","calledParentOverwritting","calledParentOverwritted","calledParentSecondOverwritting","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
-            'TEMPLATE other.latte VariablesPresenter::other ["startup","startupParent","presenter","control","fromOtherAction"] ["parentForm"]',
+            'TEMPLATE other.latte VariablesPresenter::other ["startup","startupParent","presenter","control","fromOtherAction","unresolvedInclude"] ["parentForm"]',
             'TEMPLATE parent.latte VariablesPresenter::parent ["startup","startupParent","presenter","control","variableFromParentAction","variableFromOtherMethod"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE specialConstructs.latte VariablesPresenter:: ["startup","startupParent","presenter","control"] ["parentForm"]',
             'TEMPLATE noAction.latte VariablesPresenter:: ["startup","startupParent","presenter","control"] ["parentForm"]',
