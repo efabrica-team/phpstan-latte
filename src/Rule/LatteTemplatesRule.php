@@ -117,7 +117,7 @@ final class LatteTemplatesRule implements Rule
                 ->build();
         }
 
-        return $errors;
+        return $this->errorBuilder->buildRuleErrors($errors);
     }
 
     /**
