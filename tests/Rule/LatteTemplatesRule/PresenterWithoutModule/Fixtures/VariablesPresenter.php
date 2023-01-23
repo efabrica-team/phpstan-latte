@@ -47,12 +47,13 @@ final class VariablesPresenter extends ParentPresenter
         ]);
     }
 
-    public function actionOther(): void
+    public function actionOther(string $param): void
     {
         $name = 'fromOtherAction';
         $this->template->setParameters([
             $name => 'from other action',
         ]);
+        $this->template->unresolvedInclude = $param;
     }
 
     protected function bar(): void

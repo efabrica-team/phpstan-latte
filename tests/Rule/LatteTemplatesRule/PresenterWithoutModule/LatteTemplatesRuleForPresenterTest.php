@@ -166,6 +166,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'other.latte',
             ],
             [
+                'Cannot resolve included latte template.',
+                13,
+                'other.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 3,
                 '@partial.latte',
