@@ -38,6 +38,10 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
 
         $combinedVariables = ItemCombinator::union($this->variables);
 
+        $combinedVariables = ItemCombinator::merge(
+
+        );
+
         $methodParams = [];
         foreach ($node->params as $param) {
             if ($param->var instanceof VariableExpr && is_string($param->var->name)) {

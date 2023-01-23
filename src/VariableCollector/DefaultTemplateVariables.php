@@ -35,13 +35,6 @@ final class DefaultTemplateVariables implements VariableCollectorInterface
         // nette\security bridge
         $variables[] = new Variable('user', new ObjectType('Nette\Security\User'));
 
-        // nette\application bridge
-        $variables[] = new Variable('presenter', new ObjectType('Nette\Application\UI\Presenter'));
-        $variables[] = new Variable('control', new ObjectType('Nette\Application\UI\Control'));
-
-        $flashesArrayType = new ArrayType(new MixedType(), new ObjectType('stdClass'));
-        $variables[] = new Variable('flashes', $flashesArrayType);
-
         return $variables;
     }
 }

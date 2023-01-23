@@ -15,6 +15,7 @@ class NetteApplicationUIPresenterLatteContextResolver extends ClassLatteContextR
             [
                 new Variable('presenter', $this->getClassType()),
                 new Variable('control', $this->getClassType()),
+                new Variable('flashes', new ArrayType(new MixedType(), new ObjectType('stdClass')),
             ]
         );
     }
