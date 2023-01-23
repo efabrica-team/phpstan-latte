@@ -21,7 +21,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisTemplate/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
 
         ]);
     }
@@ -30,7 +30,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/ThisGetTemplate/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
         ]);
     }
 
@@ -38,7 +38,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/TemplateAsVariable/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
         ]);
     }
 
@@ -46,10 +46,10 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/MultipleRenderMethods/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","a","b"] []',
-            'TEMPLATE test.latte SomeControl::renderTest ["presenter","control","c","d"] []',
-            'TEMPLATE param_a.latte SomeControl::renderWildcard ["presenter","control","a","c"] []',
-            'TEMPLATE param_b.latte SomeControl::renderWildcard ["presenter","control","a","c"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE test.latte SomeControl::renderTest ["presenter","control","flashes","c","d"] []',
+            'TEMPLATE param_a.latte SomeControl::renderWildcard ["presenter","control","flashes","a","c"] []',
+            'TEMPLATE param_b.latte SomeControl::renderWildcard ["presenter","control","flashes","a","c"] []',
         ]);
     }
 
@@ -64,22 +64,22 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/Resolve/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE constVar.latte SomeControl::renderConstVar ["presenter","control","a","b"] []',
-            'TEMPLATE explicit.latte SomeControl::renderExplicit ["presenter","control","a","b"] []',
-            'TEMPLATE defaultVars.latte SomeControl::renderDefaultVars ["presenter","control","a","b"] []',
-            'TEMPLATE explicitVars.latte SomeControl::renderExplicitVars ["presenter","control","a","b"] []',
-            'TEMPLATE defaultObject.latte SomeControl::renderDefaultObject ["presenter","control","a","b"] []',
-            'TEMPLATE explicitObject.latte SomeControl::renderExplicitObject ["presenter","control","a","b"] []',
-            'TEMPLATE complexType.latte SomeControl::renderComplexType ["presenter","control","a","b"] []',
-            'TEMPLATE throwSometimes.latte SomeControl::renderThrowSometimes ["presenter","control"] []',
-            'TEMPLATE default.latte SomeControl::renderIgnoredRender ["presenter","control"] []',
-            'TEMPLATE methodCall.latte SomeControl::renderMethodCall ["presenter","control"] []',
-            'TEMPLATE methodCall.latte SomeControl::renderMethodCallPart ["presenter","control"] []',
-            'TEMPLATE methodCall.latte SomeControl::renderStaticMethodCall ["presenter","control"] []',
-            'TEMPLATE methodCall.aa.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
-            'TEMPLATE methodCall.ab.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
-            'TEMPLATE methodCall.ba.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
-            'TEMPLATE methodCall.bb.latte SomeControl::renderMethodCallMulti ["presenter","control"] []',
+            'TEMPLATE constVar.latte SomeControl::renderConstVar ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE explicit.latte SomeControl::renderExplicit ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE defaultVars.latte SomeControl::renderDefaultVars ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE explicitVars.latte SomeControl::renderExplicitVars ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE defaultObject.latte SomeControl::renderDefaultObject ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE explicitObject.latte SomeControl::renderExplicitObject ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE complexType.latte SomeControl::renderComplexType ["presenter","control","flashes","a","b"] []',
+            'TEMPLATE throwSometimes.latte SomeControl::renderThrowSometimes ["presenter","control","flashes"] []',
+            'TEMPLATE default.latte SomeControl::renderIgnoredRender ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderMethodCall ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderMethodCallPart ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.latte SomeControl::renderStaticMethodCall ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.aa.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.ab.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.ba.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
+            'TEMPLATE methodCall.bb.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
         ]);
     }
 
@@ -87,9 +87,9 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","some","parent","grandParent","data","parentData","grandParentData"] []',
-            'TEMPLATE parent.latte SomeControl::renderParent ["presenter","control","parent","grandParent","data","parentData","grandParentData"] []',
-            'TEMPLATE grandParent.latte SomeControl::renderGrandParent ["presenter","control","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","some","parent","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE parent.latte SomeControl::renderParent ["presenter","control","flashes","parent","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE grandParent.latte SomeControl::renderGrandParent ["presenter","control","flashes","grandParent","data","parentData","grandParentData"] []',
         ]);
     }
 }

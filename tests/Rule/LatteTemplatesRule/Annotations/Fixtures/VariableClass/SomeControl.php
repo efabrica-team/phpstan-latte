@@ -19,7 +19,7 @@ final class SomeControl extends Control
 {
     public function renderClass()
     {
-        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control","classVar","myVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control","flashes","classVar","myVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderClass.latte', ['explicitParam' => 'a']);
     }
 
@@ -29,7 +29,7 @@ final class SomeControl extends Control
      */
     public function renderMethod()
     {
-        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control","flashes","classVar","myVar","methodVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderMethod.latte', ['explicitParam' => 'a']);
     }
 
@@ -40,7 +40,7 @@ final class SomeControl extends Control
          * @phpstan-latte-var VarCall $myVar
          * @phpstan-latte-var VarCall $explicitParam
          */
-        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control","classVar","myVar","explicitParam","callVar"] []
+        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control","flashes","classVar","myVar","explicitParam","callVar"] []
         $this->template->render(__DIR__ . '/SomeControl.renderCall.latte', ['explicitParam' => 'a']);
     }
 
@@ -55,7 +55,7 @@ final class SomeControl extends Control
          * @phpstan-latte-var VarCall $myVar
          * @phpstan-latte-var VarCall $explicitParam
          */
-        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control","classVar","myVar","methodVar","explicitParam","callVar"] []
+        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control","flashes","classVar","myVar","methodVar","explicitParam","callVar"] []
         $this->template->render(__DIR__ . '/SomeControl.renderAll.latte', ['explicitParam' => 'a']);
     }
 
@@ -68,7 +68,7 @@ final class SomeControl extends Control
     public function renderIndirect($param)
     {
         $this->setVariables($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control","classVar","myVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control","flashes","classVar","myVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderIndirect.latte', ['explicitParam' => 'a']);
     }
 
@@ -84,7 +84,7 @@ final class SomeControl extends Control
     public function renderIndirectMethod($param)
     {
         $this->setVariablesMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control","classVar","myVar","indirectVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control","flashes","classVar","myVar","indirectVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderIndirectMethod.latte', ['explicitParam' => 'a']);
     }
 
@@ -95,7 +95,7 @@ final class SomeControl extends Control
     public function renderIndirectMethodOwn($param)
     {
         $this->setVariablesMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirectMethodOwn.latte SomeControl::renderIndirectMethodOwn ["presenter","control","classVar","myVar","indirectVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderIndirectMethodOwn.latte SomeControl::renderIndirectMethodOwn ["presenter","control","flashes","classVar","myVar","indirectVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderIndirectMethodOwn.latte', ['explicitParam' => 'a']);
     }
 }

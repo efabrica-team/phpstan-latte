@@ -11,7 +11,7 @@ final class SomeControl extends Control
 {
     public function render()
     {
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
@@ -26,7 +26,7 @@ final class SomeControl extends Control
     {
         /** @phpstan-latte-ignore */
         $this->template->ignoredVar = 'ignoredVar';
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredVar ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredVar ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
@@ -34,7 +34,7 @@ final class SomeControl extends Control
     {
         /** @phpstan-latte-ignore */
         $this->addComponent(new SomeControl(), 'ignoredComponent');
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredComponent ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredComponent ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
@@ -51,7 +51,7 @@ final class SomeControl extends Control
     {
         /** @phpstan-latte-ignore */
         $this->setVariablesCallIgnored();
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredMethodCall ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderIgnoredMethodCall ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 

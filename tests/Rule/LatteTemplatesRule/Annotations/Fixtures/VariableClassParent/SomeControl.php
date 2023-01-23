@@ -18,7 +18,7 @@ final class SomeControl extends ParentControl
 {
     public function renderClass()
     {
-        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control","parentClassVar","classVar","myVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control","flashes","parentClassVar","classVar","myVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderClass.latte', ['explicitParam' => 'a']);
     }
 
@@ -28,7 +28,7 @@ final class SomeControl extends ParentControl
      */
     public function renderMethod()
     {
-        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderMethod.latte', ['explicitParam' => 'a']);
     }
 
@@ -39,7 +39,7 @@ final class SomeControl extends ParentControl
          * @phpstan-latte-var VarCall $myVar
          * @phpstan-latte-var VarCall $explicitParam
          */
-        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control","parentClassVar","classVar","myVar","explicitParam","callVar"] []
+        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control","flashes","parentClassVar","classVar","myVar","explicitParam","callVar"] []
         $this->template->render(__DIR__ . '/SomeControl.renderCall.latte', ['explicitParam' => 'a']);
     }
 
@@ -54,7 +54,7 @@ final class SomeControl extends ParentControl
          * @phpstan-latte-var VarCall $myVar
          * @phpstan-latte-var VarCall $explicitParam
          */
-        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam","callVar"] []
+        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam","callVar"] []
         $this->template->render(__DIR__ . '/SomeControl.renderAll.latte', ['explicitParam' => 'a']);
     }
 
@@ -67,7 +67,7 @@ final class SomeControl extends ParentControl
     public function renderIndirect($param)
     {
         $this->setVariables($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control","parentClassVar","classVar","myVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control","flashes","parentClassVar","classVar","myVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderIndirect.latte', ['explicitParam' => 'a']);
     }
 
@@ -83,20 +83,20 @@ final class SomeControl extends ParentControl
     public function renderIndirectMethod($param)
     {
         $this->setVariablesMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control","parentClassVar","classVar","myVar","indirectVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control","flashes","parentClassVar","classVar","myVar","indirectVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderIndirectMethod.latte', ['explicitParam' => 'a']);
     }
 
     public function renderParentIndirectMethod($param)
     {
         $this->setVariablesParentMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderParentIndirectMethod.latte SomeControl::renderParentIndirectMethod ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.renderParentIndirectMethod.latte SomeControl::renderParentIndirectMethod ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
         $this->template->render(__DIR__ . '/SomeControl.renderParentIndirectMethod.latte', ['explicitParam' => 'a']);
     }
 
     public function renderParentIndirectRender($param)
     {
-        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirectRender ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirectRender ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
         $this->renderParentIndirect($param);
     }
 }

@@ -19,7 +19,7 @@ final class SomeControl extends Control
 {
     public function renderClass()
     {
-        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control"] ["classComponent","myComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderClass.latte SomeControl::renderClass ["presenter","control","flashes"] ["classComponent","myComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderClass.latte');
     }
 
@@ -29,7 +29,7 @@ final class SomeControl extends Control
      */
     public function renderMethod()
     {
-        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control"] ["classComponent","myComponent","methodComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderMethod.latte SomeControl::renderMethod ["presenter","control","flashes"] ["classComponent","myComponent","methodComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderMethod.latte');
     }
 
@@ -39,7 +39,7 @@ final class SomeControl extends Control
          * @phpstan-latte-component ComponentCall $callComponent
          * @phpstan-latte-component ComponentCall $myComponent
          */
-        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control"] ["classComponent","myComponent","callComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderCall.latte SomeControl::renderCall ["presenter","control","flashes"] ["classComponent","myComponent","callComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderCall.latte');
     }
 
@@ -53,7 +53,7 @@ final class SomeControl extends Control
          * @phpstan-latte-component ComponentCall $callComponent
          * @phpstan-latte-component ComponentCall $myComponent
          */
-        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control"] ["classComponent","myComponent","methodComponent","callComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderAll.latte SomeControl::renderAll ["presenter","control","flashes"] ["classComponent","myComponent","methodComponent","callComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderAll.latte');
     }
 
@@ -66,7 +66,7 @@ final class SomeControl extends Control
     public function renderIndirect($param)
     {
         $this->setComponents($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control"] ["classComponent","myComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderIndirect.latte SomeControl::renderIndirect ["presenter","control","flashes"] ["classComponent","myComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderIndirect.latte');
     }
 
@@ -82,7 +82,7 @@ final class SomeControl extends Control
     public function renderIndirectMethod($param)
     {
         $this->setComponentsMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control"] ["classComponent","myComponent","indirectComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderIndirectMethod.latte SomeControl::renderIndirectMethod ["presenter","control","flashes"] ["classComponent","myComponent","indirectComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderIndirectMethod.latte');
     }
 
@@ -93,7 +93,7 @@ final class SomeControl extends Control
     public function renderIndirectMethodOwn($param)
     {
         $this->setComponentsMethod($param);
-        // COLLECT: TEMPLATE SomeControl.renderIndirectMethodOwn.latte SomeControl::renderIndirectMethodOwn ["presenter","control"] ["classComponent","myComponent","indirectComponent"]
+        // COLLECT: TEMPLATE SomeControl.renderIndirectMethodOwn.latte SomeControl::renderIndirectMethodOwn ["presenter","control","flashes"] ["classComponent","myComponent","indirectComponent"]
         $this->template->render(__DIR__ . '/SomeControl.renderIndirectMethodOwn.latte');
     }
 }

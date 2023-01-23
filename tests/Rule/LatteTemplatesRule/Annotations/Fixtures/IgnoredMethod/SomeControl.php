@@ -13,7 +13,7 @@ final class SomeControl extends Control
     {
         $this->setVariables();
         $this->setVariablesIgnored();
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","someVar"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","flashes","someVar"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
@@ -37,7 +37,7 @@ final class SomeControl extends Control
     {
         $this->setTemplatePath();
         $this->setTemplatePathIgnored();
-        // COLLECT: TEMPLATE SomeControl.other.latte SomeControl::renderTemplatePath ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.other.latte SomeControl::renderTemplatePath ["presenter","control","flashes"] []
         $this->template->render();
     }
 

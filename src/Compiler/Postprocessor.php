@@ -11,10 +11,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterf
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
-use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Template;
-use Efabrica\PHPStanLatte\VariableCollector\DynamicFilterVariables;
-use Efabrica\PHPStanLatte\VariableCollector\VariableCollectorStorage;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
@@ -30,36 +27,22 @@ final class Postprocessor
 
     private Standard $printerStandard;
 
-    private DynamicFilterVariables $dynamicFilterVariables;
-
-    private VariableCollectorStorage $variableCollectorStorage;
-
     private CompilerInterface $compiler;
 
     public function __construct(
         Parser $parser,
         NodeVisitorStorage $nodeVisitorStorage,
         Standard $printerStandard,
-        DynamicFilterVariables $dynamicFilterVariables,
-        VariableCollectorStorage $variableCollectorStorage,
         CompilerInterface $compiler
     ) {
         $this->parser = $parser;
         $this->nodeVisitorStorage = $nodeVisitorStorage;
         $this->printerStandard = $printerStandard;
-        $this->dynamicFilterVariables = $dynamicFilterVariables;
-        $this->variableCollectorStorage = $variableCollectorStorage;
         $this->compiler = $compiler;
     }
 
     public function postProcess(string $phpContent, Template $template): string
     {
-        $filters = [];
-        foreach ($template->getFilters() as $filter) {
-            $filters[$filter->getName()] = $filter->getTypeAsString();
-        }
-        $this->dynamicFilterVariables->addFilters($filters);
-
         $phpStmts = $this->findNodes($phpContent);
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
             $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
@@ -92,7 +75,7 @@ final class Postprocessor
             $nodeVisitor->setActualClass($template->getActualClass());
         }
         if ($nodeVisitor instanceof VariablesNodeVisitorInterface) {
-            $nodeVisitor->setVariables(ItemCombinator::merge($this->variableCollectorStorage->collectVariables(), $template->getVariables()));
+            $nodeVisitor->setVariables($template->getVariables());
         }
         if ($nodeVisitor instanceof ComponentsNodeVisitorInterface) {
             $nodeVisitor->setComponents($template->getComponents());

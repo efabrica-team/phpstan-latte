@@ -14,7 +14,7 @@ final class SomeControl extends Control
     public function render()
     {
         $this->ignoredControl->setVariables($this->template);
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
 
