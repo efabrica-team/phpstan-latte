@@ -12,7 +12,7 @@ final class SomeControl extends Control
     public function render()
     {
         $this->template->method = __FUNCTION__;
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","method","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","flashes","method","explicitParam"] []
         /** @phpstan-latte-template {dir}/SomeControl.latte */
         $this->template->render(__DIR__ . '/error.latte', ['explicitParam' => 'a']);
     }
@@ -20,8 +20,8 @@ final class SomeControl extends Control
     public function renderMultiple()
     {
         $this->template->method = __FUNCTION__;
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMultiple ["presenter","control","method","explicitParam"] []
-        // COLLECT: TEMPLATE SomeControl.php.latte SomeControl::renderMultiple ["presenter","control","method","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMultiple ["presenter","control","flashes","method","explicitParam"] []
+        // COLLECT: TEMPLATE SomeControl.php.latte SomeControl::renderMultiple ["presenter","control","flashes","method","explicitParam"] []
         /**
          * @phpstan-latte-template {dir}/SomeControl.latte
          * @phpstan-latte-template {dir}/SomeControl.php.latte
@@ -43,7 +43,7 @@ final class SomeControl extends Control
     /**
      * @phpstan-latte-template {dir}/SomeControl.latte
      */
-    // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMethodIgnored ["presenter","control","method"] []
+    // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMethodIgnored ["presenter","control","flashes","method"] []
     public function renderMethodIgnored()
     {
         $this->template->method = __FUNCTION__;
@@ -54,7 +54,7 @@ final class SomeControl extends Control
     /**
      * @phpstan-latte-template {dir}/SomeControl.latte
      */
-    // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMethodNoRender ["presenter","control","method"] []
+    // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderMethodNoRender ["presenter","control","flashes","method"] []
     public function renderMethodNoRender()
     {
         $this->template->method = __FUNCTION__;
@@ -72,23 +72,23 @@ final class SomeControl extends Control
     {
         $this->template->method = __FUNCTION__;
 
-        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderPlaceholders ["presenter","control","method"] []
+        // COLLECT: TEMPLATE SomeControl.latte SomeControl::renderPlaceholders ["presenter","control","flashes","method"] []
         /** @phpstan-latte-template {dir}/SomeControl.latte */
         $this->template->render(__DIR__ . '/error.latte');
 
-        // COLLECT: TEMPLATE SomeControl.php.latte SomeControl::renderPlaceholders ["presenter","control","method"] []
+        // COLLECT: TEMPLATE SomeControl.php.latte SomeControl::renderPlaceholders ["presenter","control","flashes","method"] []
         /** @phpstan-latte-template {file}.latte */
         $this->template->render(__DIR__ . '/error.latte');
 
-        // COLLECT: TEMPLATE SomeControl.php.baseName.latte SomeControl::renderPlaceholders ["presenter","control","method"] []
+        // COLLECT: TEMPLATE SomeControl.php.baseName.latte SomeControl::renderPlaceholders ["presenter","control","flashes","method"] []
         /** @phpstan-latte-template {dir}/{baseName}.baseName.latte */
         $this->template->render(__DIR__ . '/error.latte');
 
-        // COLLECT: TEMPLATE SomeControl.fileName.latte SomeControl::renderPlaceholders ["presenter","control","method"] []
+        // COLLECT: TEMPLATE SomeControl.fileName.latte SomeControl::renderPlaceholders ["presenter","control","flashes","method"] []
         /** @phpstan-latte-template {dir}/{fileName}.fileName.latte */
         $this->template->render(__DIR__ . '/error.latte');
 
-        // COLLECT: TEMPLATE SomeControl.className.latte SomeControl::renderPlaceholders ["presenter","control","method"] []
+        // COLLECT: TEMPLATE SomeControl.className.latte SomeControl::renderPlaceholders ["presenter","control","flashes","method"] []
         /** @phpstan-latte-template {dir}/{className}.className.latte */
         $this->template->render(__DIR__ . '/error.latte');
     }

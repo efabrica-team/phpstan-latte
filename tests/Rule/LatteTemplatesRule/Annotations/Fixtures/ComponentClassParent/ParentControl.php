@@ -29,7 +29,7 @@ abstract class ParentControl extends Control
     public function renderParentClass()
     {
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentClass.latte SomeControl::renderParentClass ["presenter","control"] ["parentClassComponent","classComponent","myComponent"]
+        // COLLECT: TEMPLATE ParentControl.renderParentClass.latte SomeControl::renderParentClass ["presenter","control","flashes"] ["parentClassComponent","classComponent","myComponent"]
         $this->template->render(__DIR__ . '/ParentControl.renderParentClass.latte');
     }
 
@@ -40,7 +40,7 @@ abstract class ParentControl extends Control
     public function renderParentMethod()
     {
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentMethod.latte SomeControl::renderParentMethod ["presenter","control"] ["parentClassComponent","classComponent","myComponent","methodComponent"]
+        // COLLECT: TEMPLATE ParentControl.renderParentMethod.latte SomeControl::renderParentMethod ["presenter","control","flashes"] ["parentClassComponent","classComponent","myComponent","methodComponent"]
         $this->template->render(__DIR__ . '/ParentControl.renderParentMethod.latte');
     }
 
@@ -51,7 +51,7 @@ abstract class ParentControl extends Control
          * @phpstan-latte-component ComponentParentCall $myComponent
          */
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentCall.latte SomeControl::renderParentCall ["presenter","control"] ["parentClassComponent","classComponent","myComponent","callComponent"]
+        // COLLECT: TEMPLATE ParentControl.renderParentCall.latte SomeControl::renderParentCall ["presenter","control","flashes"] ["parentClassComponent","classComponent","myComponent","callComponent"]
         $this->template->render(__DIR__ . '/ParentControl.renderParentCall.latte');
     }
 
@@ -59,7 +59,7 @@ abstract class ParentControl extends Control
     {
         $this->setComponentsParentMethod($param);
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirect ["presenter","control"] ["parentClassComponent","classComponent","myComponent","methodComponent"]
+        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirect ["presenter","control","flashes"] ["parentClassComponent","classComponent","myComponent","methodComponent"]
         $this->template->render(__DIR__ . '/ParentControl.renderParentIndirect.latte');
     }
 }

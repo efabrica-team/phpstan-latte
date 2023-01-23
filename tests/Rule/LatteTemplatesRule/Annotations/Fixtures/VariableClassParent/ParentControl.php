@@ -29,7 +29,7 @@ abstract class ParentControl extends Control
     public function renderParentClass()
     {
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentClass.latte SomeControl::renderParentClass ["presenter","control","parentClassVar","classVar","myVar","explicitParam"] []
+        // COLLECT: TEMPLATE ParentControl.renderParentClass.latte SomeControl::renderParentClass ["presenter","control","flashes","parentClassVar","classVar","myVar","explicitParam"] []
         $this->template->render(__DIR__ . '/ParentControl.renderParentClass.latte', ['explicitParam' => 'a']);
     }
 
@@ -40,7 +40,7 @@ abstract class ParentControl extends Control
     public function renderParentMethod()
     {
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentMethod.latte SomeControl::renderParentMethod ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE ParentControl.renderParentMethod.latte SomeControl::renderParentMethod ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
         $this->template->render(__DIR__ . '/ParentControl.renderParentMethod.latte', ['explicitParam' => 'a']);
     }
 
@@ -52,7 +52,7 @@ abstract class ParentControl extends Control
          * @phpstan-latte-var VarParentCall $explicitParam
          */
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentCall.latte SomeControl::renderParentCall ["presenter","control","parentClassVar","classVar","myVar","explicitParam","callVar"] []
+        // COLLECT: TEMPLATE ParentControl.renderParentCall.latte SomeControl::renderParentCall ["presenter","control","flashes","parentClassVar","classVar","myVar","explicitParam","callVar"] []
         $this->template->render(__DIR__ . '/ParentControl.renderParentCall.latte', ['explicitParam' => 'a']);
     }
 
@@ -60,7 +60,7 @@ abstract class ParentControl extends Control
     {
         $this->setVariablesParentMethod($param);
         // resolved in child class
-        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirect ["presenter","control","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
+        // COLLECT: TEMPLATE ParentControl.renderParentIndirect.latte SomeControl::renderParentIndirect ["presenter","control","flashes","parentClassVar","classVar","myVar","methodVar","explicitParam"] []
         $this->template->render(__DIR__ . '/ParentControl.renderParentIndirect.latte', ['explicitParam' => 'a']);
     }
 }

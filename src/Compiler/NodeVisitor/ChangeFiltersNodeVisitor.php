@@ -8,27 +8,54 @@ use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Helper\FilterHelper;
+use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
+use Efabrica\PHPStanLatte\Template\Variable;
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Broker\ClassNotFoundException;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\Type\ClosureTypeFactory;
+use PHPStan\Type\ObjectType;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface
 {
     use FiltersNodeVisitorBehavior;
 
+    private TypeStringResolver $typeStringResolver;
+
+    private TypeToPhpDoc $typeToPhpDoc;
+
+    private ClosureTypeFactory $closureTypeFactory;
+
+    public function __construct(TypeStringResolver $typeStringResolver, TypeToPhpDoc $typeToPhpDoc, ClosureTypeFactory $closureTypeFactory)
+    {
+        $this->typeStringResolver = $typeStringResolver;
+        $this->typeToPhpDoc = $typeToPhpDoc;
+        $this->closureTypeFactory = $closureTypeFactory;
+    }
+
     public function enterNode(Node $node): ?Node
     {
+        if ($node instanceof ClassMethod) {
+            $this->addFilterVariables($node);
+        }
+
         if (!$node instanceof FuncCall) {
             return null;
         }
@@ -46,7 +73,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             return null;
         }
 
-        if (!$dynamicName->var->var instanceof Variable) {
+        if (!$dynamicName->var->var instanceof VariableExpr) {
             return null;
         }
 
@@ -67,6 +94,94 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         return $this->createFilterCallNode($filterName, $node->getArgs());
     }
 
+    private function createFilterVariableName(string $filterName): string
+    {
+        return '__filter__' . (LatteVersion::isLatte2() ? strtolower($filterName) : $filterName);
+    }
+
+    /**
+     * @param string|array{string, string}|array{object, string}|callable $filter
+     */
+    private function isCallableString($filter): bool
+    {
+        return is_string($filter) && (str_starts_with($filter, 'Closure(') || str_starts_with($filter, '\Closure(') || str_starts_with($filter, 'callable('));
+    }
+
+    private function addFilterVariables(ClassMethod $node): void
+    {
+        $variableStatements = [];
+        foreach ($this->getFilterVariables() as $variable) {
+            $prependVarTypesDocBlocks = sprintf(
+                '/** @var %s $%s */',
+                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
+                $variable->getName()
+            );
+
+            // doc types node
+            $docNop = new Nop();
+            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
+            $variableStatements[] = $docNop;
+        }
+
+        $variableStatements[] = new Expression(
+            new Assign(
+                new VariableExpr('__filters__'),
+                new VariableExpr('this->filters->getAll()')
+            )
+        );
+
+        $node->stmts = array_merge($variableStatements, (array)$node->stmts);
+    }
+
+    /**
+     * @return Variable[]
+     */
+    private function getFilterVariables(): array
+    {
+        $variables = [];
+        foreach ($this->filters as $filterName => $filter) {
+            if ($this->isCallableString($filter)) {
+                $variableName = $this->createFilterVariableName($filterName);
+                /** @var string $filter */
+                $variables[$variableName] = new Variable($variableName, $this->typeStringResolver->resolve($filter));
+                continue;
+            }
+
+            if ($filter instanceof Closure) {
+                $variableName = $this->createFilterVariableName($filterName);
+                $variables[$variableName] = new Variable($variableName, $this->closureTypeFactory->fromClosureObject($filter));
+                continue;
+            }
+
+            if (!is_array($filter)) {
+                continue;
+            }
+
+            /** @var class-string $className */
+            $className = is_string($filter[0]) ? $filter[0] : get_class($filter[0]);
+            $methodName = $filter[1];
+
+            if ($methodName === '') {
+                continue;
+            }
+
+            try {
+                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+                $reflectionMethod = $reflectionClass->getMethod($methodName);
+
+                if ($reflectionMethod === null || $reflectionMethod->isStatic()) {
+                    continue;
+                }
+
+                $variableName = $this->createFilterVariableName($filterName);
+                $variables[$variableName] = new Variable($variableName, new ObjectType($className));
+            } catch (ClassNotFoundException $e) {
+                continue;
+            }
+        }
+        return $variables;
+    }
+
     /**
      * @param Arg[]|VariadicPlaceholder[] $args
      */
@@ -80,12 +195,12 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         // Add FilterInfo for special filters
         if (in_array($filterName, ['striphtml', 'striptags', 'strip', 'indent', 'repeat', 'replace', 'trim'], true)) {
             $args = array_merge([
-                new Arg(new Variable('ʟ_fi')),
+                new Arg(new VariableExpr('ʟ_fi')),
             ], $args);
         }
 
-        if ($filter instanceof Closure || FilterHelper::isCallableString($filter)) {
-            return new FuncCall(new Variable(FilterHelper::createFilterVariableName($filterName)), $args);
+        if ($filter instanceof Closure || $this->isCallableString($filter)) {
+            return new FuncCall(new VariableExpr($this->createFilterVariableName($filterName)), $args);
         }
 
         if (is_string($filter)) {
@@ -116,9 +231,9 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             );
         }
 
-        $variableName = FilterHelper::createFilterVariableName($filterName);
+        $variableName = $this->createFilterVariableName($filterName);
         return new MethodCall(
-            new Variable($variableName),
+            new VariableExpr($variableName),
             new Identifier($methodName),
             $args
         );

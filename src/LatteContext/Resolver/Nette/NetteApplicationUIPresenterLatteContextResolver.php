@@ -5,6 +5,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\Resolver\Nette;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\ClassLatteContextResolver;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
+use PHPStan\Type\ArrayType;
+use PHPStan\Type\MixedType;
+use PHPStan\Type\ObjectType;
 
 class NetteApplicationUIPresenterLatteContextResolver extends ClassLatteContextResolver
 {
@@ -15,7 +18,7 @@ class NetteApplicationUIPresenterLatteContextResolver extends ClassLatteContextR
             [
                 new Variable('presenter', $this->getClassType()),
                 new Variable('control', $this->getClassType()),
-                new Variable('flashes', new ArrayType(new MixedType(), new ObjectType('stdClass')),
+                new Variable('flashes', new ArrayType(new MixedType(), new ObjectType('stdClass'))),
             ]
         );
     }
