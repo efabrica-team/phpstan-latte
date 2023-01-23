@@ -97,7 +97,7 @@ final class TableErrorFormatter implements ErrorFormatter
         $this->printTable($fileWarnings, 'Warnings', $projectConfigFile, $style);
 
         if (count($analysisResult->getNotFileSpecificErrors()) > 0) {
-            $errorsCount += $analysisResult->getNotFileSpecificErrors();
+            $errorsCount += count($analysisResult->getNotFileSpecificErrors());
             $style->table(['', 'Error'], array_map(static function (string $error): array {
                 return ['', $error];
             }, $analysisResult->getNotFileSpecificErrors()));
@@ -136,6 +136,9 @@ final class TableErrorFormatter implements ErrorFormatter
         return (string) $lineNumber;
     }
 
+    /**
+     * @param array<string, Error[]> $fileErrors
+     */
     private function printTable(array $fileErrors, string $label, string $projectConfigFile, OutputStyle $style): void
     {
         if (count($fileErrors) > 0) {
