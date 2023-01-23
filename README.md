@@ -51,6 +51,8 @@ It is recommended to use this extension with [phpstan-nette](https://github.com/
 * [Link checking](docs/configuration.md#link-checking)
 * [Other configuration options](docs/configuration.md#other-configuration-options)
 
+If analysis reports errors about missing context (variables/components, ...) set in external packages you need to set option `latte.collectedPaths` as descibed in [Analyser configuration](docs/configuration.md#analyser-configuration).
+
 ## Annotations
 
 There are cases that cannot be resolved automatically by static analysis. 
