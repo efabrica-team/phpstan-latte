@@ -7,6 +7,7 @@ parameters:
         filters:
             translate: [Nette\Localization\Translator, translate]
         errorPatternsToIgnore: []
+        warningPatterns: []
         applicationMapping: []
         engineBootstrap: null
         macros: []
@@ -30,6 +31,7 @@ parametersSchema:
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
+        warningPatterns: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
         engineBootstrap: schema(string(), nullable())
         macros: arrayOf(string())
@@ -179,7 +181,7 @@ services:
 
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(@latteCurrentPhpVersionRichParser, %debugMode%)
-    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.applicationMapping%)
+    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%, %latte.applicationMapping%)
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer

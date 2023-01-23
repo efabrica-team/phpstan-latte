@@ -161,7 +161,7 @@ parameters:
         reportUnanalysedTemplates: true
 ```
 
-## Ignoring errors
+## Errors
 
 ### errorPatternsToIgnore
 Type: `array`
@@ -181,6 +181,26 @@ parameters:
     latte:
         errorPatternsToIgnore:
             - '/Unknown tag/'
+```
+
+### warningPatterns
+Type: `array`
+
+With our TableErrorFormatter, warnings are not count as errors, they are just printed to output. If you want to transform some errors to warnings, you can use this parameter. It is list of pattern strings.  
+
+Default:
+```neon
+parameters:
+    latte:
+        warningPatterns: []
+```
+
+Example:
+```neon
+parameters:
+    latte:
+        warningPatterns:
+            - '/Cannot automatically resolve latte template from expression\./'
 ```
 
 ## Link checking

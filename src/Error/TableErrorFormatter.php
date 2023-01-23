@@ -10,6 +10,7 @@ use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\CiDetectedErrorFormatter;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
+use PHPStan\Command\OutputStyle;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
 
@@ -59,21 +60,90 @@ final class TableErrorFormatter implements ErrorFormatter
             return 0;
         }
 
+        $errorsCount = 0;
+        $warningsCount = 0;
         /** @var array<string, Error[]> $fileErrors */
         $fileErrors = [];
+        /** @var array<string, Error[]> $fileWarnings */
+        $fileWarnings = [];
         foreach ($analysisResult->getFileSpecificErrors() as $fileSpecificError) {
             $key = $this->relativePathHelper->getRelativePath(realpath($fileSpecificError->getFile()) ?: '');
+            $metaData = $fileSpecificError->getMetadata();
             /** @var string|null $context */
-            $context = $fileSpecificError->getMetadata()['context'] ?? null;
+            $context = $metaData['context'] ?? null;
             if ($context !== null) {
                 $key .= ' rendered from ' . $context;
             }
-            if (!isset($fileErrors[$key])) {
-                $fileErrors[$key] = [];
+
+            $isWarning = $metaData['is_warning'] ?? false;
+            if ($isWarning) {
+                if (!isset($fileWarnings[$key])) {
+                    $fileWarnings[$key] = [];
+                }
+
+                $fileWarnings[$key][] = $fileSpecificError;
+                $warningsCount++;
+            } else {
+                if (!isset($fileErrors[$key])) {
+                    $fileErrors[$key] = [];
+                }
+
+                $fileErrors[$key][] = $fileSpecificError;
+                $errorsCount++;
             }
-            $fileErrors[$key][] = $fileSpecificError;
         }
 
+        $this->printTable($fileErrors, 'Errors', $projectConfigFile, $style);
+        $this->printTable($fileWarnings, 'Warnings', $projectConfigFile, $style);
+
+        if (count($analysisResult->getNotFileSpecificErrors()) > 0) {
+            $errorsCount += count($analysisResult->getNotFileSpecificErrors());
+            $style->table(['', 'Error'], array_map(static function (string $error): array {
+                return ['', $error];
+            }, $analysisResult->getNotFileSpecificErrors()));
+        }
+
+        if (count($analysisResult->getWarnings()) > 0) {
+            $style->table(['', 'Warning'], array_map(static function (string $warning): array {
+                return ['', $warning];
+            }, $analysisResult->getWarnings()));
+        }
+        $warningsCount += count($analysisResult->getWarnings());
+
+        $finalMessage = sprintf($errorsCount === 1 ? 'Found %d error' : 'Found %d errors', $errorsCount);
+        if ($warningsCount > 0) {
+            $finalMessage .= sprintf($warningsCount === 1 ? ' and %d warning' : ' and %d warnings', $warningsCount);
+        }
+
+        if ($errorsCount > 0) {
+            $style->error($finalMessage);
+        } else {
+            $style->warning($finalMessage);
+        }
+
+        return $errorsCount > 0 ? 1 : 0;
+    }
+
+    private function formatLineNumber(?int $lineNumber): string
+    {
+        if ($lineNumber === null) {
+            return '';
+        }
+        $isRunningInVSCodeTerminal = getenv('TERM_PROGRAM') === 'vscode';
+        if ($isRunningInVSCodeTerminal) {
+            return ':' . $lineNumber;
+        }
+        return (string) $lineNumber;
+    }
+
+    /**
+     * @param array<string, Error[]> $fileErrors
+     */
+    private function printTable(array $fileErrors, string $label, string $projectConfigFile, OutputStyle $style): void
+    {
+        if (count($fileErrors) > 0) {
+            $style->section($label);
+        }
         foreach ($fileErrors as $key => $errors) {
             $rows = [];
             foreach ($errors as $error) {
@@ -92,42 +162,5 @@ final class TableErrorFormatter implements ErrorFormatter
             }
             $style->table(['Line', $key ], $rows);
         }
-
-        if (count($analysisResult->getNotFileSpecificErrors()) > 0) {
-            $style->table(['', 'Error'], array_map(static function (string $error): array {
-                return ['', $error];
-            }, $analysisResult->getNotFileSpecificErrors()));
-        }
-
-        $warningsCount = count($analysisResult->getWarnings());
-        if ($warningsCount > 0) {
-            $style->table(['', 'Warning'], array_map(static function (string $warning): array {
-                return ['', $warning];
-            }, $analysisResult->getWarnings()));
-        }
-
-        $finalMessage = sprintf($analysisResult->getTotalErrorsCount() === 1 ? 'Found %d error' : 'Found %d errors', $analysisResult->getTotalErrorsCount());
-        if ($warningsCount > 0) {
-            $finalMessage .= sprintf($warningsCount === 1 ? ' and %d warning' : ' and %d warnings', $warningsCount);
-        }
-
-        if ($analysisResult->getTotalErrorsCount() > 0) {
-            $style->error($finalMessage);
-        } else {
-            $style->warning($finalMessage);
-        }
-        return $analysisResult->getTotalErrorsCount() > 0 ? 1 : 0;
-    }
-
-    private function formatLineNumber(?int $lineNumber): string
-    {
-        if ($lineNumber === null) {
-            return '';
-        }
-        $isRunningInVSCodeTerminal = getenv('TERM_PROGRAM') === 'vscode';
-        if ($isRunningInVSCodeTerminal) {
-            return ':' . $lineNumber;
-        }
-        return (string) $lineNumber;
     }
 }
