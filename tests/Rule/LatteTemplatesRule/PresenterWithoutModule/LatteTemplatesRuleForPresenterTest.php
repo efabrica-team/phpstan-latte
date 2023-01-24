@@ -695,7 +695,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Variable $nonExistingVariable might not be defined.',
                 3,
+                'dieSometimes.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
                 'empty.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'exitSometimes.latte',
             ],
             [
                 'Variable $nonExistingVariable might not be defined.',

@@ -71,6 +71,30 @@ final class ResolvePresenter extends Presenter
         }
     }
 
+    public function actionExit(): void
+    {
+        exit();
+    }
+
+    public function actionExitSometimes(bool $param): void
+    {
+        if ($param) {
+            exit();
+        }
+    }
+
+    public function actionDie(): void
+    {
+        die();
+    }
+
+    public function actionDieSometimes(bool $param): void
+    {
+        if ($param) {
+            die();
+        }
+    }
+
     public function actionSetFile(): void
     {
         $this->template->setFile(__DIR__ . '/templates/Resolve/setFile.changed.latte');
