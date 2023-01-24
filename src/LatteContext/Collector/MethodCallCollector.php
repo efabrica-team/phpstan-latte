@@ -43,7 +43,7 @@ final class MethodCallCollector extends AbstractLatteContextCollector
     {
         return [
             CallLike::class,
-            Exit_::class
+            Exit_::class,
         ];
     }
 
