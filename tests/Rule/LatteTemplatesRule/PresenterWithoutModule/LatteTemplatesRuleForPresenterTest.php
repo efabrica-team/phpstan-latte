@@ -724,12 +724,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Cannot resolve rendered latte template.',
-                89,
+                113,
                 'ResolvePresenter.php',
             ],
             [
                 'Cannot automatically resolve template used by sendTemplate().',
-                95,
+                119,
                 'ResolvePresenter.php',
             ],
             [

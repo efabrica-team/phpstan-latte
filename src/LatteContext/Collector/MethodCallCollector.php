@@ -48,7 +48,7 @@ final class MethodCallCollector extends AbstractLatteContextCollector
     }
 
     /**
-     * @param CallLike $node
+     * @param CallLike|Exit_ $node
      * @phpstan-return null|CollectedMethodCall[]
      */
     public function collectData(Node $node, Scope $scope): ?array

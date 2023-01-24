@@ -113,7 +113,9 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
         $this->analyse([__DIR__ . '/Fixtures/ResolvePresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"ResolvePresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ResolvePresenter"}',
+            'TEMPLATE dieSometimes.latte ResolvePresenter::dieSometimes ["presenter","control","flashes"] []',
             'TEMPLATE empty.latte ResolvePresenter::empty ["presenter","control","flashes"] []',
+            'TEMPLATE exitSometimes.latte ResolvePresenter::exitSometimes ["presenter","control","flashes"] []',
             'TEMPLATE throwSometimes.latte ResolvePresenter::throwSometimes ["presenter","control","flashes"] []',
             'TEMPLATE recursion.latte ResolvePresenter::recursion ["presenter","control","flashes","variableFromRecursionMethod"] []',
             'TEMPLATE setFile.changed.latte ResolvePresenter::setFile ["presenter","control","flashes"] []',
