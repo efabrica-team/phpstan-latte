@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.5.0] - 2023-01-24
 ### Added
 - Compiled template cache for better performance of repeated analysis
 - Better error messages for render/include of non existing template files
@@ -77,7 +78,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.1.0...0.2.0
