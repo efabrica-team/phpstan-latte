@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
+use PhpParser\Node\Expr\Exit_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 
@@ -40,11 +41,14 @@ final class MethodCallCollector extends AbstractLatteContextCollector
 
     public function getNodeTypes(): array
     {
-        return [CallLike::class];
+        return [
+            CallLike::class,
+            Exit_::class,
+        ];
     }
 
     /**
-     * @param CallLike $node
+     * @param CallLike|Exit_ $node
      * @phpstan-return null|CollectedMethodCall[]
      */
     public function collectData(Node $node, Scope $scope): ?array
@@ -61,6 +65,16 @@ final class MethodCallCollector extends AbstractLatteContextCollector
 
         if ($this->lattePhpDocResolver->resolveForNode($node, $scope)->isIgnored()) {
             return null;
+        }
+
+        if ($node instanceof Exit_) {
+            return [CollectedMethodCall::build(
+                $node,
+                $scope,
+                '',
+                'exit',
+                CollectedMethodCall::TERMINATING_CALL
+            )];
         }
 
         $calledClassName = $this->calledClassResolver->resolve($node, $scope);

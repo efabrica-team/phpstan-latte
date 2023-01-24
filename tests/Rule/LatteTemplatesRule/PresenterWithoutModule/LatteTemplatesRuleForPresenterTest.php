@@ -695,7 +695,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Variable $nonExistingVariable might not be defined.',
                 3,
+                'dieSometimes.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
                 'empty.latte',
+            ],
+            [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'exitSometimes.latte',
             ],
             [
                 'Variable $nonExistingVariable might not be defined.',
@@ -714,12 +724,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Cannot resolve rendered latte template.',
-                89,
+                113,
                 'ResolvePresenter.php',
             ],
             [
                 'Cannot automatically resolve template used by sendTemplate().',
-                95,
+                119,
                 'ResolvePresenter.php',
             ],
             [
