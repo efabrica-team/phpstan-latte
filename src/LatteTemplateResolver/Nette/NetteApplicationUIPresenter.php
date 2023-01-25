@@ -46,10 +46,13 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
         // action methods - including matching render methods
         foreach ($this->getMethodsMatching($reflectionClass, '/^action.*/') as $reflectionMethod) {
+            if (!$reflectionMethod->isPublic()) {
+                continue;
+            }
             $actionName = lcfirst((string)preg_replace('/^action/i', '', $reflectionMethod->getName()));
 
             if (!isset($actions[$actionName])) {
-                $actions[$actionName] = $actions[$actionName] = $this->createActionDefinition($reflectionClass, $latteContext, $actionName);
+                $actions[$actionName] = $this->createActionDefinition($reflectionClass, $latteContext, $actionName);
             }
             $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $reflectionMethod, $latteContext);
 
@@ -86,6 +89,9 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
         // render methods without matching action method
         foreach ($this->getMethodsMatching($reflectionClass, '/^render.*/') as $reflectionMethod) {
+            if (!$reflectionMethod->isPublic()) {
+                continue;
+            }
             $actionName = lcfirst((string)preg_replace('/^render/i', '', $reflectionMethod->getName()));
 
             if (!isset($actions[$actionName])) {

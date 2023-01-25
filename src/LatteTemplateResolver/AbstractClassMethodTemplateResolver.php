@@ -19,6 +19,9 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
 
         $result = new LatteTemplateResolverResult();
         foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
+            if (!$reflectionMethod->isPublic()) {
+                continue;
+            }
             $templateContext = $this->getClassGlobalTemplateContext($reflectionClass, $latteContext)
                 ->merge($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
 
