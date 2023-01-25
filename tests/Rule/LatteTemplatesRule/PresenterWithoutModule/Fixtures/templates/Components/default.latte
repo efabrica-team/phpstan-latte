@@ -25,3 +25,8 @@
 {control noType}
 
 {control implicitType}
+
+{var $components = ['form', 'parentForm']}
+{foreach $components as $component}
+    {control $component}
+{/foreach}
