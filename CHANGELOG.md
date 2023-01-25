@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- exit() and die() evaluated as early terminating call 
+
 ## [0.5.0] - 2023-01-24
 ### Added
 - Compiled template cache for better performance of repeated analysis
