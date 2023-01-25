@@ -3,6 +3,7 @@ includes:
     - vendor/spaze/phpstan-disallowed-calls/extension.neon
 
 parameters:
+    checkUninitializedProperties: true
     strictRules:
         # turn off strict rules
         allRules: false

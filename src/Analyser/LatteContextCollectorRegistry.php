@@ -8,10 +8,10 @@ use PhpParser\Node;
 final class LatteContextCollectorRegistry
 {
     /** @var array<class-string, AbstractLatteContextCollector[]> */
-    private array $collectors;
+    private array $collectors = [];
 
     /** @var array<class-string, AbstractLatteContextCollector[]> */
-    private array $cache;
+    private array $cache = [];
 
     /**
      * @param AbstractLatteContextCollector[] $collectors
