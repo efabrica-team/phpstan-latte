@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior;
 
 trait ActualClassNodeVisitorBehavior
 {
-    private ?string $actualClass;
+    private ?string $actualClass = null;
 
     public function setActualClass(?string $actualClass): void
     {
