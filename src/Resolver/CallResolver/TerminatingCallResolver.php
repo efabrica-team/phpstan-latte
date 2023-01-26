@@ -4,85 +4,96 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Resolver\CallResolver;
 
-use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Exit_;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Throw_;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\NeverType;
-use PHPStan\Type\ObjectType;
+use PHPStan\Type\TypeUtils;
 
 final class TerminatingCallResolver
 {
-    /**
-     * @var array<string, string[]>
-     */
+    /** @var array<string, string[]> */
     private array $earlyTerminatingMethodCalls;
 
-    private NameResolver $nameResolver;
+    /** @var array<int, string> */
+    private array $earlyTerminatingFunctionCalls;
 
-    private CalledClassResolver $calledClassResolver;
+    /** @var array<string, true> */
+    private array $earlyTerminatingMethodNames;
+
+    private ReflectionProvider $reflectionProvider;
 
     /**
-     * @param array<string, string[]> $earlyTerminatingMethodCalls
+     * @param array<string, string[]> $earlyTerminatingMethodCalls className(string) => methods(string[])
+     * @param array<int, string> $earlyTerminatingFunctionCalls
      */
-    public function __construct(array $earlyTerminatingMethodCalls, NameResolver $nameResolver, CalledClassResolver $calledClassResolver)
-    {
+    public function __construct(
+        array $earlyTerminatingMethodCalls,
+        array $earlyTerminatingFunctionCalls,
+        ReflectionProvider $reflectionProvider
+    ) {
         $this->earlyTerminatingMethodCalls = $earlyTerminatingMethodCalls;
-        $this->nameResolver = $nameResolver;
-        $this->calledClassResolver = $calledClassResolver;
+        $this->earlyTerminatingFunctionCalls = $earlyTerminatingFunctionCalls;
+        $earlyTerminatingMethodNames = [];
+        foreach ($this->earlyTerminatingMethodCalls as $methodNames) {
+            foreach ($methodNames as $methodName) {
+                $earlyTerminatingMethodNames[strtolower($methodName)] = true;
+            }
+        }
+        $this->earlyTerminatingMethodNames = $earlyTerminatingMethodNames;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
-    public function isTerminatingCallNode(Node $node, Scope $scope): bool
+    /**
+     * Copy of method from phpstan: PHPStan\Analyser\NodeScopeResolver::findEarlyTerminatingExpr
+     */
+    public function isTerminatingCallNode(Expr $expr, Scope $scope): bool
     {
-        if (!$node instanceof MethodCall && !$node instanceof StaticCall) {
-            return false;
-        }
-
-        $classReflection = $scope->getClassReflection();
-        if ($classReflection === null) {
-            return false;
-        }
-
-        $calledClassName = $this->calledClassResolver->resolve($node, $scope);
-        if (in_array($calledClassName, ['this', 'self', 'static', 'parent'], true)) {
-            $calledClassName = $classReflection->getName();
-        } elseif ($calledClassName === 'parent' && $classReflection->getParentClass()) {
-            $calledClassName = $classReflection->getParentClass()->getName();
-        }
-
-        $calledMethodName = $this->nameResolver->resolve($node->name);
-        if ($calledClassName === null || $calledMethodName === null || $calledMethodName === '') {
-            return false;
-        }
-        return $this->isTerminatingMethodCall($calledClassName, $calledMethodName) ||
-            $this->isNeverReturnMethodCall($calledClassName, $calledMethodName, $scope);
-    }
-
-    public function isTerminatingMethodCall(string $calledClassName, string $calledMethodName): bool
-    {
-        $objectType = new ObjectType($calledClassName);
-
-        foreach ($this->earlyTerminatingMethodCalls as $class => $methods) {
-            foreach ($methods as $method) {
-                if ($objectType->isInstanceOf($class)->yes() && $calledMethodName === $method) {
-                    return true;
+        if (($expr instanceof MethodCall || $expr instanceof StaticCall) && $expr->name instanceof Identifier) {
+            if (array_key_exists($expr->name->toLowerString(), $this->earlyTerminatingMethodNames)) {
+                if ($expr instanceof MethodCall) {
+                    $methodCalledOnType = $scope->getType($expr->var);
+                } else {
+                    if ($expr->class instanceof Name) {
+                        $methodCalledOnType = $scope->resolveTypeByName($expr->class);
+                    } else {
+                        $methodCalledOnType = $scope->getType($expr->class);
+                    }
+                }
+                $directClassNames = TypeUtils::getDirectClassNames($methodCalledOnType);
+                foreach ($directClassNames as $referencedClass) {
+                    if (!$this->reflectionProvider->hasClass($referencedClass)) {
+                        continue;
+                    }
+                    $classReflection = $this->reflectionProvider->getClass($referencedClass);
+                    foreach (array_merge([$referencedClass], $classReflection->getParentClassesNames(), $classReflection->getNativeReflection()->getInterfaceNames()) as $className) {
+                        if (!isset($this->earlyTerminatingMethodCalls[$className])) {
+                            continue;
+                        }
+                        if (in_array((string) $expr->name, $this->earlyTerminatingMethodCalls[$className], true)) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
-
-        return false;
-    }
-
-    public function isNeverReturnMethodCall(string $calledClassName, string $calledMethodName, Scope $scope): bool
-    {
-        $objectType = new ObjectType($calledClassName);
-        $methodReflection = $objectType->getMethod($calledMethodName, $scope);
-        $variant = $methodReflection->getVariants()[0] ?? null;
-        if ($variant === null) {
-            return false;
+        if ($expr instanceof FuncCall && $expr->name instanceof Name) {
+            if (in_array((string) $expr->name, $this->earlyTerminatingFunctionCalls, true)) {
+                return true;
+            }
         }
-        if ($variant->getReturnType() instanceof NeverType) {
+        if ($expr instanceof Exit_ || $expr instanceof Throw_) {
+            return true;
+        }
+        $exprType = $scope->getType($expr);
+        if ($exprType instanceof NeverType && $exprType->isExplicit()) {
             return true;
         }
         return false;
