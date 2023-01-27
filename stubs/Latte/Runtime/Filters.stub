@@ -1,0 +1,160 @@
+<?php
+
+namespace Latte\Runtime;
+
+use Latte\Runtime\HtmlStringable as LatteRuntimeHtmlStringable;
+use Nette\HtmlStringable as NetteHtmlStringable;
+use Stringable;
+
+/**
+ * @phpstan-type FilterString string|int|float|bool|Stringable|NetteHtmlStringable|LatteRuntimeHtmlStringable
+ */
+class Filters
+{
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeHtml($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeHtmlComment($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeXml($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeCss($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeJs($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function escapeICal($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function stripHtml(FilterInfo $info, $s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function stripTags(FilterInfo $info, $s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function safeUrl($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function repeat(FilterInfo $info, $s, int $count): string
+    {
+    }
+
+    /**
+     * @param FilterString $subject
+     */
+    public static function replace(FilterInfo $info, $subject, $search, $replace = null): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function breaklines($s): Html
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function substring($s, int $start, ?int $length = null): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function truncate($s, int $length, string $append = "\u{2026}"): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function lower($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function upper($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function firstUpper($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function capitalize($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function trim(FilterInfo $info, $s, string $charlist = " \t\n\r\0\x0B\u{A0}"): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function padLeft($s, int $length, string $append = ' '): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function padRight($s, int $length, string $append = ' '): string
+    {
+    }
+}

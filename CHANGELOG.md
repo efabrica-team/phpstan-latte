@@ -2,8 +2,11 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- stubs for filters accepting any value which could be converted to string
+
 ### Fixed
-- exit() and die() evaluated as early terminating call 
+- exit() and die() evaluated as early terminating call
 
 ## [0.5.0] - 2023-01-24
 ### Added

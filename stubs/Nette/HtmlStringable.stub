@@ -1,0 +1,7 @@
+<?php
+
+namespace Nette;
+
+interface HtmlStringable
+{
+}

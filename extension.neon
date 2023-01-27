@@ -1,4 +1,10 @@
 parameters:
+    stubFiles:
+        - stubs/Latte/Runtime/FilterInfo.stub
+        - stubs/Latte/Runtime/Filters.stub
+        - stubs/Latte/Runtime/HtmlStringable.stub
+        - stubs/Nette/HtmlStringable.stub
+        - stubs/Stringable.stub
     usePathConstantsAsConstantString: true
     latte:
         strictMode: false
