@@ -1,4 +1,10 @@
 parameters:
+    stubFiles:
+        - stubs/Latte/Runtime/FilterInfo.stub
+        - stubs/Latte/Runtime/Filters.stub
+        - stubs/Latte/Runtime/HtmlStringable.stub
+        - stubs/Nette/HtmlStringable.stub
+        - stubs/Stringable.stub
     usePathConstantsAsConstantString: true
     latte:
         strictMode: false
@@ -107,7 +113,7 @@ services:
 
     # Method resolvers
     - Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver
-    - Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver(%earlyTerminatingMethodCalls%)
+    - Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver(%earlyTerminatingMethodCalls%, %earlyTerminatingFunctionCalls%)
     - Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver()
 
     phpstanLatteNodeVisitorStorage:

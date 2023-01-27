@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- stubs for filters accepting any value which could be converted to string
+
 ### Fixed
 - exit() and die() evaluated as early terminating call
 - Resolve only public methods with name render* or action*

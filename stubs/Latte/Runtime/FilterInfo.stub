@@ -1,0 +1,7 @@
+<?php
+
+namespace Latte\Runtime;
+
+class FilterInfo
+{
+}
