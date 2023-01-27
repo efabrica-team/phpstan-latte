@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
+use Efabrica\PHPStanLatte\LatteContext\LatteContextHelper;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
@@ -20,8 +21,6 @@ use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 
@@ -198,23 +197,11 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
             return [];
         }
 
-        $argumentType = $scope->getType($argument);
-        if ($argumentType instanceof ObjectType) {
-            $argumentType = $argumentType->toArray();
+        $variables = [];
+        foreach (LatteContextHelper::variablesFromType($scope->getType($argument)) as $variable) {
+            $variables[$variable->getName()] = $variable;
         }
 
-        $variables = [];
-        if ($argumentType instanceof ConstantArrayType) {
-            $keyTypes = $argumentType->getKeyTypes();
-            $valueTypes = $argumentType->getValueTypes();
-            foreach ($keyTypes as $k => $arrayKeyType) {
-                if (!$arrayKeyType instanceof ConstantStringType) { // only string keys
-                    continue;
-                }
-                $variableName = $arrayKeyType->getValue();
-                $variables[$variableName] = new Variable($variableName, $valueTypes[$k]);
-            }
-        }
         return $variables;
     }
 }
