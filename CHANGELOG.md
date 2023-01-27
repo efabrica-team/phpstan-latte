@@ -7,6 +7,8 @@
 
 ### Fixed
 - exit() and die() evaluated as early terminating call
+- Resolve only public methods with name render* or action*
+- Prevent errors when dynamic components are used
 
 ## [0.5.0] - 2023-01-24
 ### Added
