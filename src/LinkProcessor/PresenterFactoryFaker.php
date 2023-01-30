@@ -28,6 +28,9 @@ final class PresenterFactoryFaker
 
     public function getPresenterFactory(): ?IPresenterFactory
     {
+        if ($this->presenterFactory !== null) {
+            return $this->presenterFactory;
+        }
         $presenterFactory = null;
         if ($this->presenterFactoryBootstrap !== null) {
             $presenterFactory = require $this->presenterFactoryBootstrap;
