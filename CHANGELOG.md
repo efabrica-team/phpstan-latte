@@ -5,6 +5,7 @@
 ### Added
 - stubs for filters accepting any value which could be converted to string
 - Resolving of generic template types in latte context
+- PresenterFactory bootstrap
 
 ### Fixed
 - exit() and die() evaluated as early terminating call
