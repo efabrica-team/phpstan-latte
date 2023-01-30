@@ -244,12 +244,11 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
     /**
      * @param ReflectionFunction|ReflectionMethod $reflection
-     * @param Arg[] $args
-     * @return Arg[]
+     * @param Arg[]|VariadicPlaceholder[] $args
+     * @return Arg[]|VariadicPlaceholder[]
      */
     private function updateArgs($reflection, array $args): array
     {
-        array_unshift();
         $parameter = $reflection->getParameters()[0] ?? null;
         if ($parameter instanceof ReflectionParameter && $parameter->getType() instanceof ReflectionNamedType && $parameter->getType()->getName() === FilterInfo::class) {
             $args = array_merge([
