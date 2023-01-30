@@ -15,6 +15,7 @@ parameters:
         errorPatternsToIgnore: []
         warningPatterns: []
         applicationMapping: []
+        presenterFactoryBootstrap: null
         engineBootstrap: null
         macros: []
         extensions: []
@@ -39,6 +40,7 @@ parametersSchema:
         errorPatternsToIgnore: arrayOf(string())
         warningPatterns: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
+        presenterFactoryBootstrap: schema(string(), nullable())
         engineBootstrap: schema(string(), nullable())
         macros: arrayOf(string())
         extensions: arrayOf(object())
@@ -89,7 +91,7 @@ services:
             parser: @latteCurrentPhpVersionRichParser
 
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
-    - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%)
+    - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%, %latte.presenterFactoryBootstrap%)
     -
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
@@ -180,7 +182,7 @@ services:
 
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(@latteCurrentPhpVersionRichParser, %debugMode%)
-    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%, %latte.applicationMapping%)
+    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%)
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer

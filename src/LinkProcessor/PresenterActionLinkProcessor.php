@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LinkProcessor;
 
 use Nette\Application\InvalidPresenterException;
+use Nette\Application\PresenterFactory;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
@@ -54,10 +55,16 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         $presenterName = implode('', $targetNameParts);
         $presenterVariableName = lcfirst($presenterName) . 'Presenter';
         $presenterFactory = $this->presenterFactoryFaker->getPresenterFactory();
+        if ($presenterFactory === null) {
+            return [];
+        }
 
         try {
             $presenterClassName = $presenterFactory->getPresenterClass($presenterWithModule);
         } catch (InvalidPresenterException $e) {
+            if (!$presenterFactory instanceof PresenterFactory) {
+                return [];
+            }
             $presenterClassName = $presenterFactory->formatPresenterClass($presenterWithModule);
             if ($presenterClassName === '') {
                 return [];
