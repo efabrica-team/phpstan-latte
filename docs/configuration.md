@@ -205,10 +205,13 @@ parameters:
 
 ## Link checking
 
+If you want to check links in your application, we need to know how links are transformed to correct method calls (`{link SomePresenter:create}` is transformed to `SomePresenter->actionCreate()`). For this purpose IPresenterFactory is used in Nette applications.
+You have two options how to configure it. If no one is set, link calls are not checked.
+
 ### presenterFactoryBootstrap
 Type: `string`
 
-If provided return value of this php file is used as Presenter Factory.
+Path to file where IPresenterFactory is set up.
 
 Example:
 ```neon
@@ -217,12 +220,18 @@ parameters:
         presenterFactoryBootstrap: presenter.factory.php
 ```
 
+Example of `presenter.factory.php` for loading IPresenterFactory from Nette application container:
+
+```php
+<?php
+
+return App\Bootstrap::boot()->createContainer()->getByType(IPresenterFactory::class);
+```
+
 ### applicationMapping
 Type: `array`
 
-Application mapping should be the same as the mapping used in application. It is used for transforming links to correct method calls (`link SomePresenter:create` is transformed to `SomePresenter->actionCreate()` if mapping and method exists).
-
-If not set link calls are not checked.
+Sometimes you don't have IPresenterFactory available (e.g. for some libraries or packages). You can add application mapping to configuration. Application mapping should be the same as the mapping used in application. Default PresenterFactory is created.
 
 Default:
 ```neon
