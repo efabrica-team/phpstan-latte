@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Error\Error as LatteError;
 use Efabrica\PHPStanLatte\Error\LineMapper\LineMap;
 use Efabrica\PHPStanLatte\Error\LineMapper\LineMapper;
 use Efabrica\PHPStanLatte\Error\Transformer\ErrorTransformerInterface;
+use Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\IdentifierRuleError;
@@ -57,13 +58,12 @@ final class ErrorBuilder
     /**
      * @param string[] $errorPatternsToIgnore
      * @param string[] $warningPatterns
-     * @param array<string, string> $applicationMapping
      * @param ErrorTransformerInterface[] $errorTransformers
      */
     public function __construct(
         array $errorPatternsToIgnore,
         array $warningPatterns,
-        array $applicationMapping,
+        PresenterFactoryFaker $presenterFactoryFaker,
         array $errorTransformers,
         LineMapper $lineMapper
     ) {
@@ -71,7 +71,7 @@ final class ErrorBuilder
         $this->warningPatterns = $warningPatterns;
         $this->errorTransformers = $errorTransformers;
         $this->lineMapper = $lineMapper;
-        if (count($applicationMapping) === 0) {
+        if ($presenterFactoryFaker->getPresenterFactory() === null) {
             $this->errorPatternsToIgnore[] = '/Cannot load presenter .*/';
         }
     }
