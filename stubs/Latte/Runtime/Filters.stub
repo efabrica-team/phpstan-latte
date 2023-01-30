@@ -83,6 +83,8 @@ class Filters
 
     /**
      * @param FilterString $subject
+     * @param string|string[] $search
+     * @param string|string[] $replace
      */
     public static function replace(FilterInfo $info, $subject, $search, $replace = null): string
     {
