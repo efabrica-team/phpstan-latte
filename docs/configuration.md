@@ -205,6 +205,18 @@ parameters:
 
 ## Link checking
 
+### presenterFactoryBootstrap
+Type: `string`
+
+If provided return value of this php file is used as Presenter Factory.
+
+Example:
+```neon
+parameters:
+    latte:
+        engineBootstrap: presenter.factory.php
+```
+
 ### applicationMapping
 Type: `array`
 
