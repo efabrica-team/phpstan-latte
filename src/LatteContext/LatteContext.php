@@ -115,6 +115,9 @@ final class LatteContext
         return $this->templateRenderFinder;
     }
 
+    /**
+     * @param class-string $className
+     */
     public function getClassTemplateContext(string $className): TemplateContext
     {
         return new TemplateContext(
@@ -125,6 +128,9 @@ final class LatteContext
         );
     }
 
+    /**
+     * @param class-string $className
+     */
     public function getMethodTemplateContext(string $className, string $methodName): TemplateContext
     {
         return new TemplateContext(

@@ -50,6 +50,7 @@ final class TemplateRenderFinder
     }
 
     /**
+     * @param class-string $className
      * @return CollectedTemplateRender[]
      */
     public function find(string $className, string $methodName): array
@@ -73,6 +74,8 @@ final class TemplateRenderFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return CollectedTemplateRender[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array

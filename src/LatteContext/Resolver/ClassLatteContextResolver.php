@@ -49,6 +49,9 @@ class ClassLatteContextResolver implements LatteContextResolverInterface
         );
     }
 
+    /**
+     * @return class-string
+     */
     protected function getClassName(): string
     {
         return $this->reflectionClass->getName();

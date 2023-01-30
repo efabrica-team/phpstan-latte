@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedFilter;
 use Efabrica\PHPStanLatte\Template\Filter;
+use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class FilterFinder
@@ -37,6 +38,7 @@ final class FilterFinder
     }
 
     /**
+     * @param class-string $className
      * @return Filter[]
      */
     public function find(string $className, string ...$methodNames): array
@@ -71,12 +73,19 @@ final class FilterFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return Filter[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            return array_merge($this->collectedFilters[$declaringClass][$methodName] ?? [], ...$fromCalled);
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
+            $filters = ItemCombinator::resolveTemplateTypes(
+                $this->collectedFilters[$declaringClass][$methodName] ?? [],
+                $declaringClass,
+                $currentClassName
+            );
+             return array_merge($filters, ...$fromCalled);
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }

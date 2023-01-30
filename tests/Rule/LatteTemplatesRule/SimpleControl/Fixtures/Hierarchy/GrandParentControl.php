@@ -6,11 +6,18 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixt
 
 use Nette\Application\UI\Control;
 
+/**
+ * @template T
+ */
 abstract class GrandParentControl extends Control
 {
+    /** @var T */
+    public $generic = null;
+
     public function render(): void
     {
         $this->template->grandParent = 'grandparent';
+        $this->template->generic = $this->generic;
         $this->setTemplateData();
         $this->template->render(__DIR__ . '/default.latte');
     }

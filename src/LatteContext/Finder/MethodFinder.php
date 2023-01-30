@@ -37,6 +37,9 @@ final class MethodFinder
         return CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
     }
 
+    /**
+     * @param class-string $className
+     */
     public function isAlwaysTerminated(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
@@ -46,6 +49,9 @@ final class MethodFinder
         return in_array(true, $isAlwaysTerminated, true);
     }
 
+    /**
+     * @param class-string $className
+     */
     public function hasAnyAlwaysTerminated(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {

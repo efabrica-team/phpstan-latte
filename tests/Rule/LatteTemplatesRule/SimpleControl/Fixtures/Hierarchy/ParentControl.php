@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Hierarchy;
 
+/**
+ * @template T
+ * @extends GrandParentControl<T>
+ */
 abstract class ParentControl extends GrandParentControl
 {
     public function render(): void

@@ -11,4 +11,9 @@ interface NameTypeItem extends NameItem
     public function getType(): Type;
 
     public function getTypeAsString(): string;
+
+    /**
+     * @return static
+     */
+    public function withType(Type $type): self;
 }

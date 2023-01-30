@@ -43,6 +43,13 @@ final class Container implements ControlHolderInterface, ControlInterface, JsonS
         return $this->type->describe(VerbosityLevel::typeOnly());
     }
 
+    public function withType(Type $type): self
+    {
+        $clone = clone $this;
+        $clone->type = $type;
+        return $clone;
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {

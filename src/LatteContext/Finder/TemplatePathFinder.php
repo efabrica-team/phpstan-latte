@@ -48,6 +48,7 @@ final class TemplatePathFinder
     }
 
     /**
+     * @param class-string $className
      * @return array<string>
      */
     public function find(string $className, string ...$methodNames): array
@@ -81,6 +82,8 @@ final class TemplatePathFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return array<string>
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array

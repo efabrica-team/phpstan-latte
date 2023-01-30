@@ -2,6 +2,7 @@
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
 use PHPStan\Type\TypeCombinator;
 
 class ItemCombinator
@@ -35,16 +36,26 @@ class ItemCombinator
             foreach ($itemArray as $item) {
                 $itemName = $item->getName();
                 if (isset($union[$itemName])) {
-                    $class = get_class($item);
-                    $union[$itemName] = new $class(
-                        $itemName,
-                        TypeCombinator::union($union[$itemName]->getType(), $item->getType())
-                    );
+                    $union[$itemName] = $item->withType(TypeCombinator::union($union[$itemName]->getType(), $item->getType()));
                 } else {
                     $union[$itemName] = $item;
                 }
             }
         }
         return array_values($union);
+    }
+
+    /**
+     * @param NameTypeItem[] $items
+     * @return NameTypeItem[]
+     */
+    public static function resolveTemplateTypes(array $items, string $declaringClass, ?string $currentClass): array
+    {
+        $resolvedItems = [];
+        foreach ($items as $item) {
+            $resolvedItems[] = $item->withType(TemplateTypeHelper::resolveTemplateType($item->getType(), $declaringClass, $currentClass));
+        }
+
+        return $resolvedItems;
     }
 }
