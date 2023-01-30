@@ -36,6 +36,13 @@ final class Filter implements NameTypeItem, JsonSerializable
         return $this->type->describe(VerbosityLevel::precise());
     }
 
+    public function withType(Type $type): self
+    {
+        $clone = clone $this;
+        $clone->type = $type;
+        return $clone;
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {

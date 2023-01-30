@@ -325,6 +325,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
+                'Dumped type: string',
+                11,
+                'default.latte',
+            ],
+            [
                 'Variable $nonExistingVariable might not be defined.',
                 1,
                 'parent.latte',

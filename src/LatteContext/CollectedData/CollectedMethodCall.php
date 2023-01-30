@@ -15,11 +15,14 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     public const TERMINATING_CALL = 'terminating';
     public const OUTPUT_CALL = 'output';
 
-    private string $callerClassName;
+    /**
+     * @var ?class-string
+     */
+    private ?string $callerClassName;
 
     private string $callerMethodName;
 
-    private string $calledClassName;
+    private ?string $calledClassName;
 
     private string $calledMethodName;
 
@@ -30,15 +33,20 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     /** @var array<string, string|int|float|bool> */
     private array $params;
 
+    /**
+     * @var ?class-string
+     */
     private ?string $currentClassName;
 
     /**
+     * @param ?class-string $callerClassName
+     * @param ?class-string $currentClassName
      * @param array<string, string|int|float|bool> $params
      */
     public function __construct(
-        string $callerClassName,
+        ?string $callerClassName,
         string $callerMethodName,
-        string $calledClassName,
+        ?string $calledClassName,
         string $calledMethodName,
         bool $isCalledConditionally,
         string $type = self::CALL,
@@ -55,7 +63,10 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         $this->currentClassName = $currentClassName;
     }
 
-    public function getCallerClassName(): string
+    /**
+     * @return ?class-string
+     */
+    public function getCallerClassName(): ?string
     {
         return $this->callerClassName;
     }
@@ -65,7 +76,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->callerMethodName;
     }
 
-    public function getCalledClassName(): string
+    public function getCalledClassName(): ?string
     {
         return $this->calledClassName;
     }
@@ -108,11 +119,17 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         return $this->params;
     }
 
+    /**
+     * @return ?class-string
+     */
     public function getCurrentClassName(): ?string
     {
         return $this->currentClassName;
     }
 
+    /**
+     * @param class-string $currentClassName
+     */
     public function withCurrentClass(ClassReflection $callerReflection, string $currentClassName): self
     {
         if (!in_array($this->calledClassName, ['this', 'self', 'static', 'parent'], true)) {
@@ -157,7 +174,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
         /** @var Node $parentNode */
         $grandparentNode = $parentNode->getAttribute('parent') ?? $parentNode;
         return new self(
-            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
+            $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : null,
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
             $calledClassName,
             $calledMethodName,

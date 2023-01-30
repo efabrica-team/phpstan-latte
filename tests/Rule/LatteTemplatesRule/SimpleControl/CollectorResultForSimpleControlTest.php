@@ -87,7 +87,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
-            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","some","parent","grandParent","data","parentData","grandParentData"] []',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","some","parent","grandParent","generic","data","parentData","grandParentData"] []',
             'TEMPLATE parent.latte SomeControl::renderParent ["presenter","control","flashes","parent","grandParent","data","parentData","grandParentData"] []',
             'TEMPLATE grandParent.latte SomeControl::renderGrandParent ["presenter","control","flashes","grandParent","data","parentData","grandParentData"] []',
         ]);

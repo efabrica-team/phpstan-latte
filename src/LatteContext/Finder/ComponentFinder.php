@@ -63,6 +63,7 @@ final class ComponentFinder
     }
 
     /**
+     * @param class-string $className
      * @return Component[]
      */
     public function find(string $className, string ...$methodNames): array
@@ -96,15 +97,21 @@ final class ComponentFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return Component[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
 
-        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             /** @var array<Component[]> $fromCalled */
             /** @var Component[] $collectedComponents */
-            $collectedComponents = $this->assignedComponents[$declaringClass][$methodName] ?? [];
+            $collectedComponents = ItemCombinator::resolveTemplateTypes(
+                $this->assignedComponents[$declaringClass][$methodName] ?? [],
+                $declaringClass,
+                $currentClassName
+            );
             $collectedComponents = ItemCombinator::union($collectedComponents, ...$fromCalled);
             $collectedComponents = ItemCombinator::merge($collectedComponents, $this->declaredComponents[$declaringClass][$methodName] ?? []);
             return $collectedComponents;

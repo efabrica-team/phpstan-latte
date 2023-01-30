@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Hierarchy;
 
+/**
+ * @extends ParentControl<string>
+ */
 final class SomeControl extends ParentControl
 {
     public function render(): void

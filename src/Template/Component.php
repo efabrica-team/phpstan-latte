@@ -55,6 +55,13 @@ final class Component implements NameTypeItem, JsonSerializable
         return $this->subcomponents;
     }
 
+    public function withType(Type $type): self
+    {
+        $clone = clone $this;
+        $clone->type = $type;
+        return $clone;
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {

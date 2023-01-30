@@ -44,6 +44,7 @@ final class VariableFinder
     }
 
     /**
+     * @param class-string $className
      * @return Variable[]
      */
     public function find(string $className, string ...$methodNames): array
@@ -77,14 +78,20 @@ final class VariableFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return Variable[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             /** @var array<Variable[]> $fromCalled */
             /** @var Variable[] $collectedVariables */
-            $collectedVariables = $this->assignedVariables[$declaringClass][$methodName] ?? [];
+            $collectedVariables = ItemCombinator::resolveTemplateTypes(
+                $this->assignedVariables[$declaringClass][$methodName] ?? [],
+                $declaringClass,
+                $currentClassName
+            );
             $collectedVariables = ItemCombinator::union($collectedVariables, ...$fromCalled);
             $collectedVariables = ItemCombinator::merge($collectedVariables, $this->declaredVariables[$declaringClass][$methodName] ?? []);
             return $collectedVariables;

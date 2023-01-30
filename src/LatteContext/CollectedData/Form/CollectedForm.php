@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use PHPStan\Type\Type;
 
 final class CollectedForm extends CollectedLatteContextObject
 {
@@ -44,6 +45,9 @@ final class CollectedForm extends CollectedLatteContextObject
         return $this->methodName;
     }
 
+    /**
+     * @return class-string
+     */
     public function getCreatedClassName(): string
     {
         return $this->createdClassName;
@@ -57,5 +61,12 @@ final class CollectedForm extends CollectedLatteContextObject
     public function getForm(): Form
     {
         return $this->form;
+    }
+
+    public function withFormType(Type $type): self
+    {
+        $clone = clone $this;
+        $clone->form = $this->form->withType($type);
+        return $clone;
     }
 }

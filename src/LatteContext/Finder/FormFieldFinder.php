@@ -38,6 +38,7 @@ final class FormFieldFinder
     }
 
     /**
+     * @param class-string $className
      * @return Field[]
      */
     public function find(string $className, string ...$methodNames): array
@@ -67,14 +68,20 @@ final class FormFieldFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return Field[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             /** @var array<Field[]> $fromCalled */
             /** @var Field[] $formFields */
-            $formFields = $this->assignedFormFields[$declaringClass][$methodName] ?? [];
+            $formFields = ItemCombinator::resolveTemplateTypes(
+                $this->assignedFormFields[$declaringClass][$methodName] ?? [],
+                $declaringClass,
+                $currentClassName
+            );
             return ItemCombinator::union($formFields, ...$fromCalled);
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);

@@ -65,6 +65,8 @@ final class MethodCallFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
     public function findCalled(string $className, string $methodName, string $currentClassName = null): array
@@ -77,7 +79,7 @@ final class MethodCallFinder
         $result = [];
         foreach ($calledMethods as $calledMethod) {
             $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($declaringClass), $currentClassName ?? $className);
-            if ($this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
+            if ($calledMethod->getCalledClassName() !== null && $this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
                 continue;
             }
             $result[] = $calledMethod;
@@ -87,7 +89,9 @@ final class MethodCallFinder
 
     /**
      * @template T
-     * @param callable(class-string, string, array<T[]>): T[] $callback
+     * @param callable(class-string, string, array<T[]>, ?class-string): T[] $callback
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return T[]
      */
     public function traverseCalled(callable $callback, string $className, string $methodName, string $currentClassName = null): array
@@ -97,7 +101,10 @@ final class MethodCallFinder
 
     /**
      * @template T
-     * @param callable(class-string, string, array<T[]>): T[] $callback
+     * @param callable(class-string,
+     * string, array<T[]>, ?class-string): T[] $callback
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return T[]
      */
     public function traverseAlwaysCalled(callable $callback, string $className, string $methodName, string $currentClassName = null): array
@@ -107,7 +114,9 @@ final class MethodCallFinder
 
     /**
      * @template T
-     * @param callable(class-string, string, array<T[]>): T[] $callback
+     * @param callable(class-string, string, array<T[]>, ?class-string): T[] $callback
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @param array<string, array<string, true>> $alreadyFound
      * @return T[]
      */
@@ -129,9 +138,14 @@ final class MethodCallFinder
             if ($onlyAlwaysCalled && $calledMethod->isCalledConditionally()) {
                 continue;
             }
+            /** @var ?class-string $calledClassName */
+            $calledClassName = $calledMethod->getCalledClassName();
+            if ($calledClassName === null) {
+                continue;
+            }
             $fromCalled[] = $this->traverseInMethodCalls(
                 $callback,
-                $calledMethod->getCalledClassName(),
+                $calledClassName,
                 $calledMethod->getCalledMethodName(),
                 $calledMethod->getCurrentClassName(),
                 $onlyAlwaysCalled,
@@ -139,10 +153,12 @@ final class MethodCallFinder
             );
         }
 
-        return $callback($declaringClass, $methodName, $fromCalled);
+        return $callback($declaringClass, $methodName, $fromCalled, $currentClassName ?? $className);
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
     public function findCalledOfType(string $className, string $methodName, string $type, string $currentClassName = null): array
@@ -157,6 +173,8 @@ final class MethodCallFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
     public function findAlwaysCalledOfType(string $className, string $methodName, string $type, string $currentClassName = null): array
@@ -171,27 +189,34 @@ final class MethodCallFinder
     }
 
     /**
+     * @param class-string $className
      * @return CollectedMethodCall[]
      */
     public function findAllCalledOfType(string $className, string $methodName, string $type): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) use ($type): array {
+            /** @var class-string $declaringClass */
             return array_merge($this->findCalledOfType($declaringClass, $methodName, $type), ...$fromCalled);
         };
         return $this->traverseCalled($callback, $className, $methodName);
     }
 
     /**
+     * @param class-string $className
      * @return CollectedMethodCall[]
      */
     public function findAllAlwaysCalledOfType(string $className, string $methodName, string $type): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) use ($type): array {
+            /** @var class-string $declaringClass */
             return array_merge($this->findAlwaysCalledOfType($declaringClass, $methodName, $type), ...$fromCalled);
         };
         return $this->traverseAlwaysCalled($callback, $className, $methodName);
     }
 
+    /**
+     * @param class-string $className
+     */
     public function hasAlwaysTerminatingCalls(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
@@ -201,6 +226,9 @@ final class MethodCallFinder
         return in_array(true, $hasTerminatingCalls, true);
     }
 
+    /**
+     * @param class-string $className
+     */
     public function hasAnyTerminatingCalls(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
@@ -210,6 +238,9 @@ final class MethodCallFinder
         return in_array(true, $hasTerminatingCalls, true);
     }
 
+    /**
+     * @param class-string $className
+     */
     public function hasAnyOutputCalls(string $className, string $methodName): bool
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {

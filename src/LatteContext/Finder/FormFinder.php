@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFinder
@@ -40,6 +41,7 @@ final class FormFinder
     }
 
     /**
+     * @param class-string $className
      * @return Form[]
      */
     public function find(string $className, string ...$methodNames): array
@@ -86,12 +88,22 @@ final class FormFinder
     }
 
     /**
+     * @param class-string $className
+     * @param ?class-string $currentClassName
      * @return CollectedForm[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
-        $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
-            return array_merge($this->collectedForms[$declaringClass][$methodName] ?? [], ...$fromCalled);
+        $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
+            $collectedForms = [];
+            foreach ($this->collectedForms[$declaringClass][$methodName] ?? [] as $collectedForm) {
+                $collectedForms[] = $collectedForm->withFormType(TemplateTypeHelper::resolveTemplateType(
+                    $collectedForm->getForm()->getType(),
+                    $declaringClass,
+                    $currentClassName
+                ));
+            }
+            return array_merge($collectedForms, ...$fromCalled);
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
