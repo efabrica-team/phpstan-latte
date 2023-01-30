@@ -214,7 +214,7 @@ Example:
 ```neon
 parameters:
     latte:
-        engineBootstrap: presenter.factory.php
+        presenterFactoryBootstrap: presenter.factory.php
 ```
 
 ### applicationMapping
