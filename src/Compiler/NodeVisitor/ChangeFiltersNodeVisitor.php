@@ -10,6 +10,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavi
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Latte\Runtime\FilterInfo;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -28,6 +29,10 @@ use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflection\ReflectionFunction;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod;
+use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
+use PHPStan\BetterReflection\Reflection\ReflectionParameter;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\ClosureTypeFactory;
@@ -192,18 +197,15 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             return null;
         }
 
-        // Add FilterInfo for special filters
-        if (in_array($filterName, ['striphtml', 'striptags', 'strip', 'indent', 'repeat', 'replace', 'trim'], true)) {
-            $args = array_merge([
-                new Arg(new VariableExpr('ʟ_fi')),
-            ], $args);
-        }
-
         if ($filter instanceof Closure || $this->isCallableString($filter)) {
+            if ($filter instanceof Closure) {
+                $args = $this->updateArgs(ReflectionFunction::createFromClosure($filter), $args);
+            }
             return new FuncCall(new VariableExpr($this->createFilterVariableName($filterName)), $args);
         }
 
         if (is_string($filter)) {
+            $args = $this->updateArgs(ReflectionFunction::createFromName($filter), $args);
             return new FuncCall(new FullyQualified($filter), $args);
         }
 
@@ -223,6 +225,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             return null;
         }
 
+        $args = $this->updateArgs($reflectionMethod, $args);
         if ($reflectionMethod->isStatic()) {
             return new StaticCall(
                 new FullyQualified($className),
@@ -237,5 +240,22 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             new Identifier($methodName),
             $args
         );
+    }
+
+    /**
+     * @param ReflectionFunction|ReflectionMethod $reflection
+     * @param Arg[] $args
+     * @return Arg[]
+     */
+    private function updateArgs($reflection, array $args): array
+    {
+        array_unshift();
+        $parameter = $reflection->getParameters()[0] ?? null;
+        if ($parameter instanceof ReflectionParameter && $parameter->getType() instanceof ReflectionNamedType && $parameter->getType()->getName() === FilterInfo::class) {
+            $args = array_merge([
+                new Arg(new VariableExpr('ʟ_fi')),
+            ], $args);
+        }
+        return $args;
     }
 }
