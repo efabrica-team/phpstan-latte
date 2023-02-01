@@ -1,0 +1,7 @@
+<?php
+
+namespace Nette\Forms;
+
+interface Control
+{
+}

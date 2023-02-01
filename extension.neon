@@ -3,8 +3,11 @@ parameters:
         - stubs/Latte/Runtime/FilterInfo.stub
         - stubs/Latte/Runtime/Filters.stub
         - stubs/Latte/Runtime/HtmlStringable.stub
+        - stubs/Latte/Runtime/Html.stub
         - stubs/Nette/HtmlStringable.stub
         - stubs/Stringable.stub
+        - stubs/Nette/Forms/Control.stub
+        - stubs/Nette/Bridges/FormsLatte/Runtime.stub
     usePathConstantsAsConstantString: true
     latte:
         strictMode: false
