@@ -32,3 +32,10 @@
 {/foreach}
 
 {control $varControl}
+
+{var $components = ['first', 'second']}
+{foreach $components as $component}
+    {control "multiplier-$component"}
+{/foreach}
+
+{control 'multiplier-first'}

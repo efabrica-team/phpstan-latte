@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior;
 
 use Efabrica\PHPStanLatte\Template\Component;
+use PHPStan\Type\ObjectType;
 
 trait ComponentsNodeVisitorBehavior
 {
@@ -32,6 +33,11 @@ trait ComponentsNodeVisitorBehavior
             }
             if (count($componentNameParts) === 0) {
                 return $component;
+            }
+            $componentType = $component->getType();
+            if ($componentType instanceof ObjectType && $componentType->isInstanceOf('Nette\Application\UI\Multiplier')->yes()) {
+                // TODO: How to determine component type?
+                return new Component('', new ObjectType('Nette\Application\UI\Control'));
             }
             return $this->findComponentByName($component->getSubcomponents() ?: [], implode('-', $componentNameParts));
         }
