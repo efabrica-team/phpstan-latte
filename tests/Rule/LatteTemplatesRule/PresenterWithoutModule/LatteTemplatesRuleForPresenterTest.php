@@ -156,6 +156,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                "Dumped type: array{'bar', 'baz'}",
+                92,
+                'default.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',

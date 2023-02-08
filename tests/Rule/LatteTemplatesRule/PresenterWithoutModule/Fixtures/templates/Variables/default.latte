@@ -87,3 +87,6 @@
         top: {$top}%;
     }
 </style>
+
+{var $slicedLocalStrings = slice($localStrings, 1)}
+{php \PhpStan\dumpType($slicedLocalStrings)}
