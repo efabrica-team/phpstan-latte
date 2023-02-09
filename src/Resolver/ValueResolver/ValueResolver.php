@@ -11,6 +11,8 @@ use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\Encapsed;
+use PhpParser\Node\Scalar\EncapsedStringPart;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
@@ -52,6 +54,22 @@ final class ValueResolver
                     throw new ConstExprEvaluationException();
                 }
                 return $options[0];
+            }
+
+            if ($expr instanceof Encapsed) {
+                $result = [];
+                foreach ($expr->parts as $part) {
+                    $options = $this->resolve($part, $scope, $fallbackEvaluator);
+                    if ($options === null || count($options) !== 1) {
+                        throw new ConstExprEvaluationException();
+                    }
+                    $result[] = $options[0];
+                }
+                return implode('', $result);
+            }
+
+            if ($expr instanceof EncapsedStringPart) {
+                return $expr->value;
             }
 
             if ($expr instanceof FuncCall) {

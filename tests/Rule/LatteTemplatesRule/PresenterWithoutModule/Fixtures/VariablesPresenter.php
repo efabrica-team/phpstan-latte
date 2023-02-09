@@ -45,8 +45,10 @@ final class VariablesPresenter extends ParentPresenter
 
     public function renderDefault(): void
     {
+        $var = 'variable';
+        $this->template->encapsedVariable = "encapsed $var";
         $this->template->setParameters([
-            'fromRenderDefault' => 'from render default',
+            'fromRenderDefault' => "from $var",
         ]);
     }
 

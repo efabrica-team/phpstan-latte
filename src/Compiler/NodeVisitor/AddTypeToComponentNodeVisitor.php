@@ -14,7 +14,6 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
-use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
 
@@ -73,11 +72,11 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract implements
             return null;
         }
 
-        if (!$componentNameArgument->value instanceof String_) {
+        $componentName = $this->getComponentNameByExpr($componentNameArgument->value);
+
+        if ($componentName === null) {
             return null;
         }
-
-        $componentName = $componentNameArgument->value->value;
 
         $originalDocComment = $node->getDocComment();
         $originalDocCommentText = $originalDocComment ? $originalDocComment->getText() : '';
@@ -95,7 +94,7 @@ final class AddTypeToComponentNodeVisitor extends NodeVisitorAbstract implements
         }
 
         if ($componentType === 'mixed') {
-            $createComponentMethod = 'createComponent' . ucfirst($componentName);
+            $createComponentMethod = 'createComponent' . str_replace('*', '__', ucfirst($componentName));
             $error = new Error(
                 'Component with name "' . $componentName . '" have no type specified.',
                 'Define return type of ' . $createComponentMethod . ' method.'

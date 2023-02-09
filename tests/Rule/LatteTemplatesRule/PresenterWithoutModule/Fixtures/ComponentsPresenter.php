@@ -54,12 +54,17 @@ final class ComponentsPresenter extends ParentPresenter
         return $form;
     }
 
+    /**
+     * @return Multiplier<Form>
+     */
     protected function createComponentMultiplier(): Multiplier
     {
-        return new Multiplier([$this, 'createComponentMultiplied']);
+        /** @var Multiplier<Form> $multiplier */
+        $multiplier = new Multiplier([$this, 'buildMultiplied']);
+        return $multiplier;
     }
 
-    public function createComponentMultiplied(string $param): Form
+    public function buildMultiplied(string $param): Form
     {
         $form = new Form();
         $form->addSubmit('submit', $param);
