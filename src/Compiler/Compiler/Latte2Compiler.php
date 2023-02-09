@@ -44,7 +44,9 @@ final class Latte2Compiler extends AbstractCompiler
     {
         $latteTokens = $this->engine->getParser()->parse($templateContent);
         $className = $this->generateClassName();
-        $phpContent = $this->engine->getCompiler()->compile(
+        $compiler = $this->engine->getCompiler()
+            ->setFunctions(array_keys((new Defaults())->getFunctions()));
+        $phpContent = $compiler->compile(
             $latteTokens,
             $className,
             $this->generateClassComment($className, $context),
