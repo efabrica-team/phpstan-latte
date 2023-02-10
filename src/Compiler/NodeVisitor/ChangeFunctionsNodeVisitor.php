@@ -210,7 +210,11 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
         }
 
         if (is_string($function)) {
-            return new FuncCall(new FullyQualified($function), $args);
+            if (str_contains($function, '::')) {
+                $function = explode('::', $function);
+            } else {
+                return new FuncCall(new FullyQualified($function), $args);
+            }
         }
 
         if (!is_array($function)) {
