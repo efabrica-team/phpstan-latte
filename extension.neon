@@ -16,6 +16,7 @@ parameters:
         globalVariables: []
         filters:
             translate: [Nette\Localization\Translator, translate]
+        functions: []
         errorPatternsToIgnore: []
         warningPatterns: []
         applicationMapping: []
@@ -41,6 +42,7 @@ parametersSchema:
         tmpDir: schema(string(), nullable())
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
+        functions: arrayOf(anyOf(string(), arrayOf(string())), string())
         errorPatternsToIgnore: arrayOf(string())
         warningPatterns: arrayOf(string())
         applicationMapping: arrayOf(string(), string())
@@ -78,6 +80,7 @@ services:
             engineBootstrap: %latte.engineBootstrap%
             strictMode: %latte.strictMode%
             filters: %latte.filters%
+            functions: %latte.functions%
             macros: %latte.macros%
             extensions: %latte.extensions%
 

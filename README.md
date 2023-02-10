@@ -10,7 +10,7 @@ The extension is based on Tomas Votruba's [blog series](https://tomasvotruba.com
 - Supports Latte 2 and Latte 3
 - Templates are analysed in context in which they are rendered (one template can be analysed with different contexts if it is used on multiple places)
 - Automatically collects all existing template variables, components, simple forms, render calls,... from PHP code.
-- Analyses existence and parameters of filters.
+- Analyses existence and parameters of filters and functions.
 - Can analyse existence and parameters of links (if you configure `applicationMapping`).
 - Can use pre-configured latte engine from your application container (no need to configure manually)
 - Analyses existence of components, forms and form fields used in template

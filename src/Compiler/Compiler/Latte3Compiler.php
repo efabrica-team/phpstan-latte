@@ -21,8 +21,8 @@ final class Latte3Compiler extends AbstractCompiler
         ?Engine $engine = null,
         bool $strictMode = false,
         array $filters = [],
-        array $extensions = [],
-        array $functions = []
+        array $functions = [],
+        array $extensions = []
     ) {
         parent::__construct($engine, $strictMode, $filters, $functions);
         $this->installExtensions($extensions);

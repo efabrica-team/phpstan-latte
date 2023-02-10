@@ -22,8 +22,8 @@ final class Latte2Compiler extends AbstractCompiler
         ?Engine $engine = null,
         bool $strictMode = false,
         array $filters = [],
-        array $macros = [],
-        array $functions = []
+        array $functions = [],
+        array $macros = []
     ) {
         parent::__construct($engine, $strictMode, $filters, $functions);
         $this->installMacros($macros);
