@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.6.0] - 2023-02-03
 ### Added
 - stubs for filters accepting any value which could be converted to string
 - Resolving of generic template types in latte context
@@ -11,6 +12,7 @@
 - exit() and die() evaluated as early terminating call
 - Resolve only public methods with name render* or action*
 - Prevent errors when dynamic components are used
+- Support for any filter using FilterInfo as first parameter
 
 ## [0.5.0] - 2023-01-24
 ### Added
@@ -88,7 +90,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.2.0...0.3.0
