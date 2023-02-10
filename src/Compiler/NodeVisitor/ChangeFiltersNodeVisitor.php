@@ -205,11 +205,11 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         }
 
         if (is_string($filter)) {
-            if (strpos($filter, '::') === false) {
+            if (str_contains($filter, '::')) {
+                $filter = explode('::', $filter);
+            } else {
                 $args = $this->updateArgs((new BetterReflection())->reflector()->reflectFunction($filter), $args);
                 return new FuncCall(new FullyQualified($filter), $args);
-            } else {
-                $filter = explode('::', $filter);
             }
         }
 
