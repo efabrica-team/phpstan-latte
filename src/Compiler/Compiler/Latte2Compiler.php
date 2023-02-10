@@ -22,9 +22,10 @@ final class Latte2Compiler extends AbstractCompiler
         ?Engine $engine = null,
         bool $strictMode = false,
         array $filters = [],
-        array $macros = []
+        array $macros = [],
+        array $functions = []
     ) {
-        parent::__construct($engine, $strictMode, $filters);
+        parent::__construct($engine, $strictMode, $filters, $functions);
         $this->installMacros($macros);
     }
 
@@ -44,14 +45,14 @@ final class Latte2Compiler extends AbstractCompiler
     {
         $latteTokens = $this->engine->getParser()->parse($templateContent);
         $className = $this->generateClassName();
-        $compiler = $this->engine->getCompiler()
-            ->setFunctions(array_keys((new Defaults())->getFunctions()));
-        $phpContent = $compiler->compile(
-            $latteTokens,
-            $className,
-            $this->generateClassComment($className, $context),
-            $this->strictMode
-        );
+        $phpContent = $this->engine->getCompiler()
+            ->setFunctions(array_keys($this->getDefaultFunctions()))
+            ->compile(
+                $latteTokens,
+                $className,
+                $this->generateClassComment($className, $context),
+                $this->strictMode
+            );
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->addTypes($phpContent, $className, $actualClass);
         return $phpContent;
@@ -67,8 +68,14 @@ final class Latte2Compiler extends AbstractCompiler
         return array_merge($engineFilters, array_change_key_case($this->filters));
     }
 
+    public function getFunctions(): array
+    {
+        return array_merge($this->getDefaultFunctions(), $this->functions);
+    }
+
     /**
      * @return array<string, string|array{string, string}|array{object, string}|callable>
+     * @throws ReflectionException
      */
     private function getEngineFiltersByReflection(): array
     {
@@ -93,9 +100,17 @@ final class Latte2Compiler extends AbstractCompiler
     /**
      * @return array<string, string|array{string, string}|callable>
      */
-    private function getDefaultFilters()
+    private function getDefaultFilters(): array
     {
         return array_change_key_case((new Defaults())->getFilters());
+    }
+
+    /**
+     * @return array<string, callable>
+     */
+    private function getDefaultFunctions(): array
+    {
+        return (new Defaults())->getFunctions();
     }
 
     /**

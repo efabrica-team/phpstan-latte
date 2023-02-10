@@ -111,6 +111,7 @@ parameters:
                 - '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
                 - '#^Instantiated class Latte\\Runtime\\Defaults not found\.$#'
                 - '#^Call to method getFilters\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
+                - '#^Call to method getFunctions\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
                 - '#^Method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler::getFilters\(\) should return array<string, array\{string, string\}\|string> but returns array<callable\(\): mixed>.#'
                 - '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:installMacros\(\) has invalid type Latte\\Compiler\.$#'
             path: src/Compiler/Compiler/Latte2Compiler.php
@@ -125,6 +126,7 @@ parameters:
                 - '#^Instantiated class Latte\\Compiler\\TemplateGenerator not found\.$#'
                 - '#^Call to method generate\(\) on an unknown class Latte\\Compiler\\TemplateGenerator\.$#'
                 - '#^Call to an undefined method Latte\\Engine\:\:getExtensions\(\)\.$#'
+                - '#^Call to an undefined method Latte\\Engine\:\:getFunctions\(\)\.$#'
                 - '#^Parameter \$extensions of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte3Compiler\:\:installExtensions\(\) has invalid type Latte\\Extension\.$#'
                 - '#^Call to an undefined method Latte\\Engine\:\:addExtension\(\)\.$#'
             path: src/Compiler/Compiler/Latte3Compiler.php

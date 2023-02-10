@@ -21,15 +21,21 @@ final class Latte3Compiler extends AbstractCompiler
         ?Engine $engine = null,
         bool $strictMode = false,
         array $filters = [],
-        array $extensions = []
+        array $extensions = [],
+        array $functions = []
     ) {
-        parent::__construct($engine, $strictMode, $filters);
+        parent::__construct($engine, $strictMode, $filters, $functions);
         $this->installExtensions($extensions);
     }
 
     public function getFilters(): array
     {
         return array_merge($this->engine->getFilters(), $this->filters);
+    }
+
+    public function getFunctions(): array
+    {
+        return array_merge($this->engine->getFunctions(), $this->functions);
     }
 
     protected function createDefaultEngine(): Engine

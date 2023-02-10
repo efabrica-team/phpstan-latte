@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorIn
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
 use Efabrica\PHPStanLatte\Template\Template;
@@ -88,6 +89,9 @@ final class Postprocessor
             $filters = array_merge($filters, $this->compiler->getFilters());
             $filters = LatteVersion::isLatte2() ? array_change_key_case($filters) : $filters;
             $nodeVisitor->setFilters($filters);
+        }
+        if ($nodeVisitor instanceof FunctionsNodeVisitorInterface) {
+            $nodeVisitor->setFunctions($this->compiler->getFunctions());
         }
         if ($nodeVisitor instanceof FormsNodeVisitorInterface) {
             $nodeVisitor->setForms($template->getForms());

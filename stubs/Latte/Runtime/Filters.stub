@@ -159,4 +159,12 @@ class Filters
     public static function padRight($s, int $length, string $append = ' '): string
     {
     }
+
+    /**
+     * @param string|array $value
+     * @return ($value is string ? string : array)
+     */
+    public static function slice($value, int $start, ?int $length = null, bool $preserveKeys = false)
+    {
+    }
 }

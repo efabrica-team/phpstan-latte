@@ -128,12 +128,14 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             $variableStatements[] = $docNop;
         }
 
-        $variableStatements[] = new Expression(
-            new Assign(
-                new VariableExpr('__filters__'),
-                new VariableExpr('this->filters->getAll()')
-            )
-        );
+        if ($variableStatements !== []) {
+            $variableStatements[] = new Expression(
+                new Assign(
+                    new VariableExpr('__filters__'),
+                    new VariableExpr('this->filters->getAll()')
+                )
+            );
+        }
 
         $node->stmts = array_merge($variableStatements, (array)$node->stmts);
     }
