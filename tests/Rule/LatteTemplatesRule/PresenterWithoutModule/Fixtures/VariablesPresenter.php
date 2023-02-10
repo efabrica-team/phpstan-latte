@@ -38,6 +38,9 @@ final class VariablesPresenter extends ParentPresenter
 
         [$this->template->array1WithoutType, $this->template->array2WithoutType] = $this->itemsToArrayAssignWithoutTypes();
         list($this->template->list1WithType, $this->template->list2WithType) = $this->itemsToArrayAssignWithTypes();
+
+        $variable = $this->stringLists[0];
+        $this->template->variableFromMethodCallOnVariable = $variable::method();
     }
 
     public function renderDefault(): void
