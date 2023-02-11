@@ -99,6 +99,15 @@ parameters:
             callableFilter: 'callable(string, int): string'
 ```
 
+### functions
+Type: `array`
+
+List of functions used in your apps. They are configured in same way as filters. Different is only usage in latte:
+```latte
+{$foo|fooFilter}
+{fooFunction($foo)}
+```
+
 ## Analyser configuration
 
 ### collectedPaths

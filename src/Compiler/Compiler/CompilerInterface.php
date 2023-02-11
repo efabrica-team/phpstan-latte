@@ -16,4 +16,9 @@ interface CompilerInterface
      * @return array<string, string|array{string, string}|array{object, string}|callable>
      */
     public function getFilters(): array;
+
+    /**
+     * @return array<string, string|array{string, string}|array{object, string}|callable>
+     */
+    public function getFunctions(): array;
 }

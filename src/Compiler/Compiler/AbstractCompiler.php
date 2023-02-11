@@ -15,24 +15,29 @@ use PHPStan\Type\VerbosityLevel;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
-    protected bool $strictMode;
-
     protected Engine $engine;
+
+    protected bool $strictMode;
 
     /** @var array<string, string|array{string, string}> */
     protected array $filters;
 
+    /** @var array<string, string|array{string, string}> */
+    protected array $functions;
+
     /**
      * @param array<string, string|array{string, string}> $filters
+     * @param array<string, string|array{string, string}> $functions
      */
-    public function __construct(?Engine $engine = null, bool $strictMode = false, array $filters = [])
+    public function __construct(?Engine $engine = null, bool $strictMode = false, array $filters = [], array $functions = [])
     {
         if ($engine === null) {
             $engine = $this->createDefaultEngine();
         }
         $this->engine = $engine;
-        $this->filters = $filters;
         $this->strictMode = $strictMode;
+        $this->filters = $filters;
+        $this->functions = $functions;
     }
 
     public function generateClassName(): string

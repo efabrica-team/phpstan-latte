@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Support for 'class::method' syntax in filters
+- Support for functions
+
+### Fixed
+- Static method calls on variables are not analysed
+
 ## [0.6.0] - 2023-02-03
 ### Added
 - stubs for filters accepting any value which could be converted to string
