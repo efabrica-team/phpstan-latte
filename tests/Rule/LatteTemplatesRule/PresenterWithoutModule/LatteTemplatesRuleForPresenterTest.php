@@ -156,6 +156,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Dumped type: mixed',
+                81,
+                'default.latte',
+            ],
+            [
                 'Dumped type: array',
                 92,
                 'default.latte',

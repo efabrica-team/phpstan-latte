@@ -29,6 +29,9 @@ final class CalledClassResolver
         }
 
         if ($node instanceof StaticCall) {
+            if ($node->class instanceof Variable) {
+                return null;
+            }
             $calledClassName = $this->nameResolver->resolve($node->class);
             if ($calledClassName === 'parent' && $this->nameResolver->resolve($node) !== $scope->getFunctionName()) {
                 $classReflection = $classReflection->getParentClass();

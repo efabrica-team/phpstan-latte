@@ -207,8 +207,12 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         }
 
         if (is_string($filter)) {
-            $args = $this->updateArgs(ReflectionFunction::createFromName($filter), $args);
-            return new FuncCall(new FullyQualified($filter), $args);
+            if (str_contains($filter, '::')) {
+                $filter = explode('::', $filter);
+            } else {
+                $args = $this->updateArgs((new BetterReflection())->reflector()->reflectFunction($filter), $args);
+                return new FuncCall(new FullyQualified($filter), $args);
+            }
         }
 
         if (!is_array($filter)) {
