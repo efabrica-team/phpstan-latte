@@ -22,6 +22,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Else_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
@@ -95,7 +96,7 @@ final class CleanupNodeVisitor extends NodeVisitorAbstract
                 return new If_($firstElseIf->cond, $subnodes, $node->getAttributes());
             }
 
-            // Prevent error: "Call to function is_object() with * will always evaluate to true / false." on dynamic components
+            // Prevent unwanted errors on dynamic components
             if (($node->cond instanceof FuncCall && $this->nameResolver->resolve($node->cond->name) === 'is_object') ||
                 $node->cond instanceof BooleanNot && $node->cond->expr instanceof FuncCall && $this->nameResolver->resolve($node->cond->expr->name) === 'is_object'
             ) {
@@ -116,12 +117,20 @@ final class CleanupNodeVisitor extends NodeVisitorAbstract
                         $nodes[] = new Expression($node->cond->expr->getArgs()[0]->value);
                         $node->cond->expr->args[0] = new Arg(new Variable($varName));
                     }
+
+                    $elseIgnore = new Nop();
+                    $elseIgnore->setDocComment(new Doc('/** @phpstan-ignore-next-line */'));
+                    $node->stmts[] = $elseIgnore;
+
                     $nodes[] = $node;
-                    $nodes[] = new If_(new Identical(new Variable($varName), new ConstFetch(new Name('null'))), [
+
+                    $guardNode = new If_(new Identical(new Variable($varName), new ConstFetch(new Name('null'))), [
                         'stmts' => [
                             new Expression(new Throw_(new New_(new Name(InvalidArgumentException::class)))),
                         ],
                     ]);
+                    $guardNode->setDocComment(new Doc('/** @phpstan-ignore-next-line */'));
+                    $nodes[] = $guardNode;
 
                     return $nodes;
                 }
