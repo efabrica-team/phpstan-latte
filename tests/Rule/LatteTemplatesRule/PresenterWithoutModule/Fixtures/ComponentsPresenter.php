@@ -23,6 +23,7 @@ final class ComponentsPresenter extends ParentPresenter
     {
         parent::actionDefault();
         $this->controlRegistrator->register($this);
+        $this->template->varControl = $this->createComponentForm();
     }
 
     public function actionCreate(): void
