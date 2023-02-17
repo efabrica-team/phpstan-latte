@@ -161,8 +161,9 @@ class Filters
     }
 
     /**
-     * @param string|array $value
-     * @return ($value is string ? string : array)
+     * @template T
+     * @param string|array<T> $value
+     * @return ($value is string ? string : array<T>)
      */
     public static function slice($value, int $start, ?int $length = null, bool $preserveKeys = false)
     {
