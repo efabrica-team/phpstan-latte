@@ -42,9 +42,9 @@ final class Component implements NameTypeItem, JsonSerializable
     /**
      * @param Component[] $subcomponents
      */
-    public function setSubcomponents(array $subcomponents): void
+    public function addSubcomponents(array $subcomponents): void
     {
-        $this->subcomponents = $subcomponents;
+        $this->subcomponents = ItemCombinator::merge($this->subcomponents, $subcomponents);
     }
 
     /**

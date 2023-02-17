@@ -23,7 +23,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
         $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"VariablesPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"VariablesPresenter"}',
-            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","flashes","title","viaGetTemplate","stringLists","localStrings","dynamic","obj","array1","array2","list1","list2","array1WithoutType","array2WithoutType","list1WithType","list2WithType","variableFromMethodCallOnVariable","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","overwritting","parentOverwritting","calledParentOverwritting","calledParentOverwritted","calledParentSecondOverwritting","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
+            'TEMPLATE default.latte VariablesPresenter::default ["startup","startupParent","presenter","control","flashes","title","viaGetTemplate","stringLists","localStrings","dynamic","obj","array1","array2","list1","list2","array1WithoutType","array2WithoutType","list1WithType","list2WithType","variableFromMethodCallOnVariable","variableFromParentCalledViaParent","variableFromOtherMethod","variableFromParent","varFromVariable","overwritting","parentOverwritting","calledParentOverwritting","calledParentOverwritted","calledParentSecondOverwritting","encapsedVariable","fromRenderDefault"] ["parentForm","onlyParentDefaultForm"]',
             'TEMPLATE other.latte VariablesPresenter::other ["startup","startupParent","presenter","control","flashes","fromOtherAction","unresolvedInclude"] ["parentForm"]',
             'TEMPLATE parent.latte VariablesPresenter::parent ["startup","startupParent","presenter","control","flashes","variableFromParentAction","variableFromOtherMethod"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE specialConstructs.latte VariablesPresenter:: ["startup","startupParent","presenter","control","flashes"] ["parentForm"]',
@@ -57,10 +57,10 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             __DIR__ . '/Source/SomeTableControl.php',
         ], [
             'NODE NetteApplicationUIPresenter {"className":"ComponentsPresenter"}',
-            'TEMPLATE create.latte ComponentsPresenter::create ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType","onlyCreateForm"]',
-            'TEMPLATE default.latte ComponentsPresenter::default ["startupParent","presenter","control","flashes","varControl","variableFromParentCalledViaParent"] ["parentForm","form","noType","implicitType","onlyParentDefaultForm","someControl"]',
-            'TEMPLATE noAction.latte ComponentsPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType"]',
-            'TEMPLATE parent.latte ComponentsPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","form","noType","implicitType","parentDefaultForm"]',
+            'TEMPLATE create.latte ComponentsPresenter::create ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType","multiplier","onlyCreateForm"]',
+            'TEMPLATE default.latte ComponentsPresenter::default ["startupParent","presenter","control","flashes","varControl","variableFromParentCalledViaParent"] ["parentForm","form","noType","implicitType","multiplier","onlyParentDefaultForm","someControl"]',
+            'TEMPLATE noAction.latte ComponentsPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType","multiplier"]',
+            'TEMPLATE parent.latte ComponentsPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","form","noType","implicitType","multiplier","parentDefaultForm"]',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ComponentsPresenter"}',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ParentPresenter"}',

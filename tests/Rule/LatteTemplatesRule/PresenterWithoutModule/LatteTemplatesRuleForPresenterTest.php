@@ -171,6 +171,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Dumped type: \'encapsed variable\'',
+                96,
+                'default.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',

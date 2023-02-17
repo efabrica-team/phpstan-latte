@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\ControlRegistrator;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\Multiplier;
 
 final class ComponentsPresenter extends ParentPresenter
 {
@@ -50,6 +51,23 @@ final class ComponentsPresenter extends ParentPresenter
     protected function createComponentImplicitType()
     {
         $form = new Form();
+        return $form;
+    }
+
+    /**
+     * @return Multiplier<Form>
+     */
+    protected function createComponentMultiplier(): Multiplier
+    {
+        /** @var Multiplier<Form> $multiplier */
+        $multiplier = new Multiplier([$this, 'buildMultiplied']);
+        return $multiplier;
+    }
+
+    public function buildMultiplied(string $param): Form
+    {
+        $form = new Form();
+        $form->addSubmit('submit', $param);
         return $form;
     }
 }

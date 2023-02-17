@@ -19,6 +19,7 @@ use PhpParser\Node\Stmt\Return_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\UnionType;
@@ -117,6 +118,8 @@ final class ComponentCollector extends AbstractLatteContextCollector
             }
         }
 
+        $components = $this->addSubcomponents($components);
+
         return $components;
     }
 
@@ -204,6 +207,31 @@ final class ComponentCollector extends AbstractLatteContextCollector
                 $components[$name] = CollectedComponent::build($node, $scope, $name, $type);
             }
         }
+
+        $components = $this->addSubcomponents($components);
+
         return count($components) > 0 ? array_values($components) : null;
+    }
+
+    /**
+     * @param CollectedComponent[] $components
+     * @return CollectedComponent[]
+     */
+    public function addSubcomponents(array $components): array
+    {
+        foreach ($components as $component) {
+            if ($component->getComponentType() instanceof ObjectType && (new ObjectType('Nette\Application\UI\Multiplier'))->isSuperTypeOf($component->getComponentType())->yes()) {
+                $multiplierType = $component->getComponentType()->getAncestorWithClassName('Nette\Application\UI\Multiplier');
+                if ($multiplierType instanceof GenericObjectType) {
+                    $subComponentType = $multiplierType->getTypes()[0] ?? null;
+                } else {
+                    $subComponentType = null;
+                }
+                $component->getComponent()->addSubcomponents([
+                    new Component('*', $subComponentType ?? new ObjectType('Nette\Application\UI\Control')),
+                ]);
+            }
+        }
+        return $components;
     }
 }

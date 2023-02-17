@@ -57,7 +57,7 @@ final class ComponentFinder
                 $this->declaredComponents[$componentType]['__construct'] ?? []
             );
             foreach ($components as $component) {
-                $component->setSubcomponents($subcomponents);
+                $component->addSubcomponents($subcomponents);
             }
         }
     }
