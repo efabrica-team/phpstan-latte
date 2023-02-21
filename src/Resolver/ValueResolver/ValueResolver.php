@@ -59,7 +59,11 @@ final class ValueResolver
             if ($expr instanceof Encapsed) {
                 $result = [];
                 foreach ($expr->parts as $part) {
-                    $options = $this->resolve($part, $scope, $fallbackEvaluator);
+                    if ($part instanceof EncapsedStringPart) {
+                        $options = [$part->value];
+                    } else {
+                        $options = $this->resolve($part, $scope, $fallbackEvaluator);
+                    }
                     if ($options === null || count($options) !== 1) {
                         throw new ConstExprEvaluationException();
                     }
