@@ -32,7 +32,7 @@ final class LatteContextCollectorRegistry
     {
         $nodeType = get_class($node);
         if (!isset($this->cache[$nodeType])) {
-            $parentNodeTypes = [$nodeType] + class_parents($nodeType) + class_implements($nodeType);
+            $parentNodeTypes = [$nodeType] + (array)class_parents($nodeType) + (array)class_implements($nodeType);
             $collectors = [];
             foreach ($parentNodeTypes as $parentNodeType) {
                 foreach ($this->collectors[$parentNodeType] ?? [] as $collector) {
