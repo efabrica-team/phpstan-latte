@@ -8,7 +8,7 @@ namespace Nette\Application\UI;
 final class Multiplier extends Component
 {
     /**
-     * @param callable(string, self) : T|callable(string) : T $factory
+     * @param callable(string, self<T>) : T|callable(string) : T $factory
      */
     public function __construct(callable $factory);
 
