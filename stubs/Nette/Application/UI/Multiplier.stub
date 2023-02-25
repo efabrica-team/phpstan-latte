@@ -10,10 +10,14 @@ final class Multiplier extends Component
     /**
      * @param callable(string, self<T>) : T|callable(string) : T $factory
      */
-    public function __construct(callable $factory);
+    public function __construct(callable $factory)
+    {
+    }
 
     /**
      * @return T
      */
-    protected function createComponent(string $name): \Nette\ComponentModel\IComponent;
+    protected function createComponent(string $name): \Nette\ComponentModel\IComponent
+    {
+    }
 }
