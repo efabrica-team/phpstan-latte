@@ -2,13 +2,15 @@
 
 namespace Nette\Bridges\FormsLatte;
 
-class Runtime {
-
-  /**
-   * @template T of object
-   * @param T|string $item
-   * @param \stdClass $global
-   * @return ($item is object ? T : \Nette\Forms\Control)
-   */
-  public static function item($item, $global): object;
+class Runtime
+{
+    /**
+     * @template T of object
+     * @param T|string $item
+     * @param \stdClass $global
+     * @return ($item is object ? T : \Nette\Forms\Control)
+     */
+    public static function item($item, $global): object
+    {
+    }
 }
