@@ -433,6 +433,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 48,
                 'default.latte',
             ],
+            [
+                'Call to an undefined method Nette\ComponentModel\IComponent::getControl().',
+                75,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 (mixed) of echo cannot be converted to string.',
+                75,
+                'default.latte',
+            ],
         ]);
     }
 

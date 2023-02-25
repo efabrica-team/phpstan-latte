@@ -5,6 +5,7 @@
 ### Added
 - Support for 'class::method' syntax in filters
 - Support for functions
+- Transformation for dynamic form fields with always true/false condition in is_object
 
 ### Fixed
 - Static method calls on variables are not analysed

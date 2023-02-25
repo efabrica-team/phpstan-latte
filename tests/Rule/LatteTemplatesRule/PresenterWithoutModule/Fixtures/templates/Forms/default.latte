@@ -62,3 +62,29 @@
     {input part2-text2}
     {input part2-submit2}
 {/form}
+
+{form firstForm}
+    {foreach $form->getComponents() as $formComponent}
+        {if $formComponent instanceof Nette\Forms\Controls\SubmitButton}
+            {input $formComponent, 'class' => 'btn'}
+        {elseif $formComponent instanceof Nette\Forms\Controls\RadioList}
+            {foreach $formComponent->getItems() as $key => $item}
+                {label $formComponent:$key}{input $formComponent:$key}{$item}{/label}
+            {/foreach}
+        {else}
+            {input $formComponent}
+        {/if}
+    {/foreach}
+{/form}
+
+{form firstForm}
+    {foreach $form->getComponents(false, Nette\Forms\Controls\BaseControl::class) as $formComponent}
+        {input $formComponent}
+    {/foreach}
+{/form}
+
+{form firstForm}
+    {foreach ['text', 'textarea', 'password', 'submit'] as $formComponent}
+        {input $formComponent}
+    {/foreach}
+{/form}

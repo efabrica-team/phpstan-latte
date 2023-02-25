@@ -25,7 +25,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -230,25 +229,30 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          * for RadioList and CheckboxList
          */
         if ($node instanceof If_) {
-            foreach ($this->possibleAlwaysTrueLabels as $possibleAlwaysTrueLabel) {
-                if ($possibleAlwaysTrueLabel === spl_object_hash($node)) {
-                    if ($node->cond instanceof Assign) {
-                        if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
-                            return array_merge([new Expression($node->cond)], $node->stmts);
-                        }
+            if ($node->cond instanceof Assign) {
+                if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) && $node->cond->expr instanceof MethodCall && in_array($this->nameResolver->resolve($node->cond->expr), ['getLabel', 'getLabelPart'], true)) {
+                    if (in_array(spl_object_hash($node), $this->possibleAlwaysTrueLabels, true)) {
+                        return array_merge([new Expression($node->cond)], $node->stmts);
                     }
+
+                    // temporary added, should be removed in next PR with whole block
+                    $docComment = $node->getDocComment();
+                    $docComments = $docComment ? [$docComment->getText()] : [];
+                    $docComments[] = '/** @phpstan-ignore-next-line */';
+                    $node->setDocComment(new Doc(implode("\n", $docComments)));
+                    return $node;
                 }
             }
-        }
 
-        // dynamic inputs
-        if ($node instanceof Expression && $node->expr instanceof Assign &&
-            ($node->expr->expr instanceof Ternary || ($node->expr->expr instanceof Assign && $node->expr->expr->expr instanceof Ternary))
-        ) {
-            $varName = $this->nameResolver->resolve($node->expr->var);
-            if ($varName === 'ʟ_input' || $varName === '_input') {
-                $node->setDocComment(new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' @phpstan-ignore-next-line */'));
-                return $node;
+            // temporary added, should be removed in next PR with whole block
+            if ($node->cond instanceof Variable) {
+                if (in_array($this->nameResolver->resolve($node->cond), ['ʟ_label', '_label'], true)) {
+                    $docComment = $node->getDocComment();
+                    $docComments = $docComment ? [$docComment->getText()] : [];
+                    $docComments[] = '/** @phpstan-ignore-next-line */';
+                    $node->setDocComment(new Doc(implode("\n", $docComments)));
+                    return $node;
+                }
             }
         }
 
