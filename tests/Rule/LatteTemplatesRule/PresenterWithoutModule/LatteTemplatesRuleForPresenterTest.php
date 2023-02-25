@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
 
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\VariablesPresenter;
@@ -402,7 +403,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testForms(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], [
+        $expectedErrors = [
             [
                 'Form field with name "password" probably does not exist.',
                 4,
@@ -433,17 +434,39 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 48,
                 'default.latte',
             ],
-            [
-                'Call to an undefined method Nette\ComponentModel\IComponent::getControl().',
-                75,
-                'default.latte',
-            ],
-            [
-                'Parameter #1 (mixed) of echo cannot be converted to string.',
-                75,
-                'default.latte',
-            ],
-        ]);
+
+        ];
+
+        if (LatteVersion::isLatte2()) {
+            $expectedErrors = array_merge($expectedErrors, [
+                [
+                    'Call to an undefined method Nette\ComponentModel\IComponent::getControl().',
+                    75,
+                    'default.latte',
+                ],
+                [
+                    'Parameter #1 (mixed) of echo cannot be converted to string.',
+                    75,
+                    'default.latte',
+                ],
+            ]);
+        } else {
+            // will be fixed in some next PR when forms will be rewritten to node visitors using scope
+            $expectedErrors = array_merge($expectedErrors, [
+                [
+                    'Method Nette\Forms\Controls\BaseControl::getControlPart() invoked with 1 parameter, 0 required.',
+                    72,
+                    'default.latte',
+                ],
+                [
+                    'Using nullsafe method call on non-nullable type Nette\Utils\Html. Use -> instead.',
+                    72,
+                    'default.latte',
+                ],
+            ]);
+        }
+
+        $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], $expectedErrors);
     }
 
     public function testFilters(): void

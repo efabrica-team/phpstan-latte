@@ -14,6 +14,7 @@ use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Ternary;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Type\ObjectType;
@@ -39,21 +40,16 @@ final class FormDynamicInputsNodeVisitor extends NodeVisitorAbstract implements 
             return null;
         }
 
-        if ($node->expr->expr instanceof Ternary) {
-            $node->expr->expr = $this->changeTernary($node->expr->expr);
-        } elseif ($node->expr->expr instanceof Assign && $node->expr->expr->expr instanceof Ternary) {
-            $node->expr->expr->expr = $this->changeTernary($node->expr->expr->expr);
-        } else {
-            return null;
-        }
-
         $varName = $this->nameResolver->resolve($node->expr->var);
         if ($varName !== 'ʟ_input' && $varName !== '_input') {
             return null;
         }
 
-        $type = $this->getType($node->expr->var);
-        if (!$type instanceof ObjectType) {
+        if ($node->expr->expr instanceof Ternary) {
+            $node->expr->expr = $this->changeTernary($node->expr->expr);
+        } elseif ($node->expr->expr instanceof Assign && $node->expr->expr->expr instanceof Ternary) {
+            $node->expr->expr->expr = $this->changeTernary($node->expr->expr->expr);
+        } else {
             return null;
         }
 
@@ -77,21 +73,28 @@ final class FormDynamicInputsNodeVisitor extends NodeVisitorAbstract implements 
             return $ternary;
         }
 
-        if (!$firstArg->value instanceof Assign) {
+        $controlVariable = null;
+        if ($firstArg->value instanceof Assign) {
+            $controlVariable = $firstArg->value->expr;
+        } elseif ($firstArg->value instanceof Variable) {
+            $controlVariable = $firstArg->value;
+        }
+
+        if ($controlVariable === null) {
             return $ternary;
         }
 
-        $type = $this->getType($firstArg->value->expr);
+        $type = $this->getType($controlVariable);
         if ($type === null) {
             return $ternary;
         }
 
         if ($type instanceof ObjectType) {
-            return $firstArg->value->expr;
+            return $controlVariable;
         }
 
         if ($type->isString()->yes() && $ternary->else instanceof ArrayDimFetch) {
-            return new ArrayDimFetch($ternary->else->var, $firstArg->value->expr);
+            return new ArrayDimFetch($ternary->else->var, $controlVariable);
         }
 
         return $ternary;
