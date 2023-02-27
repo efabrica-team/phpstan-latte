@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface;
 use InvalidArgumentException;
 use PhpParser\NodeVisitor;
 
@@ -19,12 +20,12 @@ final class NodeVisitorStorage
         self::WITH_SCOPE => [],
     ];
 
-    public function addNodeVisitor(int $priority, NodeVisitor $nodeVisitor, bool $withScope = false): void
+    public function addNodeVisitor(int $priority, NodeVisitor $nodeVisitor): void
     {
         if ($priority < 0 || $priority > 10000) {
             throw new InvalidArgumentException('Priority must be set between 0 and 10000');
         }
-        $scope = $withScope ? self::WITH_SCOPE : self::WITHOUT_SCOPE;
+        $scope = $nodeVisitor instanceof ExprTypeNodeVisitorInterface ? self::WITH_SCOPE : self::WITHOUT_SCOPE;
         if (!isset($this->nodeVisitors[$scope][$priority])) {
             $this->nodeVisitors[$scope][$priority] = [];
         }

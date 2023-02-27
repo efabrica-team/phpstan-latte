@@ -11,6 +11,7 @@ trait ExprTypeNodeVisitorBehavior
 {
     public function getType(Node $node): ?Type
     {
-        return $node->getAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE);
+        $type = $node->getAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE);
+        return $type instanceof Type ? $type : null;
     }
 }
