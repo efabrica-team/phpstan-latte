@@ -433,3 +433,27 @@ final class MyNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisito
     }    
 }
 ```
+
+### Type from scope
+In some cases we need to know the types of expressions in compiled templates. For this purpose `ExprTypeNodeVisitorInterface` was created. In `ExprTypeNodeVisitorBehavior` the method `getType()` is implemented. It returns the type of Expr Node.
+These NodeVisitors are executed AFTER all other NodeVisitors in their separate groups based on priority.
+
+Note: In this type of NodeVisitors it is not allowed to add new classes because of future analysis.
+
+```php
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface;
+use PHPStan\Type\Constant\ConstantStringType;
+
+final class MyNodeVisitor extends NodeVisitorAbstract implements ExprTypeNodeVisitorInterface
+{
+    use ExprTypeNodeVisitorBehavior;
+    
+    public function enterNode(Node $node)
+    {
+        if ($this->getType($node) instanceof ConstantStringType) {
+            $this->doSomethingWithConstantString($node);
+        }
+    }
+}
+```

@@ -5,6 +5,7 @@
 ### Added
 - Support for 'class::method' syntax in filters
 - Support for functions
+- NodeVisitors using Type from Scope
 - Transformation for dynamic form fields with always true/false condition in is_object
 
 ### Fixed

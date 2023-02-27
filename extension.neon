@@ -146,7 +146,7 @@ services:
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())
             # Node visitors with scope
-            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\FormDynamicInputsNodeVisitor(), true)
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\FormDynamicInputsNodeVisitor())
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
