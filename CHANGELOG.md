@@ -5,6 +5,7 @@
 ### Added
 - Support for 'class::method' syntax in filters
 - Support for functions
+- NodeVisitors using Type from Scope
 
 ### Fixed
 - Static method calls on variables are not analysed

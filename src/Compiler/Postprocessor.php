@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ActualClassNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ComponentsNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInterface;
@@ -14,10 +15,16 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInte
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Scalar\EncapsedStringPart;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\PrettyPrinter\Standard;
+use PHPStan\Analyser\NodeScopeResolver;
+use PHPStan\Analyser\Scope;
+use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Parser\Parser;
 
 final class Postprocessor
@@ -30,26 +37,61 @@ final class Postprocessor
 
     private CompilerInterface $compiler;
 
+    private ScopeFactory $scopeFactory;
+
+    private NodeScopeResolver $nodeScopeResolver;
+
     public function __construct(
         Parser $parser,
         NodeVisitorStorage $nodeVisitorStorage,
         Standard $printerStandard,
-        CompilerInterface $compiler
+        CompilerInterface $compiler,
+        ScopeFactory $scopeFactory,
+        NodeScopeResolver $nodeScopeResolver
     ) {
         $this->parser = $parser;
         $this->nodeVisitorStorage = $nodeVisitorStorage;
         $this->printerStandard = $printerStandard;
         $this->compiler = $compiler;
+        $this->scopeFactory = $scopeFactory;
+        $this->nodeScopeResolver = $nodeScopeResolver;
     }
 
-    public function postProcess(string $phpContent, Template $template): string
+    public function postProcess(string $phpContent, Template $template, string $compileFilePath): string
     {
         $phpStmts = $this->findNodes($phpContent);
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
             $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
         }
 
-        return $this->printerStandard->prettyPrintFile($phpStmts);
+        $phpContent = $this->printerStandard->prettyPrintFile($phpStmts);
+        file_put_contents($compileFilePath, $phpContent);
+        $realPath = realpath($compileFilePath) ?: '';
+        if ($realPath === '') {
+            return '';
+        }
+        require($compileFilePath); // load type definitions from compiled template
+
+        $scope = $this->scopeFactory->create(ScopeContext::create($realPath));
+
+        $phpStmts = $this->findNodes($phpContent);
+
+        $nodeScopeResolver = clone $this->nodeScopeResolver;
+        $nodeScopeResolver->processNodes($phpStmts, $scope, function (Node $node, Scope $scope) {
+            if ($node instanceof Expr && !$node instanceof EncapsedStringPart) {
+                $node->setAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE, $scope->getType($node));
+            }
+        });
+
+        foreach ($this->nodeVisitorStorage->getNodeVisitors(true) as $nodeVisitors) {
+            $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
+        }
+        $phpContent = $this->printerStandard->prettyPrintFile($phpStmts);
+
+        // update contents
+        file_put_contents($compileFilePath, $phpContent);
+
+        return $realPath;
     }
 
     /**

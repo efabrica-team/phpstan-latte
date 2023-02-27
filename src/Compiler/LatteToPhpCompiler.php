@@ -68,14 +68,12 @@ final class LatteToPhpCompiler
         $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
 
         if (!$this->debugMode && file_exists($compileFilePath)) {
+            require($compileFilePath); // load type definitions from compiled template
             return realpath($compileFilePath) ?: '';
         }
 
         $phpContent = $this->compiler->compile($templateContent, $template->getActualClass(), $context);
-        $phpContent = $this->postprocessor->postProcess($phpContent, $template);
-
-        file_put_contents($compileFilePath, $phpContent);
-        return realpath($compileFilePath) ?: '';
+        return $this->postprocessor->postProcess($phpContent, $template, $compileFilePath);
     }
 
     private function normalizeCompileDir(string $compileDir): string
