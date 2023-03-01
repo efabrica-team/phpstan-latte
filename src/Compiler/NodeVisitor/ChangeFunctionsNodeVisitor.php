@@ -8,6 +8,8 @@ use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
@@ -28,15 +30,17 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\BetterReflection\BetterReflection;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
 
-final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface
+final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface, ScopeNodeVisitorInterface
 {
     use FunctionsNodeVisitorBehavior;
+    use ScopeNodeVisitorBehavior;
 
     private TypeStringResolver $typeStringResolver;
 
@@ -46,16 +50,20 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
 
     private NameResolver $nameResolver;
 
+    private ReflectionProvider $reflectionProvider;
+
     public function __construct(
         TypeStringResolver $typeStringResolver,
         TypeToPhpDoc $typeToPhpDoc,
         ClosureTypeFactory $closureTypeFactory,
-        NameResolver $nameResolver
+        NameResolver $nameResolver,
+        ReflectionProvider $reflectionProvider
     ) {
         $this->typeStringResolver = $typeStringResolver;
         $this->typeToPhpDoc = $typeToPhpDoc;
         $this->closureTypeFactory = $closureTypeFactory;
         $this->nameResolver = $nameResolver;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function enterNode(Node $node): ?Node
@@ -179,18 +187,23 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
             }
 
             try {
-                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-                $reflectionMethod = $reflectionClass->getMethod($methodName);
-
-                if ($reflectionMethod === null || $reflectionMethod->isStatic()) {
-                    continue;
-                }
-
-                $variableName = $this->createFunctionVariableName($functionName);
-                $variables[$variableName] = new Variable($variableName, new ObjectType($className));
+                $classReflection = $this->reflectionProvider->getClass($className);
             } catch (ClassNotFoundException $e) {
                 continue;
             }
+
+            try {
+                $methodReflection = $classReflection->getMethod($methodName, $this->getScope());
+            } catch (MissingMethodFromReflectionException $e) {
+                continue;
+            }
+
+            if ($methodReflection->isStatic()) {
+                continue;
+            }
+
+            $variableName = $this->createFunctionVariableName($functionName);
+            $variables[$variableName] = new Variable($variableName, new ObjectType($className));
         }
         return $variables;
     }
@@ -226,14 +239,19 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
         /** @var non-empty-string $methodName */
         $methodName = $function[1];
 
-        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-        $reflectionMethod = $reflectionClass->getMethod($methodName);
-
-        if ($reflectionMethod === null) {
+        try {
+            $classReflection = $this->reflectionProvider->getClass($className);
+        } catch (ClassNotFoundException $e) {
             return null;
         }
 
-        if ($reflectionMethod->isStatic()) {
+        try {
+            $methodReflection = $classReflection->getMethod($methodName, $this->getScope());
+        } catch (MissingMethodFromReflectionException $e) {
+            return null;
+        }
+
+        if ($methodReflection->isStatic()) {
             return new StaticCall(
                 new FullyQualified($className),
                 new Identifier($methodName),
