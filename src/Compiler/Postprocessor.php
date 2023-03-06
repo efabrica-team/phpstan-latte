@@ -11,12 +11,16 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInter
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Scalar\EncapsedStringPart;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\Interface_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
@@ -26,6 +30,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Parser\Parser;
+use PHPStan\Type\ObjectType;
 
 final class Postprocessor
 {
@@ -41,13 +46,16 @@ final class Postprocessor
 
     private NodeScopeResolver $nodeScopeResolver;
 
+    private NameResolver $nameResolver;
+
     public function __construct(
         Parser $parser,
         NodeVisitorStorage $nodeVisitorStorage,
         Standard $printerStandard,
         CompilerInterface $compiler,
         ScopeFactory $scopeFactory,
-        NodeScopeResolver $nodeScopeResolver
+        NodeScopeResolver $nodeScopeResolver,
+        NameResolver $nameResolver
     ) {
         $this->parser = $parser;
         $this->nodeVisitorStorage = $nodeVisitorStorage;
@@ -55,6 +63,7 @@ final class Postprocessor
         $this->compiler = $compiler;
         $this->scopeFactory = $scopeFactory;
         $this->nodeScopeResolver = $nodeScopeResolver;
+        $this->nameResolver = $nameResolver;
     }
 
     public function postProcess(string $phpContent, Template $template, string $compileFilePath): string
@@ -80,11 +89,15 @@ final class Postprocessor
         $nodeScopeResolver->processNodes($phpStmts, $scope, function (Node $node, Scope $scope) {
             if ($node instanceof Expr && !$node instanceof EncapsedStringPart) {
                 $node->setAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE, $scope->getType($node));
+            } elseif ($node instanceof Class_ || $node instanceof Interface_) {
+                /** @var string $name */
+                $name = $this->nameResolver->resolve($node->name);
+                $node->setAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE, new ObjectType($name));
             }
         });
 
         foreach ($this->nodeVisitorStorage->getNodeVisitors(true) as $nodeVisitors) {
-            $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
+            $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template, $scope);
         }
         $phpContent = $this->printerStandard->prettyPrintFile($phpStmts);
 
@@ -99,20 +112,20 @@ final class Postprocessor
      * @param NodeVisitor[] $nodeVisitors
      * @return Node[]
      */
-    private function processNodeVisitors(array $phpStmts, array $nodeVisitors, Template $template): array
+    private function processNodeVisitors(array $phpStmts, array $nodeVisitors, Template $template, ?Scope $scope = null): array
     {
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new ParentConnectingVisitor()); // symplify/phpstan-rules compatibility
         foreach ($nodeVisitors as $cleanNodeVisitor) {
             $nodeVisitor = clone $cleanNodeVisitor;
-            $this->setupVisitor($nodeVisitor, $template);
+            $this->setupVisitor($nodeVisitor, $template, $scope);
             $nodeTraverser->addVisitor($nodeVisitor);
         }
 
         return $nodeTraverser->traverse($phpStmts);
     }
 
-    private function setupVisitor(NodeVisitor $nodeVisitor, Template $template): void
+    private function setupVisitor(NodeVisitor $nodeVisitor, Template $template, ?Scope $scope = null): void
     {
         if ($nodeVisitor instanceof ActualClassNodeVisitorInterface) {
             $nodeVisitor->setActualClass($template->getActualClass());
@@ -137,6 +150,9 @@ final class Postprocessor
         }
         if ($nodeVisitor instanceof FormsNodeVisitorInterface) {
             $nodeVisitor->setForms($template->getForms());
+        }
+        if ($nodeVisitor instanceof ScopeNodeVisitorInterface && $scope !== null) {
+            $nodeVisitor->setScope($scope);
         }
     }
 

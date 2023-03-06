@@ -129,22 +129,23 @@ services:
     phpstanLatteNodeVisitorStorage:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage
         setup:
+            # no scope node visitors
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor())
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CopyDefinedVarsToOtherMethodsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(%latte.globalVariables%))
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractParamsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor())
-            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())
-            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFunctionsNodeVisitor())
-            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformNClassNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformForeachWithIteratorNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())
-
+            # scope node visitors
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFunctionsNodeVisitor())
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
     - Efabrica\PHPStanLatte\LinkProcessor\LinkParamsProcessor
