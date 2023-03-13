@@ -2,13 +2,16 @@
 
 ## [Unreleased][unreleased]
 
+## [0.7.0] - 2023-03-13
 ### Added
 - Support for 'class::method' syntax in filters
 - Support for functions
+- Support for multiplier
 - NodeVisitors using Type from Scope
 
 ### Fixed
 - Static method calls on variables are not analysed
+- Fixed evaluation of encapsed strings
 
 ## [0.6.0] - 2023-02-03
 ### Added
@@ -98,7 +101,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...0.4.0
