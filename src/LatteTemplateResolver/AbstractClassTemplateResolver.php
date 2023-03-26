@@ -72,9 +72,6 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
         return [];
     }
 
-    /**
-     * @return LatteTemplateResolverResult
-     */
     public function resolve(CollectedResolvedNode $resolvedNode, LatteContext $latteContext): LatteTemplateResolverResult
     {
         $className = $resolvedNode->getParam(self::PARAM_CLASS_NAME);
