@@ -82,9 +82,6 @@ final class RemoveExtractParamsNodeVisitor extends NodeVisitorAbstract
                 }
 
                 $itemKey = $item->key->value;
-                if ($itemKey === null) {
-                    continue;
-                }
 
                 $itemValue = $item->value;
                 $itemValueType = null;
