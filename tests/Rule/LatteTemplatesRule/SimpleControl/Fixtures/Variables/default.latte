@@ -1,5 +1,5 @@
+{default $someVariableWithDefault = 'default value'}
 {var $headerVar = 'something'}
-
 {$nonExistingVariable}
 {$headerVar}
 
@@ -11,3 +11,4 @@
 {$d}
 {$e}
 {$f}
+{php \PhpStan\dumpType($someVariableWithDefault)}

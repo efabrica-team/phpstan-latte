@@ -1,7 +1,7 @@
+{default $someVariableWithDefault = 'default value'}
+
 {block content}
-
 <h1>{$title}</h1>
-
 <div n:foreach="$items as $item">
     <a n:tag-if="$item->title">
         {$item->id} - {$item->title}
@@ -94,3 +94,4 @@
 {php \PhpStan\dumpType($slicedTitle)}
 
 {php \PhpStan\dumpType($encapsedVariable)}
+{php \PhpStan\dumpType($someVariableWithDefault)}
