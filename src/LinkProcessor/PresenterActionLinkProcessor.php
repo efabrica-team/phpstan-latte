@@ -102,7 +102,7 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         foreach ($methodNames as $methodName) {
             $methodLinkParams = $this->linkParamsProcessor->process($presenterClassName, $methodName, $linkParams);
             $expressions[] = new Expression(new MethodCall($variable, $methodName, $methodLinkParams), $attributes);
-            $attributes = [];   // reset attributes, we want to print them only with first expression
+            $attributes = []; // reset attributes, we want to print them only with first expression
         }
 
         return $expressions;
