@@ -176,6 +176,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Dumped type: \'default value\'',
+                97,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'value from presenter\'',
+                98,
+                'default.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',

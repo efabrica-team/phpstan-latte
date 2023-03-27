@@ -2,6 +2,11 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Support for nette/utils ^4.0
+- Support for nette/forms ^3.0
+- Support for `default` macro / tag
+
 ## [0.7.0] - 2023-03-13
 ### Added
 - Support for 'class::method' syntax in filters
