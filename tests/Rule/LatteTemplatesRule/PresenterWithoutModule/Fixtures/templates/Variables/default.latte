@@ -1,5 +1,5 @@
 {default $someVariableWithDefault = 'default value'}
-
+{default $someOtherVariableWithDefault = 'other default value'}
 {block content}
 <h1>{$title}</h1>
 <div n:foreach="$items as $item">
@@ -95,3 +95,4 @@
 
 {php \PhpStan\dumpType($encapsedVariable)}
 {php \PhpStan\dumpType($someVariableWithDefault)}
+{php \PhpStan\dumpType($someOtherVariableWithDefault)}

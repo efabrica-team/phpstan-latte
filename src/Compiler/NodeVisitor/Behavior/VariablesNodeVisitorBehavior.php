@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 
 trait VariablesNodeVisitorBehavior
 {
-    /** @var Variable[] */
+    /** @var array<string, Variable> */
     private array $variables = [];
 
     /**
@@ -16,6 +16,8 @@ trait VariablesNodeVisitorBehavior
      */
     public function setVariables(array $variables): void
     {
-        $this->variables = $variables;
+        foreach ($variables as $variable) {
+            $this->variables[$variable->getName()] = $variable;
+        }
     }
 }

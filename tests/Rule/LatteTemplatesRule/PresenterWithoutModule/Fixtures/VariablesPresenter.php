@@ -41,6 +41,7 @@ final class VariablesPresenter extends ParentPresenter
 
         $variable = $this->stringLists[0];
         $this->template->variableFromMethodCallOnVariable = $variable::method();
+        $this->template->someOtherVariableWithDefault = 'value from presenter';
     }
 
     public function renderDefault(): void
