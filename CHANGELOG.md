@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Support for try / catch in foreach
+
+### Fixed
+- Line numbers for CachingIterator above foreach 
+
 ## [0.8.0] - 2023-03-27
 ### Added
 - Support for nette/utils ^4.0

@@ -4,7 +4,7 @@
 <h1>{$title}</h1>
 <div n:foreach="$items as $item">
     <a n:tag-if="$item->title">
-        {$item->id} - {$item->title}
+        {try}{$item->id} - {$item->title}{else}-{/try}
     </a>
 </div>
 
