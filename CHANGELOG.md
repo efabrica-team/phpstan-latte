@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- Params in block / define are analysed in the same way as they are defined by developer - they are no longer optional with default value `null` 
+
 ### Added
 - Support for try / catch in foreach
 

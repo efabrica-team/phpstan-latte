@@ -11,9 +11,7 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp\Coalesce;
-use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Name;
 use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\DNumber;
 use PhpParser\Node\Scalar\LNumber;
@@ -86,12 +84,11 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
                 } elseif ($defaultValue === '[]') {
                     $default = new Array_();
                 } else {
-                    $default = new ConstFetch(new Name('null'));
+                    $default = null;
                 }
 
-                // Type is always nullable - all params are optional in latte unless they have default value
-                $type = ltrim(trim($parameters['type'][$i]), '?');
-                $nodeComment .= ' * @param ' . ($type && !$defaultValue ? '?' : '') . ($type ? $type . ' ' : '') . '$' . $parameters['variable'][$i] . "\n";
+                $type = trim($parameters['type'][$i]);
+                $nodeComment .= ' * @param ' . ($type ? $type . ' ' : '') . '$' . $parameters['variable'][$i] . "\n";
 
                 $node->params[] = new Param(new Variable($parameters['variable'][$i]), $default);
             }
