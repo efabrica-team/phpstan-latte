@@ -4,6 +4,7 @@
 
 ### Changed
 - Params in block / define are analysed in the same way as they are defined by developer - they are no longer optional with default value `null` 
+- Changed compiled code for n:tag-if conditions with latte 2 (`$ʟ_if[0]` changed to `$ʟ_if0`)
 
 ### Added
 - Support for try / catch in foreach
