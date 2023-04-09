@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\NodeVisitorAbstract;
 
@@ -45,6 +46,6 @@ final class ChangeLifArrayToLifVariableNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        return new Node\Expr\Variable('ʟ_if' . $node->dim->value);
+        return new Variable('ʟ_if' . $node->dim->value);
     }
 }
