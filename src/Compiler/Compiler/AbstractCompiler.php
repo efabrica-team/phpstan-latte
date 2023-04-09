@@ -51,8 +51,9 @@ abstract class AbstractCompiler implements CompilerInterface
 
     public function generateClassComment(string $className, string $context): string
     {
-        $comment = "\n* $context\n";
-        $comment .= "* @property {$className}_global \$global\n";
+        $comment = "\n * $context\n";
+        $comment .= " * @property {$className}_global \$global\n";
+        $comment .= ' * @generated ' . date('Y-m-d H:i:s') . "\n";
         $comment .= "\n";
         return $comment;
     }
@@ -69,9 +70,9 @@ abstract class AbstractCompiler implements CompilerInterface
             } else {
                 $type = is_object($value) ? get_class($value) : gettype($value);
             }
-            $phpCode .= "* @property {$type} \${$name}\n";
+            $phpCode .= " * @property {$type} \${$name}\n";
         }
-        $phpCode .= "*/\n";
+        $phpCode .= " */\n";
         $phpCode .= "class {$className} extends \\stdClass { }\n";
         return $phpCode;
     }

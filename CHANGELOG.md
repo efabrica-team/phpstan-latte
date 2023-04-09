@@ -7,6 +7,7 @@
 
 ### Added
 - Support for try / catch in foreach
+- Date of generated compiled template
 
 ### Fixed
 - Line numbers for CachingIterator above foreach 
