@@ -7,10 +7,11 @@
 
 ### Added
 - Support for try / catch in foreach
+- Support for n:ifcontent
 - Date of generated compiled template
 
 ### Fixed
-- Line numbers for CachingIterator above foreach 
+- Line numbers for CachingIterator above foreach
 
 ## [0.8.0] - 2023-03-27
 ### Added
