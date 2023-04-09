@@ -11,6 +11,7 @@
 
 ### Fixed
 - Line numbers for CachingIterator above foreach 
+- Stubs for Latte\Runtime\Filters::escapeJs (accepts also array)
 
 ## [0.8.0] - 2023-03-27
 ### Added
