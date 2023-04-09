@@ -233,12 +233,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: stdClass|null',
+                'Dumped type: stdClass',
                 2,
                 'define.latte',
             ],
             [
-                'Dumped type: string|null',
+                'Dumped type: string',
                 3,
                 'define.latte',
             ],
@@ -253,7 +253,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: string|null',
+                'Dumped type: string',
                 6,
                 'define.latte',
             ],
@@ -268,32 +268,32 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: array<stdClass>',
-                10,
-                'define.latte',
-            ],
-            [
                 'Dumped type: int',
                 9,
                 'define.latte',
             ],
             [
-                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                'Dumped type: array<stdClass>',
+                10,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
                 14,
                 'define.latte',
             ],
             [
-                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                'Parameter #2 $paramString of block my-block expects string, int given.',
                 14,
                 'define.latte',
             ],
             [
-                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
                 15,
                 'define.latte',
             ],
             [
-                'Parameter #2 $paramString of block my-block expects string|null, int given.',
+                'Parameter #2 $paramString of block my-block expects string, int given.',
                 15,
                 'define.latte',
             ],
