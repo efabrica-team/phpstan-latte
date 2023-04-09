@@ -10,6 +10,19 @@ use PhpParser\Node\Expr\Cast\String_;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\NodeVisitorAbstract;
 
+/**
+ * adds cast to ob_get_flush() because it can return false and rtrim doesn't accept false, only string
+ *
+ * change output from:
+ * <code>
+ * rtrim(ob_get_flush()) === '';
+ * </code>
+ *
+ * to:
+ * <code>
+ * rtrim((string)ob_get_flush()) === '';
+ * </code>
+ */
 final class CastObGetFlushToStringNodeVisitor extends NodeVisitorAbstract
 {
     private NameResolver $nameResolver;
