@@ -46,7 +46,7 @@
 {foreach $localStrings as $string}
     {php \PhpStan\dumpType($string)}
 {/foreach}
-
+<div n:ifcontent>
 {foreach $localStrings as $string}
     {if $iterator->first}START{/if}
     {if $iterator->isFirst()}START{/if}
@@ -57,7 +57,7 @@
     {if $iterator->last}END{/if}
     {if $iterator->isLast()}END{/if}
 {/foreach}
-
+</div>
 {$overwritted}
 {$overwritting}
 {$parentOverwritted}
