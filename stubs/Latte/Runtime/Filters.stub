@@ -40,7 +40,7 @@ class Filters
     }
 
     /**
-     * @param FilterString $s
+     * @param FilterString|array<mixed> $s
      */
     public static function escapeJs($s): string
     {
