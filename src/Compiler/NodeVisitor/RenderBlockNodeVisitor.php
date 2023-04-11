@@ -29,7 +29,7 @@ use PhpParser\NodeVisitorAbstract;
  *
  * to:
  * <code>
- * $this->blockMy_block($params);
+ * $this->blockMy_block($param1, $param2, $param3);
  * </code>
  */
 final class RenderBlockNodeVisitor extends NodeVisitorAbstract
@@ -103,16 +103,21 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
             return new MethodCall(new Variable('this'), $blockMethodName);
         }
 
-        if (!$paramsArg->value instanceof Plus) {
-            return null;
+        $parameters = null;
+        if ($paramsArg->value instanceof Plus && $paramsArg->value->left instanceof Array_) {
+            // some parameters - plus is used
+            $parameters = $paramsArg->value->left->items;
+        } elseif ($paramsArg->value instanceof Array_) {
+            // no parameters - empty array is used
+            $parameters = $paramsArg->value->items;
         }
 
-        if (!$paramsArg->value->left instanceof Array_) {
+        if ($parameters === null) {
             return null;
         }
 
         $params = [];
-        foreach ($paramsArg->value->left->items as $param) {
+        foreach ($parameters as $param) {
             if (!$param instanceof ArrayItem) {
                 continue;
             }
@@ -124,6 +129,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
         }
 
         $methodCallArgs = [];
+        $blockMethodParamDefaults = [];
         foreach ($blockMethodParams as $pos => $blockMethodParam) {
             if (!$blockMethodParam instanceof Param) {
                 continue;
@@ -131,10 +137,31 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
             if (!$blockMethodParam->var instanceof Variable) {
                 continue;
             }
+            $blockMethodParamDefaults[] = $blockMethodParam->default;
             $variableName = $this->nameResolver->resolve($blockMethodParam->var->name);
             $methodCallArgs[] = new Arg($params[$pos] ?? $params[$variableName] ?? new New_(new Name('MissingBlockParameter')));
         }
 
-        return new MethodCall(new Variable('this'), $blockMethodName, $methodCallArgs);
+        $skipMissingBlockParameter = true;
+        $reducedMethodCallArgs = [];
+        foreach (array_reverse($methodCallArgs, true) as $pos => $methodCallArg) {
+            $methodCallArgValue = $methodCallArg->value;
+            if ($methodCallArgValue instanceof New_ && $methodCallArgValue->class instanceof Name && $this->nameResolver->resolve($methodCallArgValue->class) === 'MissingBlockParameter') {
+                if ($skipMissingBlockParameter) {
+                    // skip all `new MissingBlockParameter` from the end of array
+                    continue;
+                } elseif (isset($blockMethodParamDefaults[$pos])) {
+                    // replace `new MissingBlockParameter` with default value of parameter
+                    $reducedMethodCallArgs[] = new Arg($blockMethodParamDefaults[$pos]);
+                    continue;
+                }
+            } else {
+                // if some other parameter was used, stop skipping of `new MissingBlockParameter` parameters
+                $skipMissingBlockParameter = false;
+            }
+            $reducedMethodCallArgs[] = $methodCallArg;
+        }
+        $reducedMethodCallArgs = array_reverse($reducedMethodCallArgs);
+        return new MethodCall(new Variable('this'), $blockMethodName, $reducedMethodCallArgs);
     }
 }

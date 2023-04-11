@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- Improved processing of block's missing parameters - default value is used if it is available
+
+### Fixed
+- String default values for blocks
+- Blocks called with no parameters are also transfered to method call
+
 ## [0.9.0] - 2023-04-11
 ### Changed
 - Params in block / define are analysed in the same way as they are defined by developer - they are no longer optional with default value `null` 

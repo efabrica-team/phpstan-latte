@@ -13,10 +13,14 @@ final class BlockParameterErrorTransformer implements ErrorTransformerInterface
     public function transform(Error $error): Error
     {
         preg_match(self::BLOCK_METHOD, $error->getMessage(), $match);
-        if (isset($match['block']) && strpos($error->getMessage(), 'MissingBlockParameter') === false) {
+        if (isset($match['block'])) {
             $block = lcfirst(str_replace('_', '-', $match['block']));
-            $message = ucfirst(str_replace($match[0], 'block ' . $block, $error->getMessage()));
-            $error->setMessage($message);
+            $message = $error->getMessage();
+            // replace method name to block name
+            $message = str_replace($match[0], 'block ' . $block, $message);
+            // replace fake `MissingBlockParameter` with `none` type
+            $message = str_replace('MissingBlockParameter', 'none', $message);
+            $error->setMessage(ucfirst($message));
         }
         return $error;
     }

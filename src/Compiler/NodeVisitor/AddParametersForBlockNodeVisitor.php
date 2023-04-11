@@ -73,7 +73,7 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             for ($i = 0; $i < count($parameters[0]); $i++) {
                 /** @var string|null $defaultValue */
                 $defaultValue = $parameters['default'][$i] ?: null;
-                if ($defaultValue !== null && str_starts_with('\'', $defaultValue)) {
+                if ($defaultValue !== null && str_starts_with($defaultValue, '\'')) {
                     $default = new String_(trim($defaultValue, '\''));
                 } elseif (is_numeric($defaultValue)) {
                     if (str_contains($defaultValue, '.')) {
