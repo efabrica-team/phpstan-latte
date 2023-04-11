@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.9.0] - 2023-04-11
 ### Changed
 - Params in block / define are analysed in the same way as they are defined by developer - they are no longer optional with default value `null` 
 - Changed compiled code for n:tag-if conditions with latte 2 (`$ʟ_if[0]` changed to `$ʟ_if0`)
@@ -120,7 +121,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...0.6.0
