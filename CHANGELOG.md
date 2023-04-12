@@ -5,6 +5,9 @@
 ### Changed
 - Improved processing of block's missing parameters - default value is used if it is available
 
+### Removed
+- Tip about type of variable comming from PHPDoc (all variable types in compiled templates are from PHPDoc, so this tip doesn't make sense)
+
 ### Fixed
 - String default values for blocks
 - Blocks called with no parameters are also transfered to method call
