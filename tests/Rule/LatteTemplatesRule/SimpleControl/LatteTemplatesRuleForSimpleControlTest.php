@@ -278,6 +278,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
+                'Block my-block invoked with 2 parameters, 4-9 required.',
+                14,
+                'define.latte',
+            ],
+            [
                 'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
                 14,
                 'define.latte',
@@ -295,11 +300,21 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Parameter #2 $paramString of block my-block expects string, int given.',
                 15,
+                'define.latte',
+            ],
+            [
+                'Parameter #3 $paramNullable of block my-block expects string|null, none given.',
+                15,
+                'define.latte',
+            ],
+            [
+                'Block my-block invoked with 0 parameters, 4-9 required.',
+                16,
                 'define.latte',
             ],
             [
                 'Dumped type: \'some string\'',
-                17,
+                18,
                 'define.latte',
             ],
         ]);
