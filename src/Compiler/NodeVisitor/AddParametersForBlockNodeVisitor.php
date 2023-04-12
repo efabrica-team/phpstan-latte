@@ -11,7 +11,10 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp\Coalesce;
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Name;
 use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\DNumber;
 use PhpParser\Node\Scalar\LNumber;
@@ -73,7 +76,9 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             for ($i = 0; $i < count($parameters[0]); $i++) {
                 /** @var string|null $defaultValue */
                 $defaultValue = $parameters['default'][$i] ?: null;
-                if ($defaultValue !== null && str_starts_with($defaultValue, '\'')) {
+                if ($defaultValue === null) {
+                    $default = null;
+                } elseif (str_starts_with($defaultValue, '\'')) {
                     $default = new String_(trim($defaultValue, '\''));
                 } elseif (is_numeric($defaultValue)) {
                     if (str_contains($defaultValue, '.')) {
@@ -83,8 +88,11 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
                     }
                 } elseif ($defaultValue === '[]') {
                     $default = new Array_();
+                } elseif (str_contains($defaultValue, '::')) {
+                    [$className, $constantName] = explode('::', $defaultValue, 2);
+                    $default = new ClassConstFetch(new Name($className), $constantName);
                 } else {
-                    $default = null;
+                    $default = new ConstFetch(new Name($defaultValue));
                 }
 
                 $type = trim($parameters['type'][$i]);

@@ -278,43 +278,63 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Block my-block invoked with 2 parameters, 4-9 required.',
+                'Dumped type: bool',
+                11,
+                'define.latte',
+            ],
+            [
+                'Dumped type: bool',
+                12,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                13,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string',
                 14,
+                'define.latte',
+            ],
+            [
+                'Block my-block invoked with 2 parameters, 4-13 required.',
+                18,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
-                14,
+                18,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string, int given.',
-                14,
+                18,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
-                15,
+                19,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string, int given.',
-                15,
+                19,
                 'define.latte',
             ],
             [
                 'Parameter #3 $paramNullable of block my-block expects string|null, none given.',
-                15,
+                19,
                 'define.latte',
             ],
             [
-                'Block my-block invoked with 0 parameters, 4-9 required.',
-                16,
+                'Block my-block invoked with 0 parameters, 4-13 required.',
+                20,
                 'define.latte',
             ],
             [
                 'Dumped type: \'some string\'',
-                18,
+                22,
                 'define.latte',
             ],
         ]);

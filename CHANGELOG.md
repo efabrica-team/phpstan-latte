@@ -5,6 +5,9 @@
 ### Changed
 - Improved processing of block's missing parameters - default value is used if it is available
 
+### Added
+- Support for constants as default value of block parameters
+
 ### Fixed
 - String default values for blocks
 - Blocks called with no parameters are also transfered to method call
