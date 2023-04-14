@@ -6,7 +6,10 @@
 - Improved processing of block's missing parameters - default value is used if it is available
 
 ### Added
-- Support for constants as default value of block parameters
+- Support for any expression as default value of block parameters
+
+### Removed
+- Tip about type of variable comming from PHPDoc (all variable types in compiled templates are from PHPDoc, so this tip doesn't make sense)
 
 ### Fixed
 - String default values for blocks
