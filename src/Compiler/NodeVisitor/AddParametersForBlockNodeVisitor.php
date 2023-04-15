@@ -19,6 +19,7 @@ use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Unset_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Parser\Parser;
+use PHPStan\Parser\ParserErrorsException;
 
 final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
 {
@@ -64,7 +65,13 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             preg_match_all($typesAndVariablesPattern, $define, $typesAndVariables);
 
             $variableTypes = array_combine($typesAndVariables['variable'], $typesAndVariables['type']) ?: [];
-            foreach ($variableTypes as $type) {
+            foreach ($variableTypes as $variable => $type) {
+                // parameters fallback if parser will fail
+                $parameters[$variable] = [
+                    'variable' => $variable,
+                    'type' => $type,
+                    'default' => null,
+                ];
                 if (str_contains($type, '[]')) {
                     // replace something[] to array because it is not supported by php for now
                     $define = str_replace($type . ' ', 'array ', $define);
@@ -74,22 +81,24 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             // create php code from latte code of define
             $phpContent = '<?php ' . preg_replace(['/^{define /', '/' . $match['block_name'] . ',? /', '/}$/'], ['function ', $methodName . '(', ') {}'], $define);
 
-            // parse php code
-            $stmts = $this->parser->parseString($phpContent);
-
-            $function = $stmts[0] ?? null;
-            if ($function instanceof Function_) {
-                foreach ($function->params as $param) {
-                    $variable = $this->nameResolver->resolve($param->var);
-                    if ($variable === null) {
-                        continue;
+            try {
+                // parse php code
+                $stmts = $this->parser->parseString($phpContent);
+                $function = $stmts[0] ?? null;
+                if ($function instanceof Function_) {
+                    foreach ($function->params as $param) {
+                        $variable = $this->nameResolver->resolve($param->var);
+                        if ($variable === null) {
+                            continue;
+                        }
+                        $parameters[$variable] = [
+                            'variable' => $variable,
+                            'type' => $variableTypes[$variable] ?? '',
+                            'default' => $param->default,
+                        ];
                     }
-                    $parameters[] = [
-                        'variable' => $variable,
-                        'type' => $variableTypes[$variable] ?? '',
-                        'default' => $param->default,
-                    ];
                 }
+            } catch (ParserErrorsException $e) {
             }
         } else {
             // process default blocks content etc.
