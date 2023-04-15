@@ -6,8 +6,12 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\Runtime\FilterInfo;
@@ -23,6 +27,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Nop;
@@ -35,12 +40,16 @@ use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
 use PHPStan\BetterReflection\Reflection\ReflectionParameter;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
 
-final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface
+final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
     use FiltersNodeVisitorBehavior;
+    use ExprTypeNodeVisitorBehavior;
+    use ScopeNodeVisitorBehavior;
 
     private TypeStringResolver $typeStringResolver;
 
@@ -48,11 +57,18 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
     private ClosureTypeFactory $closureTypeFactory;
 
-    public function __construct(TypeStringResolver $typeStringResolver, TypeToPhpDoc $typeToPhpDoc, ClosureTypeFactory $closureTypeFactory)
-    {
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(
+        TypeStringResolver $typeStringResolver,
+        TypeToPhpDoc $typeToPhpDoc,
+        ClosureTypeFactory $closureTypeFactory,
+        ReflectionProvider $reflectionProvider
+    ) {
         $this->typeStringResolver = $typeStringResolver;
         $this->typeToPhpDoc = $typeToPhpDoc;
         $this->closureTypeFactory = $closureTypeFactory;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function enterNode(Node $node): ?Node
@@ -114,6 +130,20 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
     private function addFilterVariables(ClassMethod $node): void
     {
+        $class = $node->getAttribute('parent');
+        if (!$class instanceof Class_) {
+            return;
+        }
+
+        $type = $this->getType($class);
+        if (!$type instanceof ObjectType) {
+            return;
+        }
+
+        if (!$type->isInstanceOf('\Latte\Runtime\Template')->yes()) {
+            return;
+        }
+
         $variableStatements = [];
         foreach ($this->getFilterVariables() as $variable) {
             $prependVarTypesDocBlocks = sprintf(
@@ -173,18 +203,23 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             }
 
             try {
-                $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-                $reflectionMethod = $reflectionClass->getMethod($methodName);
-
-                if ($reflectionMethod === null || $reflectionMethod->isStatic()) {
-                    continue;
-                }
-
-                $variableName = $this->createFilterVariableName($filterName);
-                $variables[$variableName] = new Variable($variableName, new ObjectType($className));
+                $classReflection = $this->reflectionProvider->getClass($className);
             } catch (ClassNotFoundException $e) {
                 continue;
             }
+
+            try {
+                $methodReflection = $classReflection->getMethod($methodName, $this->getScope());
+            } catch (MissingMethodFromReflectionException $e) {
+                continue;
+            }
+
+            if ($methodReflection->isStatic()) {
+                continue;
+            }
+
+            $variableName = $this->createFilterVariableName($filterName);
+            $variables[$variableName] = new Variable($variableName, new ObjectType($className));
         }
         return $variables;
     }

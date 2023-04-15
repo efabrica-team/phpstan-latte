@@ -17,9 +17,6 @@ final class LineMapper
     /** @var array<string, LineMap> */
     private array $lineMaps = [];
 
-    /**
-     * @param Parser $parser
-     */
     public function __construct(Parser $parser, bool $debugMode = false)
     {
         $this->parser = $parser;

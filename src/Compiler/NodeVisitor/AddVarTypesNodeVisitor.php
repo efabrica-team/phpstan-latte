@@ -55,7 +55,7 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
         }
 
         foreach ($this->globalVariables as $variable => $type) {
-            $this->variables[] = new Variable($variable, $this->typeStringResolver->resolve($type));
+            $this->variables[$variable] = new Variable($variable, $this->typeStringResolver->resolve($type));
         }
 
         $combinedVariables = ItemCombinator::merge(

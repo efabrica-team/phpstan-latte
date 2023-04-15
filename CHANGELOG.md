@@ -2,14 +2,50 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- Improved processing of block's missing parameters - default value is used if it is available
+
+### Added
+- Support for any expression as default value of block parameters
+- Transformation for dynamic form fields with always true/false condition in is_object
+
+### Removed
+- Tip about type of variable comming from PHPDoc (all variable types in compiled templates are from PHPDoc, so this tip doesn't make sense)
+
+### Fixed
+- String default values for blocks
+- Blocks called with no parameters are also transfered to method call
+
+## [0.9.0] - 2023-04-11
+### Changed
+- Params in block / define are analysed in the same way as they are defined by developer - they are no longer optional with default value `null` 
+- Changed compiled code for n:tag-if conditions with latte 2 (`$ʟ_if[0]` changed to `$ʟ_if0`)
+
+### Added
+- Support for try / catch in foreach
+- Support for n:ifcontent
+- Date of generated compiled template
+
+### Fixed
+- Line numbers for CachingIterator above foreach
+- Stubs for Latte\Runtime\Filters::escapeJs (accepts also array)
+
+## [0.8.0] - 2023-03-27
+### Added
+- Support for nette/utils ^4.0
+- Support for nette/forms ^3.0
+- Support for `default` macro / tag
+
+## [0.7.0] - 2023-03-13
 ### Added
 - Support for 'class::method' syntax in filters
 - Support for functions
+- Support for multiplier
 - NodeVisitors using Type from Scope
-- Transformation for dynamic form fields with always true/false condition in is_object
 
 ### Fixed
 - Static method calls on variables are not analysed
+- Fixed evaluation of encapsed strings
 
 ## [0.6.0] - 2023-02-03
 ### Added
@@ -99,7 +135,10 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...0.9.0
+[0.8.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.7.0...0.8.0
+[0.7.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.3.0...0.4.0

@@ -1,4 +1,4 @@
-{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123, \stdClass[] $paramArray = []}
+{define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123, \stdClass[] $paramArray = [], array $paramArrayMixedDefault = [1, 2, 3.5, 'str1', [4, 5, 'str2']], bool $boolDefaultTrue = true, bool $boolDefaultFalse = false, ?string $nullableStringDefaultNull = null, string $stringDefaultClassConstant = Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE}
     {php \PhpStan\dumpType($paramObject)}
     {php \PhpStan\dumpType($paramString)}
     {php \PhpStan\dumpType($paramNullable)}
@@ -8,10 +8,16 @@
     {php \PhpStan\dumpType($paramFloat)}
     {php \PhpStan\dumpType($paramInteger)}
     {php \PhpStan\dumpType($paramArray)}
+    {php \PhpStan\dumpType($paramArrayMixedDefault)}
+    {php \PhpStan\dumpType($boolDefaultTrue)}
+    {php \PhpStan\dumpType($boolDefaultFalse)}
+    {php \PhpStan\dumpType($nullableStringDefaultNull)}
+    {php \PhpStan\dumpType($stringDefaultClassConstant)}
 {/define}
 
 {include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger, 'paramArray' => $knownArray}
 {include my-block 'paramObject' => $knownString, 'paramString' => $knownInteger}
 {include my-block $knownString, $knownInteger, 'paramInteger' => $knownInteger}
+{include my-block}
 
 {php \PhpStan\dumpType($paramString)}

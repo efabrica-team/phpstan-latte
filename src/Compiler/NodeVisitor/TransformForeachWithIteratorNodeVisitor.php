@@ -71,8 +71,11 @@ final class TransformForeachWithIteratorNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        $expression = new Expression($node->expr);
+        $expression->setAttributes($node->getAttributes());
+
         $nodes = [
-            new Expression($node->expr),
+            $expression,
         ];
         $node->expr = $constructArg->value;
 

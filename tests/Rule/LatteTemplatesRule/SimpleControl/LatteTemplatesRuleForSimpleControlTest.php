@@ -223,6 +223,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/Blocks/SomeControl.php'], [
             [
+                'Block my-block has parameter $paramArrayMixedDefault with no value type specified in iterable type array.',
+                1,
+                'define.latte',
+                'See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type',
+            ],
+            [
                 'Block my-block has parameter $paramNoType with no type specified.',
                 1,
                 'define.latte',
@@ -233,12 +239,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: stdClass|null',
+                'Dumped type: stdClass',
                 2,
                 'define.latte',
             ],
             [
-                'Dumped type: string|null',
+                'Dumped type: string',
                 3,
                 'define.latte',
             ],
@@ -253,7 +259,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: string|null',
+                'Dumped type: string',
                 6,
                 'define.latte',
             ],
@@ -268,38 +274,78 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
-                'Dumped type: array<stdClass>',
-                10,
-                'define.latte',
-            ],
-            [
                 'Dumped type: int',
                 9,
                 'define.latte',
             ],
             [
-                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                'Dumped type: array<stdClass>',
+                10,
+                'define.latte',
+            ],
+            [
+                'Dumped type: array',
+                11,
+                'define.latte',
+            ],
+            [
+                'Dumped type: bool',
+                12,
+                'define.latte',
+            ],
+            [
+                'Dumped type: bool',
+                13,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string|null',
                 14,
                 'define.latte',
             ],
             [
-                'Parameter #2 $paramString of block my-block expects string|null, int given.',
-                14,
-                'define.latte',
-            ],
-            [
-                'Parameter #1 $paramObject of block my-block expects stdClass|null, string given.',
+                'Dumped type: string',
                 15,
                 'define.latte',
             ],
             [
-                'Parameter #2 $paramString of block my-block expects string|null, int given.',
-                15,
+                'Block my-block invoked with 2 parameters, 4-14 required.',
+                19,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
+                19,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string, int given.',
+                19,
+                'define.latte',
+            ],
+            [
+                'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
+                20,
+                'define.latte',
+            ],
+            [
+                'Parameter #2 $paramString of block my-block expects string, int given.',
+                20,
+                'define.latte',
+            ],
+            [
+                'Parameter #3 $paramNullable of block my-block expects string|null, none given.',
+                20,
+                'define.latte',
+            ],
+            [
+                'Block my-block invoked with 0 parameters, 4-14 required.',
+                21,
                 'define.latte',
             ],
             [
                 'Dumped type: \'some string\'',
-                17,
+                23,
                 'define.latte',
             ],
         ]);
@@ -311,6 +357,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Variable $nonExistingVariable might not be defined.',
                 3,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'default value\'',
+                14,
                 'default.latte',
             ],
         ]);

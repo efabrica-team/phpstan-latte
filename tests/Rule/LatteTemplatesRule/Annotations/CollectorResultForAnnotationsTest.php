@@ -30,7 +30,7 @@ final class CollectorResultForAnnotationsTest extends ScanCollectorResultTest
     public function fixtures(): array
     {
         $fixtures = [];
-        foreach (Finder::findDirectories()->in(__DIR__ . '/Fixtures') as $path) {
+        foreach (Finder::findDirectories('*')->in(__DIR__ . '/Fixtures') as $path) {
             $fixtures[] = [$path->getFilename()];
         }
         return $fixtures;

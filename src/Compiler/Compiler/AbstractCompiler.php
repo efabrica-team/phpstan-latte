@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
 use Latte\Engine;
+use PHPStan\Reflection\Native\NativeParameterReflection;
+use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\ArrayType;
+use PHPStan\Type\CallableType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
+use PHPStan\Type\VoidType;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
@@ -47,8 +51,9 @@ abstract class AbstractCompiler implements CompilerInterface
 
     public function generateClassComment(string $className, string $context): string
     {
-        $comment = "\n* $context\n";
-        $comment .= "* @property {$className}_global \$global\n";
+        $comment = "\n * $context\n";
+        $comment .= " * @property {$className}_global \$global\n";
+        $comment .= ' * @generated ' . date('Y-m-d H:i:s') . "\n";
         $comment .= "\n";
         return $comment;
     }
@@ -65,9 +70,9 @@ abstract class AbstractCompiler implements CompilerInterface
             } else {
                 $type = is_object($value) ? get_class($value) : gettype($value);
             }
-            $phpCode .= "* @property {$type} \${$name}\n";
+            $phpCode .= " * @property {$type} \${$name}\n";
         }
-        $phpCode .= "*/\n";
+        $phpCode .= " */\n";
         $phpCode .= "class {$className} extends \\stdClass { }\n";
         return $phpCode;
     }
@@ -80,6 +85,12 @@ abstract class AbstractCompiler implements CompilerInterface
         $providers['snippetDriver'] = TypeCombinator::addNull(new ObjectType('Nette\Bridges\ApplicationLatte\SnippetDriver'));
         $providers['uiNonce'] = TypeCombinator::addNull(new StringType());
         $providers['formsStack'] = new ArrayType(new IntegerType(), new ObjectType('Nette\Forms\Container'));
+
+        $coreExceptionHandlerParameters = [
+            new NativeParameterReflection('exception', false, new ObjectType('\Throwable'), PassedByReference::createNo(), false, null),
+            new NativeParameterReflection('template', false, new ObjectType('\Latte\Runtime\Template'), PassedByReference::createNo(), false, null),
+        ];
+        $providers['coreExceptionHandler'] = new CallableType($coreExceptionHandlerParameters, new VoidType());
         $phpContent .= $this->generateTypes($className . '_global', $providers);
         return $phpContent;
     }

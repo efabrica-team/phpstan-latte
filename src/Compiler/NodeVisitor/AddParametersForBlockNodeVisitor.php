@@ -7,30 +7,30 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
-use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp\Coalesce;
-use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Name;
 use PhpParser\Node\Param;
-use PhpParser\Node\Scalar\DNumber;
-use PhpParser\Node\Scalar\LNumber;
-use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Unset_;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Parser\Parser;
+use PHPStan\Parser\ParserErrorsException;
 
 final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
 {
     private NameResolver $nameResolver;
 
-    public function __construct(NameResolver $nameResolver)
+    private Parser $parser;
+
+    public function __construct(NameResolver $nameResolver, Parser $parser)
     {
         $this->nameResolver = $nameResolver;
+        $this->parser = $parser;
     }
 
     /**
@@ -56,12 +56,50 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
         }
 
         $parameters = [];
-
-        $pattern = '/{define (?<block_name>.*?),? (?<parameters>.*)} on line (?<line>\d+)/';
+        $pattern = '/(?<define>{define (?<block_name>.*?),? (?<parameters>.*)}) on line (?<line>\d+)/';
         preg_match($pattern, $comment->getText(), $match);
         if (isset($match['parameters'])) {
-            $parametersPattern = '/(?<type>.*?)\$(?<variable>[[:alnum:]]+)( = (?<default>.*?))?,/';
-            preg_match_all($parametersPattern, $match['parameters'] . ',', $parameters);
+            $define = $match['define'];
+
+            $typesAndVariablesPattern = '/(?<type>[\?\\\[\]\<\>[:alnum:]]*)[ ]*\$(?<variable>[[:alnum:]]+)/';
+            preg_match_all($typesAndVariablesPattern, $define, $typesAndVariables);
+
+            $variableTypes = array_combine($typesAndVariables['variable'], $typesAndVariables['type']) ?: [];
+            foreach ($variableTypes as $variable => $type) {
+                // parameters fallback if parser will fail
+                $parameters[$variable] = [
+                    'variable' => $variable,
+                    'type' => $type,
+                    'default' => null,
+                ];
+                if (str_contains($type, '[]')) {
+                    // replace something[] to array because it is not supported by php for now
+                    $define = str_replace($type . ' ', 'array ', $define);
+                }
+            }
+
+            // create php code from latte code of define
+            $phpContent = '<?php ' . preg_replace(['/^{define /', '/' . $match['block_name'] . ',? /', '/}$/'], ['function ', $methodName . '(', ') {}'], $define);
+
+            try {
+                // parse php code
+                $stmts = $this->parser->parseString($phpContent);
+                $function = $stmts[0] ?? null;
+                if ($function instanceof Function_) {
+                    foreach ($function->params as $param) {
+                        $variable = $this->nameResolver->resolve($param->var);
+                        if ($variable === null) {
+                            continue;
+                        }
+                        $parameters[$variable] = [
+                            'variable' => $variable,
+                            'type' => $variableTypes[$variable] ?? '',
+                            'default' => $param->default,
+                        ];
+                    }
+                }
+            } catch (ParserErrorsException $e) {
+            }
         } else {
             // process default blocks content etc.
             $pattern = '/{block (?<block_name>.*?)} on line (?<line>\d+)/';
@@ -72,28 +110,11 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
         $node->params = [];
         if ($parameters) {
             $nodeComment .= "\n/**\n";
-            for ($i = 0; $i < count($parameters[0]); $i++) {
-                /** @var string|null $defaultValue */
-                $defaultValue = $parameters['default'][$i] ?: null;
-                if ($defaultValue !== null && str_starts_with('\'', $defaultValue)) {
-                    $default = new String_(trim($defaultValue, '\''));
-                } elseif (is_numeric($defaultValue)) {
-                    if (str_contains($defaultValue, '.')) {
-                        $default = new DNumber(floatval($defaultValue));
-                    } else {
-                        $default = new LNumber(intval($defaultValue));
-                    }
-                } elseif ($defaultValue === '[]') {
-                    $default = new Array_();
-                } else {
-                    $default = new ConstFetch(new Name('null'));
-                }
 
-                // Type is always nullable - all params are optional in latte unless they have default value
-                $type = ltrim(trim($parameters['type'][$i]), '?');
-                $nodeComment .= ' * @param ' . ($type && !$defaultValue ? '?' : '') . ($type ? $type . ' ' : '') . '$' . $parameters['variable'][$i] . "\n";
-
-                $node->params[] = new Param(new Variable($parameters['variable'][$i]), $default);
+            foreach ($parameters as $parameter) {
+                $type = trim($parameter['type']);
+                $nodeComment .= ' * @param ' . ($type ? $type . ' ' : '') . '$' . $parameter['variable'] . "\n";
+                $node->params[] = new Param(new Variable($parameter['variable']), $parameter['default']);
             }
             $nodeComment .= '*/';
         }

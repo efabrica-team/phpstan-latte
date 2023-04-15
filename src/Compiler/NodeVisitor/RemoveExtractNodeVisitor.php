@@ -4,15 +4,22 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
-final class RemoveExtractParamsNodeVisitor extends NodeVisitorAbstract
+final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
 {
+    private NameResolver $nameResolver;
+
+    public function __construct(NameResolver $nameResolver)
+    {
+        $this->nameResolver = $nameResolver;
+    }
+
     public function leaveNode(Node $node): ?int
     {
         if (!$node instanceof Expression) {
@@ -24,17 +31,10 @@ final class RemoveExtractParamsNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$expr->name instanceof Name) {
+        if ($this->nameResolver->resolve($expr) !== 'extract') {
             return null;
         }
 
-        if ((string)$expr->name === 'extract') {
-            return NodeTraverser::REMOVE_NODE;
-        }
-
-        // todo arg this->params or $ʟ_args
-        // todo we could also remove unset($ʟ_args)
-
-        return null;
+        return NodeTraverser::REMOVE_NODE;
     }
 }

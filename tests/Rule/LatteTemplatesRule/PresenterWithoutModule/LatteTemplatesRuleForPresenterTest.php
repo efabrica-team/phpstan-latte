@@ -177,6 +177,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Dumped type: \'default value\'',
+                97,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'value from presenter\'',
+                98,
+                'default.latte',
+            ],
+            [
                 'Variable $fromRenderDefault might not be defined.',
                 6,
                 'other.latte',
@@ -703,25 +713,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Comparison operation ">" between 10 and 0 is always true.',
                 2,
                 'recursion.latte',
-                'Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.',
             ],
             [
                 'Comparison operation ">" between 9 and 0 is always true.',
                 2,
                 'recursion.latte',
-                'Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.',
             ],
             [
                 'Comparison operation ">" between 8 and 0 is always true.',
                 2,
                 'recursion.latte',
-                'Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.',
             ],
             [
                 'Comparison operation ">" between 7 and 0 is always true.',
                 2,
                 'recursion.latte',
-                'Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.',
             ],
             [
                 'Dumped type: 9',

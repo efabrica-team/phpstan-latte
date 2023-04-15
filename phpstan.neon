@@ -58,17 +58,13 @@ parameters:
                 - '#^Creating new PHPStan\\Collectors\\Registry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
         -
-            messages:
-                - '#^Calling PHPStan\\Rules\\RuleError\:\:getMessage\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                - '#^Calling PHPStan\\Rules\\MetadataRuleError\:\:getMetadata\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                - '#^Calling PHPStan\\Rules\\FileRuleError\:\:getFile\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                - '#^Calling PHPStan\\Rules\\LineRuleError\:\:getLine\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                - '#^Calling PHPStan\\Rules\\TipRuleError\:\:getTip\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-                - '#^Calling PHPStan\\Rules\\IdentifierRuleError\:\:getIdentifier\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
-            path: src/Error/ErrorBuilder.php
-        -
             message: '#^Calling PHPStan\\File\\SimpleRelativePathHelper\:\:getRelativePath\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
             path: src/Error/TableErrorFormatter.php
+
+        -
+            message: '#^Creating new PHPStan\\Reflection\\Native\\NativeParameterReflection is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+            path: src/Compiler/Compiler/AbstractCompiler.php
+
         -
             message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects array\|bool\|float\|int\|PhpParser\\Node\\Expr\|string\|null, mixed given\.$#'
             path: src/LinkProcessor/LinkParamsProcessor.php

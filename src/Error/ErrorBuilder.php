@@ -40,10 +40,11 @@ final class ErrorBuilder
         '/Instanceof between .* and Nette\\\\Application\\\\UI\\\\Renderable will always evaluate to true\./', // latte code don't pass phpstan/strict-rules
         '/Parameter #2 \$parent of class (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator) constructor expects (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null, mixed given\./', // creating caching iterator
         '/Cannot access property (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./', // inner foreach cause that phpstan thinks there is null in CachingIterator
-        '/Cannot call method (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./',  // inner foreach cause that phpstan thinks there is null in CachingIterator
-        '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./',   // latte 3 internal error
+        '/Cannot call method (.*?) on (Latte\\\\Runtime\\\\CachingIterator|Latte\\\\Essential\\\\CachingIterator)\|null\./', // inner foreach cause that phpstan thinks there is null in CachingIterator
+        '/Parameter #3 \$s of static method Latte\\\\Runtime\\\\Filters::convertTo\(\) expects string, mixed given\./', // latte 3 internal error
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|string\./',
         '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
+        '/Variable \$ʟ_it on left side of \?\? always exists and is not nullable\./', // $ʟ_it in try / catch in foreach is always set
     ];
 
     /** @var string[] */
