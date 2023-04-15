@@ -13,10 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         php: [ '8.0', '8.1', '8.2' ]
-        outdated-args: [ '--ignore=phpunit/phpunit' ]
+        outdated-args: [ '--ignore=phpunit/phpunit --ignore=phpstan/phpstan-nette' ]
         include:
           - php: '7.4'
-            outdated-args: '--ignore=nette/finder --ignore=phpunit/phpunit'
+            outdated-args: '--ignore=nette/finder --ignore=phpunit/phpunit --ignore=phpstan/phpstan-nette'
 
     name: Composer outdated - PHP ${{ matrix.php }}
 
