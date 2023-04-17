@@ -15,9 +15,18 @@
     {php \PhpStan\dumpType($stringDefaultClassConstant)}
 {/define}
 
+{define no-comma-block $name, $class}
+    {php \PhpStan\dumpType($name)}
+    {php \PhpStan\dumpType($class)}
+{/define}
+
 {include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger, 'paramArray' => $knownArray}
 {include my-block 'paramObject' => $knownString, 'paramString' => $knownInteger}
 {include my-block $knownString, $knownInteger, 'paramInteger' => $knownInteger}
 {include my-block}
+{include no-comma-block, $knownString, $knownString}
+{include no-comma-block, $knownString, $knownInteger}
+{include no-comma-block, $knownInteger}
+{include no-comma-block}
 
 {php \PhpStan\dumpType($paramString)}
