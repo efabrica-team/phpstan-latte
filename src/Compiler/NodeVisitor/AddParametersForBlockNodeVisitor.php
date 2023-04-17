@@ -62,7 +62,7 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             $define = $match['define'];
 
             $typesAndVariablesPattern = '/(?<type>[\?\\\[\]\<\>[:alnum:]]*)[ ]*\$(?<variable>[[:alnum:]]+)/';
-            preg_match_all($typesAndVariablesPattern, $define, $typesAndVariables);
+            preg_match_all($typesAndVariablesPattern, $match['parameters'], $typesAndVariables);
 
             $variableTypes = array_combine($typesAndVariables['variable'], $typesAndVariables['type']) ?: [];
             foreach ($variableTypes as $variable => $type) {

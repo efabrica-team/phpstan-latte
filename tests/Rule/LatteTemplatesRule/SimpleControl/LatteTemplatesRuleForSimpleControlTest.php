@@ -309,43 +309,73 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
+                'Block no-comma-block has parameter $name with no type specified.',
+                18,
+                'define.latte',
+            ],
+            [
+                'Block no-comma-block has parameter $class with no type specified.',
+                18,
+                'define.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                19,
+                'define.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                20,
+                'define.latte',
+            ],
+            [
                 'Block my-block invoked with 2 parameters, 4-14 required.',
-                19,
+                24,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
-                19,
+                24,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string, int given.',
-                19,
+                24,
                 'define.latte',
             ],
             [
                 'Parameter #1 $paramObject of block my-block expects stdClass, string given.',
-                20,
+                25,
                 'define.latte',
             ],
             [
                 'Parameter #2 $paramString of block my-block expects string, int given.',
-                20,
+                25,
                 'define.latte',
             ],
             [
                 'Parameter #3 $paramNullable of block my-block expects string|null, none given.',
-                20,
+                25,
                 'define.latte',
             ],
             [
                 'Block my-block invoked with 0 parameters, 4-14 required.',
-                21,
+                26,
+                'define.latte',
+            ],
+            [
+                'Block no-comma-block invoked with 1 parameter, 2 required.',
+                29,
+                'define.latte',
+            ],
+            [
+                'Block no-comma-block invoked with 0 parameters, 2 required.',
+                30,
                 'define.latte',
             ],
             [
                 'Dumped type: \'some string\'',
-                23,
+                32,
                 'define.latte',
             ],
         ]);
