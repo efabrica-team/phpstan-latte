@@ -45,12 +45,12 @@
 {/form}
 
 {form notExisting}
-    {input username}
+    {input username}{label username /}
 {/form}
 
 {form firstForm}
     {var $name = "text"}
-    {input $name}
+    {input $name}{label $name /}
     {var $textarea = $form['textarea']}
     {input $textarea, 'class' => 'textarea'}
 {/form}

@@ -266,6 +266,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          * </code>
          */
         if ($node instanceof Echo_ && ($node->exprs[0] ?? null) instanceof MethodCall) {
+            $varName = 'ʟ_input';
             /** @var MethodCall $methodCallExpr */
             $methodCallExpr = $node->exprs[0];
             $methodCallVar = $methodCallExpr->var;
@@ -276,7 +277,48 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
 
             if ($methodCallVar instanceof StaticCall && $this->nameResolver->resolve($methodCallVar->class) === 'Nette\Bridges\FormsLatte\Runtime' && $this->nameResolver->resolve($methodCallVar->name) === 'item') {
-                $varName = 'ʟ_input';
+                $newMethodCallVar = new Variable($varName);
+                $newMethodCall = null;
+                foreach (array_reverse($methodCalls) as $methodCall) {
+                    $newMethodCall = $newMethodCallVar = new MethodCall($newMethodCallVar, $methodCall->name, $methodCall->args);
+                }
+
+                return [
+                    new Expression(new Assign(new Variable($varName), $methodCallVar), ['comments' => [new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' */')]]),
+                    new Echo_([$newMethodCall]),
+                ];
+            }
+        }
+
+        /**
+         * Replace:
+         * <code>
+         * echo $ʟ_label = \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global)->getLabel();
+         * </code>
+         *
+         * With:
+         * <code>
+         * /** @var Nette\Forms\Controls\BaseControl $ʟ_label
+         * $ʟ_label = \Nette\Bridges\FormsLatte\Runtime::item($name, $this->global);
+         * echo $ʟ_label->getLabel();
+         * </code>
+         */
+        if ($node instanceof Echo_ &&
+           ($node->exprs[0] ?? null) instanceof Assign &&
+           $node->exprs[0]->expr instanceof MethodCall &&
+           $node->exprs[0]->var instanceof Variable
+        ) {
+            $varName = $this->nameResolver->resolve($node->exprs[0]->var->name) ?? '$ʟ_tmp';
+            /** @var MethodCall $methodCallExpr */
+            $methodCallExpr = $node->exprs[0]->expr;
+            $methodCallVar = $methodCallExpr->var;
+            $methodCalls[] = $methodCallExpr;
+            while ($methodCallVar instanceof MethodCall) {
+                $methodCalls[] = $methodCallVar;
+                $methodCallVar = $methodCallVar->var;
+            }
+
+            if ($methodCallVar instanceof StaticCall && $this->nameResolver->resolve($methodCallVar->class) === 'Nette\Bridges\FormsLatte\Runtime' && $this->nameResolver->resolve($methodCallVar->name) === 'item') {
                 $newMethodCallVar = new Variable($varName);
                 $newMethodCall = null;
                 foreach (array_reverse($methodCalls) as $methodCall) {

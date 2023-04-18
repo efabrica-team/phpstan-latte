@@ -14,6 +14,7 @@
 ### Fixed
 - String default values for blocks
 - Blocks called with no parameters are also transfered to method call
+- Dynamic labels in form templates
 
 ## [0.9.0] - 2023-04-11
 ### Changed
