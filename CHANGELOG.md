@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.10.0] - 2023-04-21
 ### Changed
 - Improved processing of block's missing parameters - default value is used if it is available
 
@@ -135,7 +136,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.10.0...HEAD
+[0.10.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.6.0...0.7.0
