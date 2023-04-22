@@ -23,11 +23,12 @@
     {/switch}
 {/foreach}
 
-<div n:foreach="$flashes as $flash">
+<div n:snippet="mySnippet1" n:foreach="$flashes as $flash">
     <div n:class="flash, $flash->type">{$flash->message}</div>
 </div>
-
+{snippet mySnippet2}
 {capture $captured}<div class="captured">Captured block</div>{/capture}
 {$captured}
 {$startup|striptags}
 {php $thisWillBeRemoved}
+{/snippet}
