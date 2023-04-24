@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
 
+use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\VariablesPresenter;
@@ -825,6 +826,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     public function testSnippets(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], [
+            [
+                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach ' . (LatteVersion::isLatte3() ? '(on line 3 at column 6)' : '(on line 3)'),
+                3,
+                'compileError.latte',
+            ],
         ]);
     }
 }

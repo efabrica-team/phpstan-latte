@@ -11,4 +11,8 @@ final class SnippetsPresenter extends Presenter
     public function renderDefault(): void
     {
     }
+
+    public function renderCompileError(): void
+    {
+    }
 }
