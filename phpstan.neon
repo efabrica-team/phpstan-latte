@@ -127,3 +127,8 @@ parameters:
                 - '#^Call to an undefined method Latte\\Engine\:\:addExtension\(\)\.$#'
             path: src/Compiler/Compiler/Latte3Compiler.php
             reportUnmatched: false
+
+        -
+            message: '#^Method Latte\\CompileException\:\:setSource\(\) invoked with 3 parameters, 1-2 required\.$#'
+            path: src/Compiler/Compiler/Latte2Compiler.php
+            reportUnmatched: false
