@@ -15,7 +15,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "nette/application": "^3.1.2",
+        "nette/application": "^3.1.6",
         "nette/forms": "^3.1",
         "nikic/php-parser": "^4.15",
         "efabrica/coding-standard": "^0.5",
