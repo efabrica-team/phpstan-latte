@@ -9,5 +9,5 @@ rules:
     - Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultRule
 
 includes:
-     - %rootDir%/../../../vendor/phpstan/phpstan-nette/extension.neon
-     - %rootDir%/../../../vendor/phpstan/phpstan-nette/rules.neon
+    - %rootDir%/../../../vendor/phpstan/phpstan-nette/extension.neon
+    - %rootDir%/../../../vendor/phpstan/phpstan-nette/rules.neon

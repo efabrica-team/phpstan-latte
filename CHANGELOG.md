@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Typehint for `$this->global->snippetDriver` in compiled template
+
 ## [0.10.0] - 2023-04-21
 ### Changed
 - Improved processing of block's missing parameters - default value is used if it is available

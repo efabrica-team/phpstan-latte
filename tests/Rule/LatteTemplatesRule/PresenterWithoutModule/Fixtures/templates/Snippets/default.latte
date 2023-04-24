@@ -1,0 +1,7 @@
+{block content}
+
+{snippet flashes}
+    <div n:foreach="$flashes as $flash">
+        <div n:class="flash, $flash->type">{$flash->message}</div>
+    </div>
+{/snippet}

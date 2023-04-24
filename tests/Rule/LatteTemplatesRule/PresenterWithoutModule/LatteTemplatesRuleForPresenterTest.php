@@ -821,4 +821,10 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
         ]);
     }
+
+    public function testSnippets(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], [
+        ]);
+    }
 }
