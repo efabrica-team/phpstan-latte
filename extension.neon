@@ -149,6 +149,8 @@ services:
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFunctionsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\NotNullableSnippetDriverNodeVisitor())
+
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
     - Efabrica\PHPStanLatte\LinkProcessor\LinkParamsProcessor
