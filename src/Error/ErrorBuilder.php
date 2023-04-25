@@ -46,6 +46,7 @@ final class ErrorBuilder
         '/Method Nette\\\\Forms\\\\Controls\\\\BaseControl::getControlPart\(\) invoked with 1 parameter, 0 required\./', // dynamic checkbox is typehinted as BaseControl
         '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
         '/Variable \$ʟ_it on left side of \?\? always exists and is not nullable\./', // $ʟ_it in try / catch in foreach is always set
+        '/Cannot call method render\(\) on mixed\./', // redundant error for unknown components with phpstan-nette extension
     ];
 
     /** @var string[] */
