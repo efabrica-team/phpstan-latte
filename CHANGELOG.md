@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Line of compilation error (if available) instead of -1 
+
 ### Fixed
 - Typehint for `$this->global->snippetDriver` in compiled template
 

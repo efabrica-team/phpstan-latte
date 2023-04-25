@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
+use Latte\CompileException;
+
 interface CompilerInterface
 {
     /**
      * @param string $templateContent latte content
      * @return string php content
+     * @throws CompileException
      */
     public function compile(string $templateContent, ?string $actualClass, string $context = ''): string;
 

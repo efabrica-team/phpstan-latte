@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\Compiler;
 
+use Latte\CompileException;
 use Latte\Engine;
 use Latte\Runtime\Defaults;
 use Latte\Runtime\FilterExecutor;
@@ -43,16 +44,27 @@ final class Latte2Compiler extends AbstractCompiler
 
     public function compile(string $templateContent, ?string $actualClass, string $context = ''): string
     {
-        $latteTokens = $this->engine->getParser()->parse($templateContent);
-        $className = $this->generateClassName();
-        $phpContent = $this->engine->getCompiler()
-            ->setFunctions(array_keys($this->getDefaultFunctions()))
-            ->compile(
-                $latteTokens,
-                $className,
-                $this->generateClassComment($className, $context),
-                $this->strictMode
-            );
+        $parser = $this->engine->getParser();
+        $compiler = $this->engine->getCompiler();
+        try {
+            $latteTokens = $parser->parse($templateContent);
+            $className = $this->generateClassName();
+            $phpContent = $compiler
+                ->setFunctions(array_keys($this->getDefaultFunctions()))
+                ->compile(
+                    $latteTokens,
+                    $className,
+                    $this->generateClassComment($className, $context),
+                    $this->strictMode
+                );
+        } catch (CompileException $e) {
+            $line = isset($latteTokens)
+                ? $compiler->getLine()
+                : $parser->getLine();
+
+            $e->setSource($templateContent, $line, '');
+            throw $e;
+        }
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->addTypes($phpContent, $className, $actualClass);
         return $phpContent;
