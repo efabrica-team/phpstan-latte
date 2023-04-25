@@ -72,10 +72,9 @@ Nette is sometimes tricky how it handles latte templates. All latte files in `te
 In the example above we can see there is no `::bar` action after FooPresenter so this is exactly the case when `bar.latte` exists but `actionBar` neither `renderBar` exists, so no variables are sent to this template in bar context.
 
 
-<!-- TODO
-Assign in if condition - always assigned, isset is always true - assign variable always
-Multiple presenters using same variable - isset always true - assign variable always
--->
+This extension is using phpdoc for typehinting variables in compiled templates. If you assign variable in some condition, variable is always assigned, because php has no type like `undefined`. That means isset condition is always true.
+
+If multiple presenters use same template, but assign different variables set, conditions isset can be always true or always false in context of one presenter.
 
 <!-- TODO
 ## Components
