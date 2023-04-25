@@ -15,6 +15,7 @@ use Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
 use Efabrica\PHPStanLatte\Template\Template;
+use Latte\CompileException;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
@@ -157,6 +158,15 @@ final class LatteTemplatesRule implements Rule
 
             try {
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template, $context);
+            } catch (CompileException $e) {
+                $ruleErrorBuilder = RuleErrorBuilder::message($e->getMessage())
+                    ->file($template->getPath())
+                    ->metadata(['context' => $context === '' ? null : $context]);
+                if ($e->sourceLine) {
+                    $ruleErrorBuilder->line($e->sourceLine);
+                }
+                $errors[] = $ruleErrorBuilder->build();
+                continue;
             } catch (Throwable $e) {
                 $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, null, $context));
                 continue;
