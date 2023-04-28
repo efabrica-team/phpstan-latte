@@ -110,7 +110,12 @@ final class ErrorBuilder
 
         $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage())
             ->file($templatePath)
-            ->metadata(array_merge($originalError->getMetadata(), ['context' => $context === '' ? null : $context, 'is_warning' => $this->isWarning($error->getMessage())]));
+            ->metadata(array_merge($originalError->getMetadata(), [
+                'context' => $context === '' ? null : $context,
+                'is_warning' => $this->isWarning($error->getMessage()),
+                'compiled_template_path' => $compiledTemplatePath,
+                'compiled_template_error_line' => $originalError->getLine(),
+            ]));
         if ($originalError->getLine()) {
             $ruleErrorBuilder->line($lineMap->get($originalError->getLine()));
         }

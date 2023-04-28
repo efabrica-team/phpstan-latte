@@ -527,6 +527,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'parent.latte',
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters',
             ],
+            [
+                'Syntax error, unexpected \')\'',
+                2,
+                'translate_new.latte',
+            ],
         ]);
     }
 

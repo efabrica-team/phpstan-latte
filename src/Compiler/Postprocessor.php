@@ -14,6 +14,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInte
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage;
+use Efabrica\PHPStanLatte\Exception\ParseException;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
@@ -30,6 +31,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Parser\Parser;
+use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Type\ObjectType;
 
 final class Postprocessor
@@ -66,9 +68,12 @@ final class Postprocessor
         $this->nameResolver = $nameResolver;
     }
 
+    /**
+     * @throws ParseException
+     */
     public function postProcess(string $phpContent, Template $template, string $compileFilePath): string
     {
-        $phpStmts = $this->findNodes($phpContent);
+        $phpStmts = $this->findNodes($phpContent, $compileFilePath);
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
             $phpStmts = $this->processNodeVisitors($phpStmts, $nodeVisitors, $template);
         }
@@ -83,7 +88,7 @@ final class Postprocessor
 
         $scope = $this->scopeFactory->create(ScopeContext::create($realPath));
 
-        $phpStmts = $this->findNodes($phpContent);
+        $phpStmts = $this->findNodes($phpContent, $compileFilePath);
 
         $nodeScopeResolver = clone $this->nodeScopeResolver;
         $nodeScopeResolver->processNodes($phpStmts, $scope, function (Node $node, Scope $scope) {
@@ -158,9 +163,20 @@ final class Postprocessor
 
     /**
      * @return Node[]
+     * @throws ParseException
      */
-    private function findNodes(string $phpContent): array
+    private function findNodes(string $phpContent, string $compileFilePath): array
     {
-        return $this->parser->parseString($phpContent);
+        try {
+            return $this->parser->parseString($phpContent);
+        } catch (ParserErrorsException $e) {
+            // save original php content to better debugging
+            file_put_contents($compileFilePath, $phpContent);
+
+            preg_match('/ on line (?<line>\d+)/', $e->getMessage(), $matches);
+            $message = preg_replace('/ on line (?<line>\d+)/', '', $e->getMessage());
+            $line = (int)($matches['line'] ?? 0);
+            throw new ParseException($message ?: 'Parse error', $line, $compileFilePath);
+        }
     }
 }

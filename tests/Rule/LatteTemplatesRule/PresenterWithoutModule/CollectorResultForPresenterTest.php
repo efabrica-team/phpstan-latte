@@ -85,6 +85,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
             'NODE NetteApplicationUIPresenter {"className":"FiltersPresenter"}',
             'TEMPLATE default.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title"] ["parentForm"]',
             'TEMPLATE parent.latte FiltersPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
+            'TEMPLATE translate_new.latte FiltersPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"FiltersPresenter"}',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ParentPresenter"}',

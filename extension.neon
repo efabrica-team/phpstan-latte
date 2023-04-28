@@ -196,7 +196,7 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector\SetFileTemplatePathCollector
 
     # Error builder
-    - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(@latteCurrentPhpVersionRichParser, %debugMode%)
+    - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%)
 
     # Error transformers
