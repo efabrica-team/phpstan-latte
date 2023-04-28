@@ -75,6 +75,15 @@ final class TableErrorFormatter implements ErrorFormatter
                 $key .= ' rendered from ' . $context;
             }
 
+            $compiledTemplatePath = $metaData['compiled_template_path'] ?? null;
+            $compiledTemplateErrorLine = $metaData['compiled_template_error_line'] ?? null;
+            if (($output->isVerbose() || $output->isDebug()) && $compiledTemplatePath !== null) {
+                $compiledTemplateRealPath = realpath($compiledTemplatePath) ?: null;
+                if ($compiledTemplateRealPath) {
+                    $key .= "\n" . 'See compiled template: ' . $this->relativePathHelper->getRelativePath(realpath($compiledTemplatePath) ?: '') . ($compiledTemplateErrorLine ? ' on line ' . $compiledTemplateErrorLine : '');
+                }
+            }
+
             $isWarning = $metaData['is_warning'] ?? false;
             if ($isWarning) {
                 if (!isset($fileWarnings[$key])) {

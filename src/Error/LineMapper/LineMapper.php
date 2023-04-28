@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Error\LineMapper;
 
 use InvalidArgumentException;
-use PhpParser\NodeTraverser;
-use PHPStan\Parser\Parser;
 
 final class LineMapper
 {
-    private Parser $parser;
-
     private bool $debugMode;
 
     /** @var array<string, LineMap> */
     private array $lineMaps = [];
 
-    public function __construct(Parser $parser, bool $debugMode = false)
+    public function __construct(bool $debugMode = false)
     {
-        $this->parser = $parser;
         $this->debugMode = $debugMode;
     }
 
@@ -46,11 +41,21 @@ final class LineMapper
 
     private function parseLineMap(string $compiledTemplatePath): LineMap
     {
-        $phpStmts = $this->parser->parseFile($compiledTemplatePath);
+        $phpContent = file_get_contents($compiledTemplatePath) ?: '';
+        $phpLineContents = explode("\n", $phpContent);
+
         $lineMap = new LineMap();
-        $nodeTraverser = new NodeTraverser();
-        $nodeTraverser->addVisitor(new LineNumberNodeVisitor($lineMap));
-        $nodeTraverser->traverse($phpStmts);
+        foreach ($phpLineContents as $i => $phpLineContent) {
+            $pattern = '/\*(.*?)line (?<number>\d+)(.*?)\*/';
+            preg_match($pattern, $phpLineContent, $matches);
+
+            $latteLine = isset($matches['number']) ? (int)$matches['number'] : null;
+            if ($latteLine === null) {
+                continue;
+            }
+
+            $lineMap->add($i + 1, $latteLine);
+        }
         return $lineMap;
     }
 }

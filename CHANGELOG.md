@@ -4,6 +4,7 @@
 
 ### Added
 - Line of compilation error (if available) instead of -1 
+- Handling for parse errors
 
 ### Fixed
 - Typehint for `$this->global->snippetDriver` in compiled template
