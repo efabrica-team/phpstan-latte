@@ -449,7 +449,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testFilters(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], [
+        $expectedErrors = [
             [
                 'Function strlen invoked with 3 parameters, 1 required.',
                 3,
@@ -527,12 +527,23 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'parent.latte',
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters',
             ],
-            [
+        ];
+
+        if (LatteVersion::isLatte3()) {
+            $expectedErrors[] = [
+                'Unexpected \'|\' (on line 2 at column 6)',
+                2,
+                'translate_new.latte',
+            ];
+        } else {
+            $expectedErrors[] = [
                 'Syntax error, unexpected \')\'',
                 2,
                 'translate_new.latte',
-            ],
-        ]);
+            ];
+        }
+
+        $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php'], $expectedErrors);
     }
 
     public function testLinks(): void
