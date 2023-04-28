@@ -92,4 +92,12 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE grandParent.latte SomeControl::renderGrandParent ["presenter","control","flashes","grandParent","data","parentData","grandParentData"] []',
         ]);
     }
+
+    public function testTraitVariables(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TraitVariables/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","totalItems","baseA","baseB"] []',
+        ]);
+    }
 }
