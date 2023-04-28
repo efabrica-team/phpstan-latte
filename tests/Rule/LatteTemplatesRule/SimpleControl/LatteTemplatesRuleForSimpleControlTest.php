@@ -475,4 +475,25 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ]
         );
     }
+
+    public function testTraitVariables(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TraitVariables/SomeControl.php'], [
+            [
+                'Dumped type: \'baseA\'',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'baseB\'',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: int',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
 }

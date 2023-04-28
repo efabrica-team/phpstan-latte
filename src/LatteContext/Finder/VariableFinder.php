@@ -12,14 +12,10 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class VariableFinder
 {
-    /**
-     * @var array<string, array<string, Variable[]>>
-     */
+    /** @var array<string, array<string, Variable[]>> */
     private array $assignedVariables = [];
 
-    /**
-     * @var array<string, array<string, Variable[]>>
-     */
+    /** @var array<string, array<string, Variable[]>> */
     private array $declaredVariables = [];
 
     private ReflectionProvider $reflectionProvider;
