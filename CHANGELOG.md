@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.11.0] - 2023-05-02
 ### Added
 - Line of compilation error (if available) instead of -1 
 - Handling for parse errors
@@ -143,7 +144,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.10.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.11.0...HEAD
+[0.11.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.7.0...0.8.0
