@@ -63,13 +63,22 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
             }
         }
 
+        $supported = false;
         foreach ($this->getSupportedClasses() as $supportedClass) {
-            if ($objectType->isInstanceOf($supportedClass)->yes()) {
-                return [new CollectedResolvedNode(static::class, $scope->getFile(), [self::PARAM_CLASS_NAME => $className])];
+            if ($supportedClass === 'object' || $objectType->isInstanceOf($supportedClass)->yes()) {
+                $supported = true;
             }
         }
 
-        return [];
+        if (!$supported) {
+            return [];
+        }
+
+        if (preg_match($this->getClassNamePattern() . 'i', $className) !== 1) {
+            return [];
+        }
+
+        return [new CollectedResolvedNode(static::class, $scope->getFile(), [self::PARAM_CLASS_NAME => $className])];
     }
 
     public function resolve(CollectedResolvedNode $resolvedNode, LatteContext $latteContext): LatteTemplateResolverResult
@@ -123,7 +132,7 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
     }
 
     /**
-     * @return class-string[]
+     * @return array<class-string|"object">
      */
     abstract protected function getSupportedClasses(): array;
 
@@ -180,6 +189,11 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
             $this->getClassGlobalForms($reflectionClass, $latteContext),
             $this->getClassGlobalFilters($reflectionClass, $latteContext)
         );
+    }
+
+    protected function getClassNamePattern(): string
+    {
+        return '/.*/';
     }
 
     abstract protected function getClassResult(ReflectionClass $resolveClass, LatteContext $latteContext): LatteTemplateResolverResult;

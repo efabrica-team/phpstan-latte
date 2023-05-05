@@ -21,10 +21,13 @@ final class CollectorResultForCustomTemplateResolverTest extends CollectorResult
     {
         $this->analyse([__DIR__ . '/Fixtures/SomeControl.php'], [
             'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'NODE TestingCustomClassTemplateResolver {"className":"SomeControl"}',
             'NODE TestingCustomTemplateResolver {"template":"/CustomLatteTemplateResolver/Fixtures/templates/default.latte"}',
             'TEMPLATE default.latte Control::resolved ["someVariable"] []',
             'NODE TestingCustomTemplateResolver {"template":"/CustomLatteTemplateResolver/Fixtures/templates/other.latte"}',
             'TEMPLATE other.latte Control::resolved ["someVariable"] []',
+            'TEMPLATE default.latte Control::resolved ["classVariable"] []',
+
         ]);
     }
 }
