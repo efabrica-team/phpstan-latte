@@ -40,6 +40,7 @@ final class AnalysedTemplatesRegistry
 
     public function templateAnalysed(string $path): void
     {
+        $path = realpath($path) ?: $path;
         $this->templateFiles[$path] = true;
     }
 

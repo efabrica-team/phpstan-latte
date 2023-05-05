@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Not analysed templates use realpath
+
 ## [0.11.0] - 2023-05-02
 ### Added
 - Line of compilation error (if available) instead of -1 
