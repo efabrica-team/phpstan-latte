@@ -80,6 +80,7 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
             'TEMPLATE methodCall.ab.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
             'TEMPLATE methodCall.ba.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
             'TEMPLATE methodCall.bb.latte SomeControl::renderMethodCallMulti ["presenter","control","flashes"] []',
+            'TEMPLATE engine.latte SomeControl::renderRenderEngine ["presenter","control","flashes","a","b"] []',
         ]);
     }
 

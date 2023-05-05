@@ -212,8 +212,13 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'throwSometimes.latte',
             ],
             [
+                'Variable $nonExistingVariable might not be defined.',
+                3,
+                'engine.latte',
+            ],
+            [
                 'Rendered latte template ' . __DIR__ . '/Fixtures/Resolve/error.latte does not exist.',
-                193,
+                194,
                 'SomeControl.php',
             ],
         ]);

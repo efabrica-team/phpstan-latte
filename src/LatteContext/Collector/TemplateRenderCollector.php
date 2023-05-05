@@ -23,6 +23,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedError>
@@ -137,7 +138,12 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
         }
 
         $calledType = $scope->getType($node->var);
-        if (!$this->templateTypeResolver->resolve($calledType)) {
+        if ($calledType instanceof ThisType) {
+            $calledType = $calledType->getStaticObjectType();
+        }
+        $calledType = TypeCombinator::removeNull($calledType);
+        $engineType = new ObjectType('Latte\Engine');
+        if (!$this->templateTypeResolver->resolve($calledType) && !$engineType->isSuperTypeOf($calledType)->yes()) {
             return null;
         }
 
