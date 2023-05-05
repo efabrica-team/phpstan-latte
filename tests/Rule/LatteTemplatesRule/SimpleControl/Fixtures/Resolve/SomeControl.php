@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Resolve;
 
 use Exception;
+use Latte\Engine;
 use Nette\Application\UI\Control;
 
 final class SomeControl extends Control
@@ -204,5 +205,11 @@ final class SomeControl extends Control
     private function neverReturn(): void
     {
         die();
+    }
+
+    public function renderRenderEngine(): void
+    {
+        $engine = new Engine();
+        $engine->render(__DIR__ . '/engine.latte', ['a' => 'a', 'b' => 'b']);
     }
 }
