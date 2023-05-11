@@ -6,13 +6,13 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextSubCollector;
+use Efabrica\PHPStanLatte\LatteContext\LatteContextHelper;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\TypeResolver\TemplateTypeResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\Constant\ConstantArrayType;
 
 /**
  * @extends AbstractLatteContextSubCollector<CollectedVariable>
@@ -53,22 +53,6 @@ final class SetParametersToTemplateVariableCollector extends AbstractLatteContex
             return [];
         }
 
-        $types = $scope->getType($node->args[0]->value);
-        if (!$types instanceof ConstantArrayType) {
-            return [];
-        }
-        $parameterNames = [];
-        foreach ($types->getKeyTypes() as $keyType) {
-            $parameterNames[] = (string)$keyType->getValue();
-        }
-
-        $variables = [];
-        foreach ($types->getValueTypes() as $i => $valueType) {
-            if (!isset($parameterNames[$i])) {
-                continue;
-            }
-            $variables[] = CollectedVariable::build($node, $scope, $parameterNames[$i], $valueType);
-        }
-        return $variables;
+        return CollectedVariable::buildAll($node, $scope, LatteContextHelper::variablesFromExpr($node->args[0]->value, $scope));
     }
 }

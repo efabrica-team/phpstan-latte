@@ -48,8 +48,7 @@ final class SetFileTemplatePathCollector extends AbstractLatteContextSubCollecto
             return [];
         }
 
-        $callerType = $scope->getType($node->var);
-        if (!$this->templateTypeResolver->resolve($callerType)) {
+        if (!$this->templateTypeResolver->resolveByNodeAndScope($node, $scope)) {
             return [];
         }
 

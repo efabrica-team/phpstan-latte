@@ -66,6 +66,7 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
         }
 
         $paths = null;
+        $templatePaths = [];
         $isCollected = false;
         foreach ($this->templatePathCollectors as $templatePathCollector) {
             if (!$templatePathCollector->isSupported($node)) {
@@ -73,8 +74,16 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
             }
             $isCollected = true;
             $collectedPaths = $templatePathCollector->collect($node, $scope);
-            if (is_array($collectedPaths)) {
-                $paths = array_merge($paths === null ? [] : $paths, $collectedPaths);
+            if ($collectedPaths === null) {
+                continue;
+            }
+            $paths = $paths ?? [];
+            foreach ($collectedPaths as $collectedPath) {
+                if ($collectedPath instanceof CollectedError) {
+                    $templatePaths[] = $collectedPath;
+                    continue;
+                }
+                $paths[] = $collectedPath;
             }
         }
 
@@ -88,7 +97,6 @@ final class TemplatePathCollector extends AbstractLatteContextCollector
             return [CollectedError::build($node, $scope, 'Cannot automatically resolve latte template from expression.')];
         }
         $paths = array_unique($paths);
-        $templatePaths = [];
         foreach ($paths as $path) {
             $templatePaths[] = new CollectedTemplatePath($actualClassName, $functionName, $path);
         }
