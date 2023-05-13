@@ -2,6 +2,7 @@
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 
@@ -16,7 +17,7 @@ interface LatteContextSubCollectorInterface
     public function getNodeTypes(): array;
 
     /**
-     * @phpstan-return null|T[]
+     * @phpstan-return null|array<T|CollectedError>
      */
     public function collect(Node $node, Scope $scope): ?array;
 

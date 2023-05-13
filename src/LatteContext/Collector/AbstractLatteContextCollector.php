@@ -2,6 +2,7 @@
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
@@ -32,7 +33,7 @@ abstract class AbstractLatteContextCollector
 
     /**
      * @param Node $node
-     * @phpstan-return null|T[]
+     * @phpstan-return null|array<T|CollectedError>
      */
     abstract public function collectData(Node $node, Scope $scope): ?array;
 }

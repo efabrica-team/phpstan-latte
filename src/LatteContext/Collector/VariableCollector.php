@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\LatteContext\Collector\VariableCollector\VariableCollectorInterface;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
@@ -47,7 +48,7 @@ final class VariableCollector extends AbstractLatteContextCollector
     }
 
     /**
-     * @phpstan-return null|CollectedVariable[]
+     * @phpstan-return null|array<CollectedVariable|CollectedError>
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -67,6 +68,7 @@ final class VariableCollector extends AbstractLatteContextCollector
 
         $isVariablesNode = false;
         $collectedVariables = [];
+        $collectedErrors = [];
         foreach ($this->variableCollectors as $variableCollector) {
             if (!$variableCollector->isSupported($node)) {
                 continue;
@@ -77,6 +79,10 @@ final class VariableCollector extends AbstractLatteContextCollector
             }
             $isVariablesNode = true;
             foreach ($variables as $variable) {
+                if ($variable instanceof CollectedError) {
+                    $collectedErrors[] = $variable;
+                    continue;
+                }
                 $name = $variable->getVariableName();
                 if (isset($collectedVariables[$name])) {
                     $type = TypeCombinator::union($collectedVariables[$name]->getVariableType(), $variable->getVariableType());
@@ -98,6 +104,6 @@ final class VariableCollector extends AbstractLatteContextCollector
             }
         }
 
-        return array_values($collectedVariables);
+        return array_values(array_merge($collectedVariables, $collectedErrors));
     }
 }

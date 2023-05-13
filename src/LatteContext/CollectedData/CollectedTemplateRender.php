@@ -109,4 +109,19 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
             $node->getStartLine()
         );
     }
+
+    /**
+     * @param array<?string> $paths
+     * @param Variable[] $variables
+     * @param Component[] $components
+     * @return array<CollectedTemplateRender|CollectedError>
+     */
+    public static function buildAll(Node $node, Scope $scope, array $paths, array $variables, array $components = []): array
+    {
+        $templateRenders = [];
+        foreach ($paths as $path) {
+            $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables, $components);
+        }
+        return $templateRenders;
+    }
 }

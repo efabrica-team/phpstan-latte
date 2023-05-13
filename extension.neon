@@ -195,6 +195,10 @@ services:
     # TemplatePath subcollectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector\SetFileTemplatePathCollector
 
+    # TemplateRender subcollectors
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector\TemplateRenderCallsCollector
+
+
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%)

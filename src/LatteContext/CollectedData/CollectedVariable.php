@@ -72,4 +72,17 @@ final class CollectedVariable extends CollectedLatteContextObject
             $declared
         );
     }
+
+    /**
+     * @param Variable[] $variables
+     * @return CollectedVariable[]
+     */
+    public static function buildAll(Node $node, Scope $scope, array $variables, bool $declared = false): array
+    {
+        $collectedVariables = [];
+        foreach ($variables as $variable) {
+            $collectedVariables[] = self::build($node, $scope, $variable->getName(), $variable->getType(), $declared);
+        }
+        return $collectedVariables;
+    }
 }
