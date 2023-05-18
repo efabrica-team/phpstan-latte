@@ -6,6 +6,7 @@
 - Class template resolvers allows matching classes by pattern
 - Collect renders also from calls to Latte\Engine
 - TemplateRender sub collectors
+- Collecting of conditionally defined variables from array
 
 ### Fixed
 - Not analysed templates use realpath

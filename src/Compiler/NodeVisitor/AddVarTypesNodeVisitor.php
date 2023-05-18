@@ -17,6 +17,7 @@ use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDoc\TypeStringResolver;
@@ -99,6 +100,17 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
             $docNop = new Nop();
             $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
 
+            if ($variable->mightBeUndefined()) {
+                $checkingVariableName = sprintf('__%s__possible_undefined', $variable->getName());
+
+                $conditionalVariableNop = new Nop();
+                $conditionalVariableNop->setDocComment(new Doc(sprintf('/** @var bool $%s */', $checkingVariableName)));
+                $variableStatements[] = $conditionalVariableNop;
+
+                $condition = new If_(new VariableExpr($checkingVariableName), ['stmts' => [$docNop]]);
+                $variableStatements[] = $condition;
+                continue;
+            }
             $variableStatements[] = $docNop;
         }
 

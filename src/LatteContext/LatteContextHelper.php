@@ -33,12 +33,13 @@ final class LatteContextHelper
         if ($type instanceof ConstantArrayType) {
             $keyTypes = $type->getKeyTypes();
             $valueTypes = $type->getValueTypes();
+            $optionalKeys = $type->getOptionalKeys();
             foreach ($keyTypes as $k => $arrayKeyType) {
                 if (!$arrayKeyType instanceof ConstantStringType) { // only string keys
                     continue;
                 }
                 $variableName = $arrayKeyType->getValue();
-                $variables[$variableName] = new Variable($variableName, $valueTypes[$k]);
+                $variables[$variableName] = new Variable($variableName, $valueTypes[$k], in_array($k, $optionalKeys, true));
             }
         }
         return $variables;
