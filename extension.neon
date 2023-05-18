@@ -198,7 +198,6 @@ services:
     # TemplateRender subcollectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector\TemplateRenderCallsCollector
 
-
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%)
