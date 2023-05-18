@@ -10,7 +10,6 @@ use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\CiDetectedErrorFormatter;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
-use PHPStan\Command\OutputStyle;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
 
@@ -169,11 +168,9 @@ final class TableErrorFormatter implements ErrorFormatter
                 }
 
                 $metaData = $error->getMetadata();
-                $compiledTemplatePath = $metaData['compiled_template_path'] ?? null;
-
                 $row = [$this->formatLineNumber($error->getLine())];
                 if ($output->isVerbose() || $output->isDebug()) {
-                    $row[] = $this->formatLineNumber($metaData['compiled_template_error_line']) ?? null;
+                    $row[] = $this->formatLineNumber($metaData['compiled_template_error_line'] ?? null);
                 }
                 $row[] = $message;
                 $rows[] = $row;
