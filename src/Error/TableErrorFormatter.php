@@ -10,7 +10,6 @@ use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\CiDetectedErrorFormatter;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
-use PHPStan\Command\OutputStyle;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
 
@@ -76,11 +75,10 @@ final class TableErrorFormatter implements ErrorFormatter
             }
 
             $compiledTemplatePath = $metaData['compiled_template_path'] ?? null;
-            $compiledTemplateErrorLine = $metaData['compiled_template_error_line'] ?? null;
             if (($output->isVerbose() || $output->isDebug()) && $compiledTemplatePath !== null) {
                 $compiledTemplateRealPath = realpath($compiledTemplatePath) ?: null;
                 if ($compiledTemplateRealPath) {
-                    $key .= "\n" . 'See compiled template: ' . $this->relativePathHelper->getRelativePath(realpath($compiledTemplatePath) ?: '') . ($compiledTemplateErrorLine ? ' on line ' . $compiledTemplateErrorLine : '');
+                    $key .= "\n" . 'See compiled template: ' . $this->relativePathHelper->getRelativePath(realpath($compiledTemplatePath) ?: '');
                 }
             }
 
@@ -102,8 +100,8 @@ final class TableErrorFormatter implements ErrorFormatter
             }
         }
 
-        $this->printTable($fileErrors, 'Errors', $projectConfigFile, $style);
-        $this->printTable($fileWarnings, 'Warnings', $projectConfigFile, $style);
+        $this->printTable($fileErrors, 'Errors', $projectConfigFile, $output);
+        $this->printTable($fileWarnings, 'Warnings', $projectConfigFile, $output);
 
         if (count($analysisResult->getNotFileSpecificErrors()) > 0) {
             $errorsCount += count($analysisResult->getNotFileSpecificErrors());
@@ -148,8 +146,9 @@ final class TableErrorFormatter implements ErrorFormatter
     /**
      * @param array<string, Error[]> $fileErrors
      */
-    private function printTable(array $fileErrors, string $label, string $projectConfigFile, OutputStyle $style): void
+    private function printTable(array $fileErrors, string $label, string $projectConfigFile, Output $output): void
     {
+        $style = $output->getStyle();
         if (count($fileErrors) > 0) {
             $style->section($label);
         }
@@ -167,9 +166,23 @@ final class TableErrorFormatter implements ErrorFormatter
                     $url = str_replace(['%file%', '%relFile%', '%line%'], [$editorFile, $this->simpleRelativePathHelper->getRelativePath($editorFile), (string) $error->getLine()], $this->editorUrl);
                     $message .= "\n✏️  <href=" . $url . '>' . $this->relativePathHelper->getRelativePath($editorFile) . '</>';
                 }
-                $rows[] = [$this->formatLineNumber($error->getLine()), $message];
+
+                $metaData = $error->getMetadata();
+                $row = [$this->formatLineNumber($error->getLine())];
+                if ($output->isVerbose() || $output->isDebug()) {
+                    /** @var int|null $compiledTemplateErrorLine */
+                    $compiledTemplateErrorLine = $metaData['compiled_template_error_line'] ?? null;
+                    $row[] = $this->formatLineNumber($compiledTemplateErrorLine);
+                }
+                $row[] = $message;
+                $rows[] = $row;
             }
-            $style->table(['Line', $key ], $rows);
+            $headers = ['Line'];
+            if ($output->isVerbose() || $output->isDebug()) {
+                $headers[] = "Compiled\nline";
+            }
+            $headers[] = $key;
+            $style->table($headers, $rows);
         }
     }
 }

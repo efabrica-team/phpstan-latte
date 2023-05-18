@@ -2,8 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Class template resolvers allows matching classes by pattern
+- Collect renders also from calls to Latte\Engine
+- TemplateRender sub collectors
+
 ### Fixed
 - Not analysed templates use realpath
+- Error formatter
 
 ## [0.11.0] - 2023-05-02
 ### Added
