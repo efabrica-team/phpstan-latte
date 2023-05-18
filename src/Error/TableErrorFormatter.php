@@ -170,7 +170,9 @@ final class TableErrorFormatter implements ErrorFormatter
                 $metaData = $error->getMetadata();
                 $row = [$this->formatLineNumber($error->getLine())];
                 if ($output->isVerbose() || $output->isDebug()) {
-                    $row[] = $this->formatLineNumber($metaData['compiled_template_error_line'] ?? null);
+                    /** @var int|null $compiledTemplateErrorLine */
+                    $compiledTemplateErrorLine = $metaData['compiled_template_error_line'] ?? null;
+                    $row[] = $this->formatLineNumber($compiledTemplateErrorLine);
                 }
                 $row[] = $message;
                 $rows[] = $row;
