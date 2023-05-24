@@ -8,9 +8,11 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Print_;
 use PhpParser\Node\Stmt\Echo_;
 use PHPStan\Analyser\Scope;
+use PHPStan\Type\ObjectType;
 
 final class OutputCallResolver
 {
@@ -38,6 +40,12 @@ final class OutputCallResolver
         )) {
             return true;
         }
+
+        if ($node instanceof MethodCall && (new ObjectType('Nette\ComponentModel\IComponent'))->isSuperTypeOf($scope->getType($node->var))->yes() && $this->nameResolver->resolve($node) === 'render') {
+            // render method of IComponent echoes output
+            return true;
+        }
+
         return false;
     }
 }

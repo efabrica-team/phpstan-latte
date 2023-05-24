@@ -6,6 +6,7 @@
 - Class template resolvers allows matching classes by pattern
 - Collect renders also from calls to Latte\Engine
 - TemplateRender sub collectors
+- IComponent::render resolved as output call
 
 ### Fixed
 - Not analysed templates use realpath

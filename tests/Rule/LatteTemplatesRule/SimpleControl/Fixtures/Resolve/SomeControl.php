@@ -7,6 +7,8 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixt
 use Exception;
 use Latte\Engine;
 use Nette\Application\UI\Control;
+use Nette\Application\UI\Form;
+use Nette\ComponentModel\IComponent;
 
 final class SomeControl extends Control
 {
@@ -211,5 +213,25 @@ final class SomeControl extends Control
     {
         $engine = new Engine();
         $engine->render(__DIR__ . '/engine.latte', ['a' => 'a', 'b' => 'b']);
+    }
+
+    public function renderComponentViaRenderMethod(): void
+    {
+        $this->getComponent('component')->render();
+    }
+
+    public function renderFormViaRenderMethod(): void
+    {
+        $this->getComponent('form')->render();
+    }
+
+    protected function createComponentComponent(): IComponent
+    {
+        return new Form();
+    }
+
+    protected function createComponentForm(): Form
+    {
+        return new Form();
     }
 }
