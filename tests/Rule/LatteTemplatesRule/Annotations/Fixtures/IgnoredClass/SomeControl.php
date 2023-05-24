@@ -17,10 +17,4 @@ final class SomeControl extends Control
         // COLLECT: TEMPLATE SomeControl.latte SomeControl::render ["presenter","control","flashes"] []
         $this->template->render(__DIR__ . '/SomeControl.latte');
     }
-
-    // ERROR: Cannot resolve latte template for SomeControl::renderIgnoredClass().
-    public function renderIgnoredClass()
-    {
-        $this->ignoredControl->render();
-    }
 }
