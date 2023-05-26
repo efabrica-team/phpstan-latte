@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Template\Form\Container;
 use Efabrica\PHPStanLatte\Template\Form\Field;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
@@ -15,7 +16,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\UnionType;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedFormField>
@@ -116,28 +116,6 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             }
         }
 
-        $formFieldTypes = [];
-        if ($formFieldType instanceof ObjectType) {
-            $formFieldTypes[] = $formFieldType;
-        } elseif ($formFieldType instanceof UnionType) {
-            $formFieldTypes = $formFieldType->getTypes();
-        }
-
-        if ($formFieldTypes === []) {
-            return null;
-        }
-
-        foreach ($formFieldTypes as $formFieldTypeToCheck) {
-            if (!$formFieldTypeToCheck instanceof ObjectType) {
-                return null;
-            }
-            if (!$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Container')->yes() &&
-                !$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Control')->yes()
-            ) {
-                return null;
-            }
-        }
-
         if ($fieldNameArg !== null) {
             $fieldNames = $this->valueResolver->resolveStrings($fieldNameArg->value, $scope);
             if ($fieldNames === null) {
@@ -151,10 +129,18 @@ final class FormFieldCollector extends AbstractLatteContextCollector
 
         $formFields = [];
         foreach ($fieldNames as $fieldName) {
+            if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formFieldType)->yes()) {
+                $formField = new Container($fieldName, $formFieldType);
+            } elseif ((new ObjectType('Nette\Forms\Control'))->isSuperTypeOf($formFieldType)->yes()) {
+                $formField = new Field($fieldName, $formFieldType);
+            } else {
+                continue;
+            }
+
             $formFields[] = new CollectedFormField(
                 $classReflection->getName(),
                 $methodName,
-                new Field($fieldName, $formFieldType)
+                $formField
             );
         }
         return $formFields;

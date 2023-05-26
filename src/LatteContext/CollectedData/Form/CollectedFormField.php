@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
-use Efabrica\PHPStanLatte\Template\Form\Field;
+use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 
 final class CollectedFormField extends CollectedLatteContextObject
 {
@@ -14,12 +14,12 @@ final class CollectedFormField extends CollectedLatteContextObject
 
     private string $methodName;
 
-    private Field $formField;
+    private ControlInterface $formField;
 
     /**
      * @param class-string $className
      */
-    public function __construct(string $className, string $methodName, Field $formField)
+    public function __construct(string $className, string $methodName, ControlInterface $formField)
     {
         $this->className = $className;
         $this->methodName = $methodName;
@@ -36,7 +36,7 @@ final class CollectedFormField extends CollectedLatteContextObject
         return $this->methodName;
     }
 
-    public function getFormField(): Field
+    public function getFormField(): ControlInterface
     {
         return $this->formField;
     }

@@ -8,6 +8,9 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorBehavior
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Error\Error;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
+use Efabrica\PHPStanLatte\Template\Form\Container;
+use Efabrica\PHPStanLatte\Template\Form\ControlHolderInterface;
+use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use PhpParser\Builder\Class_;
 use PhpParser\Builder\Method;
@@ -44,6 +47,10 @@ use PHPStan\Type\VerbosityLevel;
 final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisitorInterface
 {
     use FormsNodeVisitorBehavior;
+
+    private const COMPONENT_TYPE = '\Nette\Forms\Controls\BaseControl';
+
+    private const COMPONENT_TYPE_PLACEHOLDER = '%%TYPE%%';
 
     private NameResolver $nameResolver;
 
@@ -304,9 +311,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          * </code>
          */
         if ($node instanceof Echo_ &&
-           ($node->exprs[0] ?? null) instanceof Assign &&
-           $node->exprs[0]->expr instanceof MethodCall &&
-           $node->exprs[0]->var instanceof Variable
+            ($node->exprs[0] ?? null) instanceof Assign &&
+            $node->exprs[0]->expr instanceof MethodCall &&
+            $node->exprs[0]->var instanceof Variable
         ) {
             $varName = $this->nameResolver->resolve($node->exprs[0]->var->name) ?? '$ʟ_tmp';
             /** @var MethodCall $methodCallExpr */
@@ -377,39 +384,87 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
     {
         $componentType = '\Nette\Forms\Controls\BaseControl';
         $componentTypePlaceholder = '%%TYPE%%';
+
+        $controlAssign = new Expression(new Assign(new Variable('control'), new StaticCall(
+            new Name('parent'),
+            new Identifier('offsetGet'),
+            [
+                new Arg(new Variable('name')),
+            ]
+        )));
+        $controlAssign->setDocComment(new Doc('/** @var \Nette\Forms\Controls\BaseControl $control */'));
+
+        $baseOffsetGetMethod = (new Method('offsetGet'))
+            ->addParam(new Param('name'))
+            ->addStmts([
+                $controlAssign,
+                new Return_(new Variable('control')),
+            ])
+            ->makePublic()
+            ->setReturnType('Nette\ComponentModel\IComponent');
+
+        // create Container classes
+        foreach ($this->forms as $formName => $form) {
+            $formClassName = $this->formClassNames[$formName] ?? null;
+            if ($formClassName === null) {
+                continue;
+            }
+            foreach ($form->getControls() as $formField) {
+                if (!$formField instanceof Container) {
+                    continue;
+                }
+                $nodes[] = $this->createClassNode($formClassName, $formField, $baseOffsetGetMethod);
+            }
+        }
+
+        // create Form classes
         foreach ($this->forms as $formName => $form) {
             $className = $this->formClassNames[$formName] ?? null;
             if ($className === null) {
                 continue;
             }
-            $controlAssign = new Expression(new Assign(new Variable('control'), new StaticCall(
-                new Name('parent'),
-                new Identifier('offsetGet'),
-                [
-                    new Arg(new Variable('name')),
-                ]
-            )));
-            $controlAssign->setDocComment(new Doc('/** @var \Nette\Forms\Controls\BaseControl $control */'));
-            $method = (new Method('offsetGet'))
-                ->addParam(new Param('name'))
-                ->addStmts([
-                    $controlAssign,
-                    new Return_(new Variable('control')),
-                ])
-                ->makePublic()
-                ->setReturnType('Nette\ComponentModel\IComponent');
-            $comment = '@return ' . $componentTypePlaceholder;
-            foreach ($form->getControls() as $formField) {
-                $comment = str_replace($componentTypePlaceholder, '($name is \'' . $formField->getName() . '\' ? ' . $formField->getTypeAsString() . ' : ' . $componentTypePlaceholder . ')', $comment);
-            }
-            $comment = str_replace($componentTypePlaceholder, $componentType, $comment);
-            $method->setDocComment('/** ' . $comment . ' */');
-            $builderClass = (new Class_($className))->extend($form->getType()->describe(VerbosityLevel::typeOnly()))
-                ->addStmts([$method]);
-            $nodes[] = $builderClass->getNode();
+            $nodes[] = $this->createClassNode($className, $form, $baseOffsetGetMethod);
         }
 
         return $nodes;
+    }
+
+    /**
+     * @param Form|Container $controlHolder
+     */
+    private function createClassNode(string $parentClassName, ControlHolderInterface $controlHolder, Method $baseOffsetGetMethod): Node
+    {
+        $comment = $this->createConditionalReturnTypeComment($parentClassName, $controlHolder->getControls());
+
+        $method = clone $baseOffsetGetMethod;
+        $method->setDocComment('/** ' . $comment . ' */');
+
+        $className = $parentClassName;
+        if ($controlHolder instanceof Container) {
+            $className .= '_' . $controlHolder->getName();
+        }
+
+        $builderClass = (new Class_($className))->extend($controlHolder->getType()->describe(VerbosityLevel::typeOnly()))
+            ->addStmts([$method]);
+        return $builderClass->getNode();
+    }
+
+    /**
+     * @param ControlInterface[] $controls
+     */
+    private function createConditionalReturnTypeComment(string $parentName, array $controls): string
+    {
+        $comment = '@return ' . self::COMPONENT_TYPE_PLACEHOLDER;
+        foreach ($controls as $control) {
+            if ($control instanceof Container) {
+                $controlType = $parentName . '_' . $control->getName();
+            } else {
+                $controlType = $control->getTypeAsString();
+            }
+
+            $comment = str_replace(self::COMPONENT_TYPE_PLACEHOLDER, '($name is \'' . $control->getName() . '\' ? ' . $controlType . ' : ' . self::COMPONENT_TYPE_PLACEHOLDER . ')', $comment);
+        }
+        return str_replace(self::COMPONENT_TYPE_PLACEHOLDER, self::COMPONENT_TYPE, $comment);
     }
 
     private function isUiControl(Expr $expr): bool

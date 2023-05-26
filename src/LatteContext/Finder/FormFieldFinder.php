@@ -6,14 +6,14 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
-use Efabrica\PHPStanLatte\Template\Form\Field;
+use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFieldFinder
 {
     /**
-     * @var array<string, array<string, Field[]>>
+     * @var array<string, array<string, ControlInterface[]>>
      */
     private array $assignedFormFields = [];
 
@@ -27,6 +27,8 @@ final class FormFieldFinder
         $this->methodCallFinder = $methodCallFinder;
 
         $collectedForms = $latteContext->getCollectedData(CollectedFormField::class);
+
+        /** @var CollectedFormField $collectedFormField */
         foreach ($collectedForms as $collectedFormField) {
             $className = $collectedFormField->getClassName();
             $methodName = $collectedFormField->getMethodName();
@@ -39,7 +41,7 @@ final class FormFieldFinder
 
     /**
      * @param class-string $className
-     * @return Field[]
+     * @return ControlInterface[]
      */
     public function find(string $className, string ...$methodNames): array
     {
@@ -54,7 +56,7 @@ final class FormFieldFinder
     }
 
     /**
-     * @return Field[]
+     * @return ControlInterface[]
      */
     private function findInClasses(string $className): array
     {
@@ -70,13 +72,13 @@ final class FormFieldFinder
     /**
      * @param class-string $className
      * @param ?class-string $currentClassName
-     * @return Field[]
+     * @return ControlInterface[]
      */
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
-            /** @var array<Field[]> $fromCalled */
-            /** @var Field[] $formFields */
+            /** @var array<ControlInterface[]> $fromCalled */
+            /** @var ControlInterface[] $formFields */
             $formFields = ItemCombinator::resolveTemplateTypes(
                 $this->assignedFormFields[$declaringClass][$methodName] ?? [],
                 $declaringClass,

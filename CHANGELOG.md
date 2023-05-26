@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- Separated collection of Form Containers
+
 ### Fixed
 - Stubs for Nette\Bridges\FormsLatte\Runtime::item
 - FilterString type contains also null because Nette cast all inputs to string first and null is also available
