@@ -2,6 +2,10 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Stubs for Nette\Bridges\FormsLatte\Runtime::item
+- FilterString type contains also null because Nette cast all inputs to string first and null is also available
+
 ## [0.12.0] - 2023-05-25
 ### Added
 - Class template resolvers allows matching classes by pattern

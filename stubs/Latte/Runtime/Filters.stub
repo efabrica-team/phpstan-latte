@@ -7,7 +7,7 @@ use Nette\HtmlStringable as NetteHtmlStringable;
 use Stringable;
 
 /**
- * @phpstan-type FilterString string|int|float|bool|Stringable|NetteHtmlStringable|LatteRuntimeHtmlStringable
+ * @phpstan-type FilterString string|int|float|bool|null|Stringable|NetteHtmlStringable|LatteRuntimeHtmlStringable
  */
 class Filters
 {
