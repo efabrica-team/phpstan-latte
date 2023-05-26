@@ -16,5 +16,11 @@ final class ControlRegistrator
         } else {
             $presenter->addComponent(new SomeControl(), 'someControl');
         }
+
+        if ($presenter instanceof ComponentsPresenter) {
+            $presenter->addComponent(new SomeControl(), 'someUnionControl');
+        } else {
+            $presenter->addComponent(new SomeBodyControl(), 'someUnionControl');
+        }
     }
 }
