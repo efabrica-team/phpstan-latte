@@ -9,6 +9,8 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedComponent;
 use Efabrica\PHPStanLatte\Template\Component;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\UnionType;
+use PHPStan\Type\VerbosityLevel;
 
 final class ComponentFinder
 {
@@ -31,8 +33,6 @@ final class ComponentFinder
         $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
-        /** @var array<string, Component[]> $componentsWithTypes */
-        $componentsWithTypes = [];
         $collectedComponents = $latteContext->getCollectedData(CollectedComponent::class);
         foreach ($collectedComponents as $collectedComponent) {
             $className = $collectedComponent->getClassName();
@@ -46,6 +46,25 @@ final class ComponentFinder
                 $this->declaredComponents[$className][$methodName] = ItemCombinator::merge($this->declaredComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
             } else {
                 $this->assignedComponents[$className][$methodName] = ItemCombinator::union($this->assignedComponents[$className][$methodName] ?? [], [$collectedComponent->getComponent()]);
+            }
+        }
+
+        /** @var array<string, Component[]> $componentsWithTypes */
+        $componentsWithTypes = [];
+        foreach (array_merge($this->declaredComponents, $this->assignedComponents) as $methods) {
+            foreach ($methods as $components) {
+                foreach ($components as $component) {
+                    if (!isset($componentsWithTypes[$component->getTypeAsString()])) {
+                        $componentsWithTypes[$component->getTypeAsString()] = [];
+                    }
+                    if ($component->getType() instanceof UnionType) {
+                        foreach ($component->getType()->getTypes() as $type) {
+                            $componentsWithTypes[$type->describe(VerbosityLevel::typeOnly())][] = $component;
+                        }
+                    } else {
+                        $componentsWithTypes[$component->getType()->describe(VerbosityLevel::typeOnly())][] = $component;
+                    }
+                }
             }
         }
 
