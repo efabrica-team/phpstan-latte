@@ -21,13 +21,13 @@ final class FormFinder
 
     private MethodCallFinder $methodCallFinder;
 
-    private FormFieldFinder $formFieldFinder;
+    private FormControlFinder $formControlFinder;
 
-    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder, FormFieldFinder $formFieldFinder)
+    public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder, FormControlFinder $formControlFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
-        $this->formFieldFinder = $formFieldFinder;
+        $this->formControlFinder = $formControlFinder;
 
         $collectedForms = $latteContext->getCollectedData(CollectedForm::class);
         foreach ($collectedForms as $collectedForm) {
@@ -63,11 +63,11 @@ final class FormFinder
             if (in_array($createdClassName, $parentClassNames, true)) {
                 $createdClassName = $className;
             }
-            $formFields = $this->formFieldFinder->find(
+            $formControls = $this->formControlFinder->find(
                 $createdClassName,
                 $collectedForm->getCreatedMethodName()
             );
-            $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withControls($formFields);
+            $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withControls($formControls);
         }
 
         return $forms;

@@ -54,8 +54,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
     private NameResolver $nameResolver;
 
-    /** @var array<array{node: string, field: string}> */
-    private array $errorFieldNodes = [];
+    /** @var array<array{node: string, control: string}> */
+    private array $errorControlNodes = [];
 
     /** @var string[] */
     private array $possibleAlwaysTrueLabels = [];
@@ -135,15 +135,15 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $itemArgumentValue = $itemArgument ? $itemArgument->value : null;
 
                     if ($itemArgumentValue instanceof String_) {
-                        $fieldName = $itemArgumentValue->value;
+                        $controlName = $itemArgumentValue->value;
                         // TODO remove when container are supported
-                        $fieldNameParts = explode('-', $fieldName);
-                        $fieldName = end($fieldNameParts);
-                        $formField = $this->actualForm->getControl($fieldName);
-                        if ($formField === null) {
-                            $this->errorFieldNodes[] = [
+                        $controlNameParts = explode('-', $controlName);
+                        $controlName = end($controlNameParts);
+                        $formControl = $this->actualForm->getControl($controlName);
+                        if ($formControl === null) {
+                            $this->errorControlNodes[] = [
                                 'node' => $this->findParentStmt($node),
-                                'field' => $fieldName,
+                                'control' => $controlName,
                             ];
                             return null;
                         }
@@ -179,25 +179,25 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
 
             if ($node->dim instanceof String_) {
-                $fieldName = $node->dim->value;
+                $controlName = $node->dim->value;
                 // TODO remove when container are supported
-                $fieldNameParts = explode('-', $fieldName);
-                $fieldName = end($fieldNameParts);
-                $formField = $this->actualForm->getControl($fieldName);
-                if ($formField === null) {
-                    $this->errorFieldNodes[] = [
+                $controlNameParts = explode('-', $controlName);
+                $controlName = end($controlNameParts);
+                $formControl = $this->actualForm->getControl($controlName);
+                if ($formControl === null) {
+                    $this->errorControlNodes[] = [
                         'node' => $this->findParentStmt($node),
-                        'field' => $fieldName,
+                        'control' => $controlName,
                     ];
                     return null;
                 }
 
-                $formFieldType = $formField->getType();
-                if ($formFieldType instanceof ObjectType && ($formFieldType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formFieldType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
+                $formControlType = $formControl->getType();
+                if ($formControlType instanceof ObjectType && ($formControlType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formControlType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
                     $this->possibleAlwaysTrueLabels[] = $this->findParentStmt($node);
                 }
             } elseif ($node->dim instanceof Variable) {
-                // dynamic field
+                // dynamic control
             } else {
                 return null;
             }
@@ -211,9 +211,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
     public function leaveNode(Node $node)
     {
-        foreach ($this->errorFieldNodes as $errorFieldNode) {
-            if ($errorFieldNode['node'] === spl_object_hash($node)) {
-                $error = new Error('Form field with name "' . $errorFieldNode['field'] . '" probably does not exist.');
+        foreach ($this->errorControlNodes as $errorControlNode) {
+            if ($errorControlNode['node'] === spl_object_hash($node)) {
+                $error = new Error('Form control with name "' . $errorControlNode['control'] . '" probably does not exist.');
                 $errorNode = $error->toNode();
                 $errorNode->setAttributes($node->getAttributes());
                 return $errorNode;
@@ -409,11 +409,11 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             if ($formClassName === null) {
                 continue;
             }
-            foreach ($form->getControls() as $formField) {
-                if (!$formField instanceof Container) {
+            foreach ($form->getControls() as $formControl) {
+                if (!$formControl instanceof Container) {
                     continue;
                 }
-                $nodes[] = $this->createClassNode($formClassName, $formField, $baseOffsetGetMethod);
+                $nodes[] = $this->createClassNode($formClassName, $formControl, $baseOffsetGetMethod);
             }
         }
 

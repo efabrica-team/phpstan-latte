@@ -415,17 +415,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], [
             [
-                'Form field with name "password" probably does not exist.',
+                'Form control with name "password" probably does not exist.',
                 4,
                 'default.latte',
             ],
             [
-                'Form field with name "second_submit" probably does not exist.',
+                'Form control with name "second_submit" probably does not exist.',
                 15,
                 'default.latte',
             ],
             [
-                'Form field with name "second_submit_label" probably does not exist.',
+                'Form control with name "second_submit_label" probably does not exist.',
                 15,
                 'default.latte',
             ],
@@ -440,7 +440,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Form field with name "username" probably does not exist.',
+                'Form control with name "username" probably does not exist.',
                 48,
                 'default.latte',
             ],

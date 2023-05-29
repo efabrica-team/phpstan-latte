@@ -4,8 +4,13 @@
 
 ### Changed
 - Separated collection of Form Containers
+- Renamed CollectedFormField to CollectedFormControl (**BC break**) 
+- Renamed FormFieldCollector to FormControlCollector (**BC break**)
+- Renamed FormFieldFinder to FormControlFinder (**BC break**)
+- Error message `Form field with name "xxx" probably does not exist.` has been changed to `Form control with name "xxx" probably does not exist.` (**BC break**)
 
 ### Fixed
+- Subcomponents in multi registered components
 - Stubs for Nette\Bridges\FormsLatte\Runtime::item
 - FilterString type contains also null because Nette cast all inputs to string first and null is also available
 

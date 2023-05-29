@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FilterFinder;
-use Efabrica\PHPStanLatte\LatteContext\Finder\FormFieldFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\FormControlFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FormFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodFinder;
@@ -39,7 +39,7 @@ final class LatteContext
 
     private FilterFinder $filterFinder;
 
-    private FormFieldFinder $formFieldFinder;
+    private FormControlFinder $formControlFinder;
 
     private FormFinder $formFinder;
 
@@ -59,8 +59,8 @@ final class LatteContext
         $this->variableFinder = new VariableFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
         $this->componentFinder = new ComponentFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
         $this->filterFinder = new FilterFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
-        $this->formFieldFinder = new FormFieldFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
-        $this->formFinder = new FormFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->formFieldFinder);
+        $this->formControlFinder = new FormControlFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
+        $this->formFinder = new FormFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->formControlFinder);
         $this->templatePathFinder = new TemplatePathFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
         $this->templateRenderFinder = new TemplateRenderFinder($latteContextData, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
     }
@@ -95,9 +95,9 @@ final class LatteContext
         return $this->filterFinder;
     }
 
-    public function formFieldFinder(): FormFieldFinder
+    public function formControlFinder(): FormControlFinder
     {
-        return $this->formFieldFinder;
+        return $this->formControlFinder;
     }
 
     public function formFinder(): FormFinder

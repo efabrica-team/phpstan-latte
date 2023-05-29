@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormControl;
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
 
-final class FormFieldFinder
+final class FormControlFinder
 {
     /**
      * @var array<string, array<string, ControlInterface[]>>
      */
-    private array $assignedFormFields = [];
+    private array $assignedFormControls = [];
 
     private ReflectionProvider $reflectionProvider;
 
@@ -26,16 +26,16 @@ final class FormFieldFinder
         $this->reflectionProvider = $reflectionProvider;
         $this->methodCallFinder = $methodCallFinder;
 
-        $collectedForms = $latteContext->getCollectedData(CollectedFormField::class);
+        $collectedFormControls = $latteContext->getCollectedData(CollectedFormControl::class);
 
-        /** @var CollectedFormField $collectedFormField */
-        foreach ($collectedForms as $collectedFormField) {
-            $className = $collectedFormField->getClassName();
-            $methodName = $collectedFormField->getMethodName();
-            if (!isset($this->assignedFormFields[$className][$methodName])) {
-                $this->assignedFormFields[$className][$methodName] = [];
+        /** @var CollectedFormControl $collectedFormControl */
+        foreach ($collectedFormControls as $collectedFormControl) {
+            $className = $collectedFormControl->getClassName();
+            $methodName = $collectedFormControl->getMethodName();
+            if (!isset($this->assignedFormControls[$className][$methodName])) {
+                $this->assignedFormControls[$className][$methodName] = [];
             }
-            $this->assignedFormFields[$className][$methodName][] = $collectedFormField->getFormField();
+            $this->assignedFormControls[$className][$methodName][] = $collectedFormControl->getFormControl();
         }
     }
 
@@ -45,14 +45,14 @@ final class FormFieldFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundFormFields = [
+        $foundFormControls = [
             $this->findInClasses($className),
             $this->findInMethodCalls($className, '__construct'),
         ];
         foreach ($methodNames as $methodName) {
-            $foundFormFields[] = $this->findInMethodCalls($className, $methodName);
+            $foundFormControls[] = $this->findInMethodCalls($className, $methodName);
         }
-        return ItemCombinator::merge(...$foundFormFields);
+        return ItemCombinator::merge(...$foundFormControls);
     }
 
     /**
@@ -62,11 +62,11 @@ final class FormFieldFinder
     {
         $classReflection = $this->reflectionProvider->getClass($className);
 
-        $assignedFormFields = $this->assignedFormFields[$className][''] ?? [];
+        $assignedFormControls = $this->assignedFormControls[$className][''] ?? [];
         foreach ($classReflection->getParentClassesNames() as $parentClass) {
-            $assignedFormFields = ItemCombinator::union($this->assignedFormFields[$parentClass][''] ?? [], $assignedFormFields);
+            $assignedFormControls = ItemCombinator::union($this->assignedFormControls[$parentClass][''] ?? [], $assignedFormControls);
         }
-        return $assignedFormFields;
+        return $assignedFormControls;
     }
 
     /**
@@ -78,13 +78,13 @@ final class FormFieldFinder
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             /** @var array<ControlInterface[]> $fromCalled */
-            /** @var ControlInterface[] $formFields */
-            $formFields = ItemCombinator::resolveTemplateTypes(
-                $this->assignedFormFields[$declaringClass][$methodName] ?? [],
+            /** @var ControlInterface[] $formControls */
+            $formControls = ItemCombinator::resolveTemplateTypes(
+                $this->assignedFormControls[$declaringClass][$methodName] ?? [],
                 $declaringClass,
                 $currentClassName
             );
-            return ItemCombinator::union($formFields, ...$fromCalled);
+            return ItemCombinator::union($formControls, ...$fromCalled);
         };
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
