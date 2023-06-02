@@ -9,6 +9,9 @@
 - Renamed FormFieldFinder to FormControlFinder (**BC break**)
 - Error message `Form field with name "xxx" probably does not exist.` has been changed to `Form control with name "xxx" probably does not exist.` (**BC break**)
 
+### Added
+- Support for numeric form container names
+
 ### Fixed
 - Subcomponents in multi registered components
 - Stubs for Nette\Bridges\FormsLatte\Runtime::item

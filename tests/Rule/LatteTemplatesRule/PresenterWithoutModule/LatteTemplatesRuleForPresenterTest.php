@@ -444,6 +444,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 48,
                 'default.latte',
             ],
+            [
+                'Form control with name "5" probably does not exist.',
+                90,
+                'default.latte',
+            ],
+            [
+                'Form control with name "1" probably does not exist.',
+                108,
+                'default.latte',
+            ],
         ]);
     }
 
