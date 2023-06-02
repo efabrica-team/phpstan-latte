@@ -128,7 +128,7 @@ final class FormsPresenter extends ParentPresenter
     protected function createComponentContainerForm(): Form
     {
         $form = new Form();
-
+        $form->setMethod('get');
         $part1 = $form->addContainer('part1');
         $part1->addText('text1', 'Text 1');
         $part1->addSubmit('submit1', 'Submit 1');

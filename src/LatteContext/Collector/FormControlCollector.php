@@ -129,7 +129,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
 
         $formControls = [];
         foreach ($controlNames as $controlName) {
-            if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formControlType)->yes()) {
+            if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formControlType)->yes() && !(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($formControlType)->yes()) {
                 $formControl = new Container($controlName, $formControlType);
             } elseif ((new ObjectType('Nette\Forms\Control'))->isSuperTypeOf($formControlType)->yes()) {
                 $formControl = new Field($controlName, $formControlType);
