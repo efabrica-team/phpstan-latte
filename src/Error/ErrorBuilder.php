@@ -45,6 +45,7 @@ final class ErrorBuilder
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|string\./', // we will not test latte compiler itself
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|null\./', // we will not test latte compiler itself
         '/Method Nette\\\\Forms\\\\Controls\\\\BaseControl::getControlPart\(\) invoked with 1 parameter, 0 required\./', // dynamic checkbox is typehinted as BaseControl
+        '/Method Nette\\\\Forms\\\\Controls\\\\BaseControl::getLabelPart\(\) invoked with 1 parameter, 0 required\./', // dynamic checkbox is typehinted as BaseControl
         '/Method Nette\\\\Forms\\\\Controls\\\\Checkbox::getControlPart\(\) invoked with 1 parameter, 0 required\./', // latte internal error - passing parameter (empty string) to getControlPart when {input checkbox:} is used
         '/Method Nette\\\\Forms\\\\Controls\\\\Checkbox::getLabelPart\(\) invoked with 1 parameter, 0 required\./', // latte internal error - passing parameter (empty string) to getLabelPart when {label checkbox: /} is used
         '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
