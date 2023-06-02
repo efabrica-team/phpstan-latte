@@ -155,7 +155,7 @@ final class ValueResolver
     }
 
     /**
-     * @return (string|int)[]|null
+     * @return array<int|string>|null
      */
     public function resolveStringsOrInts(Expr $expr, Scope $scope): ?array
     {
