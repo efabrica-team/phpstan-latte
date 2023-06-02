@@ -13,6 +13,7 @@
 - Subcomponents in multi registered components
 - Stubs for Nette\Bridges\FormsLatte\Runtime::item
 - FilterString type contains also null because Nette cast all inputs to string first and null is also available
+- Ignored incorrect calls from latte Checkbox::getControlPart('') and Checkbox::getLabelPart('')
 
 ## [0.12.0] - 2023-05-25
 ### Added

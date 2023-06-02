@@ -129,6 +129,7 @@ final class FormsPresenter extends ParentPresenter
     {
         $form = new Form();
         $form->setMethod('get');
+        $form->addCheckbox('checkbox', 'Checkbox');
         $part1 = $form->addContainer('part1');
         $part1->addText('text1', 'Text 1');
         $part1->addSubmit('submit1', 'Submit 1');
