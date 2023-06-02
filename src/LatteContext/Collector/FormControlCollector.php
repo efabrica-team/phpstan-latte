@@ -117,7 +117,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
         }
 
         if ($controlNameArg !== null) {
-            $controlNames = $this->valueResolver->resolveStrings($controlNameArg->value, $scope);
+            $controlNames = $this->valueResolver->resolveStringsOrInts($controlNameArg->value, $scope);
             if ($controlNames === null) {
                 return null;
             }
@@ -129,6 +129,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
 
         $formControls = [];
         foreach ($controlNames as $controlName) {
+            $controlName = (string)$controlName;
             if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formControlType)->yes() && !(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($formControlType)->yes()) {
                 $formControl = new Container($controlName, $formControlType);
             } elseif ((new ObjectType('Nette\Forms\Control'))->isSuperTypeOf($formControlType)->yes()) {

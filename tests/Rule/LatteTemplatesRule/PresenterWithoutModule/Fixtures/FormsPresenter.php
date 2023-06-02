@@ -143,4 +143,26 @@ final class FormsPresenter extends ParentPresenter
 
         return $form;
     }
+
+    protected function createComponentFormWithMultiContainer(): Form
+    {
+        $form = new Form();
+        for ($i = 0; $i < 5; $i++) {
+            $container = $form->addContainer($i);
+            $container->addText('text');
+        }
+        $form->addSubmit('submit', 'Submit');
+        return $form;
+    }
+
+    protected function createComponentFormWithDynamicMultiContainer(): Form
+    {
+        $form = new Form();
+        for ($i = 0; $i < strlen($this->name); $i++) {
+            $container = $form->addContainer($i);
+            $container->addText('text');
+        }
+        $form->addSubmit('submit', 'Submit');
+        return $form;
+    }
 }
