@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Support for form fields in containers
+
+### Fixed
+- Report errors when numeric container names are used in latte
+
 ## [0.13.0] - 2023-06-05
 ### Changed
 - Separated collection of Form Containers

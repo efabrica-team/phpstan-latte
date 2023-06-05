@@ -16,14 +16,17 @@ final class CollectedFormControl extends CollectedLatteContextObject
 
     private ControlInterface $formControl;
 
+    private string $parentName;
+
     /**
      * @param class-string $className
      */
-    public function __construct(string $className, string $methodName, ControlInterface $formControl)
+    public function __construct(string $className, string $methodName, ControlInterface $formControl, string $parentName)
     {
         $this->className = $className;
         $this->methodName = $methodName;
         $this->formControl = $formControl;
+        $this->parentName = $parentName;
     }
 
     public function getClassName(): string
@@ -39,5 +42,10 @@ final class CollectedFormControl extends CollectedLatteContextObject
     public function getFormControl(): ControlInterface
     {
         return $this->formControl;
+    }
+
+    public function getParentName(): string
+    {
+        return $this->parentName;
     }
 }

@@ -134,11 +134,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $itemArgument = $node->getArgs()[0] ?? null;
                     $itemArgumentValue = $itemArgument ? $itemArgument->value : null;
 
-                    if ($itemArgumentValue instanceof String_) {
-                        $controlName = $itemArgumentValue->value;
-                        // TODO remove when container are supported
-                        $controlNameParts = explode('-', $controlName);
-                        $controlName = end($controlNameParts);
+                    if ($itemArgumentValue instanceof String_ || $itemArgumentValue instanceof LNumber) {
+                        $controlName = (string)$itemArgumentValue->value;
                         $formControl = $this->actualForm->getControl($controlName);
                         if ($formControl === null) {
                             $this->errorControlNodes[] = [
@@ -178,11 +175,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 return null;
             }
 
-            if ($node->dim instanceof String_) {
-                $controlName = $node->dim->value;
-                // TODO remove when container are supported
-                $controlNameParts = explode('-', $controlName);
-                $controlName = end($controlNameParts);
+            if ($node->dim instanceof String_ || $node->dim instanceof LNumber) {
+                $controlName = (string)$node->dim->value;
                 $formControl = $this->actualForm->getControl($controlName);
                 if ($formControl === null) {
                     $this->errorControlNodes[] = [
@@ -195,6 +189,29 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 $formControlType = $formControl->getType();
                 if ($formControlType instanceof ObjectType && ($formControlType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formControlType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
                     $this->possibleAlwaysTrueLabels[] = $this->findParentStmt($node);
+                }
+
+                /**
+                 * Replace:
+                 * <code>
+                 * $form['foo-bar']->getControl();
+                 * </code>
+                 *
+                 * With:
+                 * <code>
+                 * $form['foo']['bar']->getControl();
+                 * <code>
+                 *
+                 * if foobar exists in actual form
+                 */
+                if (str_contains($controlName, '-')) {
+                    $controlNameParts = explode('-', $controlName);
+                    $tmpDim = new ArrayDimFetch(new Variable('form'), new String_(array_shift($controlNameParts)));
+                    foreach ($controlNameParts as $controlNamePart) {
+                        $tmpDim = new ArrayDimFetch($tmpDim, new String_($controlNamePart));
+                    }
+                    $tmpDim->setAttributes($node->getAttributes());
+                    return $tmpDim;
                 }
             } elseif ($node->dim instanceof Variable) {
                 // dynamic control
