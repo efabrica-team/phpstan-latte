@@ -125,10 +125,95 @@ It is important to check the context first (text after path of latte file - rend
 
     Now the type of `$baz` will be `'bar'|null` and isset() in condition will be valid.
 
-<!-- TODO
-## Components
--->
 
-<!-- TODO
+## Components
+
+Components are collected from PHP classes (e.g. Presenters or Controls) when using one of these ways:
+
+1) class method createComponent()
+```php
+protected function createComponentSomething(): SomeControl
+{
+    return new SomeControl();
+}
+```
+ 
+2) calling method addComponent()
+```php
+public function actionDefault(): void
+{
+    $this->addComponent('something', new SomeControl());
+}
+```
+
+3) assign to $this:
+```php
+public function actionDefault(): void
+{
+    $this['something'] = new SomeControl();
+}
+```
+
+Subcomponents of components are also collected, so it is possible to use this:
+```latte
+{control someControl}
+{control someControl-header}
+{control someControl-body}
+```
+
+### Common errors
+
+#### Component with name "xxx" probably doesn't exist.
+First of all, check if your component is registered in Presenter / Control using one of way described above and if the name fits.
+
+
 ## Forms
--->
+
+Forms are collected from PHP classes (e.g. Presenters or Controls) when they are registered as components via `createComponent*` or `createComponent` method if this method returns instance of `Nette\Forms\Form`.
+Form fields and form containers are also collected and can be then analysed.
+
+**IMPORTANT NOTE**: Container fields are currently assigned to containers if the name of container is the same as the name of variable which adds some field to this container.  
+
+### Common errors
+
+#### Form control with name "xxx" probably does not exist.
+Let's say you register form like this:
+
+```php
+
+use Nette\Application\UI\Form;
+
+protected function createComponentContainerForm(): Form
+{
+    $form = new Form();
+    $form->setMethod('get');
+    $form->addCheckbox('checkbox', 'Checkbox');
+    $part1 = $form->addContainer('part1');
+    $part1->addText('text1', 'Text 1');
+    $part1->addSubmit('submit1', 'Submit 1');
+
+    $part2 = $form->addContainer('part2');
+    $part2->addText('text2', 'Text 2');
+    $part2->addSubmit('submit2', 'Submit 2');
+
+    return $form;
+}
+```
+
+
+
+Then you can access all registered fields in latte this way:
+```latte
+{form containerForm}
+    {$form[part1][text1]->getHtmlId()}
+    {input part1-text1}
+    {input part1-submit1}
+
+    {input part2-text2}
+    {input part2-submit2}
+
+    {input checkbox:}
+
+    {input xxx} <-- this field is not registered in createComponent method therefore it is marked as non-existing 
+{/form}
+```

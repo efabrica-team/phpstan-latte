@@ -127,6 +127,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        $parentName = $this->nameResolver->resolve($node->var) ?: 'form';
         $formControls = [];
         foreach ($controlNames as $controlName) {
             $controlName = (string)$controlName;
@@ -141,7 +142,8 @@ final class FormControlCollector extends AbstractLatteContextCollector
             $formControls[] = new CollectedFormControl(
                 $classReflection->getName(),
                 $methodName,
-                $formControl
+                $formControl,
+                $parentName
             );
         }
         return $formControls;

@@ -6,7 +6,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormControl;
+use Efabrica\PHPStanLatte\Template\Form\Container;
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
+use Efabrica\PHPStanLatte\Template\Form\Field;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
 
@@ -28,14 +30,55 @@ final class FormControlFinder
 
         $collectedFormControls = $latteContext->getCollectedData(CollectedFormControl::class);
 
+        /** @var array<string, array<string, array<string, Container>>> $containers */
+        $containers = [];
+
+        /** @var array<string, array<string, array<string, Field[]>>> $controls */
+        $controls = [];
+
         /** @var CollectedFormControl $collectedFormControl */
         foreach ($collectedFormControls as $collectedFormControl) {
             $className = $collectedFormControl->getClassName();
             $methodName = $collectedFormControl->getMethodName();
-            if (!isset($this->assignedFormControls[$className][$methodName])) {
-                $this->assignedFormControls[$className][$methodName] = [];
+            $formControl = $collectedFormControl->getFormControl();
+            if (!$formControl instanceof Container) {
+                $parentName = $collectedFormControl->getParentName();
+                if (!isset($controls[$className][$methodName][$parentName])) {
+                    $controls[$className][$methodName][$parentName] = [];
+                }
+                $controls[$className][$methodName][$parentName][] = $formControl;
+                continue;
             }
-            $this->assignedFormControls[$className][$methodName][] = $collectedFormControl->getFormControl();
+
+            $containerName = $formControl->getName();
+            $containers[$className][$methodName][$containerName] = $formControl;
+        }
+
+        foreach ($containers as $className => $classContainers) {
+            foreach ($classContainers as $methodName => $methodContainers) {
+                foreach ($methodContainers as $containerName => $container) {
+                    $containerControls = $controls[$className][$methodName][$containerName] ?? [];
+                    $container->addControls($containerControls);
+                    unset($controls[$className][$methodName][$containerName]);
+
+                    if (!isset($this->assignedFormControls[$className][$methodName])) {
+                        $this->assignedFormControls[$className][$methodName] = [];
+                    }
+
+                    $this->assignedFormControls[$className][$methodName][] = $container;
+                }
+            }
+        }
+
+        foreach ($controls as $className => $classControls) {
+            foreach ($classControls as $methodName => $methodControls) {
+                foreach ($methodControls as $parentControls) {
+                    if (!isset($this->assignedFormControls[$className][$methodName])) {
+                        $this->assignedFormControls[$className][$methodName] = [];
+                    }
+                    $this->assignedFormControls[$className][$methodName] = array_merge($this->assignedFormControls[$className][$methodName], $parentControls);
+                }
+            }
         }
     }
 

@@ -10,4 +10,6 @@ interface ControlHolderInterface
      * @return ControlInterface[]
      */
     public function getControls(): array;
+
+    public function getControl(string $name): ?ControlInterface;
 }
