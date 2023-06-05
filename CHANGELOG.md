@@ -3,10 +3,31 @@
 ## [Unreleased][unreleased]
 
 ### Added
+- Collecting of conditionally defined variables from array
+
+## [0.13.0] - 2023-06-05
+### Changed
+- Separated collection of Form Containers
+- Renamed CollectedFormField to CollectedFormControl (**BC break**) 
+- Renamed FormFieldCollector to FormControlCollector (**BC break**)
+- Renamed FormFieldFinder to FormControlFinder (**BC break**)
+- Error message `Form field with name "xxx" probably does not exist.` has been changed to `Form control with name "xxx" probably does not exist.` (**BC break**)
+
+### Added
+- Support for numeric form container names
+
+### Fixed
+- Subcomponents in multi registered components
+- Stubs for Nette\Bridges\FormsLatte\Runtime::item
+- FilterString type contains also null because Nette cast all inputs to string first and null is also available
+- Ignored incorrect calls from latte Checkbox::getControlPart('') and Checkbox::getLabelPart('')
+
+## [0.12.0] - 2023-05-25
+### Added
 - Class template resolvers allows matching classes by pattern
 - Collect renders also from calls to Latte\Engine
 - TemplateRender sub collectors
-- Collecting of conditionally defined variables from array
+- IComponent::render resolved as output call
 
 ### Fixed
 - Not analysed templates use realpath
@@ -154,7 +175,9 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.11.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.0...HEAD
+[0.13.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.12.0...0.13.0
+[0.12.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.8.0...0.9.0

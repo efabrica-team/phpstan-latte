@@ -8,7 +8,7 @@ class Runtime
      * @template T of object
      * @param T|string $item
      * @param \stdClass $global
-     * @return ($item is object ? T : \Nette\Forms\Control)
+     * @return ($item is object ? T : \Nette\Forms\Controls\BaseControl)
      */
     public static function item($item, $global): object
     {

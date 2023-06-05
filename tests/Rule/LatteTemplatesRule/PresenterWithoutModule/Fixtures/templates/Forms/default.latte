@@ -56,9 +56,56 @@
 {/form}
 
 {form containerForm}
+    {$form[part1][text1]->getHtmlId()}
     {input part1-text1}
     {input part1-submit1}
 
     {input part2-text2}
     {input part2-submit2}
+
+    {input checkbox:}
+{/form}
+
+{form formWithMultiContainer}
+    {formContainer 0}
+        {input text}
+    {/formContainer}
+
+    {formContainer '0'}
+        {input text}
+    {/formContainer}
+
+    {formContainer 1}
+        {input text}
+    {/formContainer}
+
+    {formContainer '1'}
+        {input text}
+    {/formContainer}
+
+    {formContainer 5}
+        {input text}
+    {/formContainer}
+
+    {formContainer '5'}
+        {input text}
+    {/formContainer}
+{/form}
+
+{form formWithDynamicMultiContainer}
+    {formContainer 0}
+        {input text}
+    {/formContainer}
+
+    {formContainer '0'}
+        {input text}
+    {/formContainer}
+
+    {formContainer 1}
+        {input text}
+    {/formContainer}
+
+    {formContainer '1'}
+        {input text}
+    {/formContainer}
 {/form}

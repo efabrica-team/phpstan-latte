@@ -128,7 +128,8 @@ final class FormsPresenter extends ParentPresenter
     protected function createComponentContainerForm(): Form
     {
         $form = new Form();
-
+        $form->setMethod('get');
+        $form->addCheckbox('checkbox', 'Checkbox');
         $part1 = $form->addContainer('part1');
         $part1->addText('text1', 'Text 1');
         $part1->addSubmit('submit1', 'Submit 1');
@@ -140,6 +141,28 @@ final class FormsPresenter extends ParentPresenter
         $form->onSuccess[] = function (Form $form, array $values): void {
         };
 
+        return $form;
+    }
+
+    protected function createComponentFormWithMultiContainer(): Form
+    {
+        $form = new Form();
+        for ($i = 0; $i < 5; $i++) {
+            $container = $form->addContainer($i);
+            $container->addText('text');
+        }
+        $form->addSubmit('submit', 'Submit');
+        return $form;
+    }
+
+    protected function createComponentFormWithDynamicMultiContainer(): Form
+    {
+        $form = new Form();
+        for ($i = 0; $i < strlen($this->name); $i++) {
+            $container = $form->addContainer($i);
+            $container->addText('text');
+        }
+        $form->addSubmit('submit', 'Submit');
         return $form;
     }
 }

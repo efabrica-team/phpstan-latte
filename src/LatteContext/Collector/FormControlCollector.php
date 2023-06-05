@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormField;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormControl;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
+use Efabrica\PHPStanLatte\Template\Form\Container;
 use Efabrica\PHPStanLatte\Template\Form\Field;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
@@ -15,12 +16,11 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\UnionType;
 
 /**
- * @extends AbstractLatteContextCollector<CollectedFormField>
+ * @extends AbstractLatteContextCollector<CollectedFormControl>
  */
-final class FormFieldCollector extends AbstractLatteContextCollector
+final class FormControlCollector extends AbstractLatteContextCollector
 {
     private ValueResolver $valueResolver;
 
@@ -44,7 +44,7 @@ final class FormFieldCollector extends AbstractLatteContextCollector
 
     /**
      * @param MethodCall $node
-     * @phpstan-return null|CollectedFormField[]
+     * @phpstan-return null|CollectedFormControl[]
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -87,9 +87,9 @@ final class FormFieldCollector extends AbstractLatteContextCollector
             if ($componentArg === null) {
                 return null;
             }
-            $formFieldType = $scope->getType($componentArg->value);
-            $fieldNameArg = $node->getArgs()[1] ?? null;
-            $fieldNameDefault = null;
+            $formControlType = $scope->getType($componentArg->value);
+            $controlNameArg = $node->getArgs()[1] ?? null;
+            $controlNameDefault = null;
         } else {
             // other form methods
             $formClassReflection = $this->reflectionProvider->getClass($formType->getClassName());
@@ -97,66 +97,53 @@ final class FormFieldCollector extends AbstractLatteContextCollector
                 return null;
             }
 
-            $formFieldReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
+            $formControlReflectionMethod = $formClassReflection->getMethod($formMethodName, $scope);
 
-            $formFieldParametersAcceptor = $formFieldReflectionMethod->getVariants()[0] ?? null;
-            if ($formFieldParametersAcceptor === null) {
+            $formControlParametersAcceptor = $formControlReflectionMethod->getVariants()[0] ?? null;
+            if ($formControlParametersAcceptor === null) {
                 return null;
             }
 
-            $formFieldType = $formFieldParametersAcceptor->getReturnType();
-            $fieldNameArg = $node->getArgs()[0] ?? null;
+            $formControlType = $formControlParametersAcceptor->getReturnType();
+            $controlNameArg = $node->getArgs()[0] ?? null;
 
-            $formFieldParameters = $formFieldParametersAcceptor->getParameters();
-            $fieldNameDefaultType = isset($formFieldParameters[0]) ? $formFieldParameters[0]->getDefaultValue() : null;
-            if ($fieldNameDefaultType instanceof ConstantStringType) {
-                $fieldNameDefault = trim($fieldNameDefaultType->getValue(), '"\'');
+            $formControlParameters = $formControlParametersAcceptor->getParameters();
+            $controlNameDefaultType = isset($formControlParameters[0]) ? $formControlParameters[0]->getDefaultValue() : null;
+            if ($controlNameDefaultType instanceof ConstantStringType) {
+                $controlNameDefault = trim($controlNameDefaultType->getValue(), '"\'');
             } else {
-                $fieldNameDefault = null;
+                $controlNameDefault = null;
             }
         }
 
-        $formFieldTypes = [];
-        if ($formFieldType instanceof ObjectType) {
-            $formFieldTypes[] = $formFieldType;
-        } elseif ($formFieldType instanceof UnionType) {
-            $formFieldTypes = $formFieldType->getTypes();
-        }
-
-        if ($formFieldTypes === []) {
-            return null;
-        }
-
-        foreach ($formFieldTypes as $formFieldTypeToCheck) {
-            if (!$formFieldTypeToCheck instanceof ObjectType) {
+        if ($controlNameArg !== null) {
+            $controlNames = $this->valueResolver->resolveStringsOrInts($controlNameArg->value, $scope);
+            if ($controlNames === null) {
                 return null;
             }
-            if (!$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Container')->yes() &&
-                !$formFieldTypeToCheck->isInstanceOf('Nette\Forms\Control')->yes()
-            ) {
-                return null;
-            }
-        }
-
-        if ($fieldNameArg !== null) {
-            $fieldNames = $this->valueResolver->resolveStrings($fieldNameArg->value, $scope);
-            if ($fieldNames === null) {
-                return null;
-            }
-        } elseif ($fieldNameDefault !== null) {
-            $fieldNames = [$fieldNameDefault];
+        } elseif ($controlNameDefault !== null) {
+            $controlNames = [$controlNameDefault];
         } else {
             return null;
         }
 
-        $formFields = [];
-        foreach ($fieldNames as $fieldName) {
-            $formFields[] = new CollectedFormField(
+        $formControls = [];
+        foreach ($controlNames as $controlName) {
+            $controlName = (string)$controlName;
+            if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formControlType)->yes() && !(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($formControlType)->yes()) {
+                $formControl = new Container($controlName, $formControlType);
+            } elseif ((new ObjectType('Nette\Forms\Control'))->isSuperTypeOf($formControlType)->yes()) {
+                $formControl = new Field($controlName, $formControlType);
+            } else {
+                continue;
+            }
+
+            $formControls[] = new CollectedFormControl(
                 $classReflection->getName(),
                 $methodName,
-                new Field($fieldName, $formFieldType)
+                $formControl
             );
         }
-        return $formFields;
+        return $formControls;
     }
 }

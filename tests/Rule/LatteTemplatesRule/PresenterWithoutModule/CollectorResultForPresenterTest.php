@@ -59,7 +59,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
         ], [
             'NODE NetteApplicationUIPresenter {"className":"ComponentsPresenter"}',
             'TEMPLATE create.latte ComponentsPresenter::create ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType","multiplier","onlyCreateForm"]',
-            'TEMPLATE default.latte ComponentsPresenter::default ["startupParent","presenter","control","flashes","varControl","variableFromParentCalledViaParent"] ["parentForm","form","noType","implicitType","multiplier","onlyParentDefaultForm","someControl"]',
+            'TEMPLATE default.latte ComponentsPresenter::default ["startupParent","presenter","control","flashes","varControl","variableFromParentCalledViaParent"] ["parentForm","form","noType","implicitType","multiplier","onlyParentDefaultForm","someControl","someUnionControl"]',
             'TEMPLATE noAction.latte ComponentsPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm","form","noType","implicitType","multiplier"]',
             'TEMPLATE parent.latte ComponentsPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","form","noType","implicitType","multiplier","parentDefaultForm"]',
             'NODE NetteApplicationUIPresenterStandalone {"className":"ComponentsPresenter"}',

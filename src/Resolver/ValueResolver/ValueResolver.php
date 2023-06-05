@@ -17,6 +17,7 @@ use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ConstantScalarType;
+use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\UnionType;
 
 final class ValueResolver
@@ -118,6 +119,21 @@ final class ValueResolver
             return $options;
         }
 
+        if ($type instanceof IntegerRangeType) {
+            $min = $type->getMin() !== null ? $type->getMin() : $type->getMax();
+            $max = $type->getMax() !== null ? $type->getMax() : $type->getMin();
+
+            if ($min === null || $max === null) {
+                return null;
+            }
+
+            $result = [];
+            for ($i = $min; $i <= $max; $i++) {
+                $result[] = $i;
+            }
+            return $result;
+        }
+
         try {
             return [$constExprEvaluator->evaluateDirectly($expr)];
         } catch (ConstExprEvaluationException $e) {
@@ -134,6 +150,22 @@ final class ValueResolver
         if ($values === null) {
             return null;
         }
+
         return array_filter($values, 'is_string');
+    }
+
+    /**
+     * @return array<int|string>|null
+     */
+    public function resolveStringsOrInts(Expr $expr, Scope $scope): ?array
+    {
+        $values = $this->resolve($expr, $scope);
+        if ($values === null) {
+            return null;
+        }
+
+        return array_filter($values, function ($value) {
+            return is_string($value) || is_int($value);
+        });
     }
 }
