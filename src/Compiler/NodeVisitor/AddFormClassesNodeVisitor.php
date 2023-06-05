@@ -190,6 +190,29 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 if ($formControlType instanceof ObjectType && ($formControlType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formControlType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
                     $this->possibleAlwaysTrueLabels[] = $this->findParentStmt($node);
                 }
+
+                /**
+                 * Replace:
+                 * <code>
+                 * $form['foo-bar']->getControl();
+                 * </code>
+                 *
+                 * With:
+                 * <code>
+                 * $form['foo']['bar']->getControl();
+                 * <code>
+                 *
+                 * if foobar exists in actual form
+                 */
+                if (str_contains($controlName, '-')) {
+                    $controlNameParts = explode('-', $controlName);
+                    $tmpDim = new ArrayDimFetch(new Variable('form'), new String_(array_shift($controlNameParts)));
+                    foreach ($controlNameParts as $controlNamePart) {
+                        $tmpDim = new ArrayDimFetch($tmpDim, new String_($controlNamePart));
+                    }
+                    $tmpDim->setAttributes($node->getAttributes());
+                    return $tmpDim;
+                }
             } elseif ($node->dim instanceof Variable) {
                 // dynamic control
             } else {
