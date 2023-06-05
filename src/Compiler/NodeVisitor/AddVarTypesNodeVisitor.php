@@ -17,10 +17,11 @@ use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\If_;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
@@ -85,34 +86,22 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
             }
         }
 
+        $arrayShapeItems = [];
         $variableStatements = [];
         foreach ($combinedVariables as $variable) {
             if (in_array($variable->getName(), $methodParams, true)) {
                 continue;
             }
-            $prependVarTypesDocBlocks = sprintf(
-                '/** @var %s $%s */',
-                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
-                $variable->getName()
-            );
 
-            // doc types node
-            $docNop = new Nop();
-            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
-
-            if ($variable->mightBeUndefined()) {
-                $checkingVariableName = sprintf('__%s__possible_undefined', $variable->getName());
-
-                $conditionalVariableNop = new Nop();
-                $conditionalVariableNop->setDocComment(new Doc(sprintf('/** @var bool $%s */', $checkingVariableName)));
-                $variableStatements[] = $conditionalVariableNop;
-
-                $condition = new If_(new VariableExpr($checkingVariableName), ['stmts' => [$docNop]]);
-                $variableStatements[] = $condition;
-                continue;
-            }
-            $variableStatements[] = $docNop;
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variable->getType()->toPhpDocNode());
         }
+
+        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+        $variableStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__variables__'))]), [
+            'comments' => [
+                new Doc('/** @var ' . $arrayShape->__toString() . ' $__variables__ */'),
+            ],
+        ]);
 
         $variableStatements[] = new Expression(
             new FuncCall(

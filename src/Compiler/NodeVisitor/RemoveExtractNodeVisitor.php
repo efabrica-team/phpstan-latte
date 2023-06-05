@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
@@ -32,6 +33,18 @@ final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
         }
 
         if ($this->nameResolver->resolve($expr) !== 'extract') {
+            return null;
+        }
+
+        if (count($expr->getArgs()) !== 1) {
+            return null;
+        }
+
+        if (!$expr->args[0]->value instanceof Variable) {
+            return null;
+        }
+
+        if ($this->nameResolver->resolve($expr->args[0]->value) === '__variables__') {
             return null;
         }
 

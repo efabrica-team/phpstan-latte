@@ -51,6 +51,7 @@ final class ErrorBuilder
         '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
         '/Variable \$ʟ_it on left side of \?\? always exists and is not nullable\./', // $ʟ_it in try / catch in foreach is always set
         '/Cannot call method render\(\) on mixed\./', // redundant error for unknown components with phpstan-nette extension
+        '/PHPDoc tag @var for variable \$__variables__ has no value type specified in iterable type array\./',  // fake variable $__variables__ can have not specified array type
     ];
 
     /** @var string[] */
