@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
@@ -26,6 +25,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\ThisType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 
@@ -38,16 +38,13 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
 
     private TypeStringResolver $typeStringResolver;
 
-    private TypeToPhpDoc $typeToPhpDoc;
-
     /**
      * @param array<string, string> $globalVariables
      */
-    public function __construct(array $globalVariables, TypeStringResolver $typeStringResolver, TypeToPhpDoc $typeToPhpDoc)
+    public function __construct(array $globalVariables, TypeStringResolver $typeStringResolver)
     {
         $this->globalVariables = $globalVariables;
         $this->typeStringResolver = $typeStringResolver;
-        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     public function enterNode(Node $node): ?Node
@@ -93,7 +90,14 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
                 continue;
             }
 
-            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variable->getType()->toPhpDocNode());
+            $variableType = $variable->getType();
+
+            if ($variableType instanceof ThisType) {
+                // $this(SomeClass) is transformed to $this, but we want to use SomeClass instead
+                $variableType = $variableType->getStaticObjectType();
+            }
+
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
         $arrayShape = new ArrayShapeNode($arrayShapeItems);
