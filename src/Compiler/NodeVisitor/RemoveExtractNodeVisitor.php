@@ -36,15 +36,8 @@ final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (count($expr->getArgs()) !== 1) {
-            return null;
-        }
-
-        if (!$expr->args[0]->value instanceof Variable) {
-            return null;
-        }
-
-        if ($this->nameResolver->resolve($expr->args[0]->value) === '__variables__') {
+        // keep extract($__variables__);
+        if (count($expr->getArgs()) === 1 && $expr->args[0]->value instanceof Variable && $this->nameResolver->resolve($expr->args[0]->value) === '__variables__') {
             return null;
         }
 

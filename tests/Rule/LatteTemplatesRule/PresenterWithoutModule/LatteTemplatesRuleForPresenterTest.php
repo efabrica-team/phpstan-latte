@@ -317,7 +317,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'differentRenderConditional.latte',
             ],
             [
-                'Dumped type: mixed', // TODO should be string, but PHPStan resolves this as mixed for now
+                'Dumped type: string',
                 3,
                 'arrayShapeParams.latte',
             ],
