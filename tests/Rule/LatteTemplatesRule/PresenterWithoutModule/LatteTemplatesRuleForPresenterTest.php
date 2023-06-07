@@ -420,6 +420,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Method Nette\Forms\Controls\BaseControl::getControlPart() invoked with 1 parameter, 0 required.',
+                11,
+                'default.latte',
+            ],
+            [
+                'Method Nette\Forms\Controls\BaseControl::getLabelPart() invoked with 1 parameter, 0 required.',
+                11,
+                'default.latte',
+            ],
+            [
                 'Form control with name "second_submit" probably does not exist.',
                 15,
                 'default.latte',
