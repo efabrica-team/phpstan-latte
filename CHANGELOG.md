@@ -2,6 +2,7 @@
 
 ## [Unreleased][unreleased]
 
+## [0.13.1] - 2023-06-12
 ### Fixed
 - Removed empty string as 1st argument from method calls getControlPart() and getLabelPart()
 - Added missing stub for BaseControl
@@ -177,7 +178,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.1...HEAD
+[0.13.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.0...0.13.1
 [0.13.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.12.0...0.13.0
 [0.12.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.10.0...0.11.0
