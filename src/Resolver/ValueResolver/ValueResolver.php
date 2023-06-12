@@ -119,21 +119,6 @@ final class ValueResolver
             return $options;
         }
 
-        if ($type instanceof IntegerRangeType) {
-            $min = $type->getMin() !== null ? $type->getMin() : $type->getMax();
-            $max = $type->getMax() !== null ? $type->getMax() : $type->getMin();
-
-            if ($min === null || $max === null) {
-                return null;
-            }
-
-            $result = [];
-            for ($i = $min; $i <= $max; $i++) {
-                $result[] = $i;
-            }
-            return $result;
-        }
-
         try {
             return [$constExprEvaluator->evaluateDirectly($expr)];
         } catch (ConstExprEvaluationException $e) {
@@ -159,7 +144,23 @@ final class ValueResolver
      */
     public function resolveStringsOrInts(Expr $expr, Scope $scope): ?array
     {
-        $values = $this->resolve($expr, $scope);
+        $type = $scope->getType($expr);
+        if ($type instanceof IntegerRangeType) {
+            $min = $type->getMin() !== null ? $type->getMin() : $type->getMax();
+            $max = $type->getMax() !== null ? $type->getMax() : $type->getMin();
+
+            if ($min === null || $max === null) {
+                return null;
+            }
+
+            $values = [];
+            for ($i = $min; $i <= $max; $i++) {
+                $values[] = $i;
+            }
+        } else {
+            $values = $this->resolve($expr, $scope);
+        }
+
         if ($values === null) {
             return null;
         }
