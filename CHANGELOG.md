@@ -4,6 +4,7 @@
 
 ### Fixed
 - Removed empty string as 1st argument from method calls getControlPart() and getLabelPart()
+- Added missing stub for BaseControl
 
 ## [0.13.0] - 2023-06-05
 ### Changed

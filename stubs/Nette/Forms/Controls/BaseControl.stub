@@ -1,0 +1,10 @@
+<?php
+
+namespace Nette\Forms\Controls;
+
+use Nette\ComponentModel\Component;
+use Nette\Forms\Control;
+
+abstract class BaseControl extends Component implements Control
+{
+}
