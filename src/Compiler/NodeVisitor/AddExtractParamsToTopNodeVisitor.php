@@ -33,11 +33,7 @@ final class AddExtractParamsToTopNodeVisitor extends NodeVisitorAbstract impleme
         }
 
         $type = $this->getType($class);
-        if (!$type instanceof ObjectType) {
-            return null;
-        }
-
-        if (!$type->isInstanceOf('\Latte\Runtime\Template')->yes()) {
+        if ($type === null || !(new ObjectType('\Latte\Runtime\Template'))->isSuperTypeOf($type)->yes()) {
             return null;
         }
 

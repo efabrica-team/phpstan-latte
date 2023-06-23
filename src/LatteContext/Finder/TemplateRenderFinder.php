@@ -10,9 +10,7 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 
 final class TemplateRenderFinder
 {
-    /**
-     * @var array<string, array<string, CollectedTemplateRender[]>>
-     */
+    /** @var array<string, array<string, CollectedTemplateRender[]>> */
     private array $collectedTemplateRenders = [];
 
     private MethodCallFinder $methodCallFinder;

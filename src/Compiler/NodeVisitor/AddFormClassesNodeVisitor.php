@@ -193,7 +193,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 }
 
                 $formControlType = $formControl->getType();
-                if ($formControlType instanceof ObjectType && ($formControlType->isInstanceOf('Nette\Forms\Controls\CheckboxList')->yes() || $formControlType->isInstanceOf('Nette\Forms\Controls\RadioList')->yes())) {
+                if ((new ObjectType('Nette\Forms\Controls\CheckboxList'))->isSuperTypeOf($formControlType)->yes() || (new ObjectType('Nette\Forms\Controls\RadioList'))->isSuperTypeOf($formControlType)->yes()) {
                     $this->possibleAlwaysTrueLabels[] = $this->findParentStmt($node);
                 }
             } elseif ($node->dim instanceof Variable) {

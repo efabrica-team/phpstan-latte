@@ -12,9 +12,7 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFinder
 {
-    /**
-     * @var array<string, array<string, CollectedForm[]>>
-     */
+    /** @var array<string, array<string, CollectedForm[]>> */
     private array $collectedForms = [];
 
     private ReflectionProvider $reflectionProvider;
