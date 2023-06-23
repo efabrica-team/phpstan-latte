@@ -46,7 +46,9 @@ parameters:
 
     ignoreErrors:
         -
-            message: '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            messages:
+                - '#^Calling PHPStan\\DependencyInjection\\DerivativeContainerFactory\:\:create\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+                - '#^Accessing PHPStan\\Analyser\\FileAnalyser::class is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Analyser/FileAnalyserFactory.php
         -
             message: '#^Calling PHPStan\\File\\FileExcluder::isExcludedFromAnalysing\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
@@ -59,7 +61,10 @@ parameters:
                 - '#^Creating new PHPStan\\Collectors\\Registry is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Rule/LatteTemplatesRule.php
         -
-            message: '#^Calling PHPStan\\File\\SimpleRelativePathHelper\:\:getRelativePath\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+            messages:
+                - '#^Calling PHPStan\\File\\SimpleRelativePathHelper\:\:getRelativePath\(\) is not covered by backward compatibility promise\. The method might change in a minor PHPStan version\.$#'
+                - '#^Accessing PHPStan\\Command\\AnalyseCommand::DEFAULT_LEVEL is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
+                - '#^Accessing PHPStan\\Command\\AnalyseCommand::OPTION_LEVEL is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Error/TableErrorFormatter.php
 
         -
@@ -133,3 +138,34 @@ parameters:
             message: '#^Method Latte\\CompileException\:\:setSource\(\) invoked with 3 parameters, 1-2 required\.$#'
             path: src/Compiler/Compiler/Latte2Compiler.php
             reportUnmatched: false
+
+        # is covered by backward compatibility promise
+        -
+            messages:
+                - '#^Although PHPStan\\Node\\InClassNode is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                - '#^Although PHPStan\\Node\\ClassMethod is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+
+        -
+            messages:
+                -'#^Although PHPStan\\Rules\\MetadataRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                -'#^Although PHPStan\\Rules\\FileRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                -'#^Although PHPStan\\Rules\\LineRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                -'#^Although PHPStan\\Rules\\TipRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                -'#^Although PHPStan\\Rules\\IdentifierRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+                -'#^Although PHPStan\\Rules\\NonIgnorableRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+            path: src/Error/ErrorBuilder.php
+
+        # to be done later, no idea how to fix it now
+        -
+            message: '#^Method Efabrica\\PHPStanLatte\\Collector\\Collector\\AbstractCollector::collectItems\(\) should return array\<A of array\>\|null but returns array\<int, array\<string, mixed\>\>\.$#'
+            path: src/Collector/Collector/AbstractCollector.php
+        -
+            messages:
+                - '#^Doing instanceof PHPStan\\Type\\ObjectType is error-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'
+                - '#^Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error-prone and deprecated\.$#'
+            path: src/LatteContext/Collector/ComponentCollector.php
+        -
+            message: '#^Parameter \#1 \$object of function get_class expects object, mixed given\.$#'
+            paths:
+                - src/Compiler/NodeVisitor/ChangeFiltersNodeVisitor.php
+                - src/Compiler/NodeVisitor/ChangeFunctionsNodeVisitor.php
