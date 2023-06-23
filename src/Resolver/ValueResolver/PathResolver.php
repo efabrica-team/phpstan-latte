@@ -17,7 +17,6 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\TypeWithClassName;
 use SplFileInfo;
 
 final class PathResolver
@@ -76,10 +75,11 @@ final class PathResolver
                 throw new ConstExprEvaluationException();
             }
             $calledOnType = $scope->getType($expr->var);
-            if (!$calledOnType instanceof TypeWithClassName) {
+            $objectClassNames = $calledOnType->getObjectClassNames();
+            if ($objectClassNames === []) {
                 throw new ConstExprEvaluationException();
             }
-            $className = $calledOnType->getClassName();
+            $className = $objectClassNames[0];
             $methodName = (string)$expr->name;
             return $this->methodCallPlaceholder($className, $methodName);
         } elseif ($expr instanceof StaticCall) {
