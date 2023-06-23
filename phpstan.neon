@@ -169,3 +169,7 @@ parameters:
             paths:
                 - src/Compiler/NodeVisitor/ChangeFiltersNodeVisitor.php
                 - src/Compiler/NodeVisitor/ChangeFunctionsNodeVisitor.php
+        -
+            # present only in nette/utils 4
+            message: '#^PHPDoc tag @var with type SplFileInfo is not subtype of native type Nette\\Utils\\FileInfo\.$#'
+            reportUnmatched: false
