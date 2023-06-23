@@ -17,16 +17,14 @@ final class TemplateTypeResolver
 {
     public function resolve(Type $type): bool
     {
-        if ($type instanceof ObjectType) {
-            return $type->isInstanceOf('Nette\Application\UI\Template')->yes() || $type->isInstanceOf('Nette\Application\UI\ITemplate')->yes();
-        } elseif ($type instanceof UnionType) {
+        if ($type instanceof UnionType) {
             foreach ($type->getTypes() as $unionType) {
                 if ($this->resolve($unionType)) {
                     return true;
                 }
             }
         }
-        return false;
+        return (new ObjectType('Nette\Application\UI\Template'))->isSuperTypeOf($type)->yes() || (new ObjectType('Nette\Application\UI\ITemplate'))->isSuperTypeOf($type)->yes();
     }
 
     public function resolveByNodeAndScope(Node $node, Scope $scope): bool
