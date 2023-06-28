@@ -14,14 +14,10 @@ use PHPStan\Type\VerbosityLevel;
 
 final class ComponentFinder
 {
-    /**
-     * @var array<string, array<string, Component[]>>
-     */
+    /** @var array<string, array<string, Component[]>> */
     private array $assignedComponents = [];
 
-    /**
-     * @var array<string, array<string, Component[]>>
-     */
+    /** @var array<string, array<string, Component[]>> */
     private array $declaredComponents = [];
 
     private ReflectionProvider $reflectionProvider;

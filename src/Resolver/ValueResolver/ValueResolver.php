@@ -16,7 +16,6 @@ use PhpParser\Node\Scalar\EncapsedStringPart;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\UnionType;
 
@@ -33,8 +32,9 @@ final class ValueResolver
 
             $type = $scope->getType($expr);
 
-            if ($type instanceof ConstantScalarType) {
-                return $type->getValue();
+            $constantScalarValues = $type->getConstantScalarValues();
+            if ($constantScalarValues !== []) {
+                return $constantScalarValues[0];
             }
 
             if ($expr instanceof Dir) {
@@ -111,10 +111,11 @@ final class ValueResolver
         if ($type instanceof UnionType) {
             $options = [];
             foreach ($type->getTypes() as $subType) {
-                if (!$subType instanceof ConstantScalarType) {
+                $constantScalarValues = $subType->getConstantScalarValues();
+                if ($constantScalarValues === []) {
                     return null;
                 }
-                $options[] = $subType->getValue();
+                $options[] = $constantScalarValues[0];
             }
             return $options;
         }

@@ -12,9 +12,7 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class FormControlFinder
 {
-    /**
-     * @var array<string, array<string, ControlInterface[]>>
-     */
+    /** @var array<string, array<string, ControlInterface[]>> */
     private array $assignedFormControls = [];
 
     private ReflectionProvider $reflectionProvider;

@@ -11,19 +11,13 @@ use PHPStan\Rules\RuleErrorBuilder;
 
 class LatteContextData
 {
-    /**
-     * @var array<RuleError>
-     */
+    /** @var array<RuleError> */
     private array $errors;
 
-    /**
-     * @var array<CollectedLatteContextObject>
-     */
+    /** @var array<CollectedLatteContextObject> */
     private array $collectedData = [];
 
-    /**
-     * @var array<class-string, CollectedLatteContextObject[]>
-     */
+    /** @var array<class-string, CollectedLatteContextObject[]> */
     private array $collectedDataByType = [];
 
     /**

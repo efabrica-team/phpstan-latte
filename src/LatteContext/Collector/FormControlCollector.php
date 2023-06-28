@@ -14,7 +14,6 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -63,12 +62,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
         }
 
         $formType = $scope->getType($node->var);
-
-        if (!$formType instanceof ObjectType) {
-            return null;
-        }
-
-        if (!$formType->isInstanceOf('Nette\Forms\Container')->yes()) {
+        if (!(new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formType)->yes()) {
             return null;
         }
 
@@ -91,8 +85,12 @@ final class FormControlCollector extends AbstractLatteContextCollector
             $controlNameArg = $node->getArgs()[1] ?? null;
             $controlNameDefault = null;
         } else {
+            $objectClassNames = $formType->getObjectClassNames();
+            if ($objectClassNames === []) {
+                return null;
+            }
             // other form methods
-            $formClassReflection = $this->reflectionProvider->getClass($formType->getClassName());
+            $formClassReflection = $this->reflectionProvider->getClass($objectClassNames[0]);
             if (!$formClassReflection->hasMethod($formMethodName)) {
                 return null;
             }
@@ -109,8 +107,9 @@ final class FormControlCollector extends AbstractLatteContextCollector
 
             $formControlParameters = $formControlParametersAcceptor->getParameters();
             $controlNameDefaultType = isset($formControlParameters[0]) ? $formControlParameters[0]->getDefaultValue() : null;
-            if ($controlNameDefaultType instanceof ConstantStringType) {
-                $controlNameDefault = trim($controlNameDefaultType->getValue(), '"\'');
+            $constantStringTypes = $controlNameDefaultType !== null ? $controlNameDefaultType->getConstantStrings() : [];
+            if ($constantStringTypes !== []) {
+                $controlNameDefault = trim($constantStringTypes[0]->getValue(), '"\'');
             } else {
                 $controlNameDefault = null;
             }

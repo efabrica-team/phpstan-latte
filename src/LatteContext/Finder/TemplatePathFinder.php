@@ -11,9 +11,7 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class TemplatePathFinder
 {
-    /**
-     * @var array<string, array<string, array<string>>>
-     */
+    /** @var array<string, array<string, array<string>>> */
     private array $collectedTemplatePaths = [];
 
     private ReflectionProvider $reflectionProvider;

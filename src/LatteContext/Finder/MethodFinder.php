@@ -9,9 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethod;
 
 final class MethodFinder
 {
-    /**
-     * @var array<string, array<string, CollectedMethod[]>>>
-     */
+    /** @var array<string, array<string, CollectedMethod[]>> */
     private array $collectedMethods = [];
 
     private MethodCallFinder $methodCallFinder;

@@ -15,9 +15,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     public const TERMINATING_CALL = 'terminating';
     public const OUTPUT_CALL = 'output';
 
-    /**
-     * @var ?class-string
-     */
+    /** @var ?class-string */
     private ?string $callerClassName;
 
     private string $callerMethodName;
@@ -33,9 +31,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     /** @var array<string, string|int|float|bool> */
     private array $params;
 
-    /**
-     * @var ?class-string
-     */
+    /** @var ?class-string */
     private ?string $currentClassName;
 
     /**
