@@ -12,9 +12,7 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class FilterFinder
 {
-    /**
-     * @var array<string, array<string, Filter[]>>
-     */
+    /** @var array<string, array<string, Filter[]>> */
     private array $collectedFilters = [];
 
     private ReflectionProvider $reflectionProvider;

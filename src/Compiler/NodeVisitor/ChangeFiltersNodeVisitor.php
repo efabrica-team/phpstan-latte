@@ -136,11 +136,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         }
 
         $type = $this->getType($class);
-        if (!$type instanceof ObjectType) {
-            return;
-        }
-
-        if (!$type->isInstanceOf('\Latte\Runtime\Template')->yes()) {
+        if ($type === null || !(new ObjectType('\Latte\Runtime\Template'))->isSuperTypeOf($type)->yes()) {
             return;
         }
 

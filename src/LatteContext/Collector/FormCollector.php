@@ -69,11 +69,7 @@ final class FormCollector extends AbstractLatteContextCollector
         }
 
         $returnType = $parametersAcceptor->getReturnType();
-        if (!$returnType instanceof ObjectType) {
-            return null;
-        }
-
-        if (!$returnType->isInstanceOf('Nette\Forms\Form')->yes()) {
+        if (!(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($returnType)->yes()) {
             return null;
         }
 

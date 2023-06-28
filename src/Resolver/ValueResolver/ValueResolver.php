@@ -16,7 +16,6 @@ use PhpParser\Node\Scalar\EncapsedStringPart;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\UnionType;
 
@@ -33,8 +32,9 @@ final class ValueResolver
 
             $type = $scope->getType($expr);
 
-            if ($type instanceof ConstantScalarType) {
-                return $type->getValue();
+            $constantScalarValues = $type->getConstantScalarValues();
+            if ($constantScalarValues !== []) {
+                return $constantScalarValues[0];
             }
 
             if ($expr instanceof Dir) {
@@ -111,27 +111,13 @@ final class ValueResolver
         if ($type instanceof UnionType) {
             $options = [];
             foreach ($type->getTypes() as $subType) {
-                if (!$subType instanceof ConstantScalarType) {
+                $constantScalarValues = $subType->getConstantScalarValues();
+                if ($constantScalarValues === []) {
                     return null;
                 }
-                $options[] = $subType->getValue();
+                $options[] = $constantScalarValues[0];
             }
             return $options;
-        }
-
-        if ($type instanceof IntegerRangeType) {
-            $min = $type->getMin() !== null ? $type->getMin() : $type->getMax();
-            $max = $type->getMax() !== null ? $type->getMax() : $type->getMin();
-
-            if ($min === null || $max === null) {
-                return null;
-            }
-
-            $result = [];
-            for ($i = $min; $i <= $max; $i++) {
-                $result[] = $i;
-            }
-            return $result;
         }
 
         try {
@@ -159,7 +145,23 @@ final class ValueResolver
      */
     public function resolveStringsOrInts(Expr $expr, Scope $scope): ?array
     {
-        $values = $this->resolve($expr, $scope);
+        $type = $scope->getType($expr);
+        if ($type instanceof IntegerRangeType) {
+            $min = $type->getMin() !== null ? $type->getMin() : $type->getMax();
+            $max = $type->getMax() !== null ? $type->getMax() : $type->getMin();
+
+            if ($min === null || $max === null) {
+                return null;
+            }
+
+            $values = [];
+            for ($i = $min; $i <= $max; $i++) {
+                $values[] = $i;
+            }
+        } else {
+            $values = $this->resolve($expr, $scope);
+        }
+
         if ($values === null) {
             return null;
         }

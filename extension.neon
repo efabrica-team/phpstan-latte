@@ -8,6 +8,7 @@ parameters:
         - stubs/Nette/HtmlStringable.stub
         - stubs/Stringable.stub
         - stubs/Nette/Forms/Control.stub
+        - stubs/Nette/Forms/Controls/BaseControl.stub
         - stubs/Nette/Bridges/FormsLatte/Runtime.stub
         - stubs/Nette/Application/UI/Multiplier.stub
     usePathConstantsAsConstantString: true
@@ -151,6 +152,7 @@ services:
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\NotNullableSnippetDriverNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ContainerArrayFetchChangeIntegerToStringNodeVisitor())
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveEmptyStringFromLabelAndControlPartNodeVisitor())
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory

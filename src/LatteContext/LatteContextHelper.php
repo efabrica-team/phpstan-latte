@@ -11,8 +11,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
@@ -23,23 +21,22 @@ final class LatteContextHelper
     /**
      * @return Variable[]
      */
-    public static function variablesFromType(?Type $type): array
+    public static function variablesFromType(Type $type): array
     {
-        if ($type instanceof ObjectType) {
-            $type = $type->toArray();
-        }
+        $type = $type->toArray();
 
         $variables = [];
-        if ($type instanceof ConstantArrayType) {
-            $keyTypes = $type->getKeyTypes();
-            $valueTypes = $type->getValueTypes();
-            $optionalKeys = $type->getOptionalKeys();
+
+        foreach ($type->getConstantArrays() as $constantArrayType) {
+            $keyTypes = $constantArrayType->getKeyTypes();
+            $valueTypes = $constantArrayType->getValueTypes();
+            $optionalKeys = $constantArrayType->getOptionalKeys();
             foreach ($keyTypes as $k => $arrayKeyType) {
-                if (!$arrayKeyType instanceof ConstantStringType) { // only string keys
-                    continue;
+                $constantStringTypes = $arrayKeyType->getConstantStrings();
+                foreach ($constantStringTypes as $constantStringType) {
+                    $variableName = $constantStringType->getValue();
+                    $variables[$variableName] = new Variable($variableName, $valueTypes[$k], in_array($k, $optionalKeys, true));
                 }
-                $variableName = $arrayKeyType->getValue();
-                $variables[$variableName] = new Variable($variableName, $valueTypes[$k], in_array($k, $optionalKeys, true));
             }
         }
         return $variables;
@@ -95,16 +92,16 @@ final class LatteContextHelper
 
         foreach ($classes as $class) {
             $allowedType = new ObjectType($class);
-            if ($type instanceof ObjectType) {
-                if ($allowedType->isSuperTypeOf($type)->yes()) {
-                    return true;
-                }
-            } elseif ($type instanceof UnionType) {
+            if ($type instanceof UnionType) {
                 foreach ($type->getTypes() as $unionType) {
                     if ($allowedType->isSuperTypeOf($unionType)->yes()) {
                         return true;
                     }
                 }
+            }
+
+            if ($allowedType->isSuperTypeOf($type)->yes()) {
+                return true;
             }
         }
 

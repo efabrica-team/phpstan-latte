@@ -15,14 +15,10 @@ use PHPStan\Node\CollectedDataNode;
  */
 final class ResolvedNodeFinder
 {
-    /**
-     * @var array<string, CollectedResolvedNode[]>
-     */
+    /** @var array<string, CollectedResolvedNode[]> */
     private array $collectedResolvedNodes = [];
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     private array $analysedFiles = [];
 
     /**

@@ -16,7 +16,6 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\List_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PHPStan\Analyser\Scope;
-use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\MixedType;
 
 /**
@@ -56,8 +55,8 @@ final class AssignToArrayOfTemplateVariablesCollector extends AbstractLatteConte
 
         $types = [];
         $expressionTypes = $scope->getType($node->expr);
-        if ($expressionTypes instanceof ConstantArrayType) {
-            $types = $expressionTypes->getValueTypes();
+        foreach ($expressionTypes->getConstantArrays() as $constantArrayType) {
+            $types = array_merge($types, $constantArrayType->getValueTypes());
         }
 
         $variables = [];

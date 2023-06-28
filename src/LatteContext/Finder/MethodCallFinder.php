@@ -15,19 +15,13 @@ final class MethodCallFinder
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    /**
-     * @var array<string, array<string, CollectedMethodCall[]>>
-     */
+    /** @var array<string, array<string, CollectedMethodCall[]>> */
     private array $collectedMethodCalled = [];
 
-    /**
-     * @var array<string, array<string, bool>>>
-     */
+    /** @var array<string, array<string, bool>> */
     private array $hasTerminatingCalls = [];
 
-    /**
-     * @var array<string, array<string, bool>>>
-     */
+    /** @var array<string, array<string, bool>> */
     private array $hasOutputCalls = [];
 
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, LattePhpDocResolver $lattePhpDocResolver)

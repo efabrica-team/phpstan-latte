@@ -177,12 +177,12 @@ final class ComponentCollector extends AbstractLatteContextCollector
         $names = $this->valueResolver->resolveStrings($componentNameArg, $scope) ?? [];
 
         $componentType = null;
-        if ($componentArgType instanceof ObjectType && $componentArgType->isInstanceOf('Nette\ComponentModel\IComponent')->yes()) {
+        if ((new ObjectType('Nette\ComponentModel\IComponent'))->isSuperTypeOf($componentArgType)->yes()) {
             $componentType = $componentArgType;
         } elseif ($componentArgType instanceof UnionType) {
             $componentTypes = [];
             foreach ($componentArgType->getTypes() as $type) {
-                if ($type instanceof ObjectType && $type->isInstanceOf('Nette\ComponentModel\IComponent')->yes()) {
+                if ((new ObjectType('Nette\ComponentModel\IComponent'))->isSuperTypeOf($type)->yes()) {
                     $componentTypes[] = $type;
                 }
             }
