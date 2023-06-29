@@ -11,9 +11,13 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
@@ -84,7 +88,6 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
         }
 
         $arrayShapeItems = [];
-        $variableStatements = [];
         foreach ($combinedVariables as $variable) {
             if (in_array($variable->getName(), $methodParams, true)) {
                 continue;
@@ -101,22 +104,23 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
         }
 
         $arrayShape = new ArrayShapeNode($arrayShapeItems);
-        $variableStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__variables__'))]), [
+
+        $newStatements = [];
+        $newStatements[] = new Expression(new Assign(new VariableExpr('__variables__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('variables'))), [
             'comments' => [
                 new Doc('/** @var ' . $arrayShape->__toString() . ' $__variables__ */'),
             ],
         ]);
 
-        $variableStatements[] = new Expression(
-            new FuncCall(
-                new Name('reset'),
-                [
-                    new Arg(new VariableExpr('this->params')),
-                ]
-            )
-        );
+        $newStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__variables__'))]));
 
-        $node->stmts = array_merge($variableStatements, (array)$node->stmts);
+        $newStatements[] = new Expression(new Assign(new VariableExpr('__other_variables__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('other_variables'))), [
+            'comments' => [
+                new Doc('/** @var array $__other_variables__ */'),
+            ],
+        ]);
+        $newStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__other_variables__'))]));
+        $node->stmts = array_merge($newStatements, (array)$node->stmts);
         return $node;
     }
 }

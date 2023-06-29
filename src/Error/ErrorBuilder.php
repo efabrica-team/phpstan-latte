@@ -46,8 +46,10 @@ final class ErrorBuilder
         '/Cannot call method addAttributes\(\) on Nette\\\\Utils\\\\Html\|null\./', // we will not test latte compiler itself
         '/Instantiated class MissingBlockParameter not found\./', # missing block parameter palceholder
         '/Variable \$ʟ_it on left side of \?\? always exists and is not nullable\./', // $ʟ_it in try / catch in foreach is always set
+        '/Variable \$ʟ_it on left side of \?\? is never defined\./', // $ʟ_it in try / catch in foreach is never defined
         '/Cannot call method render\(\) on mixed\./', // redundant error for unknown components with phpstan-nette extension
         '/PHPDoc tag @var for variable \$__variables__ has no value type specified in iterable type array\./', // fake variable $__variables__ can have not specified array type
+        '/PHPDoc tag @var for variable \$__other_variables__ has no value type specified in iterable type array\./', // fake variable $__other_variables__ can have not specified array type
     ];
 
     /** @var string[] */

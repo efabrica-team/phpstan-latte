@@ -6,17 +6,19 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Closure;
 use Efabrica\PHPStanLatte\Compiler\LatteVersion;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorBehavior;
+use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FunctionsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -24,27 +26,32 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\ThisType;
 
-final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface, ScopeNodeVisitorInterface
+final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
     use FunctionsNodeVisitorBehavior;
+    use ExprTypeNodeVisitorBehavior;
     use ScopeNodeVisitorBehavior;
 
     private TypeStringResolver $typeStringResolver;
-
-    private TypeToPhpDoc $typeToPhpDoc;
 
     private ClosureTypeFactory $closureTypeFactory;
 
@@ -54,13 +61,11 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
 
     public function __construct(
         TypeStringResolver $typeStringResolver,
-        TypeToPhpDoc $typeToPhpDoc,
         ClosureTypeFactory $closureTypeFactory,
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider
     ) {
         $this->typeStringResolver = $typeStringResolver;
-        $this->typeToPhpDoc = $typeToPhpDoc;
         $this->closureTypeFactory = $closureTypeFactory;
         $this->nameResolver = $nameResolver;
         $this->reflectionProvider = $reflectionProvider;
@@ -128,29 +133,42 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
 
     private function addFunctionVariables(ClassMethod $node): void
     {
-        $variableStatements = [];
+        $class = $node->getAttribute('parent');
+        if (!$class instanceof Class_) {
+            return;
+        }
+
+        $type = $this->getType($class);
+        if ($type === null || !(new ObjectType('\Latte\Runtime\Template'))->isSuperTypeOf($type)->yes()) {
+            return;
+        }
+
+        $arrayShapeItems = [];
         foreach ($this->getFunctionVariables() as $variable) {
-            $prependVarTypesDocBlocks = sprintf(
-                '/** @var %s $%s */',
-                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
-                $variable->getName()
-            );
+            $variableType = $variable->getType();
 
-            // doc types node
-            $docNop = new Nop();
-            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
-            $variableStatements[] = $docNop;
+            if ($variableType instanceof ThisType) {
+                // $this(SomeClass) is transformed to $this, but we want to use SomeClass instead
+                $variableType = $variableType->getStaticObjectType();
+            }
+
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
-        if ($variableStatements !== []) {
-            $variableStatements[] = new Expression(
-                new Assign(
-                    new VariableExpr('__functions__'),
-                    new VariableExpr('this->global->fn')
-                )
-            );
+        if ($arrayShapeItems === []) {
+            return;
         }
 
+        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+
+        $variableStatements = [];
+        $variableStatements[] = new Expression(new Assign(new VariableExpr('__functions__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('functions'))), [
+            'comments' => [
+                new Doc('/** @var ' . $arrayShape->__toString() . ' $__functions__ */'),
+            ],
+        ]);
+
+        $variableStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__functions__'))]));
         $node->stmts = array_merge($variableStatements, (array)$node->stmts);
     }
 
