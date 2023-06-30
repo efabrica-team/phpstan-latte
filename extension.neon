@@ -149,7 +149,6 @@ services:
             # scope node visitors
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFunctionsNodeVisitor())
-#            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddExtractParamsToTopNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\NotNullableSnippetDriverNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ContainerArrayFetchChangeIntegerToStringNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveEmptyStringFromLabelAndControlPartNodeVisitor())

@@ -31,7 +31,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Dumped type: mixed',
+                'Dumped type: *ERROR*',
                 3,
                 'default.latte',
             ],
@@ -57,7 +57,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Dumped type: mixed',
+                'Dumped type: *ERROR*',
                 3,
                 'default.latte',
             ],
@@ -83,7 +83,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Dumped type: mixed',
+                'Dumped type: *ERROR*',
                 3,
                 'default.latte',
             ],
@@ -448,7 +448,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'base.latte',
             ],
             [
-                'Dumped type: mixed',
+                'Dumped type: *ERROR*',
                 3,
                 'base.latte',
             ],
@@ -468,7 +468,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'trait.latte',
             ],
             [
-                'Dumped type: mixed',
+                'Dumped type: *ERROR*',
                 3,
                 'trait.latte',
             ],
