@@ -49,7 +49,6 @@ final class ErrorBuilder
         '/Variable \$ʟ_it on left side of \?\? is never defined\./', // $ʟ_it in try / catch in foreach is never defined
         '/Cannot call method render\(\) on mixed\./', // redundant error for unknown components with phpstan-nette extension
         '/PHPDoc tag @var for variable \$__variables__ has no value type specified in iterable type array\./', // fake variable $__variables__ can have not specified array type
-        '/PHPDoc tag @var for variable \$__other_variables__ has no value type specified in iterable type array\./', // fake variable $__other_variables__ can have not specified array type
     ];
 
     /** @var string[] */

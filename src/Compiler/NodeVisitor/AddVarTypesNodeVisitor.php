@@ -114,12 +114,6 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
 
         $newStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__variables__'))]));
 
-        $newStatements[] = new Expression(new Assign(new VariableExpr('__other_variables__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('other_variables'))), [
-            'comments' => [
-                new Doc('/** @var array $__other_variables__ */'),
-            ],
-        ]);
-        $newStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__other_variables__'))]));
         $node->stmts = array_merge($newStatements, (array)$node->stmts);
         return $node;
     }
