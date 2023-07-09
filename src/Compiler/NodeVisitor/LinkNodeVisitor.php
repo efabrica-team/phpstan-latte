@@ -19,7 +19,6 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Stmt\Echo_;
@@ -145,7 +144,7 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
 
         return [
             new If_(new Identical(new FuncCall(new Name('mt_rand')), new LNumber(0)), [
-                'stmts' => $expressions
+                'stmts' => $expressions,
             ], $attributes),
         ];
     }
