@@ -73,6 +73,7 @@ It is important to check the context first (text after path of latte file - rend
 
 #### If condition is always true./If condition is always false.
 This is a similar case as in "Variable $baz might not be defined", a single template may be used in several places, like components or Presenter methods.
+You may also see the same message when including the template with `{include}` with parameters, for example: `{include "list.latte", show: true}` in one place, `{include "list.latte", show: 'false'}` in another.
 
 The template may contain `{if $foo}` and `$foo` may be set in one of those places like `$this->template->foo = true`, and `$this->template->foo = false` in another.
 The PHPStan extension sees a specific type `true`/`false` instead of `bool` in those.
