@@ -1,4 +1,4 @@
-# How it works, when doesn't and troubleshooting
+# How it works, when it doesn't, and troubleshooting
 
 In this section you can read how phpstan latte works, how to solve several issues which are reported by this extension.
 
