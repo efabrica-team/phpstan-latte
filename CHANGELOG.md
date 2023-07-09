@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Transformed html attributes
+
 ## [0.13.1] - 2023-06-12
 ### Fixed
 - Removed empty string as 1st argument from method calls getControlPart() and getLabelPart()
