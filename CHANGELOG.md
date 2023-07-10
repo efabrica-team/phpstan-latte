@@ -4,6 +4,7 @@
 
 ### Fixed
 - Avoid always terminating calls in links
+- Transformed html attributes
 
 ## [0.13.1] - 2023-06-12
 ### Fixed
