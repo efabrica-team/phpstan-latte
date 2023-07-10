@@ -36,7 +36,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'default.latte',
             ],
@@ -62,7 +62,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'default.latte',
             ],
@@ -88,7 +88,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'default.latte',
             ],
@@ -99,27 +99,27 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/MultipleRenderMethods/SomeControl.php'], [
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'default.latte',
             ],
             [
-                'Variable $a might not be defined.',
+                'Undefined variable: $a',
                 1,
                 'test.latte',
             ],
             [
-                'Variable $b might not be defined.',
+                'Undefined variable: $b',
                 2,
                 'test.latte',
             ],
             [
-                'Variable $b might not be defined.',
+                'Undefined variable: $b',
                 2,
                 'param_a.latte',
             ],
             [
-                'Variable $b might not be defined.',
+                'Undefined variable: $b',
                 2,
                 'param_b.latte',
             ],
@@ -172,47 +172,47 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             ],
 
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'constVar.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'explicit.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'defaultVars.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'explicitVars.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'defaultObject.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'explicitObject.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'complexType.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 1,
                 'throwSometimes.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'engine.latte',
             ],
@@ -390,7 +390,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/Variables/SomeControl.php'], [
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'default.latte',
             ],
@@ -406,7 +406,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
     {
         $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 1,
                 'default.latte',
             ],
@@ -416,12 +416,12 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'default.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 1,
                 'parent.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 1,
                 'grandParent.latte',
             ],
@@ -453,7 +453,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'base.latte',
             ],
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'base.latte',
             ],
@@ -473,7 +473,7 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'trait.latte',
             ],
             [
-                'Variable $c might not be defined.',
+                'Undefined variable: $c',
                 3,
                 'trait.latte',
             ],

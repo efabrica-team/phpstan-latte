@@ -1,6 +1,6 @@
-# How it works, when doesn't and troubleshooting
+# How it works, when it doesn't, and troubleshooting
 
-In this section you can read how phpstan latte works, how to solve several issues which are reported by this extension.
+In this section you can read how the PHPStan Latte extension works, how to solve several issues which are reported by this extension.
 
 ## Variables
 
@@ -32,12 +32,12 @@ class SomeControlExtendsControl
     
     private function assignToTemplate(): void
     {
-        $this->template->foo = 'bar';   // $foo will be available in latte because this method is called from render
+        $this->template->foo = 'bar';   // $foo will be available in the Latte template because this method is called from render
     }
     
     private function neverCalledMethod(): void
     {
-        $this->template->baz = 'bar';   // $baz will not be available in latte because this method is never called
+        $this->template->baz = 'bar';   // $baz will not be available in the template because this method is never called
     }
 }
 ```
@@ -47,8 +47,8 @@ If you use some non-standard way of assigning of variables to template, you have
 
 ### Common errors
 #### Variable $baz might not be defined
-This error can have several reasons. PHPStan latte checks latte templates with some context. One latte template can be used in several components or methods of Presenter.
-It is important to check the context first (text after path of latte file - rendered from, included in etc.)
+This error can have several reasons. The PHPStan Latte extension checks Latte templates with some context. One Latte template can be used in several components or methods of Presenter.
+It is important to check the context first (text after path of Latte file - rendered from, included in etc.)
 
 1) Missing assignment
     ```
@@ -68,8 +68,38 @@ It is important to check the context first (text after path of latte file - rend
      5      Variable $baz might not be defined.                      
     ------ ------------------------------------------------------------------------------------- 
     ```
-    Nette is sometimes tricky how it handles latte templates. All latte files in `templates` directory can be visited even without Presenter's action/render method.
+    Nette is sometimes tricky how it handles Latte templates. All Latte files in `templates` directory can be visited even without Presenter's action/render method.
     In the example above we can see there is no `::bar` action after FooPresenter so this is exactly the case when `bar.latte` exists but `actionBar` neither `renderBar` exists, so no variables are sent to this template in `bar` context.
+
+#### If condition is always true./If condition is always false.
+This is a similar case as in "Variable $baz might not be defined", a single template may be used in several places, like components or Presenter methods.
+You may also see the same message when including the template with `{include}` with parameters, for example: `{include "list.latte", show: true}` in one place, `{include "list.latte", show: 'false'}` in another.
+
+The template may contain `{if $foo}` and `$foo` may be set in one of those places like `$this->template->foo = true`, and `$this->template->foo = false` in another.
+The PHPStan extension sees a specific type `true`/`false` instead of `bool` in those.
+
+The solution is to make the PHPStan Latte extension see `bool` instead. There may be several ways how to achieve that, you may for example set the variable in a method:
+```php
+function setTemplateVars(bool $foo)
+{
+  $this->template->foo = $foo;
+}
+```
+Another option is to create a method that will return the value in the presenter:
+```php
+$this->template->foo = $this->isFoo();
+
+private function isFoo(): bool
+{
+    return false;
+}
+```
+You can also use a typed property:
+```php
+private bool $foo;
+
+$this->template->foo = $this->foo;
+```
 
 #### Variable $baz in isset() always exists and is not nullable
 1) Variable is conditionally assigned
@@ -81,7 +111,7 @@ It is important to check the context first (text after path of latte file - rend
         }
     }
     ```
-    Then latte looks like this:
+    Then in the Latte template:
     ```latte
     {ifset $baz}
         do something

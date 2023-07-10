@@ -3,7 +3,16 @@
 ## [Unreleased][unreleased]
 
 ### Added
+- Changed types handling - used smart extract feature from PHPStan
+- Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignore, you need to change ignored error pattern)
+
+### Fixed
 - Collecting of conditionally defined variables from array
+
+## [0.13.2] - 2023-07-10
+### Fixed
+- Avoid always terminating calls in links
+- Transformed html attributes
 
 ## [0.13.1] - 2023-06-12
 ### Fixed
@@ -181,7 +190,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.1...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.2...HEAD
+[0.13.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.1...0.13.2
 [0.13.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.0...0.13.1
 [0.13.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.12.0...0.13.0
 [0.12.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.11.0...0.12.0
