@@ -426,6 +426,24 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             $nodes[] = $this->createClassNode($className, $form, $baseOffsetGetMethod);
         }
 
+        /**
+         * TODO create some function / method which will be used instead of new SomeForm something like this:
+         * It has to be predictable so the best way should be some method inside Template class called via `$this->`
+         * It cannot be some global function or shared namespace static class because it will throw error - class / function already exists
+         * But some predefined class name should work too - like it works for $this->globals
+         *
+         * /**
+         *  * @return --- conditional return type here based by form name
+         *  *
+         * private function getForm(string $name): Form
+         * {
+         *     some ifs or switch
+         * }
+         *
+         * this function can be than used
+         *
+         */
+
         return $nodes;
     }
 
