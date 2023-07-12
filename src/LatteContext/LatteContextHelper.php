@@ -26,14 +26,16 @@ final class LatteContextHelper
         $type = $type->toArray();
 
         $variables = [];
+
         foreach ($type->getConstantArrays() as $constantArrayType) {
             $keyTypes = $constantArrayType->getKeyTypes();
             $valueTypes = $constantArrayType->getValueTypes();
+            $optionalKeys = $constantArrayType->getOptionalKeys();
             foreach ($keyTypes as $k => $arrayKeyType) {
                 $constantStringTypes = $arrayKeyType->getConstantStrings();
                 foreach ($constantStringTypes as $constantStringType) {
                     $variableName = $constantStringType->getValue();
-                    $variables[$variableName] = new Variable($variableName, $valueTypes[$k]);
+                    $variables[$variableName] = new Variable($variableName, $valueTypes[$k], in_array($k, $optionalKeys, true));
                 }
             }
         }

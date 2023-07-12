@@ -27,7 +27,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/VariablesPresenter.php'], [
             [
-                'Variable $items might not be defined.',
+                'Undefined variable: $items',
                 5,
                 'default.latte',
             ],
@@ -52,12 +52,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 18,
                 'default.latte',
             ],
             [
-                'Variable $fromOtherAction might not be defined.',
+                'Undefined variable: $fromOtherAction',
                 19,
                 'default.latte',
             ],
@@ -97,17 +97,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Variable $overwritted might not be defined.',
+                'Undefined variable: $overwritted',
                 61,
                 'default.latte',
             ],
             [
-                'Variable $parentOverwritted might not be defined.',
+                'Undefined variable: $parentOverwritted',
                 63,
                 'default.latte',
             ],
             [
-                'Variable $calledParentSecondOverwritted might not be defined.',
+                'Undefined variable: $calledParentSecondOverwritted',
                 68,
                 'default.latte',
             ],
@@ -187,12 +187,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Variable $fromRenderDefault might not be defined.',
+                'Undefined variable: $fromRenderDefault',
                 6,
                 'other.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 7,
                 'other.latte',
             ],
@@ -202,119 +202,139 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'other.latte',
             ],
             [
-                'Variable $fromRenderDefault might not be defined.',
+                'Undefined variable: $fromRenderDefault',
                 3,
                 '@partial.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 4,
                 '@partial.latte',
             ],
             [
-                'Variable $fromRenderDefault might not be defined.',
+                'Undefined variable: $fromRenderDefault',
                 4,
                 '@subpartial.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 5,
                 '@subpartial.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 4,
                 'parent.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 5,
                 'noAction.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 5,
                 'direct.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 1,
                 '@includedDynamically.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 4,
                 'onlyRender.latte',
             ],
             [
-                'Variable $fromDifferentRenderAction might not be defined.', // action different
+                'Undefined variable: $fromDifferentRenderAction', // action different
                 3,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRendersAction might not be defined.', // action different
+                'Undefined variable: $fromDifferentRendersAction', // action different
                 4,
                 'different.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action different
+                'Undefined variable: $nonExistingVariable', // action different
                 6,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRenderAction might not be defined.', // action differentRenders
+                'Undefined variable: $fromDifferentRenderAction', // action differentRenders
                 3,
                 'different.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                'Undefined variable: $nonExistingVariable', // action differentRenders
                 6,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRendersAction might not be defined.', // action differentRender
+                'Undefined variable: $fromDifferentRendersAction', // action differentRender
                 4,
                 'different.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action differentRender
+                'Undefined variable: $nonExistingVariable', // action differentRender
                 6,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRenderAction might not be defined.', // action differentRenderConditional
+                'Undefined variable: $fromDifferentRenderAction', // action differentRenderConditional
                 3,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRendersAction might not be defined.', // action differentRenderConditional
+                'Undefined variable: $fromDifferentRendersAction', // action differentRenderConditional
                 4,
                 'different.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action differentRenderConditional
+                'Undefined variable: $nonExistingVariable', // action differentRenderConditional
                 6,
                 'different.latte',
             ],
             [
-                'Variable $fromDifferentRendersAction might not be defined.', // action different2
+                'Undefined variable: $fromDifferentRendersAction', // action different2
                 3,
                 'different2.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action different2
+                'Undefined variable: $nonExistingVariable', // action different2
                 5,
                 'different2.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                'Undefined variable: $nonExistingVariable', // action differentRenders
                 5,
                 'different2.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action differentRenders
+                'Undefined variable: $nonExistingVariable', // action differentRenders
                 3,
                 'differentRenderConditional.latte',
+            ],
+            [
+                'Dumped type: string',
+                3,
+                'arrayShapeParams.latte',
+            ],
+            [
+                'Variable $a might not be defined.',
+                3,
+                'arrayShapeParams.latte',
+            ],
+            [
+                'Dumped type: int',
+                4,
+                'arrayShapeParams.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                5,
+                'arrayShapeParams.latte',
             ],
         ]);
     }
@@ -760,32 +780,32 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/ResolvePresenter.php'], [
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'dieSometimes.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'empty.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'exitSometimes.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'recursion.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'throwSometimes.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'setFile.changed.latte',
             ],
@@ -800,7 +820,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'ResolvePresenter.php',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.',
+                'Undefined variable: $nonExistingVariable',
                 3,
                 'sendTemplate.latte',
             ],
@@ -832,27 +852,27 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
     {
         $this->analyse([__DIR__ . '/Fixtures/StartupViewPresenter.php'], [
             [
-                'Variable $nonExistingVariable might not be defined.', // action default
+                'Undefined variable: $nonExistingVariable', // action default
                 4,
                 'default.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action parent
+                'Undefined variable: $nonExistingVariable', // action parent
                 4,
                 'parent.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action startup
+                'Undefined variable: $nonExistingVariable', // action startup
                 4,
                 'startup.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action default(startup)
+                'Undefined variable: $nonExistingVariable', // action default(startup)
                 4,
                 'startup.latte',
             ],
             [
-                'Variable $nonExistingVariable might not be defined.', // action parent(startup)
+                'Undefined variable: $nonExistingVariable', // action parent(startup)
                 4,
                 'startup.latte',
             ],

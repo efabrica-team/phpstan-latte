@@ -6,24 +6,30 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\ThisType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 
@@ -36,16 +42,13 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
 
     private TypeStringResolver $typeStringResolver;
 
-    private TypeToPhpDoc $typeToPhpDoc;
-
     /**
      * @param array<string, string> $globalVariables
      */
-    public function __construct(array $globalVariables, TypeStringResolver $typeStringResolver, TypeToPhpDoc $typeToPhpDoc)
+    public function __construct(array $globalVariables, TypeStringResolver $typeStringResolver)
     {
         $this->globalVariables = $globalVariables;
         $this->typeStringResolver = $typeStringResolver;
-        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     public function enterNode(Node $node): ?Node
@@ -84,34 +87,34 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
             }
         }
 
-        $variableStatements = [];
+        $arrayShapeItems = [];
         foreach ($combinedVariables as $variable) {
             if (in_array($variable->getName(), $methodParams, true)) {
                 continue;
             }
-            $prependVarTypesDocBlocks = sprintf(
-                '/** @var %s $%s */',
-                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
-                $variable->getName()
-            );
 
-            // doc types node
-            $docNop = new Nop();
-            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
+            $variableType = $variable->getType();
 
-            $variableStatements[] = $docNop;
+            if ($variableType instanceof ThisType) {
+                // $this(SomeClass) is transformed to $this, but we want to use SomeClass instead
+                $variableType = $variableType->getStaticObjectType();
+            }
+
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
-        $variableStatements[] = new Expression(
-            new FuncCall(
-                new Name('reset'),
-                [
-                    new Arg(new VariableExpr('this->params')),
-                ]
-            )
-        );
+        $arrayShape = new ArrayShapeNode($arrayShapeItems);
 
-        $node->stmts = array_merge($variableStatements, (array)$node->stmts);
+        $newStatements = [];
+        $newStatements[] = new Expression(new Assign(new VariableExpr('__variables__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('variables'))), [
+            'comments' => [
+                new Doc('/** @var ' . $arrayShape->__toString() . ' $__variables__ */'),
+            ],
+        ]);
+
+        $newStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__variables__'))]));
+
+        $node->stmts = array_merge($newStatements, (array)$node->stmts);
         return $node;
     }
 }

@@ -37,7 +37,7 @@ final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleT
                 'default.latte',
             ],
             [
-                'Parameter #1 $ of closure expects int, string given.',
+                'Parameter #1 $param of closure expects int, string given.',
                 4,
                 'default.latte',
             ],

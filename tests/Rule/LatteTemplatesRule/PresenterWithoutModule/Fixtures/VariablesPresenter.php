@@ -9,6 +9,9 @@ final class VariablesPresenter extends ParentPresenter
     /** @var array<string[]> */
     private array $stringLists = [];
 
+    /** @var array{a?: string, b: int, c: ?string} */
+    private array $arrayShape = [];
+
     protected function startup()
     {
         parent::startup();
@@ -148,6 +151,11 @@ final class VariablesPresenter extends ParentPresenter
     public function renderDifferent2(): void
     {
         $this->template->fromDifferentRender2 = 'from different render 2';
+    }
+
+    public function actionArrayShapeParams(): void
+    {
+        $this->template->setParameters($this->arrayShape);
     }
 
     private function itemsToArrayAssignWithoutTypes(): array

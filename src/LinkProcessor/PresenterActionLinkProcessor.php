@@ -8,8 +8,12 @@ use Nette\Application\InvalidPresenterException;
 use Nette\Application\PresenterFactory;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Reflection\ReflectionProvider;
 
@@ -94,11 +98,13 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
         $variable = new Variable($presenterVariableName);
         $methodNames = $this->prepareMethodNames($presenterClassName, $actionName, $linkParams);
 
-        $attributes['comments'][] = new Doc(
-            '/** @var ' . $presenterClassName . ' $' . $presenterVariableName . ' */'
-        );
-
         $expressions = [];
+        $expressions[] = new Expression(new Assign(new Variable($presenterVariableName), new ArrayDimFetch(new PropertyFetch(new Variable('this'), 'params'), new String_($presenterVariableName))), [
+            'comments' => [
+                new Doc('/** @var ' . $presenterClassName . ' $' . $presenterVariableName . ' */'),
+            ],
+        ]);
+
         foreach ($methodNames as $methodName) {
             $methodLinkParams = $this->linkParamsProcessor->process($presenterClassName, $methodName, $linkParams);
             $expressions[] = new Expression(new MethodCall($variable, $methodName, $methodLinkParams), $attributes);

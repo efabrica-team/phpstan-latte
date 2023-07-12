@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Changed types handling - used smart extract feature from PHPStan
+- Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignore, you need to change ignored error pattern)
+
+### Fixed
+- Collecting of conditionally defined variables from array
+
 ## [0.13.2] - 2023-07-10
 ### Fixed
 - Avoid always terminating calls in links

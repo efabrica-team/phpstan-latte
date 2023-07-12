@@ -12,13 +12,13 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorBehavi
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Latte\Runtime\FilterInfo;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -26,11 +26,12 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
@@ -40,10 +41,14 @@ use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
 use PHPStan\BetterReflection\Reflection\ReflectionParameter;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\ThisType;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
@@ -53,20 +58,16 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
     private TypeStringResolver $typeStringResolver;
 
-    private TypeToPhpDoc $typeToPhpDoc;
-
     private ClosureTypeFactory $closureTypeFactory;
 
     private ReflectionProvider $reflectionProvider;
 
     public function __construct(
         TypeStringResolver $typeStringResolver,
-        TypeToPhpDoc $typeToPhpDoc,
         ClosureTypeFactory $closureTypeFactory,
         ReflectionProvider $reflectionProvider
     ) {
         $this->typeStringResolver = $typeStringResolver;
-        $this->typeToPhpDoc = $typeToPhpDoc;
         $this->closureTypeFactory = $closureTypeFactory;
         $this->reflectionProvider = $reflectionProvider;
     }
@@ -140,29 +141,32 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             return;
         }
 
-        $variableStatements = [];
+        $arrayShapeItems = [];
         foreach ($this->getFilterVariables() as $variable) {
-            $prependVarTypesDocBlocks = sprintf(
-                '/** @var %s $%s */',
-                $this->typeToPhpDoc->toPhpDocString($variable->getType()),
-                $variable->getName()
-            );
+            $variableType = $variable->getType();
 
-            // doc types node
-            $docNop = new Nop();
-            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
-            $variableStatements[] = $docNop;
+            if ($variableType instanceof ThisType) {
+                // $this(SomeClass) is transformed to $this, but we want to use SomeClass instead
+                $variableType = $variableType->getStaticObjectType();
+            }
+
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
-        if ($variableStatements !== []) {
-            $variableStatements[] = new Expression(
-                new Assign(
-                    new VariableExpr('__filters__'),
-                    new VariableExpr('this->filters->getAll()')
-                )
-            );
+        if ($arrayShapeItems === []) {
+            return;
         }
 
+        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+
+        $variableStatements = [];
+        $variableStatements[] = new Expression(new Assign(new VariableExpr('__filters__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('filters'))), [
+            'comments' => [
+                new Doc('/** @var ' . $arrayShape->__toString() . ' $__filters__ */'),
+            ],
+        ]);
+
+        $variableStatements[] = new Expression(new FuncCall(new Name('extract'), [new Arg(new VariableExpr('__filters__'))]));
         $node->stmts = array_merge($variableStatements, (array)$node->stmts);
     }
 

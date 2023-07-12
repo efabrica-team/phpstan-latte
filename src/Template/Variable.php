@@ -15,10 +15,13 @@ final class Variable implements NameTypeItem, JsonSerializable
 
     private Type $type;
 
-    public function __construct(string $name, Type $type)
+    private bool $mightBeUndefined;
+
+    public function __construct(string $name, Type $type, bool $mightBeUndefined = false)
     {
         $this->name = $name;
         $this->type = $type;
+        $this->mightBeUndefined = $mightBeUndefined;
     }
 
     public function getName(): string
@@ -36,6 +39,11 @@ final class Variable implements NameTypeItem, JsonSerializable
         return $this->type->describe(VerbosityLevel::precise());
     }
 
+    public function mightBeUndefined(): bool
+    {
+        return $this->mightBeUndefined;
+    }
+
     public function withType(Type $type): self
     {
         $clone = clone $this;
@@ -47,8 +55,9 @@ final class Variable implements NameTypeItem, JsonSerializable
     public function jsonSerialize()
     {
         return [
-          'name' => $this->name,
-          'type' => $this->getTypeAsString(),
+            'name' => $this->name,
+            'type' => $this->getTypeAsString(),
+            'undefined' => $this->mightBeUndefined,
         ];
     }
 }

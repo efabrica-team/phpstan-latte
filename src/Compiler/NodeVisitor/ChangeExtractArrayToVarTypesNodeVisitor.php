@@ -6,30 +6,19 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\VariablesNodeVisitorInterface;
-use Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Variable;
-use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable as VariableExpr;
 use PhpParser\Node\Name;
-use PhpParser\Node\Scalar\DNumber;
-use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Nop;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDoc\TypeStringResolver;
-use PHPStan\Type\Constant\ConstantBooleanType;
-use PHPStan\Type\Constant\ConstantFloatType;
-use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\NullType;
 
 final class ChangeExtractArrayToVarTypesNodeVisitor extends NodeVisitorAbstract implements VariablesNodeVisitorInterface
 {
@@ -42,21 +31,17 @@ final class ChangeExtractArrayToVarTypesNodeVisitor extends NodeVisitorAbstract 
 
     private TypeStringResolver $typeStringResolver;
 
-    private TypeToPhpDoc $typeToPhpDoc;
-
     /**
      * @param array<string, string> $globalVariables
      */
     public function __construct(
         array $globalVariables,
         NameResolver $nameResolver,
-        TypeStringResolver $typeStringResolver,
-        TypeToPhpDoc $typeToPhpDoc
+        TypeStringResolver $typeStringResolver
     ) {
         $this->globalVariables = $globalVariables;
         $this->nameResolver = $nameResolver;
         $this->typeStringResolver = $typeStringResolver;
-        $this->typeToPhpDoc = $typeToPhpDoc;
     }
 
     public function beforeTraverse(array $nodes)
@@ -94,7 +79,7 @@ final class ChangeExtractArrayToVarTypesNodeVisitor extends NodeVisitorAbstract 
 
         $skipExisting = $this->nameResolver->resolve($secondArg) === 'EXTR_SKIP';
 
-        $nodes = [];
+        $items = [];
         foreach ($firstArg->items as $item) {
             if ($item === null) {
                 continue;
@@ -106,54 +91,24 @@ final class ChangeExtractArrayToVarTypesNodeVisitor extends NodeVisitorAbstract 
 
             $itemKey = $item->key->value;
 
-            // if extract is used with EXTR_SKIP and we already have variable with this name, we should skip
+            // if extract is used with EXTR_SKIP, and we already have variable with this name, we should skip
             if ($skipExisting && isset($this->variables[$itemKey])) {
                 continue;
             }
 
-            $itemValue = $item->value;
-            $itemValueType = null;
-
-            if ($itemValue instanceof String_) {
-                $itemValueType = new ConstantStringType($itemValue->value);
-            } elseif ($itemValue instanceof DNumber) {
-                $itemValueType = new ConstantFloatType($itemValue->value);
-            } elseif ($itemValue instanceof LNumber) {
-                $itemValueType = new ConstantIntegerType($itemValue->value);
-            } elseif ($itemValue instanceof ConstFetch) {
-                $constFetchName = $this->nameResolver->resolve($itemValue->name);
-                if ($constFetchName === null) {
-                    continue;
-                }
-
-                if (strtolower($constFetchName) === 'null') {
-                    $itemValueType = new NullType();
-                } elseif (in_array(strtolower($constFetchName), ['true', 'false'], true)) {
-                    $itemValueType = new ConstantBooleanType(strtolower($constFetchName) === 'true');
-                }
-            }
-
-            if ($itemValueType === null) {
-                continue;
-            }
-
-            $prependVarTypesDocBlocks = sprintf(
-                '/** @var %s $%s */',
-                $this->typeToPhpDoc->toPhpDocString($itemValueType),
-                $itemKey
-            );
-
-            $docNop = new Nop();
-            $docNop->setDocComment(new Doc($prependVarTypesDocBlocks));
-            $nodes[] = $docNop;
+            $items[] = $item;
         }
 
-        if ($nodes !== []) {
-            $extractVariable = new VariableExpr('_extract_variable');
-            $extractVariableAssign = new Assign($extractVariable, $firstArg);
-            $nodes[] = new Expression($extractVariableAssign);
-            $nodes[] = new Expression(new FuncCall(new Name('reset'), [new Arg($extractVariable)]));
+        if ($items === []) {
+            return null;
         }
+
+        $defaultVariables = new VariableExpr('__default_variables__');
+        $defaultVariablesAssign = new Assign($defaultVariables, new Array_($items));
+
+        $nodes = [];
+        $nodes[] = new Expression($defaultVariablesAssign);
+        $nodes[] = new Expression(new FuncCall(new Name('extract'), [new Arg($defaultVariables)]));
         return $nodes;
     }
 }
