@@ -47,12 +47,18 @@ final class LinksPresenter extends ParentPresenter
     {
     }
 
+    /**
+     * @return never
+     */
     public function persistentConflict($persistentConflict)
     {
         $this->redirect('default');
     }
 
-    public function handleDelete(string $id): void
+    /**
+     * @return never
+     */
+    public function handleDelete(string $id)
     {
     }
 }

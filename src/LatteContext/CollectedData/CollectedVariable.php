@@ -63,12 +63,12 @@ final class CollectedVariable extends CollectedLatteContextObject
         return $this->declared;
     }
 
-    public static function build(Node $node, Scope $scope, string $name, Type $type, bool $declared = false): self
+    public static function build(Node $node, Scope $scope, string $name, Type $type, bool $declared = false, bool $mightBeUndefined = false): self
     {
         return new self(
             $scope->getClassReflection() !== null ? $scope->getClassReflection()->getName() : '',
             $node instanceof ClassMethod ? $node->name->name : $scope->getFunctionName() ?? '',
-            new Variable($name, $type),
+            new Variable($name, $type, $mightBeUndefined),
             $declared
         );
     }
@@ -81,7 +81,7 @@ final class CollectedVariable extends CollectedLatteContextObject
     {
         $collectedVariables = [];
         foreach ($variables as $variable) {
-            $collectedVariables[] = self::build($node, $scope, $variable->getName(), $variable->getType(), $declared);
+            $collectedVariables[] = self::build($node, $scope, $variable->getName(), $variable->getType(), $declared, $variable->mightBeUndefined());
         }
         return $collectedVariables;
     }

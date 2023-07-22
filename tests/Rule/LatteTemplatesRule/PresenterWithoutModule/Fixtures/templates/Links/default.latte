@@ -1,10 +1,10 @@
 {block content}
 
 <h2>Create</h2>
-<a href="{link create}">Only create</a>
-<a href="{link Links:create}">Create with presenter</a>
+<a href="{link create}" n:attr="aa => xxx, bb => yyy">Only create</a>
+<a href="{link Links:create}" n:attr="aa, bb">Create with presenter</a>
 
-<a href="{link create, 'extra-argument'}">Only create with extra argument</a>
+<a href="{link create, 'extra-argument'}" n:attr="[aa, bb]">Only create with extra argument</a>
 <a href="{link Links:create, 'extra-argument'}">Create with presenter with extra argument</a>
 
 <a href="{link create, ['extra' => 'argument']}">Only create with extra argument as array</a>

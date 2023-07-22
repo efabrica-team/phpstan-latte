@@ -50,7 +50,7 @@ final class SignalLinkProcessor implements LinkProcessorInterface
         $classReflection = $this->reflectionProvider->getClass($this->actualClass);
         $variable = new Variable('control');
         $methodName = 'handle' . ucfirst(substr($targetName, 0, -1));
-        if ($this->actualClass !== null && $classReflection->hasMethod($methodName)) {
+        if ($classReflection->hasMethod($methodName)) {
             $methodLinkParams = $this->linkParamsProcessor->process($this->actualClass, $methodName, $linkParams);
             return [new Expression(new MethodCall($variable, $methodName, $methodLinkParams), $attributes)];
         }

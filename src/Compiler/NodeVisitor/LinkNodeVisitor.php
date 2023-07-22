@@ -14,10 +14,15 @@ use Nette\Application\InvalidPresenterException;
 use PhpParser\ConstExprEvaluationException;
 use PhpParser\ConstExprEvaluator;
 use PhpParser\Node;
+use PhpParser\Node\Expr\BinaryOp\Identical;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Stmt\Echo_;
+use PhpParser\Node\Stmt\If_;
 use PhpParser\NodeVisitorAbstract;
 use Throwable;
 
@@ -137,7 +142,11 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
             return null;
         }
 
-        return $expressions;
+        return [
+            new If_(new Identical(new FuncCall(new Name('mt_rand')), new LNumber(0)), [
+                'stmts' => $expressions,
+            ], $attributes),
+        ];
     }
 
     private function isMethodCallUiLink(MethodCall $methodCall): bool
