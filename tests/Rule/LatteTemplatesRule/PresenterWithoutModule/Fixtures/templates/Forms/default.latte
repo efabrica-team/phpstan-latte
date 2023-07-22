@@ -110,6 +110,7 @@
     {/formContainer}
 {/form}
 
+{* Use with https://github.com/efabrica-team/phpstan-latte/issues/403
 {form formWithDynamicMultiContainer}
     {for $i = 0; $i < 5; $i++}
         {formContainer $i}
@@ -117,3 +118,4 @@
         {/formContainer}
     {/for}
 {/form}
+*}
