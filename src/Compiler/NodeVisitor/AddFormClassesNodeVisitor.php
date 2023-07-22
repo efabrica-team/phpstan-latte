@@ -134,8 +134,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $itemArgument = $node->getArgs()[0] ?? null;
                     $itemArgumentValue = $itemArgument ? $itemArgument->value : null;
 
-                    if ($itemArgumentValue instanceof String_) {
-                        $controlName = $itemArgumentValue->value;
+                    if ($itemArgumentValue instanceof String_ || $itemArgumentValue instanceof LNumber) {
+                        $controlName = (string)$itemArgumentValue->value;
                         // TODO remove when container are supported
                         $controlNameParts = explode('-', $controlName);
                         $controlName = end($controlNameParts);
@@ -178,8 +178,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 return null;
             }
 
-            if ($node->dim instanceof String_) {
-                $controlName = $node->dim->value;
+            if ($node->dim instanceof String_ || $node->dim instanceof LNumber) {
+                $controlName = (string)$node->dim->value;
                 // TODO remove when container are supported
                 $controlNameParts = explode('-', $controlName);
                 $controlName = end($controlNameParts);
