@@ -109,3 +109,11 @@
         {input text}
     {/formContainer}
 {/form}
+
+{form formWithDynamicMultiContainer}
+    {for $i = 0; $i < 5; $i++}
+        {formContainer $i}
+            {input text}
+        {/formContainer}
+    {/for}
+{/form}
