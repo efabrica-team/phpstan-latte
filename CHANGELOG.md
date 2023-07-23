@@ -4,8 +4,12 @@
 
 ### Added
 - Changed types handling - used smart extract feature from PHPStan
-- Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignore, you need to change ignored error pattern)
+- Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignored, you need to change ignored error pattern)
 - Added type int as param for Runtime::item() method
+- Transformer for ternary condition with is_object and dynamic form fields - it removes always true / always false condition errors
+
+### Removed
+- ignore-next-line for dynamic inputs - should be solved by removing ternary condition for dynamic inputs
 
 ### Fixed
 - Collecting of conditionally defined variables from array

@@ -153,6 +153,7 @@ services:
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\NotNullableSnippetDriverNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ContainerArrayFetchChangeIntegerToStringNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveEmptyStringFromLabelAndControlPartNodeVisitor())
+            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveTernaryConditionWithDynamicFormFieldsNodeVisitor())
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
