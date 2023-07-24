@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 
+use Efabrica\PHPStanLatte\Compiler\Helper\FormHelper;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FormsNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Error\Error;
@@ -23,6 +24,7 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
@@ -103,8 +105,11 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     )
                 );
             }
+
             $this->actualForm = $this->forms[$formName] ?? null;
-            return new Assign(new Variable('form'), new New_(new Name($formClassName)));
+            return new Assign(new Variable('form'), new StaticCall(new Name(FormHelper::class), 'getForm', [
+                new Arg(new ClassConstFetch(new Name($formClassName), 'class')),
+            ]));
         } elseif ($node instanceof StaticCall) {
             if ($this->nameResolver->resolve($node->class) === 'Nette\Bridges\FormsLatte\Runtime') {
                 if ($this->nameResolver->resolve($node->name) === 'renderFormEnd') {
