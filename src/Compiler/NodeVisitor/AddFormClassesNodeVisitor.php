@@ -398,6 +398,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 }
                 $arrayShape = new ArrayShapeNode($arrayShapeItems);
 
+
+                // TODO replace $form = $this->global->formsStack[] = $this->global->uiControl[$formName];
+                // with $form = FormHelper::getForm($this->global->formNamesToFormClasses[$formName]);
+
                 $node->stmts[] = new Property(StmtClass_::MODIFIER_PUBLIC, [
                     new PropertyProperty('formNamesToFormClasses')
                 ], [
