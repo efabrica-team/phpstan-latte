@@ -15,6 +15,6 @@ final class FormHelper
      */
     public static function getForm(string $form): Form
     {
-        return new Form(); // irrelevant, only typehint is important
+        return new $form(); // irrelevant, only typehint is important
     }
 }
