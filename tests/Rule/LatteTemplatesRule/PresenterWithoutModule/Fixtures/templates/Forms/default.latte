@@ -15,8 +15,8 @@
     {input second_submit, 'class' => 'btn'}{label second_submit_label /}
 </form>
 
-{var $formName = 'customForm'}
-{form $formName}
+{form customForm}
+{*    {$form->getRenderer()->renderControls($form->getGroup('General'), true) |noescape}*}
     {$form->getRenderer()->renderPair($form['custom_text'])}
     {$form->getRenderer()->renderPair($form['custom_default'])}
     {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
@@ -119,4 +119,12 @@
             {input text}
         {/formContainer}
     {/for}
+{/form}
+
+{var $formName = 'customForm'}
+{form $formName}
+    {$form->getRenderer()->renderPair($form['custom_text'])}
+    {$form->getRenderer()->renderPair($form['custom_default'])}
+    {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
+    {$form->getRenderer()->someNonExistingCustomMethod($form['submit'])}
 {/form}
