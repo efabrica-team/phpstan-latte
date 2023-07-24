@@ -219,3 +219,8 @@ services:
             simpleRelativePathHelper: @simpleRelativePathHelper
             showTipsOfTheDay: %tipsOfTheDay%
             editorUrl: %editorUrl%
+
+    -   # Add parent back to nodes - was removed in bleeding edge. TODO rewrite according to the instructions on https://phpstan.org/blog/preprocessing-ast-for-custom-rules
+        factory: PhpParser\NodeVisitor\ParentConnectingVisitor
+        tags:
+            - phpstan.parser.richParserNodeVisitor
