@@ -114,31 +114,31 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->fromOnlyRender = 'from only render';
     }
 
-    public function actionDifferentRender()
+    public function actionDifferentRender(): void
     {
         $this->template->fromDifferentRenderAction = 'from different render';
         $this->setView('different');
     }
 
-    public function actionDifferentRenders(bool $param)
+    public function actionDifferentRenders(bool $param): void
     {
         $this->template->fromDifferentRendersAction = 'from different renders';
         $this->setView($param ? 'different' : 'different2');
     }
 
-    public function actionDifferentRenderConditional(bool $param)
+    public function actionDifferentRenderConditional(bool $param): void
     {
         if ($param) {
             $this->setView('different');
         }
     }
 
-    public function actionDifferentRenderIndirect()
+    public function actionDifferentRenderIndirect(): void
     {
         $this->changeView();
     }
 
-    public function changeView()
+    public function changeView(): void
     {
         $this->setView('different');
     }

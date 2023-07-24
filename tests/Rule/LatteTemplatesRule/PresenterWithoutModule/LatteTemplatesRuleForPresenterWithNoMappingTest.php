@@ -9,7 +9,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\F
 
 final class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRuleTest
 {
-    public static function getAdditionalConfigFiles(): array
+    protected static function additionalConfigFiles(): array
     {
         return [
             __DIR__ . '/../../../../rules.neon',

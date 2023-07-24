@@ -13,6 +13,7 @@
 
 ### Fixed
 - Collecting of conditionally defined variables from array
+- "Cannot resolve latte template for action" when setView is used with bleeding edge
 
 ## [0.13.2] - 2023-07-10
 ### Fixed

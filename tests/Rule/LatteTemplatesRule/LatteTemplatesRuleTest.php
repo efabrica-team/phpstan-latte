@@ -12,6 +12,11 @@ use PHPStan\Testing\RuleTestCase;
 
 abstract class LatteTemplatesRuleTest extends RuleTestCase
 {
+    final public static function getAdditionalConfigFiles(): array
+    {
+        return array_merge(parent::getAdditionalConfigFiles(), static::additionalConfigFiles());
+    }
+
     protected function getRule(): Rule
     {
         return $this->getContainer()->getByType(LatteTemplatesRule::class);
@@ -51,4 +56,6 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
         sort($expectedErrors);
         $this->assertSame(implode("\n", $expectedErrors) . "\n", implode("\n", $actualErrors) . "\n");
     }
+
+    abstract protected static function additionalConfigFiles(): array;
 }
