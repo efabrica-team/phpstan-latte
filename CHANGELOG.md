@@ -3,7 +3,7 @@
 ## [Unreleased][unreleased]
 
 ### Added
-- Changed types handling - used smart extract feature from PHPStan
+- Changed types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
 - Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignored, you need to change ignored error pattern)
 - Added type int as param for Runtime::item() method
 - Transformer for ternary condition with is_object and dynamic form fields - it removes always true / always false condition errors
@@ -15,6 +15,7 @@
 ### Fixed
 - Collecting of conditionally defined variables from array
 - "Cannot resolve latte template for action" when setView is used with bleeding edge
+- Form classes can now have custom params in constructor
 
 ## [0.13.2] - 2023-07-10
 ### Fixed
