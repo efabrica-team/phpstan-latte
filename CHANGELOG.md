@@ -7,6 +7,7 @@
 - Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignored, you need to change ignored error pattern)
 - Added type int as param for Runtime::item() method
 - Transformer for ternary condition with is_object and dynamic form fields - it removes always true / always false condition errors
+- Added nette/forms errors `Cannot call method endTag() on Nette\Utils\Html|string.` and `Cannot call method startTag() on Nette\Utils\Html|string.` to ignore list until they are fixed
 
 ### Removed
 - ignore-next-line for dynamic inputs - should be solved by removing ternary condition for dynamic inputs
