@@ -9,7 +9,7 @@
     {input select}
     {input username:}{label username: /}
     {input password:wrong}{label password:wrong /}
-    {input checkbox}{label checkbox /} <label n:name="checkbox"><input n:name="checkbox">Checkbox</label>
+    {input checkbox}{label checkbox /} {label checkbox}{input checkbox}{/label} <label n:name="checkbox"><input n:name="checkbox">Checkbox</label>
     {label checkbox_list /}
     {input checkbox_list}
     {input second_submit, 'class' => 'btn'}{label second_submit_label /}
@@ -110,12 +110,13 @@
     {/formContainer}
 {/form}
 
-{* Use with https://github.com/efabrica-team/phpstan-latte/issues/403
 {form formWithDynamicMultiContainer}
     {for $i = 0; $i < 5; $i++}
         {formContainer $i}
             {input text}
         {/formContainer}
+        {formContainer "$i"}
+            {input text}
+        {/formContainer}
     {/for}
 {/form}
-*}

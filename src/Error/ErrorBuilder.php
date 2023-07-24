@@ -49,6 +49,8 @@ final class ErrorBuilder
         '/Variable \$ʟ_it on left side of \?\? is never defined\./', // $ʟ_it in try / catch in foreach is never defined
         '/Cannot call method render\(\) on mixed\./', // redundant error for unknown components with phpstan-nette extension
         '/PHPDoc tag @var for variable \$__variables__ has no value type specified in iterable type array\./', // fake variable $__variables__ can have not specified array type
+        '/Cannot call method startTag\(\) on Nette\\\\Utils\\\\Html\|string\./', // nette/forms error https://github.com/nette/forms/issues/308
+        '/Cannot call method endTag\(\) on Nette\\\\Utils\\\\Html\|string\./', // nette/forms error https://github.com/nette/forms/issues/308
     ];
 
     /** @var string[] */

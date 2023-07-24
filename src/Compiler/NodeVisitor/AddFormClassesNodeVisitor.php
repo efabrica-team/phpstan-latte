@@ -28,7 +28,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -245,17 +244,6 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                         }
                     }
                 }
-            }
-        }
-
-        // dynamic inputs
-        if ($node instanceof Expression && $node->expr instanceof Assign &&
-            ($node->expr->expr instanceof Ternary || ($node->expr->expr instanceof Assign && $node->expr->expr->expr instanceof Ternary))
-        ) {
-            $varName = $this->nameResolver->resolve($node->expr->var);
-            if ($varName === 'ʟ_input' || $varName === '_input') {
-                $node->setDocComment(new Doc('/** @var Nette\Forms\Controls\BaseControl $' . $varName . ' @phpstan-ignore-next-line */'));
-                return $node;
             }
         }
 

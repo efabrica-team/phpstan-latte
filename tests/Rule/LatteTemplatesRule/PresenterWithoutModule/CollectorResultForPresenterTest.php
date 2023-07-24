@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTest;
 
 final class CollectorResultForPresenterTest extends CollectorResultTest
 {
-    public static function getAdditionalConfigFiles(): array
+    protected static function additionalConfigFiles(): array
     {
         return [
             __DIR__ . '/../../../../rules.neon',
