@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 
 final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTest
 {
-    public static function getAdditionalConfigFiles(): array
+    protected static function additionalConfigFiles(): array
     {
         return [
             __DIR__ . '/../../../../rules.neon',

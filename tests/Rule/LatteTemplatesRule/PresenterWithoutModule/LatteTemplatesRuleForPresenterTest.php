@@ -13,7 +13,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\S
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 {
-    public static function getAdditionalConfigFiles(): array
+    protected static function additionalConfigFiles(): array
     {
         return [
             __DIR__ . '/../../../../rules.neon',
@@ -476,7 +476,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Form control with name "5" probably does not exist.',
+                86,
+                'default.latte',
+            ],
+            [
+                'Form control with name "5" probably does not exist.',
                 90,
+                'default.latte',
+            ],
+            [
+                'Form control with name "1" probably does not exist.',
+                104,
                 'default.latte',
             ],
             [

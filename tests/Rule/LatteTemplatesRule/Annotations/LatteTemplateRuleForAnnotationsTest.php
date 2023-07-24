@@ -8,7 +8,7 @@ use Nette\Utils\Finder;
 
 final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTest
 {
-    public static function getAdditionalConfigFiles(): array
+    protected static function additionalConfigFiles(): array
     {
         return [
             __DIR__ . '/../../../../rules.neon',

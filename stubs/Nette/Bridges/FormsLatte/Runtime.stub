@@ -6,7 +6,7 @@ class Runtime
 {
     /**
      * @template T of object
-     * @param T|string $item
+     * @param T|string|int $item
      * @param \stdClass $global
      * @return ($item is object ? T : \Nette\Forms\Controls\BaseControl)
      */
