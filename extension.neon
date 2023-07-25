@@ -205,7 +205,7 @@ services:
 
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)
-    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%)
+    - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%, %latte.strictMode%)
 
     # Error transformers
     - Efabrica\PHPStanLatte\Error\Transformer\UndefinedLatteFilterErrorTransformer
