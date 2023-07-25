@@ -18,6 +18,17 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\NodeVisitorAbstract;
 
+/**
+ * changed output from:
+ * <code>
+ * $form = $this->global->formsStack[] = $this->global->uiControl[$formName];
+ * </code>
+ *
+ * to:
+ * <code>
+ * $form = FormHelper::getForm($this->global->formNamesToFormClasses[$formName]);
+ * </code>
+ */
 final class TransformFormStackToGetFormNodeVisitor extends NodeVisitorAbstract implements ExprTypeNodeVisitorInterface
 {
     use ExprTypeNodeVisitorBehavior;
