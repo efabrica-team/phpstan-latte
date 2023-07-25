@@ -36,12 +36,19 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Class_ as StmtClass_;
 use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\PropertyProperty;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
 
@@ -375,8 +382,29 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
      */
     public function afterTraverse(array $nodes): array
     {
-        $componentType = '\Nette\Forms\Controls\BaseControl';
-        $componentTypePlaceholder = '%%TYPE%%';
+        $templateClass = false;
+        foreach ($nodes as $node) {
+            if ($node instanceof StmtClass_) {
+                if ($templateClass === false) {
+                    // skip Template class
+                    $templateClass = true;
+                    continue;
+                }
+                // use Template->global class
+
+                $arrayShapeItems = [];
+                foreach ($this->formClassNames as $formName => $form) {
+                    $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($formName), false, (new ConstantStringType($form))->toPhpDocNode());
+                }
+                $arrayShape = new ArrayShapeNode($arrayShapeItems);
+                $node->stmts[] = new Property(StmtClass_::MODIFIER_PUBLIC, [
+                    new PropertyProperty('formNamesToFormClasses'),
+                ], [
+                    'comments' => [new Doc('/** @var ' . $arrayShape->__toString() . ' */')],
+                ], 'array');
+                break;
+            }
+        }
 
         $controlAssign = new Expression(new Assign(new Variable('control'), new StaticCall(
             new Name('parent'),

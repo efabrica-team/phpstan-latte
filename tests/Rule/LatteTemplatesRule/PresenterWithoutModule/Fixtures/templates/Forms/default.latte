@@ -120,3 +120,11 @@
         {/formContainer}
     {/for}
 {/form}
+
+{var $formName = 'customForm'}
+{form $formName}
+    {$form->getRenderer()->renderPair($form['custom_text'])}
+    {$form->getRenderer()->renderPair($form['custom_default'])}
+    {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
+    {$form->getRenderer()->someNonExistingCustomMethod($form['submit'])}
+{/form}

@@ -494,6 +494,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 108,
                 'default.latte',
             ],
+            [
+                'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
+                129,
+                'default.latte',
+            ],
         ]);
     }
 
