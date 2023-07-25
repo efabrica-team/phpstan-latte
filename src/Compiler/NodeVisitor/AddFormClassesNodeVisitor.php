@@ -397,13 +397,8 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($formName), false, (new ConstantStringType($form))->toPhpDocNode());
                 }
                 $arrayShape = new ArrayShapeNode($arrayShapeItems);
-
-
-                // TODO replace $form = $this->global->formsStack[] = $this->global->uiControl[$formName];
-                // with $form = FormHelper::getForm($this->global->formNamesToFormClasses[$formName]);
-
                 $node->stmts[] = new Property(StmtClass_::MODIFIER_PUBLIC, [
-                    new PropertyProperty('formNamesToFormClasses')
+                    new PropertyProperty('formNamesToFormClasses'),
                 ], [
                     'comments' => [new Doc('/** @var ' . $arrayShape->__toString() . ' */')],
                 ], 'array');
