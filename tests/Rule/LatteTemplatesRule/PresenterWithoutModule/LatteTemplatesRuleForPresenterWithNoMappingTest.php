@@ -15,6 +15,7 @@ final class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplat
             __DIR__ . '/../../../../rules.neon',
             __DIR__ . '/../../../config.neon',
             __DIR__ . '/config.neon',
+            __DIR__ . '/strict.neon',
         ];
     }
 
@@ -30,6 +31,11 @@ final class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplat
             [
                 'Method ' . LinksPresenter::class . '::handleDelete() invoked with 2 parameters, 1 required.',
                 98,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $destination of method Nette\Application\UI\Component::link() expects string, Latte\Runtime\Html|string|false given.',
+                103,
                 'default.latte',
             ],
         ]);

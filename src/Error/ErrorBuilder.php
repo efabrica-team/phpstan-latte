@@ -69,6 +69,7 @@ final class ErrorBuilder
     public function __construct(
         array $errorPatternsToIgnore,
         array $warningPatterns,
+        bool $strictMode,
         PresenterFactoryFaker $presenterFactoryFaker,
         array $errorTransformers,
         LineMapper $lineMapper
@@ -77,6 +78,9 @@ final class ErrorBuilder
         $this->warningPatterns = $warningPatterns;
         $this->errorTransformers = $errorTransformers;
         $this->lineMapper = $lineMapper;
+        if ($strictMode === false) {
+            $this->errorPatternsToIgnore[] = '/Parameter #1 \$destination of method Nette\\\\Application\\\\UI\\\\Component::link\(\) expects string, Latte\\\\Runtime\\\\Html\|string\|false given\./'; // nette/application error https://github.com/nette/application/issues/313 found by https://github.com/efabrica-team/phpstan-latte/issues/398
+        }
         if ($presenterFactoryFaker->getPresenterFactory() === null) {
             $this->errorPatternsToIgnore[] = '/Cannot load presenter .*/';
         }

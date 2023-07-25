@@ -97,3 +97,7 @@
 <a href="{link delete!}">Missing required param in handle link</a>
 <a href="{link delete!, 'my-id', 'extra param'}">Extra param in handle link</a>
 <a href="{link delete!, id: 'my-id', extra: 'extra param'}">Extra named param in handle link</a>
+
+<a n:href="Links:create" n:attr="aa, bb">Create with presenter via n:href</a>
+{capture $linksCreate}Links:create{/capture}
+<a n:href="$linksCreate" n:attr="aa, bb">Create with presenter via n:href</a>
