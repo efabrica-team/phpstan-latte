@@ -71,7 +71,21 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
         return new self(
             $this->name,
             $this->type,
-            ItemCombinator::union($this->controls, $controls)
+            ItemCombinator::union($this->controls, $controls),
+            $this->groups
+        );
+    }
+
+    /**
+     * @param Group[] $groups
+     */
+    public function withGroups(array $groups): self
+    {
+        return new self(
+            $this->name,
+            $this->type,
+            $this->controls,
+            ItemCombinator::merge($this->groups, $groups)
         );
     }
 
@@ -86,9 +100,10 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
     public function jsonSerialize()
     {
         return [
-          'name' => $this->name,
-          'type' => $this->getTypeAsString(),
-          'controls' => $this->controls,
+            'name' => $this->name,
+            'type' => $this->getTypeAsString(),
+            'controls' => $this->controls,
+            'groups' => $this->groups,
         ];
     }
 }

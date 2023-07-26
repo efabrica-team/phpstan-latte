@@ -185,8 +185,9 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplatePathCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderMethodPhpDocCollector
-    - Efabrica\PHPStanLatte\LatteContext\Collector\FormControlCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\FormCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FormControlCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\FormGroupCollector
     - Efabrica\PHPStanLatte\LatteContext\Collector\RelatedFilesCollector(%analysedPaths%, %latte.collectedPaths%)
     - Efabrica\PHPStanLatte\LatteContext\Collector\NetteApplicationUIPresenterCollector
 
