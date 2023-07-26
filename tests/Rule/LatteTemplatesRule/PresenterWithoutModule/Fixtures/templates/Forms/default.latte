@@ -16,7 +16,7 @@
 </form>
 
 {form customForm}
-{*    {$form->getRenderer()->renderControls($form->getGroup('General'), true) |noescape}*}
+    {$form->getRenderer()->renderControls($form->getGroup('General'), true) |noescape}
     {$form->getRenderer()->renderPair($form['custom_text'])}
     {$form->getRenderer()->renderPair($form['custom_default'])}
     {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
