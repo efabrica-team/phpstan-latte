@@ -3,10 +3,12 @@
 ## [Unreleased][unreleased]
 
 ## [0.14.0] - 2023-07-26
-### Added
-- Changed types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
+### Changed
+- Types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
 - Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignored, you need to change ignored error pattern)
-- Added type `int` as param for Runtime::item() method to support integer names of Form containers
+
+### Added
+- Type `int` as param for Runtime::item() method to support integer names of Form containers
 - Transformer for ternary condition with is_object and dynamic form fields - it removes always true / always false condition errors
 - Errors `Cannot call method endTag() on Nette\Utils\Html|string.` and `Cannot call method startTag() on Nette\Utils\Html|string.` added to ignore list until they are fixed in nette/forms
 - Support for dynamic forms with known name
