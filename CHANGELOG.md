@@ -2,20 +2,23 @@
 
 ## [Unreleased][unreleased]
 
-### Added
-- Changed types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
+## [0.14.0] - 2023-07-26
+### Changed
+- Types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
 - Not defined variables are marked with error `Undefined variable ...` (**BC break** - if error was ignored, you need to change ignored error pattern)
-- Added type int as param for Runtime::item() method
+
+### Added
+- Type `int` as param for Runtime::item() method to support integer names of Form containers
 - Transformer for ternary condition with is_object and dynamic form fields - it removes always true / always false condition errors
-- Added nette/forms errors `Cannot call method endTag() on Nette\Utils\Html|string.` and `Cannot call method startTag() on Nette\Utils\Html|string.` to ignore list until they are fixed
+- Errors `Cannot call method endTag() on Nette\Utils\Html|string.` and `Cannot call method startTag() on Nette\Utils\Html|string.` added to ignore list until they are fixed in nette/forms
 - Support for dynamic forms with known name
-- Ignore for Latte\Runtime\Html in link if strict mode is not enabled
+- Allowed `Stringable` as link destination parameter value if strict mode is not enabled
 
 ### Removed
-- ignore-next-line for dynamic inputs - should be solved by removing ternary condition for dynamic inputs
+- ignore-next-line for dynamic inputs - should be solved by removing ternary condition for dynamic inputs (If you have any issue with this, please report it)
 
 ### Fixed
-- Collecting of conditionally defined variables from array
+- Collecting of conditionally defined (optioinal) variables from array
 - "Cannot resolve latte template for action" when setView is used with bleeding edge
 - Form classes can now have custom params in constructor
 
@@ -200,7 +203,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.2...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.14.0...HEAD
+[0.14.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.2...0.14.0
 [0.13.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.1...0.13.2
 [0.13.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.0...0.13.1
 [0.13.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.12.0...0.13.0
