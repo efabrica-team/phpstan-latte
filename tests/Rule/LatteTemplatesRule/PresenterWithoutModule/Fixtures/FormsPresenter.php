@@ -56,7 +56,7 @@ final class FormsPresenter extends ParentPresenter
     protected function createComponentCustomForm(): CustomForm
     {
         $form = new CustomForm();
-//        $form->addGroup('General');
+        $form->addGroup('General');
         $form->addCustomText('custom_text', 'Custom text')
             ->setRequired();
         $form->addCustomText();

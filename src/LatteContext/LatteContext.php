@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\Finder\ComponentFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FilterFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FormControlFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\FormFinder;
+use Efabrica\PHPStanLatte\LatteContext\Finder\FormGroupFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodCallFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\MethodFinder;
 use Efabrica\PHPStanLatte\LatteContext\Finder\TemplatePathFinder;
@@ -41,6 +42,8 @@ final class LatteContext
 
     private FormControlFinder $formControlFinder;
 
+    private FormGroupFinder $formGroupFinder;
+
     private FormFinder $formFinder;
 
     private TemplatePathFinder $templatePathFinder;
@@ -60,7 +63,8 @@ final class LatteContext
         $this->componentFinder = new ComponentFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
         $this->filterFinder = new FilterFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
         $this->formControlFinder = new FormControlFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
-        $this->formFinder = new FormFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->formControlFinder);
+        $this->formGroupFinder = new FormGroupFinder($latteContextData, $reflectionProvider, $this->methodCallFinder);
+        $this->formFinder = new FormFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->formControlFinder, $this->formGroupFinder);
         $this->templatePathFinder = new TemplatePathFinder($latteContextData, $reflectionProvider, $this->methodCallFinder, $this->methodFinder, $this->pathResolver);
         $this->templateRenderFinder = new TemplateRenderFinder($latteContextData, $this->methodCallFinder, $this->methodFinder, $this->templatePathFinder, $this->pathResolver);
     }
@@ -95,14 +99,19 @@ final class LatteContext
         return $this->filterFinder;
     }
 
+    public function formFinder(): FormFinder
+    {
+        return $this->formFinder;
+    }
+
     public function formControlFinder(): FormControlFinder
     {
         return $this->formControlFinder;
     }
 
-    public function formFinder(): FormFinder
+    public function formGroupFinder(): FormGroupFinder
     {
-        return $this->formFinder;
+        return $this->formGroupFinder;
     }
 
     public function templatePathFinder(): TemplatePathFinder

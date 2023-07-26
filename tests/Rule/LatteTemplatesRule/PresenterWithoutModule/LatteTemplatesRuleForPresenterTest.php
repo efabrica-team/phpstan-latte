@@ -460,43 +460,53 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Method Nette\Forms\Rendering\DefaultFormRenderer::renderControls() invoked with 2 parameters, 1 required.',
+                19,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $parent of method Nette\Forms\Rendering\DefaultFormRenderer::renderControls() expects Nette\Forms\Container|Nette\Forms\ControlGroup, null given.',
+                20,
+                'default.latte',
+            ],
+            [
                 'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
-                23,
+                24,
                 'default.latte',
             ],
             [
                 'Form with name "notExisting" probably does not exist.',
-                47,
-                'default.latte',
-            ],
-            [
-                'Form control with name "username" probably does not exist.',
                 48,
                 'default.latte',
             ],
             [
-                'Form control with name "5" probably does not exist.',
-                86,
+                'Form control with name "username" probably does not exist.',
+                49,
                 'default.latte',
             ],
             [
                 'Form control with name "5" probably does not exist.',
-                90,
+                87,
+                'default.latte',
+            ],
+            [
+                'Form control with name "5" probably does not exist.',
+                91,
                 'default.latte',
             ],
             [
                 'Form control with name "1" probably does not exist.',
-                104,
+                105,
                 'default.latte',
             ],
             [
                 'Form control with name "1" probably does not exist.',
-                108,
+                109,
                 'default.latte',
             ],
             [
                 'Call to an undefined method ' . CustomFormRenderer::class . '::someNonExistingCustomMethod().',
-                129,
+                130,
                 'default.latte',
             ],
         ]);
