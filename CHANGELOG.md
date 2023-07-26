@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Added
+- Support for form groups
+
 ## [0.14.0] - 2023-07-26
 ### Changed
 - Types handling - used smart extract feature from PHPStan (**Possible problems** please report any issue connected with variable types)
