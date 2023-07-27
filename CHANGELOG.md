@@ -4,6 +4,10 @@
 
 ### Added
 - Support for form groups
+- Collecting options for checkbox list and radio list and report if some non-existing option is used
+
+### Fixed
+- `If condition is always true` for CheckboxList::getLabelPart(), CheckboxList::getControlPart(), RadioList::getLabelPart() and RadioList::getControlPart() 
 
 ## [0.14.0] - 2023-07-26
 ### Changed

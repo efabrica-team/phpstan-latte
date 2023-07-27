@@ -15,6 +15,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedFormControl>
@@ -76,6 +77,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        $controlOptions = null;
         if ($formMethodName === 'addComponent') {
             $componentArg = $node->getArgs()[0] ?? null;
             if ($componentArg === null) {
@@ -105,6 +107,8 @@ final class FormControlCollector extends AbstractLatteContextCollector
             $formControlType = $formControlParametersAcceptor->getReturnType();
             $controlNameArg = $node->getArgs()[0] ?? null;
 
+            $controlOptions = $this->getControlOptions($node, $formControlType, $scope);
+
             $formControlParameters = $formControlParametersAcceptor->getParameters();
             $controlNameDefaultType = isset($formControlParameters[0]) ? $formControlParameters[0]->getDefaultValue() : null;
             $constantStringTypes = $controlNameDefaultType !== null ? $controlNameDefaultType->getConstantStrings() : [];
@@ -132,7 +136,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
             if ((new ObjectType('Nette\Forms\Container'))->isSuperTypeOf($formControlType)->yes() && !(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($formControlType)->yes()) {
                 $formControl = new Container($controlName, $formControlType);
             } elseif ((new ObjectType('Nette\Forms\Control'))->isSuperTypeOf($formControlType)->yes()) {
-                $formControl = new Field($controlName, $formControlType);
+                $formControl = new Field($controlName, $formControlType, $controlOptions);
             } else {
                 continue;
             }
@@ -144,5 +148,33 @@ final class FormControlCollector extends AbstractLatteContextCollector
             );
         }
         return $formControls;
+    }
+
+    /**
+     * @return ?array<int|string, int|string> - we don't care about values, so we use only keys as keys and also as values here
+     */
+    private function getControlOptions(MethodCall $node, Type $formControlType, Scope $scope): ?array
+    {
+        if (!((new ObjectType('Nette\Forms\Controls\CheckboxList'))->isSuperTypeOf($formControlType)->yes() || (new ObjectType('Nette\Forms\Controls\RadioList'))->isSuperTypeOf($formControlType)->yes())) {
+            return null;
+        }
+
+        $controlOptionsArg = $node->getArgs()[2] ?? null;
+        if ($controlOptionsArg === null) {
+            return null;
+        }
+
+        $controlOptionsType = $scope->getType($controlOptionsArg->value);
+        $controlOptions = $controlOptionsType->getConstantArrays()[0] ?? null;
+
+        if ($controlOptions === null) {
+            return null;
+        }
+
+        $options = [];
+        foreach ($controlOptions->getKeyTypes() as $keyType) {
+            $options[$keyType->getValue()] = $keyType->getValue();
+        }
+        return $options;
     }
 }

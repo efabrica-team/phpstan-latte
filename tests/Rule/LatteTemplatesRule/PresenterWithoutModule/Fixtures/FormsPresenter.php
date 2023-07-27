@@ -39,6 +39,11 @@ final class FormsPresenter extends ParentPresenter
             'item2' => 'Second item',
             'item3' => 'Third item',
         ]);
+        $form->addRadioList('radio_list', 'Radio list', [
+            1 => 'First item',
+            2 => 'Second item',
+            3 => 'Third item',
+        ]);
         $form->addText('username', 'Username')
             ->setRequired()
             ->addRule(Form::EMAIL);

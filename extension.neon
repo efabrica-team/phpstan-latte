@@ -146,6 +146,7 @@ services:
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
+            - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ReportNonExistingFieldOptionNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())
             # scope node visitors
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeFiltersNodeVisitor())

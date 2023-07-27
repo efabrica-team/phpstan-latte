@@ -150,6 +150,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     $itemArgument = $node->getArgs()[0] ?? null;
                     $itemArgumentValue = $itemArgument ? $itemArgument->value : null;
 
+                    $formControl = null;
                     if ($itemArgumentValue instanceof String_ || $itemArgumentValue instanceof LNumber) {
                         $controlName = (string)$itemArgumentValue->value;
                         // TODO remove when container are supported
@@ -166,10 +167,14 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                     } elseif ($itemArgumentValue instanceof Variable) {
                         return null;
                     }
+                    $attributes = $node->getAttributes();
+                    if ($formControl !== null) {
+                        $attributes['formControl'] = $formControl;
+                    }
                     return new ArrayDimFetch(
                         new Variable('form'),
                         $itemArgumentValue,
-                        $node->getAttributes()
+                        $attributes
                     );
                 }
             }
@@ -194,6 +199,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 return null;
             }
 
+            $formControl = null;
             if ($node->dim instanceof String_ || $node->dim instanceof LNumber) {
                 $controlName = (string)$node->dim->value;
                 // TODO remove when container are supported
@@ -219,6 +225,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             }
 
             $node->var = new Variable('form');
+            if ($formControl !== null) {
+                $node->setAttribute('formControl', $formControl);
+            }
+
             return $node;
         }
 
@@ -250,14 +260,21 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
          * echo $ʟ_label;
          * </code>
          *
-         * for RadioList and CheckboxList
+         * for RadioList and CheckboxList methods getLabel, getLabelPart, getControlPart
          */
         if ($node instanceof If_) {
             foreach ($this->possibleAlwaysTrueLabels as $possibleAlwaysTrueLabel) {
                 if ($possibleAlwaysTrueLabel === spl_object_hash($node)) {
                     if ($node->cond instanceof Assign) {
-                        if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) && $node->cond->expr instanceof MethodCall && $this->nameResolver->resolve($node->cond->expr) === 'getLabel') {
-                            return array_merge([new Expression($node->cond)], $node->stmts);
+                        if (in_array($this->nameResolver->resolve($node->cond->var), ['ʟ_label', '_label'], true) &&
+                            (
+                                $node->cond->expr instanceof MethodCall && in_array($this->nameResolver->resolve($node->cond->expr), ['getLabel', 'getLabelPart', 'getControlPart'], true) ||
+                                $node->cond->expr instanceof ArrayDimFetch && $node->cond->expr->var instanceof Array_ && isset($node->cond->expr->var->items[0]) && $node->cond->expr->var->items[0]->value instanceof MethodCall && in_array($this->nameResolver->resolve($node->cond->expr->var->items[0]->value), ['getLabel', 'getLabelPart', 'getControlPart'], true)
+                            )
+                        ) {
+                            $expression = new Expression($node->cond);
+                            $expression->setAttributes($node->getAttributes());
+                            return array_merge([$expression], $node->stmts);
                         }
                     }
                 }
