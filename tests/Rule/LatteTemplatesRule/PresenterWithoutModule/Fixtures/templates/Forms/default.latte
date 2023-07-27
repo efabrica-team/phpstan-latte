@@ -129,3 +129,15 @@
     {$form->getRenderer()->someCustomMethod($form['custom_textarea'])}
     {$form->getRenderer()->someNonExistingCustomMethod($form['submit'])}
 {/form}
+
+{form secondForm}
+    {input checkbox_list:item1}{label checkbox_list:item1 /}
+    {input checkbox_list:item2}{label checkbox_list:item2 /}
+    {input checkbox_list:item3}{label checkbox_list:item3 /}
+    {input checkbox_list:item4}{label checkbox_list:item4 /}
+    {input radio_list:1}{label radio_list:1 /}
+    {input radio_list:2}{label radio_list:2 /}
+    {input radio_list:3}{label radio_list:3 /}
+    {input radio_list:4}{label radio_list:4 /}
+    {input submit, 'class' => 'btn'}
+{/form}

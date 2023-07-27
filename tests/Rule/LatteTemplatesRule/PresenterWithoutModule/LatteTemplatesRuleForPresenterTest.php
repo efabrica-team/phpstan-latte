@@ -509,6 +509,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 130,
                 'default.latte',
             ],
+            [
+                'Option "item4" for control "checkbox_list" probably doesn\'t exist.',
+                137,
+                'default.latte',
+            ],
+            [
+                'Option "4" for control "radio_list" probably doesn\'t exist.',
+                141,
+                'default.latte',
+            ],
         ]);
     }
 
