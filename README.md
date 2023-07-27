@@ -20,6 +20,8 @@ The extension is based on Tomas Votruba's [blog series](https://tomasvotruba.com
 - You can use annotations to fine-tuning analysis of latte templates
 - If you use some non-standard and magic using rendering you can implement your own template resolvers (experimental)
 
+Read [How it works, when it doesn't, and troubleshooting](docs/how_it_works.md)
+
 ## Installation
 
 To use this extension, require it in [Composer](https://getcomposer.org/):

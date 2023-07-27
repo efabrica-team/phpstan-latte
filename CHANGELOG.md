@@ -5,6 +5,7 @@
 ### Added
 - Support for form groups
 - Collecting options for checkbox list and radio list and report if some non-existing option is used
+- Tip for error message "Latte template xxx.latte was not analysed"
 
 ### Fixed
 - `If condition is always true` for CheckboxList::getLabelPart(), CheckboxList::getControlPart(), RadioList::getLabelPart() and RadioList::getControlPart() 
