@@ -116,6 +116,7 @@ final class LatteTemplatesRule implements Rule
         foreach ($this->analysedTemplatesRegistry->getReportedUnanalysedTemplates() as $templatePath) {
             $errors[] = RuleErrorBuilder::message('Latte template ' . pathinfo($templatePath, PATHINFO_BASENAME) . ' was not analysed.')
                 ->file($templatePath)
+                ->tip('Please make sure your template path is correct. If you use some non-standard way of resolving your templates, read our extension guide https://github.com/efabrica-team/phpstan-latte/blob/main/docs/extension.md#template-resolvers')
                 ->build();
         }
 
