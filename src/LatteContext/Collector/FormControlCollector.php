@@ -6,8 +6,8 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormControl;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
+use Efabrica\PHPStanLatte\Resolver\NameResolver\FormControlNameResolver;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
-use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use Efabrica\PHPStanLatte\Template\Form\Container;
 use Efabrica\PHPStanLatte\Template\Form\Field;
 use PhpParser\Node;
@@ -22,18 +22,18 @@ use PHPStan\Type\Type;
  */
 final class FormControlCollector extends AbstractLatteContextCollector
 {
-    private ValueResolver $valueResolver;
+    private FormControlNameResolver $formControlNameResolver;
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
     public function __construct(
         NameResolver $nameResolver,
         ReflectionProvider $reflectionProvider,
-        ValueResolver $valueResolver,
+        FormControlNameResolver $formControlNameResolver,
         LattePhpDocResolver $lattePhpDocResolver
     ) {
         parent::__construct($nameResolver, $reflectionProvider);
-        $this->valueResolver = $valueResolver;
+        $this->formControlNameResolver = $formControlNameResolver;
         $this->lattePhpDocResolver = $lattePhpDocResolver;
     }
 
@@ -120,7 +120,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
         }
 
         if ($controlNameArg !== null) {
-            $controlNames = $this->valueResolver->resolveStringsOrInts($controlNameArg->value, $scope);
+            $controlNames = $this->formControlNameResolver->resolve($controlNameArg->value, $scope);
             if ($controlNames === null) {
                 return null;
             }

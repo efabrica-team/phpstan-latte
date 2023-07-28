@@ -242,3 +242,31 @@ Then you can access all registered fields in latte this way:
     {input xxx} <-- this field is not registered in createComponent method therefore it is marked as non-existing 
 {/form}
 ```
+
+### Features
+By default, controls with dynamic names which can't be resolved as constant string or integer are not collected.
+
+Example:
+```php
+$form->addText('text1', 'Text 1'); // <- this is collected
+$text2 = 'text2'; 
+$form->addText($text2, 'Text 2'); // <- this is collected
+$text3 = $this->name; // some dynamic name 
+$form->addText($text3, 'Text 3'); // <- this is not collected 
+```
+
+With feature flag `transformDynamicFormControlNamesToString` it is collected. Try it:
+```neon
+parameters:
+    latte:
+        features:
+            transformDynamicFormControlNamesToString: true    
+```
+
+Form field is collected and if it is used with the same name in latte, it will be identified as TextInput.
+For Form above use latte:
+```latte
+{input text1}
+{input text2}
+{input $text3}
+```

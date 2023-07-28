@@ -8,9 +8,16 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\S
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
+use stdClass;
 
 final class FormsPresenter extends ParentPresenter
 {
+    public function actionDefault(): void
+    {
+        $this->template->dynamicVariable = $this->name;
+        $this->template->dynamicPropertyFetch = new stdClass();
+    }
+
     protected function createComponentFirstForm(): Form
     {
         $form = new Form();
@@ -49,8 +56,15 @@ final class FormsPresenter extends ParentPresenter
             ->addRule(Form::EMAIL);
         $form->addPassword('password', 'Passowrd')
             ->setRequired();
+        $dynamicVariable = $this->name;
+        $form->addText($dynamicVariable, 'Dynamic name (variable)');
+
+        $dynamicPropertyFetch = new stdClass();
+        $form->addPassword($dynamicPropertyFetch->name, 'Dynamic name (property fetch)');
+
         $submit = new SubmitButton();
-        $form->addComponent($submit, 'submit');
+        $submitName = 'submit';
+        $form->addComponent($submit, $submitName);
 
         $form->onSuccess[] = function (Form $form, array $values): void {
         };
@@ -60,7 +74,7 @@ final class FormsPresenter extends ParentPresenter
 
     protected function createComponentCustomForm(): CustomForm
     {
-        $form = new CustomForm();
+        $form = new CustomForm('custom parameter');
         $form->addGroup('General');
         $form->addCustomText('custom_text', 'Custom text')
             ->setRequired();

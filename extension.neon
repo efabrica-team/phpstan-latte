@@ -29,6 +29,8 @@ parameters:
         resolveAllPossiblePaths: false
         reportUnanalysedTemplates: false
         collectedPaths: []
+        features:
+            transformDynamicFormControlNamesToString: false
     ignoreErrors:
         -
             messages:
@@ -55,6 +57,7 @@ parametersSchema:
         resolveAllPossiblePaths: bool()
         reportUnanalysedTemplates: bool()
         collectedPaths: arrayOf(string())
+        features: arrayOf(bool(), string())
     ])
 
 rules:
@@ -121,6 +124,7 @@ services:
 
     # Name resolvers
     - Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver
+    - Efabrica\PHPStanLatte\Resolver\NameResolver\FormControlNameResolver(%latte.features.transformDynamicFormControlNamesToString%)
 
     # Method resolvers
     - Efabrica\PHPStanLatte\Resolver\CallResolver\CalledClassResolver
@@ -156,6 +160,7 @@ services:
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveEmptyStringFromLabelAndControlPartNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveTernaryConditionWithDynamicFormFieldsNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformFormStackToGetFormNodeVisitor())
+            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformDynamicFormControlsToDynamicStringNodeVisitor(%latte.features.transformDynamicFormControlNamesToString%))
 
     # Link processors
     - Efabrica\PHPStanLatte\LinkProcessor\LinkProcessorFactory
