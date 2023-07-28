@@ -165,7 +165,7 @@ final class LatteTemplatesRule implements Rule
             } catch (CompileException $e) {
                 $ruleErrorBuilder = RuleErrorBuilder::message($e->getMessage())
                     ->file($template->getPath())
-                    ->metadata(['context' => $context === '' ? null : $context]);
+                    ->metadata(['context' => $context]);
                 if ($e->sourceLine) {
                     $ruleErrorBuilder->line($e->sourceLine);
                 }
