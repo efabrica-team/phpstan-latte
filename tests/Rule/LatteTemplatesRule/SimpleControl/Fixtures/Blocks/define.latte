@@ -1,23 +1,23 @@
 {define my-block, \stdClass $paramObject, string $paramString, ?string $paramNullable, $paramNoType, string $paramDefault = 'default', $paramNoTypeDefault = 'default', float $paramFloat = 1.23, int $paramInteger = 123, \stdClass[] $paramArray = [], array $paramArrayMixedDefault = [1, 2, 3.5, 'str1', [4, 5, 'str2']], bool $boolDefaultTrue = true, bool $boolDefaultFalse = false, ?string $nullableStringDefaultNull = null, string $stringDefaultClassConstant = Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE}
-    {php \PhpStan\dumpType($paramObject)}
-    {php \PhpStan\dumpType($paramString)}
-    {php \PhpStan\dumpType($paramNullable)}
-    {php \PhpStan\dumpType($paramNoType)}
-    {php \PhpStan\dumpType($paramDefault)}
-    {php \PhpStan\dumpType($paramNoTypeDefault)}
-    {php \PhpStan\dumpType($paramFloat)}
-    {php \PhpStan\dumpType($paramInteger)}
-    {php \PhpStan\dumpType($paramArray)}
-    {php \PhpStan\dumpType($paramArrayMixedDefault)}
-    {php \PhpStan\dumpType($boolDefaultTrue)}
-    {php \PhpStan\dumpType($boolDefaultFalse)}
-    {php \PhpStan\dumpType($nullableStringDefaultNull)}
-    {php \PhpStan\dumpType($stringDefaultClassConstant)}
+    {php \PHPStan\dumpType($paramObject)}
+    {php \PHPStan\dumpType($paramString)}
+    {php \PHPStan\dumpType($paramNullable)}
+    {php \PHPStan\dumpType($paramNoType)}
+    {php \PHPStan\dumpType($paramDefault)}
+    {php \PHPStan\dumpType($paramNoTypeDefault)}
+    {php \PHPStan\dumpType($paramFloat)}
+    {php \PHPStan\dumpType($paramInteger)}
+    {php \PHPStan\dumpType($paramArray)}
+    {php \PHPStan\dumpType($paramArrayMixedDefault)}
+    {php \PHPStan\dumpType($boolDefaultTrue)}
+    {php \PHPStan\dumpType($boolDefaultFalse)}
+    {php \PHPStan\dumpType($nullableStringDefaultNull)}
+    {php \PHPStan\dumpType($stringDefaultClassConstant)}
 {/define}
 
 {define no-comma-block $name, $class}
-    {php \PhpStan\dumpType($name)}
-    {php \PhpStan\dumpType($class)}
+    {php \PHPStan\dumpType($name)}
+    {php \PHPStan\dumpType($class)}
 {/define}
 
 {include my-block 'paramObject' => $knownObject, 'paramString' => $knownString, 'paramNullable' => null, 'paramNoType' => $knownString, 'paramFloat' => $knownFloat, 'paramInteger' => $knownInteger, 'paramArray' => $knownArray}
@@ -29,4 +29,4 @@
 {include no-comma-block, $knownInteger}
 {include no-comma-block}
 
-{php \PhpStan\dumpType($paramString)}
+{php \PHPStan\dumpType($paramString)}

@@ -18,9 +18,9 @@
 {$nonExistingVariable}
 {$fromOtherAction}
 
-{php \PhpStan\dumpType($stringLists)}
+{php \PHPStan\dumpType($stringLists)}
 {foreach $stringLists as $stringList}
-    {php \PhpStan\dumpType($stringList)}
+    {php \PHPStan\dumpType($stringList)}
 {/foreach}
 
 {foreach $stringLists as $stringList}
@@ -28,13 +28,13 @@
     {if $iterator->isFirst()}START{/if}
     {$iterator->counter}
     {$iterator->getCounter()}
-    {php \PhpStan\dumpType($stringList)}
+    {php \PHPStan\dumpType($stringList)}
     {foreach $stringList as $string}
         {if $iterator->first}INNER START{/if}
         {if $iterator->isFirst()}INNER START{/if}
         {$iterator->counter}
         {$iterator->getCounter()}
-        {php \PhpStan\dumpType($string)}
+        {php \PHPStan\dumpType($string)}
         {if $iterator->last}INNER END{/if}
         {if $iterator->isLast()}INNER END{/if}
     {/foreach}
@@ -42,9 +42,9 @@
     {if $iterator->isLast()}END{/if}
 {/foreach}
 
-{php \PhpStan\dumpType($localStrings)}
+{php \PHPStan\dumpType($localStrings)}
 {foreach $localStrings as $string}
-    {php \PhpStan\dumpType($string)}
+    {php \PHPStan\dumpType($string)}
 {/foreach}
 <div n:ifcontent>
 {foreach $localStrings as $string}
@@ -53,7 +53,7 @@
     {$iterator->counter}
     {$iterator->getCounter()}
     {$iterator->getCounter0()}
-    {php \PhpStan\dumpType($string)}
+    {php \PHPStan\dumpType($string)}
     {if $iterator->last}END{/if}
     {if $iterator->isLast()}END{/if}
 {/foreach}
@@ -68,17 +68,17 @@
 {$calledParentSecondOverwritted}
 {$calledParentSecondOverwritting}
 
-{php \PhpStan\dumpType($obj)}
+{php \PHPStan\dumpType($obj)}
 
-{php \PhpStan\dumpType($array1)}
-{php \PhpStan\dumpType($array2)}
-{php \PhpStan\dumpType($list1)}
-{php \PhpStan\dumpType($list2)}
-{php \PhpStan\dumpType($array1WithoutType)}
-{php \PhpStan\dumpType($array2WithoutType)}
-{php \PhpStan\dumpType($list1WithType)}
-{php \PhpStan\dumpType($list2WithType)}
-{php \PhpStan\dumpType($variableFromMethodCallOnVariable)}
+{php \PHPStan\dumpType($array1)}
+{php \PHPStan\dumpType($array2)}
+{php \PHPStan\dumpType($list1)}
+{php \PHPStan\dumpType($list2)}
+{php \PHPStan\dumpType($array1WithoutType)}
+{php \PHPStan\dumpType($array2WithoutType)}
+{php \PHPStan\dumpType($list1WithType)}
+{php \PHPStan\dumpType($list2WithType)}
+{php \PHPStan\dumpType($variableFromMethodCallOnVariable)}
 {$dynamic}
 
 {var $top = round(456 / 10)};
@@ -89,13 +89,13 @@
 </style>
 
 {var $slicedLocalStrings = slice($localStrings, 1)}
-{php \PhpStan\dumpType($slicedLocalStrings)}
+{php \PHPStan\dumpType($slicedLocalStrings)}
 {var $slicedTitle = slice($title, 1)}
-{php \PhpStan\dumpType($slicedTitle)}
+{php \PHPStan\dumpType($slicedTitle)}
 
-{php \PhpStan\dumpType($encapsedVariable)}
-{php \PhpStan\dumpType($someVariableWithDefault)}
-{php \PhpStan\dumpType($someOtherVariableWithDefault)}
+{php \PHPStan\dumpType($encapsedVariable)}
+{php \PHPStan\dumpType($someVariableWithDefault)}
+{php \PHPStan\dumpType($someOtherVariableWithDefault)}
 
 <a n:tag-if="$nullOrUrl" href="{$nullOrUrl}">{$nullOrUrl}</a>
 
