@@ -68,7 +68,7 @@ It is important to check the context first (text after path of Latte file - rend
      5      Variable $baz might not be defined.                      
     ------ ------------------------------------------------------------------------------------- 
     ```
-    Nette is sometimes tricky how it handles Latte templates. All Latte files in `templates` directory can be visited even without Presenter's action/render method.
+    Nette is sometimes tricky how it handles Latte templates. All Latte files in `templates` directory can be visited even without Presenter's action/render method (see more details [here](https://doc.nette.org/en/application/presenters#toc-life-cycle-of-presenter)).
     In the example above we can see there is no `::bar` action after FooPresenter so this is exactly the case when `bar.latte` exists but `actionBar` neither `renderBar` exists, so no variables are sent to this template in `bar` context.
 
 #### If condition is always true./If condition is always false.
