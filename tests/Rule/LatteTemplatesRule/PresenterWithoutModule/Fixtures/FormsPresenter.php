@@ -167,6 +167,13 @@ final class FormsPresenter extends ParentPresenter
         $part2->addText('text2', 'Text 2');
         $part2->addSubmit('submit2', 'Submit 2');
 
+        $part3 = $form->addContainer('part3');
+        for ($i = 0; $i < 2; $i++) {
+            $subContainer = $part3->addContainer($i);
+            $subContainer->addText('title','Title');
+            $subContainer->addImageButton('image','Image');
+        }
+
         $form->onSuccess[] = function (Form $form, array $values): void {
         };
 
