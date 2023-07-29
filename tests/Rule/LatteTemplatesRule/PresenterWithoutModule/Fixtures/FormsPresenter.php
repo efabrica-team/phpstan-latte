@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\CustomForm;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\Slide;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
-use stdClass;
 
 final class FormsPresenter extends ParentPresenter
 {
+    public Slide $slide;
+
     public function actionDefault(): void
     {
         parent::actionDefault();
         $this->template->dynamicVariable = $this->name;
-        $this->template->dynamicPropertyFetch = new stdClass();
-        $this->template->slide = new stdClass();
+        $this->template->slide = $this->slide;
     }
 
     protected function createComponentFirstForm(): Form
@@ -61,13 +62,17 @@ final class FormsPresenter extends ParentPresenter
         $dynamicVariable = $this->name;
         $form->addText($dynamicVariable, 'Dynamic name (variable)');
 
-        $dynamicPropertyFetch = new stdClass();
-        $form->addPassword($dynamicPropertyFetch->name, 'Dynamic name (property fetch)');
+        $slide = $this->slide;
+        $form->addPassword($slide->name, 'Dynamic name (property fetch)');
 
-        $slide = new stdClass();
         $container = $form->addContainer($slide->id);
         $container->addText('title', 'Title');
         $container->addImageButton('image', 'Image');
+
+        $multiContainer = $form->addContainer('multi');
+        $slideTitleContainer = $multiContainer->addContainer($slide->title);
+        $slideTitleContainer->addText('en');
+        $slideTitleContainer->addText('sk');
 
         $defaults = [];
         $form->setDefaults($defaults);
@@ -170,8 +175,8 @@ final class FormsPresenter extends ParentPresenter
         $part3 = $form->addContainer('part3');
         for ($i = 0; $i < 2; $i++) {
             $subContainer = $part3->addContainer($i);
-            $subContainer->addText('title','Title');
-            $subContainer->addImageButton('image','Image');
+            $subContainer->addText('title', 'Title');
+            $subContainer->addImageButton('image', 'Image');
         }
 
         $form->onSuccess[] = function (Form $form, array $values): void {
