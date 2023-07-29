@@ -62,6 +62,9 @@ final class FormsPresenter extends ParentPresenter
         $dynamicPropertyFetch = new stdClass();
         $form->addPassword($dynamicPropertyFetch->name, 'Dynamic name (property fetch)');
 
+        $defaults = [];
+        $form->setDefaults($defaults);
+        
         $submit = new SubmitButton();
         $submitName = 'submit';
         $form->addComponent($submit, $submitName);
