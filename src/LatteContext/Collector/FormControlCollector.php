@@ -77,6 +77,12 @@ final class FormControlCollector extends AbstractLatteContextCollector
             return null;
         }
 
+        // todo lowercase method names - do this everywhere
+        // todo add parameter for developers to extend this array with they own methods
+        if (in_array($formMethodName, ['setTranslator', 'setRenderer', 'setDefaults'], true)) {
+            return null;
+        }
+        
         $controlOptions = null;
         if ($formMethodName === 'addComponent') {
             $componentArg = $node->getArgs()[0] ?? null;
