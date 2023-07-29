@@ -14,8 +14,10 @@ final class FormsPresenter extends ParentPresenter
 {
     public function actionDefault(): void
     {
+        parent::actionDefault();
         $this->template->dynamicVariable = $this->name;
         $this->template->dynamicPropertyFetch = new stdClass();
+        $this->template->slide = new stdClass();
     }
 
     protected function createComponentFirstForm(): Form
@@ -62,9 +64,14 @@ final class FormsPresenter extends ParentPresenter
         $dynamicPropertyFetch = new stdClass();
         $form->addPassword($dynamicPropertyFetch->name, 'Dynamic name (property fetch)');
 
+        $slide = new stdClass();
+        $container = $form->addContainer($slide->id);
+        $container->addText('title', 'Title');
+        $container->addImageButton('image', 'Image');
+
         $defaults = [];
         $form->setDefaults($defaults);
-        
+
         $submit = new SubmitButton();
         $submitName = 'submit';
         $form->addComponent($submit, $submitName);

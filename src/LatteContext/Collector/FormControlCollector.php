@@ -82,7 +82,7 @@ final class FormControlCollector extends AbstractLatteContextCollector
         if (in_array($formMethodName, ['setTranslator', 'setRenderer', 'setDefaults'], true)) {
             return null;
         }
-        
+
         $controlOptions = null;
         if ($formMethodName === 'addComponent') {
             $componentArg = $node->getArgs()[0] ?? null;

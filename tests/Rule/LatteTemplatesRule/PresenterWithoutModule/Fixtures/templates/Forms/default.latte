@@ -143,5 +143,9 @@
     {input $dynamicVariable}
     {php \PHPStan\dumpType($form[$dynamicPropertyFetch->name])}
     {input $dynamicPropertyFetch->name}
+    {formContainer $slide->id}
+        {input title}
+        {input image}
+    {/formContainer}
     {input submit, 'class' => 'btn'}
 {/form}
