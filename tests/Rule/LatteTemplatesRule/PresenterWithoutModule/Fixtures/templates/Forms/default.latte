@@ -139,5 +139,13 @@
     {input radio_list:2}{label radio_list:2 /}
     {input radio_list:3}{label radio_list:3 /}
     {input radio_list:4}{label radio_list:4 /}
+    {php \PHPStan\dumpType($form[$dynamicVariable])}
+    {input $dynamicVariable}
+    {php \PHPStan\dumpType($form[$dynamicPropertyFetch->name])}
+    {input $dynamicPropertyFetch->name}
+    {formContainer $slide->id}
+        {input title}
+        {input image}
+    {/formContainer}
     {input submit, 'class' => 'btn'}
 {/form}

@@ -511,7 +511,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             $methods[] = $getGroupMethod;
         }
 
-        $builderClass = (new Class_($className))->extend($controlHolder->getType()->describe(VerbosityLevel::typeOnly()))
+        $builderClass = (new Class_($this->fixClassName($className)))->extend($controlHolder->getType()->describe(VerbosityLevel::typeOnly()))
             ->addStmts($methods);
         return $builderClass->getNode();
     }
@@ -529,7 +529,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 $controlType = $control->getTypeAsString();
             }
 
-            $comment = str_replace(self::COMPONENT_TYPE_PLACEHOLDER, '($name is \'' . $control->getName() . '\' ? ' . $controlType . ' : ' . self::COMPONENT_TYPE_PLACEHOLDER . ')', $comment);
+            $comment = str_replace(self::COMPONENT_TYPE_PLACEHOLDER, '($name is \'' . $control->getName() . '\' ? ' . $this->fixClassName($controlType) . ' : ' . self::COMPONENT_TYPE_PLACEHOLDER . ')', $comment);
         }
         return str_replace(self::COMPONENT_TYPE_PLACEHOLDER, self::COMPONENT_TYPE, $comment);
     }
@@ -602,5 +602,10 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         }
 
         return true;
+    }
+
+    private function fixClassName(string $className): string
+    {
+        return str_replace(['$', '->'], ['_dollar_', '_arrow_'], $className);
     }
 }

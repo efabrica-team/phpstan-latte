@@ -519,6 +519,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 141,
                 'default.latte',
             ],
+            [
+                'Dumped type: Nette\Forms\Controls\TextInput',
+                142,
+                'default.latte',
+            ],
+            [
+                'Dumped type: Nette\Forms\Controls\TextInput',
+                144,
+                'default.latte',
+            ],
         ]);
     }
 
