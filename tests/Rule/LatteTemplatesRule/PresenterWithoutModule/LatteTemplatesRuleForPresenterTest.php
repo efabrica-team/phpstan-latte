@@ -336,6 +336,26 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 5,
                 'arrayShapeParams.latte',
             ],
+            [
+                'Dumped type: object{a?: string, b: int, c: string|null}&stdClass',
+                3,
+                'objectShapeParams.latte',
+            ],
+            [
+                'Dumped type: mixed',
+                4,
+                'objectShapeParams.latte',
+            ],
+            [
+                'Dumped type: int',
+                5,
+                'objectShapeParams.latte',
+            ],
+            [
+                'Dumped type: string|null',
+                6,
+                'objectShapeParams.latte',
+            ],
         ]);
     }
 
