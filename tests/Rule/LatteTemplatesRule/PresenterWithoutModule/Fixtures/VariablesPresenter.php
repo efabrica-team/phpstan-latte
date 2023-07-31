@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
+use stdClass;
+
 final class VariablesPresenter extends ParentPresenter
 {
     /** @var array<string[]> */
@@ -11,6 +13,9 @@ final class VariablesPresenter extends ParentPresenter
 
     /** @var array{a?: string, b: int, c: ?string} */
     private array $arrayShape = [];
+
+    /** @var stdClass&object{a?: string, b: int, c: ?string} */
+    private stdClass $objectShape;
 
     protected function startup()
     {
@@ -156,6 +161,11 @@ final class VariablesPresenter extends ParentPresenter
     public function actionArrayShapeParams(): void
     {
         $this->template->setParameters($this->arrayShape);
+    }
+
+    public function actionObjectShapeParams(): void
+    {
+        $this->template->objectShape = $this->objectShape;
     }
 
     private function itemsToArrayAssignWithoutTypes(): array

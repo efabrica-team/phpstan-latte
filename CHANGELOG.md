@@ -8,6 +8,7 @@
 - Tip for error message "Latte template xxx.latte was not analysed"
 - Tip for standalone templates
 - Feature Transform dynamic form controls to "dynamic" string (control with name $record->id will be transformed to "$record->id") (Turn this feature with parameter `latte.features.transformDynamicFormControlNamesToString: true`)
+- Support for object shape variables
 
 ### Fixed
 - `If condition is always true` for CheckboxList::getLabelPart(), CheckboxList::getControlPart(), RadioList::getLabelPart() and RadioList::getControlPart() 
