@@ -1,4 +1,6 @@
 parameters:
+    fileExtensions: # adding latte to file extensions list to report unmatched errors also in latte
+        - latte
     stubFiles:
         - stubs/Latte/Essential/Filters.stub
         - stubs/Latte/Runtime/FilterInfo.stub
