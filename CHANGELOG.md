@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Changed
+- All compiled templates from one run will be stored in one directory within tmpDir
+
 ## [0.15.0] - 2023-07-31
 ### Added
 - Support for form groups

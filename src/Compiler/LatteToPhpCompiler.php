@@ -25,13 +25,13 @@ final class LatteToPhpCompiler
     private bool $debugMode;
 
     public function __construct(
-        ?string $tmpDir,
         string $cacheKey,
+        CompiledTemplateDirResolver $compiledTemplateDirResolver,
         CompilerInterface $compiler,
         Postprocessor $postprocessor,
         bool $debugMode = false
     ) {
-        $this->tmpDir = $tmpDir ?? sys_get_temp_dir() . '/phpstan-latte';
+        $this->tmpDir = $compiledTemplateDirResolver->resolve();
         $this->cacheKey = $cacheKey . md5(
             Engine::VERSION_ID .
             PHP_VERSION_ID .
