@@ -93,10 +93,15 @@ services:
 
     - Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(@fileExcluderAnalyse, %analysedPaths%, %latte.reportUnanalysedTemplates%)
+
+    -
+        factory: Efabrica\PHPStanLatte\Compiler\CompiledTemplateDirResolver
+        arguments:
+            tmpDir: %latte.tmpDir%
+
     -
         class: Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
         arguments:
-            tmpDir: %latte.tmpDir%
             cacheKey: ::md5(::json_encode(%latte%))
             debugMode: %debugMode%
     -
