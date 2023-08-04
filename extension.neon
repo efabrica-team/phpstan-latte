@@ -110,6 +110,7 @@ services:
             parser: @latteCurrentPhpVersionRichParser
 
     - Efabrica\PHPStanLatte\Compiler\TypeToPhpDoc
+    - Efabrica\PHPStanLatte\Compiler\Helper\TemplateContextHelper
     - Efabrica\PHPStanLatte\LinkProcessor\PresenterFactoryFaker(%latte.applicationMapping%, %latte.presenterFactoryBootstrap%)
     -
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
