@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
+use Efabrica\PHPStanLatte\Compiler\Helper\TemplateContextHelper;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
 use Efabrica\PHPStanLatte\Exception\ParseException;
@@ -21,12 +22,12 @@ use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
-use PHPStan\File\RelativePathHelper;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\ShouldNotHappenException;
 use Throwable;
 
 /**
@@ -47,13 +48,13 @@ final class LatteTemplatesRule implements Rule
 
     private ErrorBuilder $errorBuilder;
 
-    private RelativePathHelper $relativePathHelper;
-
     private LatteContextAnalyser $latteContextAnalyser;
 
     private LatteContextAnalyser $latteIncludeAnalyser;
 
     private LatteContextFactory $latteContextFactory;
+
+    private TemplateContextHelper $templateContextHelper;
 
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
@@ -66,10 +67,10 @@ final class LatteTemplatesRule implements Rule
         AnalysedTemplatesRegistry $analysedTemplatesRegistry,
         RuleRegistry $rulesRegistry,
         ErrorBuilder $errorBuilder,
-        RelativePathHelper $relativePathHelper,
         LatteContextAnalyser $latteContextAnalyser,
         LatteContextFactory $latteContextFactory,
-        array $templateRenderCollectors
+        array $templateRenderCollectors,
+        TemplateContextHelper $templateContextHelper
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -77,10 +78,10 @@ final class LatteTemplatesRule implements Rule
         $this->analysedTemplatesRegistry = $analysedTemplatesRegistry;
         $this->rulesRegistry = $rulesRegistry;
         $this->errorBuilder = $errorBuilder;
-        $this->relativePathHelper = $relativePathHelper;
         $this->latteContextAnalyser = $latteContextAnalyser;
         $this->latteIncludeAnalyser = $latteContextAnalyser->withCollectors($templateRenderCollectors);
         $this->latteContextFactory = $latteContextFactory;
+        $this->templateContextHelper = $templateContextHelper;
     }
 
     public function getNodeType(): string
@@ -94,7 +95,9 @@ final class LatteTemplatesRule implements Rule
     public function processNode(Node $collectedDataNode, Scope $scope): array
     {
         $resolvedNodeFinder = new ResolvedNodeFinder($collectedDataNode, $this->latteTemplateResolvers);
-        $latteContextData = $this->latteContextAnalyser->analyseFiles($resolvedNodeFinder->getAnalysedFiles());
+
+        $analysedFiles = $resolvedNodeFinder->getAnalysedFiles();
+        $latteContextData = $this->latteContextAnalyser->analyseFiles($analysedFiles);
         $latteContext = $this->latteContextFactory->create($latteContextData);
 
         $errors = array_merge($latteContextData->getErrors(), $latteContextData->getCollectedErrors());
@@ -107,7 +110,8 @@ final class LatteTemplatesRule implements Rule
             }
         }
 
-        $this->analyseTemplates($templates, $errors);
+        $compiledTemplates = $this->compileTemplates($templates, $errors);
+        $errors = array_merge($errors, $this->analyseTemplates($compiledTemplates));
 
         if (count($errors) > 1000) {
             $errors[] = RuleErrorBuilder::message('Too many errors in latte.')->build();
@@ -127,9 +131,12 @@ final class LatteTemplatesRule implements Rule
      * @param Template[] $templates
      * @param RuleError[] $errors
      * @param array<string, int> $alreadyAnalysed
+     * @return array<string, Template> path of compiled template => Template
+     * @throws ShouldNotHappenException
      */
-    private function analyseTemplates(array $templates, array &$errors, array &$alreadyAnalysed = []): void
+    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysed = []): array
     {
+        $compiledTemplates = [];
         foreach ($templates as $template) {
             $templatePath = $template->getPath();
 
@@ -145,23 +152,11 @@ final class LatteTemplatesRule implements Rule
                 continue; // stop recursion when template is analysed more than 3 times in include chain
             }
 
-            $context = '';
-            $actualClass = $template->getActualClass();
-            if ($actualClass !== null) {
-                $context .= $actualClass;
-            }
-            $actualAction = $template->getActualAction();
-            if ($actualAction !== null) {
-                $context .= '::' . $actualAction;
-            } else {
-                $context .= ' (standalone template, 💡see https://github.com/efabrica-team/phpstan-latte/blob/main/docs/how_it_works.md#variable-baz-might-not-be-defined Point 2 for more details)';
-            }
-            foreach ($template->getParentTemplatePaths() as $parentTemplate) {
-                $context .= ' included in ' . $this->relativePathHelper->getRelativePath(realpath($parentTemplate) ?: '');
-            }
+            $context = $this->templateContextHelper->getContext($template);
 
             try {
                 $compileFilePath = $this->latteToPhpCompiler->compileFile($template, $context);
+                $compiledTemplates[$compileFilePath] = $template;
             } catch (CompileException $e) {
                 $ruleErrorBuilder = RuleErrorBuilder::message($e->getMessage())
                     ->file($template->getPath())
@@ -178,24 +173,9 @@ final class LatteTemplatesRule implements Rule
                 $errors = array_merge($errors, $this->errorBuilder->buildErrors([new Error($e->getMessage() ?: get_class($e), $template->getPath())], $templatePath, null, $context));
                 continue;
             }
-
-            $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
-                $compileFilePath,
-                [],
-                $this->rulesRegistry,
-                new CollectorsRegistry([]), // TODO predavat CollectorRegistry protoze nektere rules muzou pozadovat collector aby fungovaly
-                null
-            );
             $this->analysedTemplatesRegistry->templateAnalysed($templatePath);
 
-            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $templatePath, $compileFilePath, $context));
-
-            if (count($errors) > 1000) {
-                return;
-            }
-
             $dir = dirname($templatePath);
-
             $includeTemplates = [];
             $collectedTemplateRenders = $this->latteIncludeAnalyser->analyseFile($compileFilePath)->getCollectedData(CollectedTemplateRender::class);
             foreach ($collectedTemplateRenders as $collectedTemplateRender) {
@@ -214,8 +194,8 @@ final class LatteTemplatesRule implements Rule
                         $includedTemplatePath = realpath($includedTemplatePath) ?: $includedTemplatePath;
                         $includeTemplate = new Template(
                             $includedTemplatePath,
-                            $actualClass,
-                            $actualAction,
+                            $template->getActualClass(),
+                            $template->getActualAction(),
                             $template->getTemplateContext()->mergeVariables($collectedTemplateRender->getVariables()),
                             array_merge([$template->getPath()], $template->getParentTemplatePaths())
                         );
@@ -235,7 +215,36 @@ final class LatteTemplatesRule implements Rule
                     );
                 }
             }
-            $this->analyseTemplates($includeTemplates, $errors, $alreadyAnalysed);
+
+            if ($includeTemplates !== []) {
+                $compiledTemplates = array_merge($compiledTemplates, $this->compileTemplates(array_values($includeTemplates), $errors, $alreadyAnalysed));
+            }
         }
+        return $compiledTemplates;
+    }
+
+    /**
+     * @param array<string, Template> $templates
+     * @return RuleError[]
+     */
+    private function analyseTemplates(array $templates): array
+    {
+        $errors = [];
+        foreach ($templates as $compileFilePath => $template) {
+            $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
+                $compileFilePath,
+                [],
+                $this->rulesRegistry,
+                new CollectorsRegistry([]),
+                null
+            );
+
+            $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileAnalyserResult->getErrors(), $template->getPath(), $compileFilePath, $this->templateContextHelper->getContext($template)));
+
+            if (count($errors) > 1000) {
+                return $errors;
+            }
+        }
+        return $errors;
     }
 }
