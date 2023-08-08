@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
+use Efabrica\PHPStanLatte\Compiler\CompiledTemplateDirResolver;
 use Efabrica\PHPStanLatte\Compiler\Helper\TemplateContextHelper;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
@@ -56,6 +57,10 @@ final class LatteTemplatesRule implements Rule
 
     private TemplateContextHelper $templateContextHelper;
 
+    private CompiledTemplateDirResolver $compiledTemplateDirResolver;
+
+    private ?string $phpstanCommand;
+
     /**
      * @param LatteTemplateResolverInterface[] $latteTemplateResolvers
      * @param TemplateRenderCollector[] $templateRenderCollectors
@@ -70,7 +75,9 @@ final class LatteTemplatesRule implements Rule
         LatteContextAnalyser $latteContextAnalyser,
         LatteContextFactory $latteContextFactory,
         array $templateRenderCollectors,
-        TemplateContextHelper $templateContextHelper
+        TemplateContextHelper $templateContextHelper,
+        CompiledTemplateDirResolver $compiledTemplateDirResolver,
+        ?string $phpstanCommand
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
         $this->latteToPhpCompiler = $latteToPhpCompiler;
@@ -82,6 +89,8 @@ final class LatteTemplatesRule implements Rule
         $this->latteIncludeAnalyser = $latteContextAnalyser->withCollectors($templateRenderCollectors);
         $this->latteContextFactory = $latteContextFactory;
         $this->templateContextHelper = $templateContextHelper;
+        $this->compiledTemplateDirResolver = $compiledTemplateDirResolver;
+        $this->phpstanCommand = $phpstanCommand;
     }
 
     public function getNodeType(): string
@@ -230,6 +239,30 @@ final class LatteTemplatesRule implements Rule
     private function analyseTemplates(array $templates): array
     {
         $errors = [];
+        if ($this->phpstanCommand) {
+            $compiledTemplatesDir = $this->compiledTemplateDirResolver->resolve();
+            if (!is_dir($compiledTemplatesDir)) {
+                return [];
+            }
+            $phpstanCommand = str_replace('{dir}', $compiledTemplatesDir, $this->phpstanCommand) . ' --error-format json';
+            $phpstanOutput = shell_exec($phpstanCommand);
+            $originalErrors = json_decode($phpstanOutput, true);
+
+            foreach ($originalErrors['files'] ?? [] as $compileFilePath => $originalFileErrors) {
+                $template = $templates[$compileFilePath] ?? null;
+                if ($template === null) {
+                    continue;
+                }
+                $fileErrors = [];
+                foreach ($originalFileErrors['messages'] as $originalError) {
+                    $fileErrors[] = new Error($originalError['message'], $compileFilePath, $originalError['line'], $originalError['ignorable'], null, null, $originalError['tip']);
+                }
+                $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileErrors, $template->getPath(), $compileFilePath, $this->templateContextHelper->getContext($template)));
+            }
+
+            return $errors;
+        }
+
         foreach ($templates as $compileFilePath => $template) {
             $fileAnalyserResult = $this->fileAnalyserFactory->create()->analyseFile(
                 $compileFilePath,
