@@ -245,7 +245,9 @@ final class LatteTemplatesRule implements Rule
                 return [];
             }
             $phpstanCommand = str_replace('{dir}', $compiledTemplatesDir, $this->phpstanCommand) . ' --error-format json';
-            $phpstanOutput = shell_exec($phpstanCommand);
+            $phpstanOutput = shell_exec($phpstanCommand) ?: '{}';
+
+            /** @var array{files?: array<string, array{messages: array<array{message: string, line: int, ignorable: bool, tip?: string}>}>} $originalErrors */
             $originalErrors = json_decode($phpstanOutput, true);
 
             foreach ($originalErrors['files'] ?? [] as $compileFilePath => $originalFileErrors) {
@@ -255,7 +257,7 @@ final class LatteTemplatesRule implements Rule
                 }
                 $fileErrors = [];
                 foreach ($originalFileErrors['messages'] as $originalError) {
-                    $fileErrors[] = new Error($originalError['message'], $compileFilePath, $originalError['line'], $originalError['ignorable'], null, null, $originalError['tip']);
+                    $fileErrors[] = new Error($originalError['message'], $compileFilePath, $originalError['line'], $originalError['ignorable'], null, null, $originalError['tip'] ?? null);
                 }
                 $errors = array_merge($errors, $this->errorBuilder->buildErrors($fileErrors, $template->getPath(), $compileFilePath, $this->templateContextHelper->getContext($template)));
             }
