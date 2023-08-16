@@ -2,8 +2,77 @@
 
 namespace Latte\Essential;
 
+use Latte\Runtime\FilterInfo;
+use Stringable;
+
+/**
+ * @phpstan-type FilterString string|int|float|bool|null|Stringable
+ */
 final class Filters
 {
+    /**
+     * @param FilterString $s
+     */
+    public static function stripHtml(FilterInfo $info, $s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function stripTags(FilterInfo $info, $s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function repeat(FilterInfo $info, $s, int $count): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function lower($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function upper($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function firstUpper($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function capitalize($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function padLeft($s, int $length, string $append = ' '): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
+    public static function padRight($s, int $length, string $append = ' '): string
+    {
+    }
+
     /**
      * @template T
      * @param string|array<T> $value
