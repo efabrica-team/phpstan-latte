@@ -6,6 +6,9 @@
 - All compiled templates from one run will be stored in one directory within tmpDir
 - Feature phpstanCommand to analyse compiled templates via separated command  (Turn this feature with parameter `latte.features.phpstanCommand: "vendor/bin/phpstan {dir}"`)
 
+### Fixed
+- Stubs for Latte\Essential\Filters
+
 ## [0.15.0] - 2023-07-31
 ### Added
 - Support for form groups
