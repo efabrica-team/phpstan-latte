@@ -20,5 +20,6 @@ final class FiltersPresenter extends ParentPresenter
             return uniqid($string);
         });
         $this->template->title = 'foo';
+        $this->template->someObject = new \stdClass();
     }
 }
