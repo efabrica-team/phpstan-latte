@@ -33,6 +33,7 @@ parameters:
         collectedPaths: []
         features:
             transformDynamicFormControlNamesToString: false
+            phpstanCommand: null
     ignoreErrors:
         -
             messages:
@@ -59,7 +60,10 @@ parametersSchema:
         resolveAllPossiblePaths: bool()
         reportUnanalysedTemplates: bool()
         collectedPaths: arrayOf(string())
-        features: arrayOf(bool(), string())
+        features: structure([
+            transformDynamicFormControlNamesToString: bool()
+            phpstanCommand: schema(string(), nullable())
+        ])
     ])
 
 rules:

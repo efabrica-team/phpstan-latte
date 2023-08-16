@@ -1,0 +1,4 @@
+parameters:
+    latte:
+        features:
+            phpstanCommand: "vendor/bin/phpstan analyse {dir} --level 8 --no-progress"
