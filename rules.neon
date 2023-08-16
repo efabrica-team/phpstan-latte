@@ -3,6 +3,8 @@ includes:
 
 services:
     -
-        factory: Efabrica\PHPStanLatte\Rule\LatteTemplatesRule
+        factory: Efabrica\PHPStanLatte\Rule\LatteTemplatesRule()
+        arguments:
+            phpstanCommand: %latte.features.phpstanCommand%
         tags:
             - phpstan.rules.rule
