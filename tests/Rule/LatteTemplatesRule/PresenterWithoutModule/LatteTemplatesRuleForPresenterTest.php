@@ -673,7 +673,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ];
 
             $filterStringType = 'bool|float|int|';
-            if (PHP_VERSION_ID > 80000) {
+            if (PHP_VERSION_ID < 80000) {
                 $filterStringType .= 'Latte\Runtime\HtmlStringable|Nette\HtmlStringable|';
             }
             $filterStringType .= 'string|Stringable|null';
