@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
+use stdClass;
+
 final class FiltersPresenter extends ParentPresenter
 {
     protected function startup()
@@ -20,6 +22,6 @@ final class FiltersPresenter extends ParentPresenter
             return uniqid($string);
         });
         $this->template->title = 'foo';
-        $this->template->someObject = new \stdClass();
+        $this->template->someObject = new stdClass();
     }
 }

@@ -650,11 +650,41 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 2,
                 'translate_new.latte',
             ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Essential\Filters::lower() expects bool|float|int|string|Stringable|null, stdClass given.',
+                19,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Essential\Filters::upper() expects bool|float|int|string|Stringable|null, stdClass given.',
+                20,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Essential\Filters::capitalize() expects bool|float|int|string|Stringable|null, stdClass given.',
+                21,
+                'default.latte',
+            ];
         } else {
             $expectedErrors[] = [
                 'Syntax error, unexpected \')\'',
                 2,
                 'translate_new.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Runtime\Filters::lower() expects bool|float|int|Latte\Runtime\HtmlStringable|Nette\HtmlStringable|string|Stringable|null, stdClass given.',
+                19,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Runtime\Filters::upper() expects bool|float|int|Latte\Runtime\HtmlStringable|Nette\HtmlStringable|string|Stringable|null, stdClass given.',
+                20,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $s of static method Latte\Runtime\Filters::capitalize() expects bool|float|int|Latte\Runtime\HtmlStringable|Nette\HtmlStringable|string|Stringable|null, stdClass given.',
+                21,
+                'default.latte',
             ];
         }
 
