@@ -10,6 +10,8 @@ use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIPresenterLatteContextResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassTemplateResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverResult;
+use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
+use Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
@@ -24,6 +26,14 @@ use PHPStan\Rules\RuleErrorBuilder;
 final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 {
     public const CALL_SET_VIEW = 'Nette\Application\UI\Presenter::setView';
+
+    private LayoutPathResolver $layoutPathResolver;
+
+    public function __construct(LattePhpDocResolver $lattePhpDocResolver, LayoutPathResolver $layoutPathResolver)
+    {
+        parent::__construct($lattePhpDocResolver);
+        $this->layoutPathResolver = $layoutPathResolver;
+    }
 
     public function getSupportedClasses(): array
     {
@@ -103,8 +113,14 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $result = new LatteTemplateResolverResult();
         foreach ($actions as $actionName => $actionDefinition) {
             // explicit render calls
+            /** @var CollectedTemplateRender $templateRender */
             foreach ($actionDefinition['renders'] as $templateRender) {
                 $result->addTemplateFromRender($templateRender, $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
+
+                $layoutFilePath = $this->layoutPathResolver->resolve($templateRender->getTemplatePath());
+                if ($layoutFilePath !== null) {
+                    $result->addTemplateFromRender($templateRender->withTemplatePath($layoutFilePath), $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
+                }
             }
 
             // default render with set template path
@@ -116,6 +132,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                     continue;
                 }
                 $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+
+                $layoutFilePath = $this->layoutPathResolver->resolve($template);
+                if ($layoutFilePath !== null) {
+                    $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                }
             }
 
             // default render with default template
@@ -129,6 +150,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 continue;
             }
             $result->addTemplate(new Template($actionDefinition['defaultTemplate'], $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+
+            $layoutFilePath = $this->layoutPathResolver->resolve($actionDefinition['defaultTemplate']);
+            if ($layoutFilePath !== null) {
+                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+            }
         }
 
         return $result;

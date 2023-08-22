@@ -143,6 +143,8 @@ services:
     - Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver(%earlyTerminatingMethodCalls%, %earlyTerminatingFunctionCalls%)
     - Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver()
 
+    - Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver
+
     phpstanLatteNodeVisitorStorage:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage
         setup:

@@ -188,17 +188,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Undefined variable: $fromRenderDefault',
-                6,
+                8,
                 'other.latte',
             ],
             [
                 'Undefined variable: $nonExistingVariable',
-                7,
+                9,
                 'other.latte',
             ],
             [
                 'Cannot resolve included latte template.',
-                13,
+                15,
                 'other.latte',
             ],
             [
@@ -355,6 +355,41 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Dumped type: string|null',
                 6,
                 'objectShapeParams.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
             ],
         ]);
     }
