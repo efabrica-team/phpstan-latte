@@ -37,7 +37,7 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
 
             $layoutFilePath = $this->layoutPathResolver->resolve($standaloneTemplateFile);
             if ($layoutFilePath !== null) {
-                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), null, $templateContext));
+                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), null, $templateContext, [], true));
             }
         }
         return $result;

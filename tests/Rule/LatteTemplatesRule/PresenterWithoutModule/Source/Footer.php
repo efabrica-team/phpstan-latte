@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Nette\Application\UI\Control;
 
-final class Footer  extends Control
+final class Footer extends Control
 {
     public function render(): void
     {

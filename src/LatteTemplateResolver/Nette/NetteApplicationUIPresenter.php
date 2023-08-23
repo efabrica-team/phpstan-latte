@@ -119,7 +119,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
                 $layoutFilePath = $this->layoutPathResolver->resolve($templateRender->getTemplatePath());
                 if ($layoutFilePath !== null) {
-                    $result->addTemplateFromRender($templateRender->withTemplatePath($layoutFilePath), $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
+                    $result->addTemplateFromRender($templateRender->withTemplatePath($layoutFilePath), $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName, true);
                 }
             }
 
@@ -135,7 +135,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
                 $layoutFilePath = $this->layoutPathResolver->resolve($template);
                 if ($layoutFilePath !== null) {
-                    $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                    $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext'], [], true));
                 }
             }
 
@@ -153,7 +153,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
             $layoutFilePath = $this->layoutPathResolver->resolve($actionDefinition['defaultTemplate']);
             if ($layoutFilePath !== null) {
-                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext'], [], true));
             }
         }
 

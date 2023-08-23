@@ -157,8 +157,8 @@ final class LatteTemplatesRule implements Rule
                 $alreadyAnalysed[$templatePath] = 1;
             } elseif ($alreadyAnalysed[$templatePath] <= 3) {
                 $alreadyAnalysed[$templatePath]++;
-            } else {
-                continue; // stop recursion when template is analysed more than 3 times in include chain
+            } elseif (!$template->isLayout()) {
+                continue; // stop recursion when template is analysed more than 4 times in include chain, excluding layout templates
             }
 
             $context = $this->templateContextHelper->getContext($template);

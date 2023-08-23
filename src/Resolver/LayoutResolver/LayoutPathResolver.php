@@ -12,14 +12,13 @@ final class LayoutPathResolver
             return null;
         }
 
-        $templateContent = file_get_contents($templatePath);
+        $templateContent = file_get_contents($templatePath) ?: '';
         preg_match('/{(layout|extend) (?<layout_name>.*?)}/', $templateContent, $match);
 
         if (isset($match['layout_name'])) {
             $layoutFilePath = dirname($templatePath) . '/' . $match['layout_name'];
             return $layoutFilePath;
         }
-
 
         $layoutFilePath = realpath(dirname($templatePath) . '/@layout.latte') ?: null;
         if ($layoutFilePath !== null) {

@@ -64,7 +64,7 @@ final class LatteTemplateResolverResult
     /**
      * @param class-string $className
      */
-    public function addTemplateFromRender(CollectedTemplateRender $templateRender, TemplateContext $templateContext, string $className, string $action): void
+    public function addTemplateFromRender(CollectedTemplateRender $templateRender, TemplateContext $templateContext, string $className, string $action, bool $isLayout = false): void
     {
         $templatePath = $templateRender->getTemplatePath();
         if ($templatePath === null) {
@@ -85,7 +85,9 @@ final class LatteTemplateResolverResult
             $action,
             $templateContext
                 ->mergeVariables($templateRender->getVariables())
-                ->mergeComponents($templateRender->getComponents())
+                ->mergeComponents($templateRender->getComponents()),
+            [],
+            $isLayout
         ));
     }
 }
