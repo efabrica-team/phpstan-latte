@@ -139,11 +139,11 @@ final class LatteTemplatesRule implements Rule
     /**
      * @param Template[] $templates
      * @param RuleError[] $errors
-     * @param array<string, int> $alreadyAnalysed
+     * @param array<string, int> $alreadyAnalysedInParents
      * @return array<string, Template> path of compiled template => Template
      * @throws ShouldNotHappenException
      */
-    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysed = []): array
+    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysedInParents = null): array
     {
         $compiledTemplates = [];
         foreach ($templates as $template) {
@@ -152,6 +152,8 @@ final class LatteTemplatesRule implements Rule
             if ($this->analysedTemplatesRegistry->isExcludedFromAnalysing($templatePath)) {
                 continue;
             }
+
+            $alreadyAnalysed = $alreadyAnalysedInParents ?? [];
 
             if (!array_key_exists($templatePath, $alreadyAnalysed)) {
                 $alreadyAnalysed[$templatePath] = 1;
