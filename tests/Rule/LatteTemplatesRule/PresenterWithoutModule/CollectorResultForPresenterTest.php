@@ -85,7 +85,7 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"FiltersPresenter"}',
-            'TEMPLATE default.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","someObject"] ["parentForm"]',
+            'TEMPLATE default.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","subtitle","someObject"] ["parentForm"]',
             'TEMPLATE parent.latte FiltersPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","parentDefaultForm"]',
             'TEMPLATE translate_new.latte FiltersPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm"]',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',

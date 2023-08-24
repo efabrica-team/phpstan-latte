@@ -665,6 +665,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 21,
                 'default.latte',
             ];
+            $expectedErrors[] = [
+                'Parameter #1 $value of static method Latte\Essential\Filters::slice() expects array|string, string|null given.',
+                22,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Unable to resolve the template type T in call to method static method Latte\Essential\Filters::slice()',
+                22,
+                'default.latte',
+                'See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type',
+            ];
         } else {
             $expectedErrors[] = [
                 'Syntax error, unexpected \')\'',
@@ -692,6 +703,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Parameter #1 $s of static method Latte\Runtime\Filters::capitalize() expects ' . $filterStringType . ', stdClass given.',
                 21,
                 'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Parameter #1 $value of static method Latte\Runtime\Filters::slice() expects array|string, string|null given.',
+                22,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Unable to resolve the template type T in call to method static method Latte\Runtime\Filters::slice()',
+                22,
+                'default.latte',
+                'See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type',
             ];
         }
 
