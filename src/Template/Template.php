@@ -22,8 +22,6 @@ final class Template implements JsonSerializable
     /** @var array<string> */
     private array $parentTemplatePaths;
 
-    private bool $isLayout;
-
     /**
      * @param ?class-string $actualClass
      * @param array<string> $parentTemplatePaths
@@ -33,15 +31,13 @@ final class Template implements JsonSerializable
         ?string $actualClass,
         ?string $actualAction,
         TemplateContext $templateContext,
-        array $parentTemplatePaths = [],
-        bool $isLayout = false
+        array $parentTemplatePaths = []
     ) {
         $this->path = $path;
         $this->actualClass = $actualClass;
         $this->actualAction = $actualAction;
         $this->templateContext = $templateContext;
         $this->parentTemplatePaths = $parentTemplatePaths;
-        $this->isLayout = $isLayout;
     }
 
     public function getPath(): string
@@ -107,11 +103,6 @@ final class Template implements JsonSerializable
         return $this->parentTemplatePaths;
     }
 
-    public function isLayout(): bool
-    {
-        return $this->isLayout;
-    }
-
     public function getSignatureHash(): string
     {
         return md5((string)json_encode($this));
@@ -126,7 +117,6 @@ final class Template implements JsonSerializable
             'actualAction' => $this->actualAction,
             'templateContext' => $this->templateContext,
             'parentTemplatePaths' => $this->parentTemplatePaths,
-            'isLayout' => $this->isLayout,
         ];
     }
 }

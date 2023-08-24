@@ -297,6 +297,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'different.latte',
             ],
             [
+                'Undefined variable: $fromDifferentRenderAction', // action differentRenderIndirect
+                3,
+                'different.latte',
+            ],
+            [
+                'Undefined variable: $fromDifferentRendersAction', // action differentRenderIndirect
+                4,
+                'different.latte',
+            ],
+            [
+                'Undefined variable: $nonExistingVariable', // action differentRenderIndirect
+                6,
+                'different.latte',
+            ],
+            [
                 'Undefined variable: $fromDifferentRendersAction', // action different2
                 3,
                 'different2.latte',
@@ -1181,24 +1196,64 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'recursion.latte',
             ],
             [
+                'Dumped type: 10',
+                1,
+                'indirectRecursion.latte',
+            ],
+            [
                 'Dumped type: 9',
                 1,
-                '@recursionB.latte',
+                '@indirectRecursionB.latte',
             ],
             [
                 'Dumped type: 8',
                 1,
-                '@recursionB.latte',
+                'indirectRecursion.latte',
             ],
             [
                 'Dumped type: 7',
                 1,
-                '@recursionB.latte',
+                '@indirectRecursionB.latte',
             ],
             [
                 'Dumped type: 6',
                 1,
-                '@recursionB.latte',
+                'indirectRecursion.latte',
+            ],
+            [
+                'Dumped type: 5',
+                1,
+                '@indirectRecursionB.latte',
+            ],
+            [
+                'Dumped type: 4',
+                1,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Dumped type: 3',
+                1,
+                '@indirectRecursionB.latte',
+            ],
+            [
+                'Comparison operation ">" between 10 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 8 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 6 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 4 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
             ],
             [
                 'Undefined variable: $title',

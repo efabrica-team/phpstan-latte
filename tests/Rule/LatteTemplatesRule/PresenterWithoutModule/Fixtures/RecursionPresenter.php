@@ -10,4 +10,9 @@ final class RecursionPresenter extends ParentPresenter
     {
         $this->template->counter = 10;
     }
+
+    public function renderIndirectRecursion(): void
+    {
+        $this->template->counter = 10;
+    }
 }
