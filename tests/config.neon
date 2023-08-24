@@ -4,6 +4,7 @@ parameters:
         resolveAllPossiblePaths: true
         features:
             transformDynamicFormControlNamesToString: true
+            analyseLayoutFiles: true
     checkExplicitMixed: true
     checkImplicitMixed: true
 

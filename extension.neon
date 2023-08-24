@@ -34,6 +34,7 @@ parameters:
         features:
             transformDynamicFormControlNamesToString: false
             phpstanCommand: null
+            analyseLayoutFiles: false
     ignoreErrors:
         -
             messages:
@@ -63,6 +64,7 @@ parametersSchema:
         features: structure([
             transformDynamicFormControlNamesToString: bool()
             phpstanCommand: schema(string(), nullable())
+            analyseLayoutFiles: bool()
         ])
     ])
 
@@ -143,7 +145,7 @@ services:
     - Efabrica\PHPStanLatte\Resolver\CallResolver\TerminatingCallResolver(%earlyTerminatingMethodCalls%, %earlyTerminatingFunctionCalls%)
     - Efabrica\PHPStanLatte\Resolver\CallResolver\OutputCallResolver()
 
-    - Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver
+    - Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver(%latte.features.analyseLayoutFiles%)
 
     phpstanLatteNodeVisitorStorage:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage

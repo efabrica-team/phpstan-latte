@@ -4,10 +4,10 @@
 
 ### Changed
 - All compiled templates from one run will be stored in one directory within tmpDir
-- Feature phpstanCommand to analyse compiled templates via separated command  (Turn this feature with parameter `latte.features.phpstanCommand: "vendor/bin/phpstan {dir}"`)
+- Feature: Separate phpstan command to analyse compiled templates (Turn this feature with parameter `latte.features.phpstanCommand: "vendor/bin/phpstan {dir}"`)
 
 ### Added
-- Testing layout files for each presenter's action
+- Feature: Testing layout files for each presenter's action (Turn this feature with parameter `latte.features.analyseLayoutFiles: true`)
 
 ### Fixed
 - Stubs for Latte\Essential\Filters

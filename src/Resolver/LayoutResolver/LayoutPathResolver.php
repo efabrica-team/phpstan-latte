@@ -6,8 +6,19 @@ namespace Efabrica\PHPStanLatte\Resolver\LayoutResolver;
 
 final class LayoutPathResolver
 {
+    private bool $featureAnalyseLayoutFiles;
+
+    public function __construct(bool $featureAnalyseLayoutFiles)
+    {
+        $this->featureAnalyseLayoutFiles = $featureAnalyseLayoutFiles;
+    }
+
     public function resolve(?string $templatePath): ?string
     {
+        if (!$this->featureAnalyseLayoutFiles) {
+            return null;
+        }
+
         if ($templatePath === null) {
             return null;
         }
