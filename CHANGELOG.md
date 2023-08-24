@@ -2,15 +2,17 @@
 
 ## [Unreleased][unreleased]
 
+## [0.16.0] - 2023-08-24
 ### Changed
 - All compiled templates from one run will be stored in one directory within tmpDir
-- Feature: Separate phpstan command to analyse compiled templates (Turn this feature with parameter `latte.features.phpstanCommand: "vendor/bin/phpstan {dir}"`)
 
 ### Added
+- Feature: Separate phpstan command to analyse compiled templates (Turn this feature with parameter `latte.features.phpstanCommand: "vendor/bin/phpstan {dir}"`)
 - Feature: Testing layout files for each presenter's action (Turn this feature with parameter `latte.features.analyseLayoutFiles: true`)
 
 ### Fixed
 - Stubs for Latte\Essential\Filters
+- Fixed include recursion failsafe that wrongly prevented expected analysis of templates in different contexts
 
 ## [0.15.0] - 2023-07-31
 ### Added
@@ -226,7 +228,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.15.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.0...HEAD
+[0.16.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.15.0...0.16.0
 [0.15.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.14.0...0.15.0
 [0.14.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.2...0.14.0
 [0.13.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.13.1...0.13.2
