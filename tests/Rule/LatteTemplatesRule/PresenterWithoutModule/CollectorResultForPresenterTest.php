@@ -106,10 +106,10 @@ final class CollectorResultForPresenterTest extends CollectorResultTest
     {
         $this->analyse([__DIR__ . '/Fixtures/FiltersPresenter.php', __DIR__ . '/Fixtures/ParentPresenter.php'], [
             'NODE NetteApplicationUIPresenter {"className":"FiltersPresenter"}',
-            'TEMPLATE default.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","someObject"] ["parentForm","header","footer"]',
+            'TEMPLATE default.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","subtitle","someObject"] ["parentForm","header","footer"]',
             'TEMPLATE parent.latte FiltersPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","header","footer","parentDefaultForm"]',
             'TEMPLATE translate_new.latte FiltersPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm","header","footer"]',
-            'TEMPLATE @layout.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","someObject"] ["parentForm","header","footer"]',
+            'TEMPLATE @layout.latte FiltersPresenter::default ["startupParent","presenter","control","flashes","title","subtitle","someObject"] ["parentForm","header","footer"]',
             'TEMPLATE @layout.latte FiltersPresenter::parent ["startupParent","presenter","control","flashes","variableFromParentAction"] ["parentForm","header","footer","parentDefaultForm"]',
             'TEMPLATE @layout.latte FiltersPresenter:: ["startupParent","presenter","control","flashes"] ["parentForm","header","footer"]',
             'NODE NetteApplicationUIPresenter {"className":"ParentPresenter"}',

@@ -8,6 +8,8 @@ use stdClass;
 
 final class FiltersPresenter extends ParentPresenter
 {
+    private ?string $subtitle = null;
+
     protected function startup()
     {
         parent::startup();
@@ -22,6 +24,7 @@ final class FiltersPresenter extends ParentPresenter
             return uniqid($string);
         });
         $this->template->title = 'foo';
+        $this->template->subtitle = $this->subtitle;
         $this->template->someObject = new stdClass();
     }
 }
