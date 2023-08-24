@@ -40,3 +40,18 @@ parameters:
         features:
             phpstanCommand: "/some/cusetom/global/path/to/phpstan analyse {dir} --no-progress --configuration /some/cusetom/global/path/to/phpstan/config.max.neon"
 ```
+
+## analyseLayoutFiles
+
+- type: boolean
+- default: false
+
+This feature flag turns on testing layout files for each presenter's action
+
+To turn this feature on, use:
+```neon
+parameters:
+    latte:
+        features:
+            analyseLayoutFiles: true    
+```

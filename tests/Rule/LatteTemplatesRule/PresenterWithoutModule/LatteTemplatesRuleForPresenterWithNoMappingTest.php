@@ -38,6 +38,76 @@ class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRule
                 103,
                 'default.latte',
             ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
         ]);
     }
 }

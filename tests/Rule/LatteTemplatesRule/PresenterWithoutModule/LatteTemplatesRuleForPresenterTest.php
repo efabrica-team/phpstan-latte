@@ -188,17 +188,17 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Undefined variable: $fromRenderDefault',
-                6,
+                8,
                 'other.latte',
             ],
             [
                 'Undefined variable: $nonExistingVariable',
-                7,
+                9,
                 'other.latte',
             ],
             [
                 'Cannot resolve included latte template.',
-                13,
+                15,
                 'other.latte',
             ],
             [
@@ -297,6 +297,21 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'different.latte',
             ],
             [
+                'Undefined variable: $fromDifferentRenderAction', // action differentRenderIndirect
+                3,
+                'different.latte',
+            ],
+            [
+                'Undefined variable: $fromDifferentRendersAction', // action differentRenderIndirect
+                4,
+                'different.latte',
+            ],
+            [
+                'Undefined variable: $nonExistingVariable', // action differentRenderIndirect
+                6,
+                'different.latte',
+            ],
+            [
                 'Undefined variable: $fromDifferentRendersAction', // action different2
                 3,
                 'different2.latte',
@@ -355,6 +370,166 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Dumped type: string|null',
                 6,
                 'objectShapeParams.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $otherTitle',
+                7,
+                '@layoutOther.latte',
             ],
         ]);
     }
@@ -447,6 +622,46 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Component with name "nonExistingControl" probably doesn\'t exist.',
                 11,
                 'noAction.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
             ],
         ]);
     }
@@ -559,6 +774,26 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 169,
                 'default.latte',
             ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
         ]);
     }
 
@@ -641,6 +876,31 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 4,
                 'parent.latte',
                 'Register it in phpstan.neon: parameters > latte > filters. See https://github.com/efabrica-team/phpstan-latte/blob/main/docs/configuration.md#filters',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
             ],
         ];
 
@@ -840,6 +1100,76 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 98,
                 'default.latte',
             ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
         ];
         $this->analyse([__DIR__ . '/Fixtures/LinksPresenter.php'], $expectedErrors);
     }
@@ -888,24 +1218,104 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'recursion.latte',
             ],
             [
+                'Dumped type: 10',
+                1,
+                'indirectRecursion.latte',
+            ],
+            [
                 'Dumped type: 9',
                 1,
-                '@recursionB.latte',
+                '@indirectRecursionB.latte',
             ],
             [
                 'Dumped type: 8',
                 1,
-                '@recursionB.latte',
+                'indirectRecursion.latte',
             ],
             [
                 'Dumped type: 7',
                 1,
-                '@recursionB.latte',
+                '@indirectRecursionB.latte',
             ],
             [
                 'Dumped type: 6',
                 1,
-                '@recursionB.latte',
+                'indirectRecursion.latte',
+            ],
+            [
+                'Dumped type: 5',
+                1,
+                '@indirectRecursionB.latte',
+            ],
+            [
+                'Dumped type: 4',
+                1,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Dumped type: 3',
+                1,
+                '@indirectRecursionB.latte',
+            ],
+            [
+                'Comparison operation ">" between 10 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 8 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 6 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Comparison operation ">" between 4 and 0 is always true.',
+                2,
+                'indirectRecursion.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
             ],
         ]);
     }
@@ -958,6 +1368,166 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 3,
                 'sendTemplate.latte',
             ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
         ]);
     }
 
@@ -978,6 +1548,46 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Dumped type: array<int>',
                 5,
                 'trait.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
             ],
         ]);
     }
@@ -1010,6 +1620,56 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 4,
                 'startup.latte',
             ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
         ]);
     }
 
@@ -1020,6 +1680,46 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach ' . (LatteVersion::isLatte3() ? '(on line 3 at column 6)' : '(on line 3)'),
                 3,
                 'compileError.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
             ],
         ]);
     }

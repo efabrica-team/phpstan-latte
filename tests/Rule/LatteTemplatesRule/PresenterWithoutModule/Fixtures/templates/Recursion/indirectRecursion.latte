@@ -1,0 +1,4 @@
+{php \PHPStan\dumpType($counter)}
+{if $counter > 0}
+  {include @indirectRecursionB.latte counter: $counter - 1}
+{/if}

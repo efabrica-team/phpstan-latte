@@ -139,11 +139,11 @@ final class LatteTemplatesRule implements Rule
     /**
      * @param Template[] $templates
      * @param RuleError[] $errors
-     * @param array<string, int> $alreadyAnalysed
+     * @param array<string, int> $alreadyAnalysedInParents
      * @return array<string, Template> path of compiled template => Template
      * @throws ShouldNotHappenException
      */
-    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysed = []): array
+    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysedInParents = null): array
     {
         $compiledTemplates = [];
         foreach ($templates as $template) {
@@ -153,12 +153,14 @@ final class LatteTemplatesRule implements Rule
                 continue;
             }
 
+            $alreadyAnalysed = $alreadyAnalysedInParents ?? [];
+
             if (!array_key_exists($templatePath, $alreadyAnalysed)) {
                 $alreadyAnalysed[$templatePath] = 1;
             } elseif ($alreadyAnalysed[$templatePath] <= 3) {
                 $alreadyAnalysed[$templatePath]++;
             } else {
-                continue; // stop recursion when template is analysed more than 3 times in include chain
+                continue; // stop recursion when template is analysed more than 4 times in include chain
             }
 
             $context = $this->templateContextHelper->getContext($template);

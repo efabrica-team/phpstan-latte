@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\Footer;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\Header;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 
@@ -87,5 +89,15 @@ abstract class ParentPresenter extends Presenter
     protected function createIndirectForm(): Form
     {
         return new Form();
+    }
+
+    protected function createComponentHeader(): Header
+    {
+        return new Header();
+    }
+
+    protected function createComponentFooter(): Footer
+    {
+        return new Footer();
     }
 }
