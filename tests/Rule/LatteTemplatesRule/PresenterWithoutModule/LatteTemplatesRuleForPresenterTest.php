@@ -1271,6 +1271,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 '@layout.latte',
             ],
             [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
                 'Undefined variable: $neverDefined',
                 10,
                 '@layout.latte',
