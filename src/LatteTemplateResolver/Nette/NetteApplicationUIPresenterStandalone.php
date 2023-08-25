@@ -27,12 +27,15 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
         $shortClassName = $reflectionClass->getShortName();
         $presenterName = str_replace('Presenter', '', $shortClassName);
 
-        $dir = is_dir("$dir/templates") ? $dir : dirname($dir);
-
         return [
              $dir . '/templates/' . $presenterName . '/([a-zA-Z0-9_]+).latte',
              $dir . '/templates/' . $presenterName . '\.([a-zA-Z0-9_]+).latte',
         ];
+    }
+
+    protected function adjustDir(string $dir): string
+    {
+        return is_dir("$dir/templates") ? $dir : dirname($dir);
     }
 
     protected function isStandaloneTemplate(ReflectionClass $reflectionClass, string $templateFile, array $matches): bool

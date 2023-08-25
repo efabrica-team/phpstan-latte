@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Standalone presenter action template is not analysed if presenter dir and template dir are siblings
+
 ## [0.16.0] - 2023-08-24
 ### Changed
 - All compiled templates from one run will be stored in one directory within tmpDir

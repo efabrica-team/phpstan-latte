@@ -1,0 +1,4 @@
+parameters:
+    latte:
+        applicationMapping:
+            *: Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithModule\Fixtures\Modules\*\Presenters\*Presenter
