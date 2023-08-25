@@ -1,0 +1,5 @@
+parameters:
+    latte:
+        collectedPaths:
+            - tests/Rule/LatteTemplatesRule/PresenterWithModule/Fixtures
+            - tests/Rule/LatteTemplatesRule/PresenterWithModule/Source
