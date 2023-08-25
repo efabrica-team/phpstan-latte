@@ -53,6 +53,7 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
             return [];
         }
 
+        $dir = $this->adjustDir($dir);
         $patterns = $this->getTemplatePathPatterns($reflectionClass, $dir);
 
         $standaloneTemplates = [];
@@ -74,6 +75,11 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
         }
 
         return $standaloneTemplates;
+    }
+
+    protected function adjustDir(string $dir): string
+    {
+        return $dir;
     }
 
     /**
