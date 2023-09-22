@@ -225,6 +225,7 @@ services:
 
     # TemplateRender subcollectors
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector\TemplateRenderCallsCollector
+    - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector\CastTemplateToStringCollector
 
     # Error builder
     - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)

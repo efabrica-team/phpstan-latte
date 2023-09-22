@@ -51,7 +51,7 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
 
     public function getNodeTypes(): array
     {
-        return [MethodCall::class];
+        return [MethodCall::class, Node\Expr\Cast\String_::class];
     }
 
     /**
@@ -127,6 +127,8 @@ final class TemplateRenderCollector extends AbstractLatteContextCollector
         $collectedTemplateRenders = [];
 
         foreach ($this->templateRenderCollectors as $templateRenderCollector) {
+            var_dump(get_class($node));
+
             if (!$templateRenderCollector->isSupported($node)) {
                 continue;
             }

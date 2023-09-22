@@ -95,6 +95,110 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
         ]);
     }
 
+    public function testEchoTemplate(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/EchoTemplate/SomeControl.php'], [
+            [
+                'Dumped type: \'a\'|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'b\'',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: *ERROR*',
+                3,
+                'default.latte',
+            ],
+            [
+                'Undefined variable: $c',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
+
+    public function testTemplateCastToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateCastToString/SomeControl.php'], [
+            [
+                'Dumped type: \'a\'|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'b\'',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: *ERROR*',
+                3,
+                'default.latte',
+            ],
+            [
+                'Undefined variable: $c',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
+
+    public function testTemplateRenderToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateRenderToString/SomeControl.php'], [
+            [
+                'Dumped type: \'a\'|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'b\'',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: *ERROR*',
+                3,
+                'default.latte',
+            ],
+            [
+                'Undefined variable: $c',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
+
+    public function testTemplateToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateToString/SomeControl.php'], [
+            [
+                'Dumped type: \'a\'|null',
+                1,
+                'default.latte',
+            ],
+            [
+                'Dumped type: \'b\'',
+                2,
+                'default.latte',
+            ],
+            [
+                'Dumped type: *ERROR*',
+                3,
+                'default.latte',
+            ],
+            [
+                'Undefined variable: $c',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
+
     public function testMultipleRenderMethods(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/MultipleRenderMethods/SomeControl.php'], [

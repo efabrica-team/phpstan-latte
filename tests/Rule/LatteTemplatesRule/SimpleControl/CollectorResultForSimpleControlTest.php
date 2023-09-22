@@ -42,6 +42,38 @@ final class CollectorResultForSimpleControlTest extends CollectorResultTest
         ]);
     }
 
+    public function testEchoTemplate(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/EchoTemplate/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
+        ]);
+    }
+
+    public function testTemplateCastToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateCastToString/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
+        ]);
+    }
+
+    public function testTemplateRenderToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateRenderToString/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
+        ]);
+    }
+
+    public function testTemplateToString(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/TemplateToString/SomeControl.php'], [
+            'NODE NetteApplicationUIControl {"className":"SomeControl"}',
+            'TEMPLATE default.latte SomeControl::render ["presenter","control","flashes","a","b"] []',
+        ]);
+    }
+
     public function testMultipleRenderMethods(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/MultipleRenderMethods/SomeControl.php'], [

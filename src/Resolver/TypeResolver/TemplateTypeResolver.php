@@ -12,6 +12,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
+use PHPStan\Type\VerbosityLevel;
 
 final class TemplateTypeResolver
 {
@@ -35,7 +36,7 @@ final class TemplateTypeResolver
         } elseif ($node instanceof MethodCall) {
             $var = $node->var;
         } elseif ($node instanceof PropertyFetch) {
-            $var = $node->var;
+//            $var = $node->var;
         }
 
         if ($var === null) {
@@ -43,6 +44,9 @@ final class TemplateTypeResolver
         }
 
         $type = $scope->getType($var);
+
+        var_dump($type->describe(VerbosityLevel::typeOnly()));
+
         return $this->resolve($type);
     }
 }
