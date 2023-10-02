@@ -52,7 +52,7 @@ final class TemplateRenderCallsCollector extends AbstractLatteContextSubCollecto
     public function collect(Node $node, Scope $scope): ?array
     {
         $calledMethodName = $this->nameResolver->resolve($node);
-        if (!in_array($calledMethodName, ['render', 'renderToString'], true)) {
+        if (!in_array($calledMethodName, ['render', 'renderToString', '__toString'], true)) {
             return null;
         }
 
