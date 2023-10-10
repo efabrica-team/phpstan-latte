@@ -33,6 +33,7 @@ final class ErrorBuilder
         '/Parameter \#1 \$var_array of function extract is passed by reference, so it expects variables only\./', // we will not test latte compiler itself
         '/Call to an undefined method Nette\\\\ComponentModel\\\\IComponent::render\(\)\./', # rendering of unknown components
         '/Parameter #1 \$blocks of method Nette\\\\Bridges\\\\ApplicationLatte\\\\SnippetDriver::renderSnippets\(\) expects .*/', # nette internal error
+        '/Parameter #1 \$blocks of method Nette\\\\Bridges\\\\ApplicationLatte\\\\SnippetRuntime::renderSnippets\(\) expects .*/', # nette internal error
         '/Parameter #3 \$blocks of static method Nette\\\\Bridges\\\\ApplicationLatte\\\\UIRuntime::initialize\(\) expects .*/', # nette internal error
         '/Cannot call method getParent\(\) on Latte\\\\Essential\\\\CachingIterator\|null\./', # latte internal error
         '/Cannot call method attributes\(\) on Nette\\\\Utils\\\\Html\|null\./', # latte internal error

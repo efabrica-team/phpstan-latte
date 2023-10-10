@@ -5,6 +5,7 @@
 ### Fixed
 - Standalone presenter action template is not analysed if presenter dir and template dir are siblings
 - Method call __toString() is considered template render call
+- Compatibility with nette/application 3.1.14 (SnippetDriver renanamed to SnippetRuntime)
 
 ## [0.16.0] - 2023-08-24
 ### Changed

@@ -82,7 +82,7 @@ abstract class AbstractCompiler implements CompilerInterface
         $providers = $this->engine->getProviders();
         $providers['uiControl'] = new ObjectType($actualClass ?? 'Nette\Application\UI\Control');
         $providers['uiPresenter'] = new ObjectType($actualClass ?? 'Nette\Application\UI\Presenter');
-        $providers['snippetDriver'] = new ObjectType('Nette\Bridges\ApplicationLatte\SnippetDriver');
+        $providers['snippetDriver'] = new ObjectType(class_exists('Nette\Bridges\ApplicationLatte\SnippetDriver') ? 'Nette\Bridges\ApplicationLatte\SnippetDriver' : 'Nette\Bridges\ApplicationLatte\SnippetRuntime');
         $providers['uiNonce'] = TypeCombinator::addNull(new StringType());
         $providers['formsStack'] = new ArrayType(new IntegerType(), new ObjectType('Nette\Forms\Container'));
 
