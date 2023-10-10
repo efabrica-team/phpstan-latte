@@ -23,7 +23,7 @@ final class NotNullableSnippetDriverNodeVisitor extends NodeVisitorAbstract impl
         }
 
         $callerType = $this->getType($node->var);
-        if ($callerType !== null && (new ObjectType('Nette\Bridges\ApplicationLatte\SnippetDriver'))->isSuperTypeOf($callerType)->yes()) {
+        if ($callerType !== null && ((new ObjectType('Nette\Bridges\ApplicationLatte\SnippetDriver'))->isSuperTypeOf($callerType)->yes() || (new ObjectType('Nette\Bridges\ApplicationLatte\SnippetRuntime'))->isSuperTypeOf($callerType)->yes())) {
             $methodCall = new MethodCall($node->var, $node->name, $node->args);
             $methodCall->setAttributes($node->getAttributes());
             return $methodCall;
