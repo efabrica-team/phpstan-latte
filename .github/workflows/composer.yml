@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request: null
+  schedule:
+    - cron: "30 1 * * *"
 
 jobs:
   composer:
