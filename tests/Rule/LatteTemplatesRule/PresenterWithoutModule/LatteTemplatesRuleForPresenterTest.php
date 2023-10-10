@@ -711,7 +711,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Form with name "notExisting" probably does not exist.',
-                48,
+                LatteVersion::isLatte3() ? 48 : 45,
                 'default.latte',
             ],
             [
