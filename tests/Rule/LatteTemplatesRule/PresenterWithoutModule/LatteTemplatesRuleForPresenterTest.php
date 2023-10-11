@@ -187,6 +187,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Only booleans are allowed in an if condition, string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                100,
+                'default.latte',
+            ],
+            [
                 'Undefined variable: $fromRenderDefault',
                 8,
                 'other.latte',
@@ -225,6 +230,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Undefined variable: $nonExistingVariable',
                 4,
                 'parent.latte',
+            ],
+            [
+                'Only booleans are allowed in a ternary operator condition, int|false given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                30,
+                'specialConstructs.latte',
             ],
             [
                 'Undefined variable: $nonExistingVariable',
@@ -675,6 +685,16 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                10,
+                'default.latte',
+            ],
+            [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                11,
+                'default.latte',
+            ],
+            [
                 'Method Nette\Forms\Controls\BaseControl::getControlPart() invoked with 1 parameter, 0 required.',
                 11,
                 'default.latte',
@@ -682,6 +702,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Method Nette\Forms\Controls\BaseControl::getLabelPart() invoked with 1 parameter, 0 required.',
                 11,
+                'default.latte',
+            ],
+            [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                12,
                 'default.latte',
             ],
             [
@@ -717,6 +742,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Form control with name "username" probably does not exist.',
                 49,
+                'default.latte',
+            ],
+            [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                54,
                 'default.latte',
             ],
             [
@@ -1098,6 +1128,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Method ' . LinksPresenter::class . '::handleDelete() invoked with 2 parameters, 1 required.',
                 98,
+                'default.latte',
+            ],
+            [
+                'Only booleans are allowed in a ternary operator condition, int|false given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                102,
                 'default.latte',
             ],
             [

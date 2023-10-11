@@ -1,0 +1,5 @@
+parameters:
+    reportMaybesInMethodSignatures: false
+
+includes:
+    - %rootDir%/../../../vendor/phpstan/phpstan-strict-rules/rules.neon
