@@ -14,3 +14,4 @@ rules:
 includes:
     - %rootDir%/../../../vendor/phpstan/phpstan-nette/extension.neon
     - %rootDir%/../../../vendor/phpstan/phpstan-nette/rules.neon
+    - strict-rules.neon

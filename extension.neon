@@ -165,6 +165,7 @@ services:
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\TransformForeachWithIteratorNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
+            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeGetParentNameToCompareWithNullNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ReportNonExistingFieldOptionNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())

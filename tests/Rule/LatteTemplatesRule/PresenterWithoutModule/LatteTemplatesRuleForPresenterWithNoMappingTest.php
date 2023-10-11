@@ -34,6 +34,11 @@ class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRule
                 'default.latte',
             ],
             [
+                'Only booleans are allowed in a ternary operator condition, int|false given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                102,
+                'default.latte',
+            ],
+            [
                 'Parameter #1 $destination of method Nette\Application\UI\Component::link() expects string, Latte\Runtime\Html|string|false given.',
                 103,
                 'default.latte',
