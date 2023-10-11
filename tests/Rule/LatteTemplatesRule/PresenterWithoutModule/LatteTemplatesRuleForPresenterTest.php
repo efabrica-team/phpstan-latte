@@ -678,20 +678,10 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testForms(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], [
+        $expectedErrors = [
             [
                 'Form control with name "password" probably does not exist.',
                 4,
-                'default.latte',
-            ],
-            [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                10,
-                'default.latte',
-            ],
-            [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                11,
                 'default.latte',
             ],
             [
@@ -702,11 +692,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Method Nette\Forms\Controls\BaseControl::getLabelPart() invoked with 1 parameter, 0 required.',
                 11,
-                'default.latte',
-            ],
-            [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                12,
                 'default.latte',
             ],
             [
@@ -742,11 +727,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Form control with name "username" probably does not exist.',
                 49,
-                'default.latte',
-            ],
-            [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                54,
                 'default.latte',
             ],
             [
@@ -824,7 +804,36 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 10,
                 '@layout.latte',
             ],
-        ]);
+        ];
+        if (LatteVersion::isLatte3()) {
+            $expectedErrors[] = [
+                'PHPDoc tag @var with type Nette\Forms\Controls\BaseControl is not subtype of type Nette\Forms\Controls\TextArea.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                55,
+                'default.latte',
+            ];
+        } else {
+            $expectedErrors[] = [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                10,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                11,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                12,
+                'default.latte',
+            ];
+            $expectedErrors[] = [
+                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
+                54,
+                'default.latte',
+            ];
+        }
+        $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], $expectedErrors);
     }
 
     public function testFilters(): void
