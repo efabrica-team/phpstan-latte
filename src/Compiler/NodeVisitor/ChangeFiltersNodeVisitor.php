@@ -35,10 +35,10 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionFunction;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
-use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
-use PHPStan\BetterReflection\Reflection\ReflectionParameter;
+use PHPStan\BetterReflection\Reflection\ReflectionFunction as BetterReflectionFunction;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
+use PHPStan\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNamedType;
+use PHPStan\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
@@ -49,6 +49,9 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
+use ReflectionFunction;
+use ReflectionNamedType;
+use ReflectionParameter;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
@@ -236,7 +239,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
         if ($filter instanceof Closure || $this->isCallableString($filter)) {
             if ($filter instanceof Closure) {
-                $args = $this->updateArgs(ReflectionFunction::createFromClosure($filter), $args);
+                $args = $this->updateArgs(new ReflectionFunction($filter), $args);
             }
             return new FuncCall(new VariableExpr($this->createFilterVariableName($filterName)), $args);
         }
@@ -284,14 +287,21 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
     }
 
     /**
-     * @param ReflectionFunction|ReflectionMethod $reflection
+     * @param BetterReflectionFunction|BetterReflectionMethod|ReflectionFunction $reflection
      * @param Arg[]|VariadicPlaceholder[] $args
      * @return Arg[]|VariadicPlaceholder[]
      */
     private function updateArgs($reflection, array $args): array
     {
         $parameter = $reflection->getParameters()[0] ?? null;
-        if ($parameter instanceof ReflectionParameter && $parameter->getType() instanceof ReflectionNamedType && $parameter->getType()->getName() === FilterInfo::class) {
+        if ($parameter instanceof BEtterReflectionParameter && $parameter->getType() instanceof BetterReflectionNamedType) {
+            $parameterType = $parameter->getType()->getName();
+        } elseif ($parameter instanceof ReflectionParameter && $parameter->getType() instanceof ReflectionNamedType) {
+            $parameterType = $parameter->getType()->getName();
+        } else {
+            $parameterType = null;
+        }
+        if ($parameterType === FilterInfo::class) {
             $args = array_merge([
                 new Arg(new VariableExpr('ʟ_fi')),
             ], $args);
