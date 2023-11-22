@@ -2,6 +2,10 @@
 
 ## [Unreleased][unreleased]
 
+## [0.16.2] - 2023-11-22
+### Fixed
+- Fixed first class callable filters
+
 ## [0.16.1] - 2023-10-11
 ### Fixed
 - Standalone presenter action template is not analysed if presenter dir and template dir are siblings
@@ -234,7 +238,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.1...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...HEAD
+[0.16.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.1...0.16.2
 [0.16.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.0...0.16.1
 [0.16.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.15.0...0.16.0
 [0.15.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.14.0...0.15.0
