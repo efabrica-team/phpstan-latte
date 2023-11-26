@@ -2,6 +2,10 @@
 
 ## [Unreleased][unreleased]
 
+## [0.16.3] - 2023-11-26
+### Added
+- Support for PHP 8.3
+- 
 ## [0.16.2] - 2023-11-22
 ### Fixed
 - Fixed first class callable filters
@@ -238,7 +242,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.3...HEAD
+[0.16.3]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...0.16.3
 [0.16.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.1...0.16.2
 [0.16.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.0...0.16.1
 [0.16.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.15.0...0.16.0
