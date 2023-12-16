@@ -162,7 +162,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Dumped type: array<string>',
+                "Dumped type: array<'bar'|'baz'|'foo'>", // False positive - TODO create DynamicMethodReturnTypeExtension for Latte\Runtime\Filters::slice - inspire in ArraySliceFunctionReturnTypeExtension and SubstrDynamicReturnTypeExtension
                 92,
                 'default.latte',
             ],
