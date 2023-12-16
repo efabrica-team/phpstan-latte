@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\LinkProcessor;
 
 use RuntimeException;
 
-class LinkProcessorException extends RuntimeException
+final class LinkProcessorException extends RuntimeException
 {
 
 }

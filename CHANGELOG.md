@@ -2,10 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+### Fixed
+- Updated coding standard (Possible **BC break** - added `final` or `abstract` to (almost) all classes)
+- Bleeding edge changes - updated typehints
+
 ## [0.16.3] - 2023-11-26
 ### Added
 - Support for PHP 8.3
-- 
+
 ## [0.16.2] - 2023-11-22
 ### Fixed
 - Fixed first class callable filters

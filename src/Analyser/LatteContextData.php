@@ -9,7 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
-class LatteContextData
+final class LatteContextData
 {
     /** @var array<RuleError> */
     private array $errors;

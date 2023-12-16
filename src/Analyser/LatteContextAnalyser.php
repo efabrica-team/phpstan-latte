@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\Analyser;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
@@ -16,7 +18,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\RuleErrorBuilder;
 use Throwable;
 
-class LatteContextAnalyser
+final class LatteContextAnalyser
 {
     private ScopeFactory $scopeFactory;
 

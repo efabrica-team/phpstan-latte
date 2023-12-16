@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\LatteContext\Resolver\Nette;
 
 use Efabrica\PHPStanLatte\LatteContext\Resolver\ClassLatteContextResolver;
@@ -8,7 +10,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 
-class NetteApplicationUIControlLatteContextResolver extends ClassLatteContextResolver
+final class NetteApplicationUIControlLatteContextResolver extends ClassLatteContextResolver
 {
     public function getVariables(): array
     {

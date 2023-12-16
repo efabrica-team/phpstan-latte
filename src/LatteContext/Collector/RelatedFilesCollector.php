@@ -66,7 +66,10 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
         ];
     }
 
-    public function collectData(Node $node, Scope $scope): ?array
+    /**
+     * @return CollectedRelatedFiles[]
+     */
+    public function collectData(Node $node, Scope $scope): array
     {
         $relatedFiles = [];
         if ($node instanceof InClassNode) {

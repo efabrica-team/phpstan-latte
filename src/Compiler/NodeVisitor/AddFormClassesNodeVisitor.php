@@ -235,6 +235,9 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         return null;
     }
 
+    /**
+     * @return Node|Node[]|null
+     */
     public function leaveNode(Node $node)
     {
         foreach ($this->errorControlNodes as $errorControlNode) {

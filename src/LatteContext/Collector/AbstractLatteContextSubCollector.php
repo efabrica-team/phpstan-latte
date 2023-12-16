@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use PhpParser\Node;
