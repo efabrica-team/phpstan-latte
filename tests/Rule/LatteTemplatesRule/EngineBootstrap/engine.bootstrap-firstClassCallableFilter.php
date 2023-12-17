@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\EngineBootstrap;
 
 use Latte\Engine;
 
-class FirstClassCallableFilters
+final class FirstClassCallableFilters
 {
     public function objectFilter(string $input): string
     {

@@ -17,7 +17,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 /**
  * @implements Rule<FuncCall>
  */
-class LatteCompileErrorsRule implements Rule
+final class LatteCompileErrorsRule implements Rule
 {
     public function getNodeType(): string
     {

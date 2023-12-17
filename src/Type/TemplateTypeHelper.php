@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\Type;
 
 use PHPStan\Type\ErrorType;
@@ -8,7 +10,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 
-class TemplateTypeHelper
+final class TemplateTypeHelper
 {
     public static function resolveTemplateType(Type $type, string $declaringClass, ?string $currentClass): Type
     {

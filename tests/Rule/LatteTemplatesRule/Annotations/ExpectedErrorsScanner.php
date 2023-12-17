@@ -6,7 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
 use RuntimeException;
 
-class ExpectedErrorsScanner
+final class ExpectedErrorsScanner
 {
     /**
      * @return list<array{error: string, line: int, tip: ?string}>

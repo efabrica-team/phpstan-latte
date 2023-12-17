@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
 use PHPStan\Type\TypeCombinator;
 
-class ItemCombinator
+final class ItemCombinator
 {
     /**
      * @template T of NameItem
