@@ -20,7 +20,7 @@
         "nikic/php-parser": "^4.15",
         "efabrica/coding-standard": "^0.6",
         "phpstan/phpstan-strict-rules": "^1.4",
-        "spaze/phpstan-disallowed-calls": "^2.11"
+        "spaze/phpstan-disallowed-calls": "^2.11 | ^3.0"
     },
     "extra": {
         "phpstan": {
