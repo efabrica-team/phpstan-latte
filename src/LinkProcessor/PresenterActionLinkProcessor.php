@@ -77,6 +77,9 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
                 if ($this->actualClass === null) {
                     return [];
                 }
+                if (!is_callable([$presenterFactory, 'unformatPresenterClass'])) {
+                    throw new LinkProcessorException('PresenterFactory does not have method unformatPresenterClass');
+                }
                 $actualClass = @$presenterFactory->unformatPresenterClass($this->actualClass);
                 if ($actualClass === null) {
                     return [];

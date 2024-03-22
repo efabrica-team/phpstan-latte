@@ -43,4 +43,25 @@ final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleT
             ],
         ]);
     }
+
+    public function testFunctions(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/FunctionsPresenter.php'], [
+            [
+                'Function nonexistingfunction not found. ### Learn more at https://phpstan.org/user-guide/discovering-symbols',
+                2,
+                'default.latte',
+            ],
+            [
+                'Closure invoked with 1 parameter, 0 required.',
+                3,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $param of closure expects int, string given.',
+                4,
+                'default.latte',
+            ],
+        ]);
+    }
 }

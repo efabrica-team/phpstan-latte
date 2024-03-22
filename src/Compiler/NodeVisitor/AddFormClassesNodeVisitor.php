@@ -510,7 +510,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
                 ->setReturnType('?Nette\Forms\ControlGroup');
 
             $getGroupComment = $this->createGetGroupConditionalReturnTypeComment($controlHolder->getGroups());
-            $getGroupMethod->setDocComment('/** ' . $getGroupComment . ' */');
+            $getGroupMethod->setDocComment('/** @param int|string $name' . "\n" . $getGroupComment . ' */');
             $methods[] = $getGroupMethod;
         }
 

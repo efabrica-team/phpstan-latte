@@ -2,4 +2,6 @@ parameters:
     latte:
         filters:
             existingFilter: strlen
+        functions:
+            existingfunction: time
         engineBootstrap: %rootDir%/../../../tests/Rule/LatteTemplatesRule/EngineBootstrap/engine.bootstrap.php

@@ -17,7 +17,7 @@
         "phpunit/phpunit": "^9.5",
         "nette/application": "^3.1.6",
         "nette/forms": "^3.1.12",
-        "nikic/php-parser": "^4.15",
+        "nikic/php-parser": "^4.19",
         "efabrica/coding-standard": "^0.6",
         "phpstan/phpstan-strict-rules": "^1.4",
         "spaze/phpstan-disallowed-calls": "^2.11 | ^3.0"
