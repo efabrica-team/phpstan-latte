@@ -42,6 +42,7 @@ abstract class AbstractCompiler implements CompilerInterface
         $this->strictMode = $strictMode;
         $this->filters = $filters;
         $this->functions = $functions;
+        $this->installFunctions($functions);
     }
 
     public function generateClassName(): string
@@ -93,6 +94,23 @@ abstract class AbstractCompiler implements CompilerInterface
         $providers['coreExceptionHandler'] = new CallableType($coreExceptionHandlerParameters, new VoidType());
         $phpContent .= $this->generateTypes($className . '_global', $providers);
         return $phpContent;
+    }
+
+    /**
+     * @param array<string, string|array{string, string}> $functions
+     */
+    private function installFunctions(array $functions): void
+    {
+        foreach ($functions as $name => $function) {
+            if (is_callable($function)) {
+                $this->engine->addFunction($name, $function);
+            } else {
+                // add placeholder function
+                $this->engine->addFunction($name, function (...$args) {
+                    return null;
+                });
+            }
+        }
     }
 
     abstract protected function createDefaultEngine(): Engine;

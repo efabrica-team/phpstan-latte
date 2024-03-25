@@ -120,7 +120,7 @@ final class LatteTemplatesRule implements Rule
         }
 
         $compiledTemplates = $this->compileTemplates($templates, $errors);
-        $errors = array_merge($errors, $this->analyseTemplates($compiledTemplates));
+        $errors = array_merge(array_filter($errors), $this->analyseTemplates($compiledTemplates));
 
         if (count($errors) > 1000) {
             $errors[] = RuleErrorBuilder::message('Too many errors in latte.')->build();
@@ -138,7 +138,7 @@ final class LatteTemplatesRule implements Rule
 
     /**
      * @param Template[] $templates
-     * @param RuleError[] $errors
+     * @param array<?RuleError> $errors
      * @param array<string, int> $alreadyAnalysedInParents
      * @return array<string, Template> path of compiled template => Template
      * @throws ShouldNotHappenException
