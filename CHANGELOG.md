@@ -2,6 +2,9 @@
 
 ## [Unreleased][unreleased]
 
+### Updated
+- Coding standard
+
 ## [0.17.0] - 2024-03-27
 ### Fixed
 - Updated coding standard (Possible **BC break** - added `final` or `abstract` to (almost) all classes)
