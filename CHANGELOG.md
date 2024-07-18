@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased][unreleased]
+
+## [0.17.1] - 2024-07-18
 ### Updated
 - Coding standard
 ### Fixed
@@ -253,7 +255,8 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.0...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.1...HEAD
+[0.17.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.0...0.17.1
 [0.17.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.3...0.17.0
 [0.16.3]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...0.16.3
 [0.16.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.1...0.16.2
