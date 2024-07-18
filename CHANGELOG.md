@@ -1,9 +1,10 @@
 # Change Log
 
 ## [Unreleased][unreleased]
-
 ### Updated
 - Coding standard
+### Fixed
+- RelatedFilesCollector collecting classes that were not present in vendor
 
 ## [0.17.0] - 2024-03-27
 ### Fixed
