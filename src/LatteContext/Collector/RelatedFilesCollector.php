@@ -89,7 +89,7 @@ final class RelatedFilesCollector extends AbstractLatteContextCollector
                 $newClassNames = [$this->nameResolver->resolve($node->class)];
             }
             foreach ($newClassNames as $newClassName) {
-                if ($newClassName !== null && !in_array($newClassName, ['this', 'self', 'static', 'parent'], true)) {
+                if ($newClassName !== null && !in_array($newClassName, ['this', 'self', 'static', 'parent'], true) && class_exists($newClassName)) {
                     $classReflection = $this->reflectionProvider->getClass($newClassName);
                     if (!$classReflection->isInterface() && !$classReflection->isTrait()) {
                         $filename = $this->getFilename($classReflection);
