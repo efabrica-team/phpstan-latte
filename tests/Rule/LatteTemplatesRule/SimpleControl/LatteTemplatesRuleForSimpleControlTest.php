@@ -379,8 +379,18 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 'define.latte',
             ],
             [
+                'Dumped type: int',
+                35,
+                'define.latte',
+            ],
+            [
+                'Dumped type: string',
+                36,
+                'define.latte',
+            ],
+            [
                 'Dumped type: \'some string\'',
-                32,
+                39,
                 'define.latte',
             ],
         ]);
