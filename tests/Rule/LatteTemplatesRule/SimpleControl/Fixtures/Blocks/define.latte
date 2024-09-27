@@ -29,4 +29,11 @@
 {include no-comma-block, $knownInteger}
 {include no-comma-block}
 
+{define multiline-block,
+  int $count,
+  string $name}
+    {php \PHPStan\dumpType($count)}
+    {php \PHPStan\dumpType($name)}
+{/define}
+
 {php \PHPStan\dumpType($paramString)}

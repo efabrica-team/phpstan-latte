@@ -56,12 +56,12 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
         }
 
         $parameters = [];
-        $pattern = '/(?<define>{define (?<block_name>.*?),? (?<parameters>.*)}) on line (?<line>\d+)/';
+        $pattern = '/(?<define>{define\s+(?<block_name>.*?)\s*,?\s+(?<parameters>.*)})\s+on line (?<line>\d+)/s';
         preg_match($pattern, $comment->getText(), $match);
         if (isset($match['parameters'])) {
             $define = $match['define'];
 
-            $typesAndVariablesPattern = '/(?<type>[\?\\\[\]\<\>[:alnum:]]*)[ ]*\$(?<variable>[[:alnum:]]+)/';
+            $typesAndVariablesPattern = '/(?<type>[\?\\\[\]\<\>[:alnum:]]*)[ ]*\$(?<variable>[[:alnum:]]+)/s';
             preg_match_all($typesAndVariablesPattern, $match['parameters'], $typesAndVariables);
 
             $variableTypes = array_combine($typesAndVariables['variable'], $typesAndVariables['type']) ?: [];
@@ -102,7 +102,7 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
             }
         } else {
             // process default blocks content etc.
-            $pattern = '/{block (?<block_name>.*?)} on line (?<line>\d+)/';
+            $pattern = '/{block\s+(?<block_name>.*?)}\s+on line (?<line>\d+)/s';
             preg_match($pattern, $comment->getText(), $match);
         }
 

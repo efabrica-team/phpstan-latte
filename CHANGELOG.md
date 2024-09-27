@@ -12,6 +12,7 @@
 ### Fixed
 - Updated coding standard (Possible **BC break** - added `final` or `abstract` to (almost) all classes)
 - Bleeding edge changes - updated typehints
+- Fixed parameters parsing for multiline {define}
 - Functions handling with FunctionExecutor in new Latte 
 - Removed unformatPresenterClass of new PresenterFactory
 
