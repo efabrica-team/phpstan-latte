@@ -5,6 +5,7 @@
 ### Fixed
 - Updated coding standard (Possible **BC break** - added `final` or `abstract` to (almost) all classes)
 - Bleeding edge changes - updated typehints
+- Fixed parameters parsing for multiline {define}
 
 ## [0.16.3] - 2023-11-26
 ### Added
