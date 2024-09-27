@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\LinkProcessor;
 
 use InvalidArgumentException;
 use Nette\Application\IPresenterFactory;
-use Nette\Application\PresenterFactory;
 
 final class PresenterFactoryFaker
 {
@@ -38,8 +37,8 @@ final class PresenterFactoryFaker
                 throw new InvalidArgumentException('Presenter factory file must return instance of Nette\Application\IPresenterFactory');
             }
         } elseif ($this->mapping !== []) {
-            $presenterFactory = new PresenterFactory();
-            $presenterFactory->setMapping($this->mapping);
+            $presenterFactory = new FakePresenterFactory();
+            $presenterFactory->setFakeMapping($this->mapping);
         }
 
         $this->presenterFactory = $presenterFactory;

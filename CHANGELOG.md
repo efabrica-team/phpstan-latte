@@ -2,10 +2,19 @@
 
 ## [Unreleased][unreleased]
 
+## [0.17.1] - 2024-07-18
+### Updated
+- Coding standard
+### Fixed
+- RelatedFilesCollector collecting classes that were not present in vendor
+
+## [0.17.0] - 2024-03-27
 ### Fixed
 - Updated coding standard (Possible **BC break** - added `final` or `abstract` to (almost) all classes)
 - Bleeding edge changes - updated typehints
 - Fixed parameters parsing for multiline {define}
+- Functions handling with FunctionExecutor in new Latte 
+- Removed unformatPresenterClass of new PresenterFactory
 
 ## [0.16.3] - 2023-11-26
 ### Added
@@ -247,7 +256,9 @@
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.3...HEAD
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.1...HEAD
+[0.17.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.0...0.17.1
+[0.17.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.3...0.17.0
 [0.16.3]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...0.16.3
 [0.16.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.1...0.16.2
 [0.16.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.0...0.16.1

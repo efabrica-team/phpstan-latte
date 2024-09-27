@@ -50,7 +50,7 @@ final class Latte2Compiler extends AbstractCompiler
             $latteTokens = $parser->parse($templateContent);
             $className = $this->generateClassName();
             $phpContent = $compiler
-                ->setFunctions(array_keys($this->getDefaultFunctions()))
+                ->setFunctions(array_keys($this->getFunctions()))
                 ->compile(
                     $latteTokens,
                     $className,
@@ -82,7 +82,12 @@ final class Latte2Compiler extends AbstractCompiler
 
     public function getFunctions(): array
     {
-        return array_merge($this->getDefaultFunctions(), $this->functions);
+        try {
+            $engineFunctions = $this->getEngineFunctionsByReflection();
+        } catch (ReflectionException $e) {
+            $engineFunctions = $this->getDefaultFunctions();
+        }
+        return array_change_key_case(array_merge($engineFunctions, $this->functions));
     }
 
     /**
@@ -107,6 +112,25 @@ final class Latte2Compiler extends AbstractCompiler
             $engineFilters[strtolower($filterName)] = $filterData[0];
         }
         return $engineFilters;
+    }
+
+    /**
+     * @return array<string, callable>
+     * @throws ReflectionException
+     */
+    private function getEngineFunctionsByReflection(): array
+    {
+        // we must use try to use reflection to get to filter signatures in Latte 2 :-(
+        $engineFunctionsPropertyReflection = (new ReflectionClass($this->engine))->getProperty('functions');
+        $engineFunctionsPropertyReflection->setAccessible(true);
+        /** @var array<string, callable> $engineFunctionsProperty */
+        $engineFunctionsProperty = $engineFunctionsPropertyReflection->getValue($this->engine);
+
+        $engineFunctions = [];
+        foreach ($engineFunctionsProperty as $functionName => $callable) {
+            $engineFunctions[strtolower($functionName)] = $callable;
+        }
+        return $engineFunctions;
     }
 
     /**
