@@ -35,7 +35,7 @@ abstract class AbstractCollector implements Collector
 
     /**
      * @phpstan-param array<T> $items
-     * @return ?A[]
+     * @return non-empty-array<A>|null
      */
     protected function collectItems(array $items): ?array
     {

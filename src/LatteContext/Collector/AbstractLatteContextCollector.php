@@ -35,7 +35,7 @@ abstract class AbstractLatteContextCollector
 
     /**
      * @param Node $node
-     * @phpstan-return null|array<T|CollectedError>
+     * @phpstan-return null|non-empty-array<T|CollectedError>
      */
     abstract public function collectData(Node $node, Scope $scope): ?array;
 }
