@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
-use PHPStan\Rules\RuleError;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
 final class LatteTemplateResolverResult
@@ -15,12 +15,12 @@ final class LatteTemplateResolverResult
   /** @var array<string, Template>  */
     private array $templates = [];
 
-  /** @var RuleError[]  */
+  /** @var IdentifierRuleError[]  */
     private array $errors = [];
 
   /**
    * @param Template[] $templates
-   * @param RuleError[] $errors
+   * @param IdentifierRuleError[] $errors
    */
     public function __construct(array $templates = [], array $errors = [])
     {
@@ -39,7 +39,7 @@ final class LatteTemplateResolverResult
     }
 
   /**
-   * @return RuleError[]
+   * @return IdentifierRuleError[]
    */
     public function getErrors(): array
     {
@@ -51,11 +51,14 @@ final class LatteTemplateResolverResult
         $this->templates[$template->getSignatureHash()] = $template;
     }
 
-    public function addError(RuleError $error): void
+    public function addError(IdentifierRuleError $error): void
     {
         $this->errors[] = $error;
     }
 
+    /**
+     * @param RuleErrorBuilder<IdentifierRuleError> $error
+     */
     public function addErrorFromBuilder(RuleErrorBuilder $error): void
     {
         $this->errors[] = $error->build();
@@ -69,11 +72,13 @@ final class LatteTemplateResolverResult
         $templatePath = $templateRender->getTemplatePath();
         if ($templatePath === null) {
             $this->addErrorFromBuilder(RuleErrorBuilder::message('Cannot resolve rendered latte template.')
+                ->identifier('latte.cannotResolve')
                 ->file($templateRender->getFile())
                 ->line($templateRender->getLine()));
             return;
         } elseif (!is_file($templatePath)) {
             $this->addErrorFromBuilder(RuleErrorBuilder::message('Rendered latte template ' . $templatePath . ' does not exist.')
+                ->identifier('latte.notFound')
                 ->file($templateRender->getFile())
                 ->line($templateRender->getLine()));
             return;

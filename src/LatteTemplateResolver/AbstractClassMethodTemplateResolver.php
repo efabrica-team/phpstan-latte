@@ -35,6 +35,7 @@ abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplate
                     !$latteContext->methodFinder()->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName())
                 ) {
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
+                        ->identifier('latte.cannotResolve')
                         ->file($reflectionClass->getFileName() ?? 'unknown')
                         ->line($reflectionMethod->getStartLine()));
                 }

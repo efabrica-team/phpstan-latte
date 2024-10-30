@@ -13,7 +13,7 @@ final class BlockParameterErrorTransformer implements ErrorTransformerInterface
     public function transform(Error $error): Error
     {
         preg_match(self::BLOCK_METHOD, $error->getMessage(), $match);
-        if (isset($match['block'])) {
+        if (isset($match[0]) && isset($match['block'])) {
             $block = lcfirst(str_replace('_', '-', $match['block']));
             $message = $error->getMessage();
             // replace method name to block name

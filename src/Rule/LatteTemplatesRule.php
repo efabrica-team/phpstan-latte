@@ -24,9 +24,9 @@ use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Registry as CollectorsRegistry;
 use PHPStan\Node\CollectedDataNode;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Registry as RuleRegistry;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use Throwable;
@@ -123,11 +123,14 @@ final class LatteTemplatesRule implements Rule
         $errors = array_merge(array_filter($errors), $this->analyseTemplates($compiledTemplates));
 
         if (count($errors) > 1000) {
-            $errors[] = RuleErrorBuilder::message('Too many errors in latte.')->build();
+            $errors[] = RuleErrorBuilder::message('Too many errors in latte.')
+                ->identifier('latte.tooManyErrors')
+                ->build();
         }
 
         foreach ($this->analysedTemplatesRegistry->getReportedUnanalysedTemplates() as $templatePath) {
             $errors[] = RuleErrorBuilder::message('Latte template ' . pathinfo($templatePath, PATHINFO_BASENAME) . ' was not analysed.')
+                ->identifier('latte.unanalysedTemplate')
                 ->file($templatePath)
                 ->tip('Please make sure your template path is correct. If you use some non-standard way of resolving your templates, read our extension guide https://github.com/efabrica-team/phpstan-latte/blob/main/docs/extension.md#template-resolvers')
                 ->build();
@@ -138,7 +141,7 @@ final class LatteTemplatesRule implements Rule
 
     /**
      * @param Template[] $templates
-     * @param array<?RuleError> $errors
+     * @param array<?IdentifierRuleError> $errors
      * @param array<string, int> $alreadyAnalysedInParents
      * @return array<string, Template> path of compiled template => Template
      * @throws ShouldNotHappenException
@@ -170,6 +173,7 @@ final class LatteTemplatesRule implements Rule
                 $compiledTemplates[$compileFilePath] = $template;
             } catch (CompileException $e) {
                 $ruleErrorBuilder = RuleErrorBuilder::message($e->getMessage())
+                    ->identifier('latte.compileError')
                     ->file($template->getPath())
                     ->metadata(['context' => $context]);
                 if ($e->sourceLine) {
@@ -236,7 +240,7 @@ final class LatteTemplatesRule implements Rule
 
     /**
      * @param array<string, Template> $templates
-     * @return RuleError[]
+     * @return IdentifierRuleError[]
      */
     private function analyseTemplates(array $templates): array
     {

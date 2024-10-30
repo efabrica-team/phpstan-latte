@@ -127,8 +127,9 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             foreach ($actionDefinition['templatePaths'] as $template) {
                 if ($template === null) {
                     $result->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
-                    ->file($reflectionClass->getFileName() ?? 'unknown')
-                    ->line($actionDefinition['line']));
+                        ->identifier('latte.cannotResolve')
+                        ->file($reflectionClass->getFileName() ?? 'unknown')
+                        ->line($actionDefinition['line']));
                     continue;
                 }
                 $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
@@ -143,6 +144,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             if ($actionDefinition['defaultTemplate'] === null) {
                 if (!$actionDefinition['terminated'] && $actionDefinition['templatePaths'] === []) { // might not be rendered at all (for example redirect or use set template path)
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for action $actionName")
+                        ->identifier('latte.cannotResolve')
                         ->file($reflectionClass->getFileName() ?? 'unknown')
                         ->line($actionDefinition['line'])
                         ->identifier($actionName));
