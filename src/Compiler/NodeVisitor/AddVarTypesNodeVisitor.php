@@ -32,6 +32,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
+use PHPStan\Type\VerbosityLevel;
 
 final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements VariablesNodeVisitorInterface
 {
@@ -94,7 +95,6 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
             }
 
             $variableType = $variable->getType();
-
             if ($variableType instanceof ThisType) {
                 // $this(SomeClass) is transformed to $this, but we want to use SomeClass instead
                 $variableType = $variableType->getStaticObjectType();
