@@ -978,7 +978,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         } else {
             $expectedErrors[] = [
                 'Syntax error, unexpected \')\'',
-                2,
+                -1,
                 'translate_new.latte',
             ];
 

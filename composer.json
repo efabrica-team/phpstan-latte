@@ -7,7 +7,6 @@
     "require": {
         "php": ">=7.4 <8.4",
         "ext-json": "*",
-        "ext-random": "*",
         "phpstan/phpstan": "^1.12.13",
         "phpstan/phpstan-nette": "^1.2.6",
         "latte/latte": "^2.11.6 | ^3.0.4",

@@ -52,7 +52,7 @@ final class VariablesPresenter extends ParentPresenter
         $this->template->someOtherVariableWithDefault = 'value from presenter';
 
         $this->template->nullOrUrl = null;
-        if (mt_rand()) {
+        if (uniqid() == 'random') {
             $this->template->nullOrUrl = 'https://example.org';
         }
     }

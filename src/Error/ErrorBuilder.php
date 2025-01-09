@@ -53,6 +53,7 @@ final class ErrorBuilder
         '/Cannot call method endTag\(\) on Nette\\\\Utils\\\\Html\|string\./', // nette/forms error https://github.com/nette/forms/issues/308
         '/Variable .* on left side of \?\?= is never defined./',
         '/Variable .* on left side of \?\?= always exists and is not nullable./',
+        '/Property Latte\\\\Runtime\\\\Template::\$parentName .* does not accept mixed./',
     ];
 
     /** @var string[] */
