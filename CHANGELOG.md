@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased][unreleased]
+### Fixed
+- Compatibility with new Latte versions
 
 ## [0.17.1] - 2024-07-18
 ### Updated

@@ -866,12 +866,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Parameter #1 $ of closure expects string, int given.',
+                'Parameter #1 of closure expects string, int given.',
                 8,
                 'default.latte',
             ],
             [
-                'Parameter #2 $ of closure expects int, string given.',
+                'Parameter #2 of closure expects int, string given.',
                 8,
                 'default.latte',
             ],
@@ -881,12 +881,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Parameter #1 $ of closure expects string, int given.',
+                'Parameter #1 of closure expects string, int given.',
                 11,
                 'default.latte',
             ],
             [
-                'Parameter #2 $ of closure expects int, string given.',
+                'Parameter #2 of closure expects int, string given.',
                 11,
                 'default.latte',
             ],
@@ -896,12 +896,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Parameter #1 $ of callable callable(string, int): string expects string, int given.',
+                'Parameter #1 of callable callable(string, int): string expects string, int given.',
                 14,
                 'default.latte',
             ],
             [
-                'Parameter #2 $ of callable callable(string, int): string expects int, string given.',
+                'Parameter #2 of callable callable(string, int): string expects int, string given.',
                 14,
                 'default.latte',
             ],
@@ -978,7 +978,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
         } else {
             $expectedErrors[] = [
                 'Syntax error, unexpected \')\'',
-                2,
+                -1,
                 'translate_new.latte',
             ];
 

@@ -69,8 +69,12 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
             if (!$presenterFactory instanceof PresenterFactory) {
                 return [];
             }
-            $presenterClassName = $presenterFactory->formatPresenterClass($presenterWithModule);
-            if ($presenterClassName === '') {
+            if ($presenterWithModule) {
+                $presenterClassName = $presenterFactory->formatPresenterClass($presenterWithModule);
+            } else {
+                $presenterClassName = $this->actualClass;
+            }
+            if ($presenterClassName === '' || $presenterClassName === null) {
                 return [];
             }
             if (!$this->reflectionProvider->hasClass($presenterClassName)) {

@@ -72,7 +72,7 @@ parameters:
             path: src/Compiler/Compiler/AbstractCompiler.php
 
         -
-            message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects array\|bool\|float\|int\|PhpParser\\Node\\Expr\|string\|null, mixed given\.$#'
+            message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects .*, mixed given\.$#'
             path: src/LinkProcessor/LinkParamsProcessor.php
         -
             messages:
@@ -144,16 +144,6 @@ parameters:
             messages:
                 - '#^Although PHPStan\\Node\\InClassNode is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
                 - '#^Although PHPStan\\Node\\ClassMethod is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-
-        -
-            messages:
-                -'#^Although PHPStan\\Rules\\MetadataRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-                -'#^Although PHPStan\\Rules\\FileRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-                -'#^Although PHPStan\\Rules\\LineRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-                -'#^Although PHPStan\\Rules\\TipRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-                -'#^Although PHPStan\\Rules\\IdentifierRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-                -'#^Although PHPStan\\Rules\\NonIgnorableRuleError is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
-            path: src/Error/ErrorBuilder.php
 
         # to be done later, no idea how to fix it now
         -

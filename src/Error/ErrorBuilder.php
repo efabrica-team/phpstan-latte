@@ -15,7 +15,6 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\LineRuleError;
 use PHPStan\Rules\MetadataRuleError;
 use PHPStan\Rules\NonIgnorableRuleError;
-use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\TipRuleError;
 
@@ -52,6 +51,9 @@ final class ErrorBuilder
         '/PHPDoc tag @var for variable \$__variables__ has no value type specified in iterable type array\./', // fake variable $__variables__ can have not specified array type
         '/Cannot call method startTag\(\) on Nette\\\\Utils\\\\Html\|string\./', // nette/forms error https://github.com/nette/forms/issues/308
         '/Cannot call method endTag\(\) on Nette\\\\Utils\\\\Html\|string\./', // nette/forms error https://github.com/nette/forms/issues/308
+        '/Variable .* on left side of \?\?= is never defined./',
+        '/Variable .* on left side of \?\?= always exists and is not nullable./',
+        '/Property Latte\\\\Runtime\\\\Template::\$parentName .* does not accept mixed./',
     ];
 
     /** @var string[] */
@@ -89,7 +91,7 @@ final class ErrorBuilder
 
     /**
      * @param Error[] $originalErrors
-     * @return RuleError[]
+     * @return IdentifierRuleError[]
      */
     public function buildErrors(array $originalErrors, string $templatePath, ?string $compiledTemplatePath, ?string $context = null): array
     {
@@ -110,7 +112,7 @@ final class ErrorBuilder
         return $errors;
     }
 
-    public function buildError(Error $originalError, string $templatePath, ?string $compiledTemplatePath, ?string $context = null): ?RuleError
+    public function buildError(Error $originalError, string $templatePath, ?string $compiledTemplatePath, ?string $context = null): ?IdentifierRuleError
     {
         $lineMap = $compiledTemplatePath ? $this->lineMapper->getLineMap($compiledTemplatePath) : new LineMap();
 
@@ -119,6 +121,7 @@ final class ErrorBuilder
 
         $ruleErrorBuilder = RuleErrorBuilder::message($error->getMessage())
             ->file($templatePath)
+            ->identifier('latte.error')
             ->metadata(array_merge($originalError->getMetadata(), [
                 'context' => $context === '' ? null : $context,
                 'is_warning' => $this->isWarning($error->getMessage()),
@@ -138,8 +141,8 @@ final class ErrorBuilder
     }
 
     /**
-     * @param RuleError[] $ruleErrors
-     * @return RuleError[]
+     * @param IdentifierRuleError[] $ruleErrors
+     * @return list<IdentifierRuleError>
      */
     public function buildRuleErrors(array $ruleErrors): array
     {
@@ -182,7 +185,7 @@ final class ErrorBuilder
         return $newRuleErrors;
     }
 
-    private function errorSignature(RuleError $error): string
+    private function errorSignature(IdentifierRuleError $error): string
     {
         $values = (array)$error;
         unset($values['metadata']);

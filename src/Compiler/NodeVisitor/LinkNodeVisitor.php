@@ -20,7 +20,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
-use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\NodeVisitorAbstract;
@@ -143,7 +143,7 @@ final class LinkNodeVisitor extends NodeVisitorAbstract implements ActualClassNo
         }
 
         return [
-            new If_(new Identical(new FuncCall(new Name('mt_rand')), new LNumber(0)), [
+            new If_(new Identical(new FuncCall(new Name('uniqid')), new String_('random')), [
                 'stmts' => $expressions,
             ], $attributes),
         ];

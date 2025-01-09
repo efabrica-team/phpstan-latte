@@ -6,12 +6,12 @@ namespace Efabrica\PHPStanLatte\Analyser;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
-use PHPStan\Rules\RuleError;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
 final class LatteContextData
 {
-    /** @var array<RuleError> */
+    /** @var list<IdentifierRuleError> */
     private array $errors;
 
     /** @var array<CollectedLatteContextObject> */
@@ -22,7 +22,7 @@ final class LatteContextData
 
     /**
      * @param array<CollectedLatteContextObject> $collectedData
-     * @param array<RuleError> $errors
+     * @param list<IdentifierRuleError> $errors
      */
     public function __construct(array $collectedData, array $errors)
     {
@@ -34,7 +34,7 @@ final class LatteContextData
     }
 
     /**
-     * @return array<RuleError>
+     * @return list<IdentifierRuleError>
      */
     public function getErrors(): array
     {
@@ -42,13 +42,17 @@ final class LatteContextData
     }
 
     /**
-     * @return array<RuleError>
+     * @return list<IdentifierRuleError>
      */
     public function getCollectedErrors(): array
     {
         $errors = [];
         foreach ($this->getCollectedData(CollectedError::class) as $collectedError) {
-            $errors[] = RuleErrorBuilder::message($collectedError->getMessage())->file($collectedError->getFile())->line($collectedError->getLine() ?? -1)->build();
+            $errors[] = RuleErrorBuilder::message($collectedError->getMessage())
+                ->identifier('latte.error')
+                ->file($collectedError->getFile())
+                ->line($collectedError->getLine() ?? -1)
+                ->build();
         }
         return $errors;
     }

@@ -58,7 +58,7 @@ final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
         $parameters = [];
         $pattern = '/(?<define>{define\s+(?<block_name>.*?)\s*,?\s+(?<parameters>.*)})\s+on line (?<line>\d+)/s';
         preg_match($pattern, $comment->getText(), $match);
-        if (isset($match['parameters'])) {
+        if (isset($match['define']) && isset($match['block_name']) &&isset($match['parameters'])) {
             $define = $match['define'];
 
             $typesAndVariablesPattern = '/(?<type>[\?\\\[\]\<\>[:alnum:]]*)[ ]*\$(?<variable>[[:alnum:]]+)/s';

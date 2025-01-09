@@ -104,7 +104,11 @@ final class LatteContextAnalyser
                         try {
                             $collectedData = $collector->collectData($node, $scope);
                         } catch (Throwable $e) {
-                            $fileErrors[] = RuleErrorBuilder::message(get_class($collector) . ' error: ' . $e->getMessage())->file($file)->line($node->getLine())->build();
+                            $fileErrors[] = RuleErrorBuilder::message(get_class($collector) . ' error: ' . $e->getMessage())
+                                ->identifier('latte.collectorError')
+                                ->file($file)
+                                ->line($node->getLine())
+                                ->build();
                             continue;
                         }
                         if ($collectedData === null || $collectedData === []) {
@@ -116,12 +120,21 @@ final class LatteContextAnalyser
                 $scope = $this->scopeFactory->create(ScopeContext::create($file));
                 $this->nodeScopeResolver->processNodes($parserNodes, $scope, $nodeCallback);
             } catch (Throwable $e) {
-                $fileErrors[] = RuleErrorBuilder::message('LatteContextAnalyser error: ' . $e->getMessage())->file($file)->build();
+                $fileErrors[] = RuleErrorBuilder::message('LatteContextAnalyser error: ' . $e->getMessage())
+                    ->identifier('latte.failed')
+                    ->file($file)
+                    ->build();
             }
         } elseif (is_dir($file)) {
-            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s is a directory.', $file))->file($file)->build();
+            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s is a directory.', $file))
+                ->identifier('latte.fileError')
+                ->file($file)
+                ->build();
         } else {
-            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s does not exist.', $file))->file($file)->build();
+            $fileErrors[] = RuleErrorBuilder::message(sprintf('File %s does not exist.', $file))
+                ->identifier('latte.fileError')
+                ->file($file)
+                ->build();
         }
         return new LatteContextData($fileCollectedData, $fileErrors);
     }
