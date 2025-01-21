@@ -38,7 +38,7 @@ final class FormCollector extends AbstractLatteContextCollector
 
     /**
      * @param ClassMethod $node
-     * @phpstan-return null|CollectedForm[]
+     * @phpstan-return null|non-empty-array<CollectedForm>
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
@@ -51,7 +51,7 @@ final class FormCollector extends AbstractLatteContextCollector
     }
 
     /**
-     * @phpstan-return null|CollectedForm[]
+     * @phpstan-return null|non-empty-array<CollectedForm>
      */
     private function findCreateComponent(ClassMethod $node, ClassReflection $classReflection, Scope $scope): ?array
     {
