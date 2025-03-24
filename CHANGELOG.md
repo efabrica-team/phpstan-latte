@@ -4,6 +4,9 @@
 ### Fixed
 - Compatibility with new Latte versions
 
+### Updated
+- nette/utils is set to ^4 [BC]
+
 ## [0.17.1] - 2024-07-18
 ### Updated
 - Coding standard
