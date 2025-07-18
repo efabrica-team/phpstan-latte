@@ -81,6 +81,7 @@ final class TemplateRenderFinder
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
             return array_merge($this->collectedTemplateRenders[$declaringClass][$methodName] ?? [], ...$fromCalled);
         };
+        /** @var CollectedTemplateRender[] */
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

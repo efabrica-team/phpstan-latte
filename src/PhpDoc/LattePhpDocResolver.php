@@ -139,6 +139,9 @@ final class LattePhpDocResolver
             $docNode = $node->getDocComment();
             if ($docNode !== null) {
                 $lattePhpDoc = $this->resolve($docNode->getText(), $scope->getClassReflection());
+            } elseif ($node->getAttribute('parent') instanceof Node && $node->getAttribute('parent')->getLine() === $node->getLine()) {
+                // If the node has no doc comment, but is a child of another node on same line with a doc comment, resolve that one
+                return $this->resolveForNode($node->getAttribute('parent'), $scope);
             } else {
                 $lattePhpDoc = new LattePhpDoc();
             }

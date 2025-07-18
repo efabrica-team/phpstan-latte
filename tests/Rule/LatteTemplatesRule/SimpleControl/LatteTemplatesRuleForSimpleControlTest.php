@@ -412,6 +412,22 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
         ]);
     }
 
+    public function testLinks(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Links/SomeControl.php'], [
+            [
+                'Parameter #1 $id of method Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Links\SomeControl::handleDelete() expects int, null given.',
+                2,
+                'default.latte',
+            ],
+            [
+                'Parameter #1 $id of method Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Links\SomeControl::handleDelete() expects int, string given.',
+                3,
+                'default.latte',
+            ],
+        ]);
+    }
+
     public function testHierarchy(): void
     {
         $this->analyse([__DIR__ . '/Fixtures/Hierarchy/SomeControl.php'], [

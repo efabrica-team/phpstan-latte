@@ -9,6 +9,7 @@ use Nette\Utils\Finder;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Testing\PHPStanTestCase;
 
@@ -22,7 +23,7 @@ final class ValueResolverTest extends PHPStanTestCase
     {
         $this->valueResolver = new ValueResolver();
         $parserFactory = new ParserFactory();
-        $this->phpParser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        $this->phpParser = $parserFactory->createForVersion(PhpVersion::fromString('7.4'));
     }
 
     /**

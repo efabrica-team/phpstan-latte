@@ -19,7 +19,6 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
-use PhpParser\Node\Scalar\EncapsedStringPart;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\NodeTraverser;
@@ -92,7 +91,7 @@ final class Postprocessor
 
         $nodeScopeResolver = clone $this->nodeScopeResolver;
         $nodeScopeResolver->processNodes($phpStmts, $scope, function (Node $node, Scope $scope) {
-            if ($node instanceof Expr && !$node instanceof EncapsedStringPart) {
+            if ($node instanceof Expr) {
                 $node->setAttribute(ExprTypeNodeVisitorInterface::TYPE_ATTRIBUTE, $scope->getType($node));
             } elseif ($node instanceof Class_ || $node instanceof Interface_) {
                 /** @var string $name */

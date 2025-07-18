@@ -6,10 +6,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Collector;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethod;
 use PhpParser\Node;
-use PhpParser\Node\Stmt\Return_;
-use PhpParser\Node\Stmt\Throw_;
 use PHPStan\Analyser\Scope;
-use PHPStan\Node\ClassMethod;
 use PHPStan\Node\ExecutionEndNode;
 
 /**
@@ -36,13 +33,6 @@ final class MethodTerminatingCollector extends AbstractLatteContextCollector
 
         $methodName = $scope->getFunctionName();
         if ($methodName === null) {
-            return null;
-        }
-
-        if (!$node->getNode() instanceof ClassMethod &&
-           !$node->getNode() instanceof Return_ &&
-           !$node->getNode() instanceof Throw_
-        ) {
             return null;
         }
 

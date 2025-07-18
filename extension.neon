@@ -5,6 +5,7 @@ parameters:
         - stubs/Latte/Essential/Filters.stub
         - stubs/Latte/Runtime/FilterInfo.stub
         - stubs/Latte/Runtime/Filters.stub
+        - stubs/Latte/Runtime/Helpers.stub
         - stubs/Latte/Runtime/HtmlStringable.stub
         - stubs/Latte/Runtime/Html.stub
         - stubs/Nette/HtmlStringable.stub
@@ -82,6 +83,8 @@ services:
             originalParser: @currentPhpVersionRichParser
             cachedNodesByStringCountMax: 128
         autowired: no
+
+    - PhpParser\PrettyPrinter\Standard
 
     phpstanLatteCompiler:
         class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface

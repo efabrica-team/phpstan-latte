@@ -7,9 +7,12 @@ namespace Efabrica\PHPStanLatte\Resolver\ValueResolver;
 use PhpParser\ConstExprEvaluationException;
 use PhpParser\ConstExprEvaluator;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\BinaryOp\Coalesce;
 use PhpParser\Node\Expr\Cast;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\Encapsed;
 use PhpParser\Node\Scalar\EncapsedStringPart;
@@ -17,6 +20,7 @@ use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\UnionType;
+use ReflectionMethod;
 
 final class ValueResolver
 {
@@ -48,6 +52,18 @@ final class ValueResolver
                 return constant((string)$expr->name);
             }
 
+            if ($expr instanceof Coalesce) {
+                $leftVal = $this->resolve($expr->left, $scope, $fallbackEvaluator);
+                if ($leftVal !== null) {
+                    return $leftVal;
+                }
+                $rightVal = $this->resolve($expr->right, $scope, $fallbackEvaluator);
+                if ($rightVal !== null) {
+                    return $rightVal;
+                }
+                return null;
+            }
+
             if ($expr instanceof Cast) {
                 $options = $this->resolve($expr->expr, $scope, $fallbackEvaluator);
                 if ($options === null || count($options) !== 1) {
@@ -72,19 +88,8 @@ final class ValueResolver
                 return implode('', $result);
             }
 
-            if ($expr instanceof EncapsedStringPart) {
-                return $expr->value;
-            }
-
-            if ($expr instanceof FuncCall) {
-                if (!$expr->name instanceof Name) {
-                    return null;
-                }
-
+            if ($expr instanceof FuncCall && $expr->name instanceof Name) {
                 $functionName = (string)$expr->name;
-                if (!function_exists($functionName)) {
-                    return null;
-                }
 
                 $args = $expr->getArgs();
                 $arguments = [];
@@ -96,7 +101,43 @@ final class ValueResolver
                     $arguments[] = $options[0];
                 }
 
-                return call_user_func_array($functionName, $arguments);
+                if (function_exists($functionName)) {
+                    return call_user_func_array($functionName, $arguments);
+                }
+            }
+
+            if ($expr instanceof StaticCall && $expr->name instanceof Identifier && $expr->class instanceof Name) {
+                $className = (string)$expr->class;
+                $methodName = (string)$expr->name;
+
+                $classReflection = $scope->getClassReflection();
+
+                if($classReflection) {
+                    if($className === 'self' || $className === 'static') {
+                        $className = $classReflection->getName();
+                    } elseif($className === 'parent' && $classReflection->getParentClass()) {
+                        $className = $classReflection->getParentClass()->getName();
+                    }
+                }
+
+                $callable = [$className, $methodName];
+
+                $args = $expr->getArgs();
+                $arguments = [];
+                foreach($args as $arg) {
+                    $options = $this->resolve($arg->value, $scope);
+                    if($options === null || count($options) !== 1) {
+                        throw new ConstExprEvaluationException();
+                    }
+                    $arguments[] = $options[0];
+                }
+
+                if(\method_exists($className, $methodName) && \is_callable($callable)) {
+                    $ref = new ReflectionMethod($className, $methodName);
+                    if($ref->isPublic()) {
+                        return call_user_func_array($callable, $arguments);
+                    }
+                }
             }
 
             if ($fallbackEvaluator !== null) {

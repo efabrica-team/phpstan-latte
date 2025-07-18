@@ -115,6 +115,7 @@ final class FormFinder
             }
             return array_merge($collectedForms, ...$fromCalled);
         };
+        /** @var CollectedForm[] */
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

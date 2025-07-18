@@ -15,7 +15,6 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\NeverType;
-use PHPStan\Type\TypeUtils;
 
 final class TerminatingCallResolver
 {
@@ -67,7 +66,7 @@ final class TerminatingCallResolver
                         $methodCalledOnType = $scope->getType($expr->class);
                     }
                 }
-                $directClassNames = TypeUtils::getDirectClassNames($methodCalledOnType);
+                $directClassNames = $methodCalledOnType->getObjectClassNames();
                 foreach ($directClassNames as $referencedClass) {
                     if (!$this->reflectionProvider->hasClass($referencedClass)) {
                         continue;

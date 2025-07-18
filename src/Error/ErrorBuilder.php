@@ -54,6 +54,17 @@ final class ErrorBuilder
         '/Variable .* on left side of \?\?= is never defined./',
         '/Variable .* on left side of \?\?= always exists and is not nullable./',
         '/Property Latte\\\\Runtime\\\\Template::\$parentName .* does not accept mixed./',
+        '/PHPDoc tag @property for .* references internal class .*/',
+        '/Call to method .* of internal class .*/',
+        '/Call to static method .* of internal class .*/',
+        '/Call to internal method .* /',
+        '/Access to internal property .* /',
+        '/Access to property .* of internal class .*/',
+        '/Instantiation of internal class .*/',
+        '/Instanceof references internal class .*/',
+        '/PHPDoc tag @var for variable \$__variables__ contains unknown class .*/',
+        '/Casting to .* something that\'s already .*/',
+        '/Only booleans are allowed in .* condition.*/',
     ];
 
     /** @var string[] */
@@ -153,6 +164,7 @@ final class ErrorBuilder
             }
 
             $newRuleError = RuleErrorBuilder::message($ruleError->getMessage());
+            $newRuleError->identifier($ruleError->getIdentifier());
 
             $metaData = [];
             if ($ruleError instanceof MetadataRuleError) {
@@ -171,10 +183,6 @@ final class ErrorBuilder
 
             if ($ruleError instanceof TipRuleError) {
                 $newRuleError->tip($ruleError->getTip());
-            }
-
-            if ($ruleError instanceof IdentifierRuleError) {
-                $newRuleError->identifier($ruleError->getIdentifier());
             }
 
             if ($ruleError instanceof NonIgnorableRuleError) {

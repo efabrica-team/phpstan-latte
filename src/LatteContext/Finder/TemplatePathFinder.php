@@ -89,6 +89,7 @@ final class TemplatePathFinder
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
             return array_merge($this->collectedTemplatePaths[$declaringClass][$methodName] ?? [], ...$fromCalled);
         };
+        /** @var array<string> */
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

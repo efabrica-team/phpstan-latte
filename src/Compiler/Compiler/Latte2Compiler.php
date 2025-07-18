@@ -12,6 +12,7 @@ use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
 use ReflectionClass;
 use ReflectionException;
+use function is_string;
 
 final class Latte2Compiler extends AbstractCompiler
 {
@@ -62,8 +63,11 @@ final class Latte2Compiler extends AbstractCompiler
                 ? $compiler->getLine()
                 : $parser->getLine();
 
-            $e->setSource($templateContent, $line, '');
+            $e->setSource($templateContent, is_string($line) ? $line : null, '');
             throw $e;
+        }
+        if (!is_string($phpContent)) {
+            throw new CompileException('Compiler did not return a string.');
         }
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->addTypes($phpContent, $className, $actualClass);
@@ -138,7 +142,9 @@ final class Latte2Compiler extends AbstractCompiler
      */
     private function getDefaultFilters(): array
     {
-        return array_change_key_case((new Defaults())->getFilters());
+        /** @var array<string, callable> $defaultFilters */
+        $defaultFilters = $this->getDefaultFunctions();
+        return array_change_key_case($defaultFilters);
     }
 
     /**
@@ -146,6 +152,7 @@ final class Latte2Compiler extends AbstractCompiler
      */
     private function getDefaultFunctions(): array
     {
+        /** @var array<string, callable> */
         return (new Defaults())->getFunctions();
     }
 

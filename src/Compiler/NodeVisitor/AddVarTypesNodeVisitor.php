@@ -100,10 +100,10 @@ final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements Variab
                 $variableType = $variableType->getStaticObjectType();
             }
 
-            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName(), ConstExprStringNode::SINGLE_QUOTED), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
-        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+        $arrayShape = ArrayShapeNode::createSealed($arrayShapeItems);
 
         $newStatements = [];
         $newStatements[] = new Expression(new Assign(new VariableExpr('__variables__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('variables'))), [

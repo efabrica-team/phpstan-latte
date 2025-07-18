@@ -4,4 +4,6 @@ namespace Latte\Runtime;
 
 class Html implements HtmlStringable
 {
+
+
 }

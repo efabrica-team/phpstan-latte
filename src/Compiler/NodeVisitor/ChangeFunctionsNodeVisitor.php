@@ -53,6 +53,7 @@ use PHPStan\Type\ThisType;
 use ReflectionFunction;
 use ReflectionNamedType;
 use ReflectionParameter;
+use function is_string;
 
 final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
@@ -161,14 +162,14 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
                 $variableType = $variableType->getStaticObjectType();
             }
 
-            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName(), ConstExprStringNode::SINGLE_QUOTED), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
         if ($arrayShapeItems === []) {
             return;
         }
 
-        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+        $arrayShape = ArrayShapeNode::createSealed($arrayShapeItems);
 
         $variableStatements = [];
         $variableStatements[] = new Expression(new Assign(new VariableExpr('__functions__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('functions'))), [
@@ -209,7 +210,7 @@ final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements Fu
             $className = is_string($function[0]) ? $function[0] : get_class($function[0]);
             $methodName = $function[1];
 
-            if ($methodName === '') {
+            if (!is_string($methodName) || $methodName === '') {
                 continue;
             }
 

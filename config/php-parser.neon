@@ -4,14 +4,14 @@ services:
         arguments!: []
 
     cachedParser:
-        factory: PHPStan\Parser\CachedParser
+        class: PHPStan\Parser\CachedParser
         arguments:
             originalParser: @customParser
             cachedNodesByStringCountMax: 128
         autowired: false
 
     pathRoutingParser:
-        factory: PHPStan\Parser\PathRoutingParser
+        class: PHPStan\Parser\PathRoutingParser
         arguments:
             currentPhpVersionRichParser: @cachedParser
             currentPhpVersionSimpleParser: @cachedParser
@@ -19,8 +19,7 @@ services:
         autowired: false
 
     customParser:
-        factory: PHPStan\Parser\RichParser
+        class: PHPStan\Parser\RichParser
         arguments:
             parser: @currentPhpVersionPhpParser
-            lexer: @currentPhpVersionLexer
         autowired: false

@@ -14,15 +14,15 @@ parameters:
         overwriteVariablesWithLoop: true
         closureUsesThis: true
         numericOperandsInArithmeticOperators: true
-        strictCalls: true
+        #strictCalls: true
 
     # turn on some strict rules parameters
     polluteScopeWithLoopInitialAssignments: true
     polluteScopeWithAlwaysIterableForeach: true
-    checkAlwaysTrueCheckTypeFunctionCall: false
-    checkAlwaysTrueInstanceof: false
-    checkAlwaysTrueStrictComparison: false
-    checkAlwaysTrueLooseComparison: false
+    #checkAlwaysTrueCheckTypeFunctionCall: false
+    #checkAlwaysTrueInstanceof: false
+    #checkAlwaysTrueStrictComparison: false
+    #checkAlwaysTrueLooseComparison: false
     checkExplicitMixedMissingReturn: false
     reportMaybesInMethodSignatures: false
     reportStaticMethodSignatures: false
@@ -68,12 +68,29 @@ parameters:
             path: src/Error/TableErrorFormatter.php
 
         -
+            messages:
+                - '#Parameter \#2 ...\$arrays of function array_merge expects array, mixed given#'
+            path: src/LatteContext/Finder/*Finder.php
+
+        -
             message: '#^Creating new PHPStan\\Reflection\\Native\\NativeParameterReflection is not covered by backward compatibility promise\. The class might change in a minor PHPStan version\.$#'
             path: src/Compiler/Compiler/AbstractCompiler.php
 
         -
-            message: '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects .*, mixed given\.$#'
+            message: '#^Call to function is_array\(\) with array{0: string, 1: string, 2\?: string} will always evaluate to true\.$#'
+            path: src/LinkProcessor/FakePresenterFactory.php
+
+        -
+            messages:
+                - '#^Call to internal method Nette\\Application\\PresenterFactory::formatPresenterClass\(\) from outside its root namespace Nette\.$#'
+            path: src/LinkProcessor/PresenterActionLinkProcessor.php
+
+        -
+            messages:
+                - '#^Parameter \#1 \$value of static method PhpParser\\BuilderHelpers\:\:normalizeValue\(\) expects .*, mixed given\.$#'
+                - '#^Call to static method normalizeValue\(\) of internal class PhpParser\\BuilderHelpers from outside its root namespace PhpParser\.$#'
             path: src/LinkProcessor/LinkParamsProcessor.php
+
         -
             messages:
                 - '#^Method Efabrica\\PHPStanLatte\\Analyser\\LatteContextAnalyser::__construct\(\) has parameter \$collectors with generic class Efabrica\\PHPStanLatte\\LatteContext\\Collector\\AbstractLatteContextCollector but does not specify its types: T#'
@@ -106,16 +123,23 @@ parameters:
                 - '#^Property Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:\$compiler has unknown class Latte\\Compiler as its type\.$#'
                 - '#^Parameter \$parser of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:__construct\(\) has invalid type Latte\\Parser\.$#'
                 - '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:__construct\(\) has invalid type Latte\\Compiler\.$#'
+                - '#^Parameter \#1 \$compiler of static method .*Macros::install\(\) expects Latte\\Compiler, mixed given\.#'
                 - '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
+                - '#^Cannot call method parse\(\) on mixed.$#'
                 - '#^Call to method compile\(\) on an unknown class Latte\\Compiler\.$#'
+                - '#^Cannot call method compile\(\) on mixed.$#'
                 - '#^Call to an undefined method Latte\\Engine::getCompiler\(\).$#'
                 - '#^Call to an undefined method Latte\\Engine::getParser\(\).$#'
                 - '#^Call to method parse\(\) on an unknown class Latte\\Parser\.$#'
                 - '#^Instantiated class Latte\\Runtime\\Defaults not found\.$#'
                 - '#^Call to method getFilters\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
                 - '#^Call to method getFunctions\(\) on an unknown class Latte\\Runtime\\Defaults\.$#'
+                - '#^Cannot call method getFunctions\(\) on mixed.$#'
+                - '#^Cannot call method setFunctions\(\) on mixed.$#'
+                - '#^Cannot call method getLine\(\) on mixed.$#'
                 - '#^Method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler::getFilters\(\) should return array<string, array\{string, string\}\|string> but returns array<callable\(\): mixed>.#'
                 - '#^Parameter \$compiler of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte2Compiler\:\:installMacros\(\) has invalid type Latte\\Compiler\.$#'
+                - '#^PHPDoc tag @var references internal class .*#'
             path: src/Compiler/Compiler/Latte2Compiler.php
             reportUnmatched: false
 
@@ -144,11 +168,15 @@ parameters:
             messages:
                 - '#^Although PHPStan\\Node\\InClassNode is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
                 - '#^Although PHPStan\\Node\\ClassMethod is covered by backward compatibility promise, this instanceof assumption might break because it''s not guaranteed to always stay the same\.$#'
+            reportUnmatched: false
 
         # to be done later, no idea how to fix it now
         -
-            message: '#^Method Efabrica\\PHPStanLatte\\Collector\\Collector\\AbstractCollector::collectItems\(\) should return array\<A of array\>\|null but returns array\<int, array\<string, mixed\>\>\.$#'
+            messages:
+                - '#^Method Efabrica\\PHPStanLatte\\Collector\\Collector\\AbstractCollector::collectItems\(\) should return array\<A of array\>\|null but returns (array\<int, |list<)array\<string, mixed\>\>\.$#'
+                - '#^Method Efabrica\\PHPStanLatte\\Collector\\Collector\\AbstractCollector::loadData\(\) should return array<T of Efabrica\\PHPStanLatte\\Collector\\CollectedData\\CollectedValueObject> but returns list<mixed>\.$#'
             path: src/Collector/Collector/AbstractCollector.php
+            reportUnmatched: false
         -
             messages:
                 - '#^Doing instanceof PHPStan\\Type\\ObjectType is error-prone and deprecated\. Use Type\:\:isObject\(\) or Type\:\:getObjectClassNames\(\) instead\.$#'

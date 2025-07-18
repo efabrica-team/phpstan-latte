@@ -51,9 +51,6 @@ final class CalledClassResolver
         if ($node->var instanceof Variable && is_string($node->var->name) && $node->var->name === 'this') {
             return 'this';
         } else {
-            if ($node->var === null) {
-                return null;
-            }
             $callerType = $scope->getType($node->var);
             $callerClassNames = $callerType->getObjectClassNames();
             return $callerClassNames[0] ?? null;

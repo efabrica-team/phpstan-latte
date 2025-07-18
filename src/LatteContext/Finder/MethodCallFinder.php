@@ -192,6 +192,7 @@ final class MethodCallFinder
             /** @var class-string $declaringClass */
             return array_merge($this->findCalledOfType($declaringClass, $methodName, $type), ...$fromCalled);
         };
+        /** @var CollectedMethodCall[] */
         return $this->traverseCalled($callback, $className, $methodName);
     }
 
@@ -205,6 +206,7 @@ final class MethodCallFinder
             /** @var class-string $declaringClass */
             return array_merge($this->findAlwaysCalledOfType($declaringClass, $methodName, $type), ...$fromCalled);
         };
+        /** @var CollectedMethodCall[] */
         return $this->traverseAlwaysCalled($callback, $className, $methodName);
     }
 
