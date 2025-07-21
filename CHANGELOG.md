@@ -1,8 +1,13 @@
 # Change Log
 
-## [Unreleased][unreleased]
+## [0.18] - 2025-07-22
+### Updated
+- Compatibility with PHPStan 2.x (**BC break**)
+- Dropped support of PHPStan 1.x (**BC break**)
+
+## [0.17.2] - 2025-07-21
 ### Fixed
-- Compatibility with new Latte versions
+- Maintenance release
 
 ## [0.17.1] - 2024-07-18
 ### Updated

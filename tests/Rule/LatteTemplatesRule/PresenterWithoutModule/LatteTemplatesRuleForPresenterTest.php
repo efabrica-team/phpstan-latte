@@ -1683,52 +1683,61 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testSnippets(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], [
+        $expectedErrors = [
             [
-                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach ' . (LatteVersion::isLatte3() ? '(on line 3 at column 6)' : '(on line 3)'),
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+        ];
+        if (LatteVersion::isLatte3()) {
+            $expectedErrors[] = [
+                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach (on line 3 at column 6)',
                 3,
                 'compileError.latte',
-            ],
-            [
-                'Undefined variable: $title',
-                7,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $title',
-                7,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $neverDefined',
-                10,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $neverDefined',
-                10,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "header" probably doesn\'t exist.',
-                11,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "header" probably doesn\'t exist.',
-                11,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "footer" probably doesn\'t exist.',
-                13,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "footer" probably doesn\'t exist.',
-                13,
-                '@layout.latte',
-            ],
-        ]);
+            ];
+        } else {
+            $expectedErrors[] = [
+                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach (on line 3)',
+                3,
+                'compileError.latte',
+            ];
+        }
+        $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], $expectedErrors);
     }
 }

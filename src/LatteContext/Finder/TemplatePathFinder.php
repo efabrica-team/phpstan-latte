@@ -87,6 +87,7 @@ final class TemplatePathFinder
     private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
+            /** @var array<array<string>> $fromCalled */
             return array_merge($this->collectedTemplatePaths[$declaringClass][$methodName] ?? [], ...$fromCalled);
         };
         /** @var array<string> */

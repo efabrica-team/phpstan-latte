@@ -79,6 +79,7 @@ final class LatteToPhpCompiler
         }
 
         $phpContent = $this->compiler->compile($templateContent, $template->getActualClass(), $context);
+        file_put_contents($compileFilePath . '.original', $phpContent);
         return $this->postprocessor->postProcess($phpContent, $template, $compileFilePath);
     }
 

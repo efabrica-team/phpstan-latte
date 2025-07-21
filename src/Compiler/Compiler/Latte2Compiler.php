@@ -12,7 +12,7 @@ use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
 use ReflectionClass;
 use ReflectionException;
-use function is_string;
+use function is_int;
 
 final class Latte2Compiler extends AbstractCompiler
 {
@@ -63,11 +63,8 @@ final class Latte2Compiler extends AbstractCompiler
                 ? $compiler->getLine()
                 : $parser->getLine();
 
-            $e->setSource($templateContent, is_string($line) ? $line : null, '');
+            $e->setSource($templateContent, is_int($line) ? $line : null, '');
             throw $e;
-        }
-        if (!is_string($phpContent)) {
-            throw new CompileException('Compiler did not return a string.');
         }
         $phpContent = $this->fixLines($phpContent);
         $phpContent = $this->addTypes($phpContent, $className, $actualClass);

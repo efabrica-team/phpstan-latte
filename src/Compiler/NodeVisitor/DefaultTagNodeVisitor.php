@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor;
 use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\AssignOp\Coalesce;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Ternary;
@@ -74,7 +75,7 @@ final class DefaultTagNodeVisitor extends NodeVisitorAbstract
         $funcCall->args[1]->value = new Variable('__defined_vars__');
 
         return [
-          new Expression(new Node\Expr\Assign(new Variable('__defined_vars__'), $argFuncCall)),
+          new Expression(new Assign(new Variable('__defined_vars__'), $argFuncCall)),
           $node,
         ];
     }

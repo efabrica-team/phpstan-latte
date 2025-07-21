@@ -34,7 +34,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-text
 
       - name: Debugging artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: compiled-templates-php${{ matrix.php }}
