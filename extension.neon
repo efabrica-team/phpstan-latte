@@ -154,6 +154,7 @@ services:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage
         setup:
             # no scope node visitors
+            - addNodeVisitor(40, Efabrica\PHPStanLatte\Compiler\NodeVisitor\DefaultTagNodeVisitor())
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor(parser: @latteCurrentPhpVersionRichParser))
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CopyDefinedVarsToOtherMethodsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor())

@@ -21,6 +21,8 @@ use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\UnionType;
 use ReflectionMethod;
+use function is_callable;
+use function method_exists;
 
 final class ValueResolver
 {
@@ -93,15 +95,17 @@ final class ValueResolver
 
                 $args = $expr->getArgs();
                 $arguments = [];
+                $argsValid = true;
                 foreach ($args as $arg) {
                     $options = $this->resolve($arg->value, $scope);
                     if ($options === null || count($options) !== 1) {
-                        throw new ConstExprEvaluationException();
+                        $argsValid = false;
+                    } else {
+                        $arguments[] = $options[0];
                     }
-                    $arguments[] = $options[0];
                 }
 
-                if (function_exists($functionName)) {
+                if ($argsValid && function_exists($functionName)) {
                     return call_user_func_array($functionName, $arguments);
                 }
             }
@@ -112,10 +116,10 @@ final class ValueResolver
 
                 $classReflection = $scope->getClassReflection();
 
-                if($classReflection) {
-                    if($className === 'self' || $className === 'static') {
+                if ($classReflection) {
+                    if ($className === 'self' || $className === 'static') {
                         $className = $classReflection->getName();
-                    } elseif($className === 'parent' && $classReflection->getParentClass()) {
+                    } elseif ($className === 'parent' && $classReflection->getParentClass()) {
                         $className = $classReflection->getParentClass()->getName();
                     }
                 }
@@ -124,17 +128,19 @@ final class ValueResolver
 
                 $args = $expr->getArgs();
                 $arguments = [];
-                foreach($args as $arg) {
+                $argsValid = true;
+                foreach ($args as $arg) {
                     $options = $this->resolve($arg->value, $scope);
-                    if($options === null || count($options) !== 1) {
-                        throw new ConstExprEvaluationException();
+                    if ($options === null || count($options) !== 1) {
+                        $argsValid = false;
+                    } else {
+                        $arguments[] = $options[0];
                     }
-                    $arguments[] = $options[0];
                 }
 
-                if(\method_exists($className, $methodName) && \is_callable($callable)) {
+                if ($argsValid && method_exists($className, $methodName) && is_callable($callable)) {
                     $ref = new ReflectionMethod($className, $methodName);
-                    if($ref->isPublic()) {
+                    if ($ref->isPublic()) {
                         return call_user_func_array($callable, $arguments);
                     }
                 }
