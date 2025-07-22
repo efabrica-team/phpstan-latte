@@ -81,10 +81,6 @@ final class ChangeExtractArrayToVarTypesNodeVisitor extends NodeVisitorAbstract 
 
         $items = [];
         foreach ($firstArg->items as $item) {
-            if ($item === null) {
-                continue;
-            }
-
             if (!$item->key instanceof String_) {
                 continue;
             }

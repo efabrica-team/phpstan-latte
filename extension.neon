@@ -5,6 +5,7 @@ parameters:
         - stubs/Latte/Essential/Filters.stub
         - stubs/Latte/Runtime/FilterInfo.stub
         - stubs/Latte/Runtime/Filters.stub
+        - stubs/Latte/Runtime/Helpers.stub
         - stubs/Latte/Runtime/HtmlStringable.stub
         - stubs/Latte/Runtime/Html.stub
         - stubs/Nette/HtmlStringable.stub
@@ -83,6 +84,8 @@ services:
             cachedNodesByStringCountMax: 128
         autowired: no
 
+    - PhpParser\PrettyPrinter\Standard
+
     phpstanLatteCompiler:
         class: Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface
         factory: @Efabrica\PHPStanLatte\Compiler\Compiler\CompilerFactory::create
@@ -151,12 +154,12 @@ services:
         factory: Efabrica\PHPStanLatte\Compiler\NodeVisitor\NodeVisitorStorage
         setup:
             # no scope node visitors
+            - addNodeVisitor(40, Efabrica\PHPStanLatte\Compiler\NodeVisitor\DefaultTagNodeVisitor())
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddParametersForBlockNodeVisitor(parser: @latteCurrentPhpVersionRichParser))
             - addNodeVisitor(50, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CopyDefinedVarsToOtherMethodsNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddTypeToComponentNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddVarTypesNodeVisitor(%latte.globalVariables%))
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeExtractArrayToVarTypesNodeVisitor(%latte.globalVariables%))
-            - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RenderBlockNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeLifArrayToLifVariableNodeVisitor())
             - addNodeVisitor(100, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CastObGetFlushToStringNodeVisitor())
@@ -166,6 +169,7 @@ services:
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\LinkNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeNotNullToEqualsNullNodeVisitor())
             - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ChangeGetParentNameToCompareWithNullNodeVisitor())
+            - addNodeVisitor(200, Efabrica\PHPStanLatte\Compiler\NodeVisitor\RemoveExtractNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\AddFormClassesNodeVisitor())
             - addNodeVisitor(300, Efabrica\PHPStanLatte\Compiler\NodeVisitor\ReportNonExistingFieldOptionNodeVisitor())
             - addNodeVisitor(9900, Efabrica\PHPStanLatte\Compiler\NodeVisitor\CleanupNodeVisitor())

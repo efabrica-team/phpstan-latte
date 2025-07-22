@@ -52,9 +52,6 @@ final class LinkParamsProcessor
             }
 
             foreach ($paramValue->items as $arrayItem) {
-                if (!$arrayItem instanceof ArrayItem) {
-                    continue;
-                }
                 $key = $arrayItem->key;
                 if ($key instanceof String_) {
                     $transferredParamName = $key->value;
@@ -63,10 +60,10 @@ final class LinkParamsProcessor
                         continue;
                     }
                     $arrayItem = new ArrayItem($arrayItem->value, null, $arrayItem->byRef, $arrayItem->getAttributes());
-                    $transferredParams[$key->value] = new Arg($arrayItem);
+                    $transferredParams[$key->value] = new Arg($arrayItem->value);
                     continue;
                 }
-                $transferredParams[] = new Arg($arrayItem);
+                $transferredParams[] = new Arg($arrayItem->value);
             }
         }
 

@@ -12,6 +12,7 @@ use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
+use function is_string;
 
 final class TableErrorFormatter implements ErrorFormatter
 {
@@ -75,7 +76,7 @@ final class TableErrorFormatter implements ErrorFormatter
             }
 
             $compiledTemplatePath = $metaData['compiled_template_path'] ?? null;
-            if (($output->isVerbose() || $output->isDebug()) && $compiledTemplatePath !== null) {
+            if (($output->isVerbose() || $output->isDebug()) && is_string($compiledTemplatePath)) {
                 $compiledTemplateRealPath = realpath($compiledTemplatePath) ?: null;
                 if ($compiledTemplateRealPath) {
                     $key .= "\n" . 'See compiled template: ' . $this->relativePathHelper->getRelativePath(realpath($compiledTemplatePath) ?: '');

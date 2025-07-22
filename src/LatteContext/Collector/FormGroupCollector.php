@@ -56,10 +56,6 @@ final class FormGroupCollector extends AbstractLatteContextCollector
             return null;
         }
 
-        if (!$node instanceof MethodCall) {
-            return null;
-        }
-
         $formType = $scope->getType($node->var);
         if (!(new ObjectType('Nette\Forms\Form'))->isSuperTypeOf($formType)->yes()) {
             return null;

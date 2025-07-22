@@ -80,6 +80,7 @@ abstract class AbstractCompiler implements CompilerInterface
 
     protected function addTypes(string $phpContent, string $className, ?string $actualClass): string
     {
+        /** @var array<string, mixed> $providers */
         $providers = $this->engine->getProviders();
         $providers['uiControl'] = new ObjectType($actualClass ?? 'Nette\Application\UI\Control');
         $providers['uiPresenter'] = new ObjectType($actualClass ?? 'Nette\Application\UI\Presenter');

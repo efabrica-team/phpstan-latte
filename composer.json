@@ -7,8 +7,9 @@
     "require": {
         "php": ">=7.4 <8.4",
         "ext-json": "*",
-        "phpstan/phpstan": "^1.12.13",
-        "phpstan/phpstan-nette": "^1.2.6",
+        "phpstan/phpstan": "^2.1.0",
+        "phpstan/phpdoc-parser": "^2.1.0",
+        "phpstan/phpstan-nette": "^2.0",
         "latte/latte": "^2.11.6 | ^3.0.4",
         "nette/utils": "^3.2|^4.0",
         "nette/finder": "^2.5|^3.0"
@@ -17,10 +18,10 @@
         "phpunit/phpunit": "^9.5",
         "nette/application": "^3.1.6",
         "nette/forms": "^3.1.12",
-        "nikic/php-parser": "^4.19",
+        "nikic/php-parser": "^5.5",
         "efabrica/coding-standard": "^0.7",
-        "phpstan/phpstan-strict-rules": "^1.4",
-        "spaze/phpstan-disallowed-calls": "^2.11 | ^3.0"
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "spaze/phpstan-disallowed-calls": "^2.11|^3.0|^4.0"
     },
     "extra": {
         "phpstan": {

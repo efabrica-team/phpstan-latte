@@ -16,6 +16,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Reflection\ReflectionProvider;
+use function is_string;
 
 final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {
@@ -85,10 +86,9 @@ final class PresenterActionLinkProcessor implements LinkProcessorInterface
                     throw new LinkProcessorException('PresenterFactory does not have method unformatPresenterClass');
                 }
                 $actualClass = @$presenterFactory->unformatPresenterClass($this->actualClass);
-                if ($actualClass === null) {
+                if (!is_string($actualClass)) {
                     return [];
                 }
-
                 if ($targetNamePartsCount === 1) { // action
                     $newTarget = $actualClass . ':' . $targetName;
                 } elseif ($targetNamePartsCount === 2) { // presenter:action

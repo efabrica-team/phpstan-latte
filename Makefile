@@ -3,7 +3,7 @@
 build: cs tests phpstan
 
 tests:
-	php vendor/bin/phpunit
+	rm -rf tmp/* && php vendor/bin/phpunit
 
 cs:
 	vendor/bin/phpcs src tests --standard=vendor/efabrica/coding-standard/eFabrica --extensions="php" -n

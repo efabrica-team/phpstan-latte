@@ -85,6 +85,7 @@ final class FilterFinder
             );
              return array_merge($filters, ...$fromCalled);
         };
+        /** @var Filter[] */
         return $this->methodCallFinder->traverseCalled($callback, $className, $methodName, $currentClassName);
     }
 }

@@ -8,7 +8,6 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\BinaryOp\Plus;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -118,9 +117,6 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
 
         $params = [];
         foreach ($parameters as $param) {
-            if (!$param instanceof ArrayItem) {
-                continue;
-            }
             if (!$param->key instanceof String_) {
                 $params[] = $param->value;
                 continue;
@@ -131,9 +127,6 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
         $methodCallArgs = [];
         $blockMethodParamDefaults = [];
         foreach ($blockMethodParams as $pos => $blockMethodParam) {
-            if (!$blockMethodParam instanceof Param) {
-                continue;
-            }
             if (!$blockMethodParam->var instanceof Variable) {
                 continue;
             }

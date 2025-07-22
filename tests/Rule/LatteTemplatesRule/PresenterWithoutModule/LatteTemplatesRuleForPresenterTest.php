@@ -187,11 +187,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ],
             [
-                'Only booleans are allowed in an if condition, string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                100,
-                'default.latte',
-            ],
-            [
                 'Undefined variable: $fromRenderDefault',
                 8,
                 'other.latte',
@@ -230,11 +225,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'Undefined variable: $nonExistingVariable',
                 4,
                 'parent.latte',
-            ],
-            [
-                'Only booleans are allowed in a ternary operator condition, int|false given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                30,
-                'specialConstructs.latte',
             ],
             [
                 'Undefined variable: $nonExistingVariable',
@@ -811,27 +801,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 55,
                 'default.latte',
             ];
-        } else {
-            $expectedErrors[] = [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                10,
-                'default.latte',
-            ];
-            $expectedErrors[] = [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                11,
-                'default.latte',
-            ];
-            $expectedErrors[] = [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                12,
-                'default.latte',
-            ];
-            $expectedErrors[] = [
-                'Only booleans are allowed in an if condition, Nette\Utils\Html|string|null given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                54,
-                'default.latte',
-            ];
         }
         $this->analyse([__DIR__ . '/Fixtures/FormsPresenter.php'], $expectedErrors);
     }
@@ -965,7 +934,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ];
             $expectedErrors[] = [
-                'Parameter #1 $value of static method Latte\Essential\Filters::slice() expects array|string, string|null given.',
+                'Parameter #1 $value of static method Latte\Essential\Filters::slice() expects array<mixed>|string, string|null given.',
                 22,
                 'default.latte',
             ];
@@ -1004,7 +973,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ];
             $expectedErrors[] = [
-                'Parameter #1 $value of static method Latte\Runtime\Filters::slice() expects array|string, string|null given.',
+                'Parameter #1 $value of static method Latte\Runtime\Filters::slice() expects array<mixed>|string, string|null given.',
                 22,
                 'default.latte',
             ];
@@ -1137,11 +1106,6 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             [
                 'Method ' . LinksPresenter::class . '::handleDelete() invoked with 2 parameters, 1 required.',
                 98,
-                'default.latte',
-            ],
-            [
-                'Only booleans are allowed in a ternary operator condition, int|false given.', // Should be removed after issue https://github.com/efabrica-team/phpstan-latte/issues/444 is resolved
-                102,
                 'default.latte',
             ],
             [
@@ -1719,52 +1683,61 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 
     public function testSnippets(): void
     {
-        $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], [
+        $expectedErrors = [
             [
-                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach ' . (LatteVersion::isLatte3() ? '(on line 3 at column 6)' : '(on line 3)'),
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $title',
+                7,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Undefined variable: $neverDefined',
+                10,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "header" probably doesn\'t exist.',
+                11,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+            [
+                'Component with name "footer" probably doesn\'t exist.',
+                13,
+                '@layout.latte',
+            ],
+        ];
+        if (LatteVersion::isLatte3()) {
+            $expectedErrors[] = [
+                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach (on line 3 at column 6)',
                 3,
                 'compileError.latte',
-            ],
-            [
-                'Undefined variable: $title',
-                7,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $title',
-                7,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $neverDefined',
-                10,
-                '@layout.latte',
-            ],
-            [
-                'Undefined variable: $neverDefined',
-                10,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "header" probably doesn\'t exist.',
-                11,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "header" probably doesn\'t exist.',
-                11,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "footer" probably doesn\'t exist.',
-                13,
-                '@layout.latte',
-            ],
-            [
-                'Component with name "footer" probably doesn\'t exist.',
-                13,
-                '@layout.latte',
-            ],
-        ]);
+            ];
+        } else {
+            $expectedErrors[] = [
+                'Combination of n:snippet with n:foreach is invalid, use n:inner-foreach (on line 3)',
+                3,
+                'compileError.latte',
+            ];
+        }
+        $this->analyse([__DIR__ . '/Fixtures/SnippetsPresenter.php'], $expectedErrors);
     }
 }

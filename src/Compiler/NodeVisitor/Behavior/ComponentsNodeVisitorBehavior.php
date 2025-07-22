@@ -10,8 +10,8 @@ use PhpParser\ConstExprEvaluator;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\InterpolatedStringPart;
 use PhpParser\Node\Scalar\Encapsed;
-use PhpParser\Node\Scalar\EncapsedStringPart;
 
 trait ComponentsNodeVisitorBehavior
 {
@@ -67,13 +67,13 @@ trait ComponentsNodeVisitorBehavior
             if ($expr instanceof Encapsed) {
                 $result = [];
                 foreach ($expr->parts as $part) {
-                    $result[] = $this->evaluateComponentName($part);
+                    if ($part instanceof InterpolatedStringPart) {
+                        $result[] = $part->value;
+                    } else {
+                        $result[] = $this->evaluateComponentName($part);
+                    }
                 }
                 return implode('', $result);
-            }
-
-            if ($expr instanceof EncapsedStringPart) {
-                return $expr->value;
             }
 
             throw new ConstExprEvaluationException();

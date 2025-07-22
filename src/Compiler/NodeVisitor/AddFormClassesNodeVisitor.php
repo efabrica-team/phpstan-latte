@@ -302,7 +302,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
             /** @var MethodCall $methodCallExpr */
             $methodCallExpr = $node->exprs[0];
             $methodCallVar = $methodCallExpr->var;
-            $methodCalls[] = $methodCallExpr;
+            $methodCalls = [$methodCallExpr];
             while ($methodCallVar instanceof MethodCall) {
                 $methodCalls[] = $methodCallVar;
                 $methodCallVar = $methodCallVar->var;
@@ -389,6 +389,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
     {
         $rootParentNode = $node;
         while (true) {
+            /** @var ?Node $parentNode */
             $parentNode = $rootParentNode->getAttribute('parent');
             if ($parentNode === null) {
                 throw new ShouldNotHappenException('Could not find parent statement.');
@@ -419,14 +420,14 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
 
                 $arrayShapeItems = [];
                 foreach ($this->formClassNames as $formName => $form) {
-                    $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($formName), false, (new ConstantStringType($form))->toPhpDocNode());
+                    $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($formName, ConstExprStringNode::SINGLE_QUOTED), false, (new ConstantStringType($form))->toPhpDocNode());
                 }
-                $arrayShape = new ArrayShapeNode($arrayShapeItems);
+                $arrayShape = ArrayShapeNode::createSealed($arrayShapeItems);
                 $node->stmts[] = new Property(StmtClass_::MODIFIER_PUBLIC, [
                     new PropertyProperty('formNamesToFormClasses'),
                 ], [
                     'comments' => [new Doc('/** @var ' . $arrayShape->__toString() . ' */')],
-                ], 'array');
+                ], new Name('array'));
                 break;
             }
         }

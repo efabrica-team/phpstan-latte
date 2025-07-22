@@ -52,6 +52,7 @@ use PHPStan\Type\ThisType;
 use ReflectionFunction;
 use ReflectionNamedType;
 use ReflectionParameter;
+use function is_string;
 
 final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements FiltersNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {
@@ -153,14 +154,14 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
                 $variableType = $variableType->getStaticObjectType();
             }
 
-            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName()), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
+            $arrayShapeItems[] = new ArrayShapeItemNode(new ConstExprStringNode($variable->getName(), ConstExprStringNode::SINGLE_QUOTED), $variable->mightBeUndefined(), $variableType->toPhpDocNode());
         }
 
         if ($arrayShapeItems === []) {
             return;
         }
 
-        $arrayShape = new ArrayShapeNode($arrayShapeItems);
+        $arrayShape = ArrayShapeNode::createSealed($arrayShapeItems);
 
         $variableStatements = [];
         $variableStatements[] = new Expression(new Assign(new VariableExpr('__filters__'), new ArrayDimFetch(new PropertyFetch(new VariableExpr('this'), 'params'), new String_('filters'))), [
@@ -201,7 +202,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             $className = is_string($filter[0]) ? $filter[0] : get_class($filter[0]);
             $methodName = $filter[1];
 
-            if ($methodName === '') {
+            if (!is_string($methodName) || $methodName === '') {
                 continue;
             }
 

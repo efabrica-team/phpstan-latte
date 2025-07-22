@@ -9,7 +9,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
-use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 
 final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
@@ -42,6 +42,6 @@ final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        return NodeTraverser::REMOVE_NODE;
+        return NodeVisitor::REMOVE_NODE;
     }
 }

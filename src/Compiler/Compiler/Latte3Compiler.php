@@ -30,12 +30,16 @@ final class Latte3Compiler extends AbstractCompiler
 
     public function getFilters(): array
     {
-        return array_merge($this->engine->getFilters(), $this->filters);
+        /** @var array<string, callable> $engineFilters */
+        $engineFilters = $this->engine->getFilters();
+        return array_merge($engineFilters, $this->filters);
     }
 
     public function getFunctions(): array
     {
-        return array_merge($this->engine->getFunctions(), $this->functions);
+        /** @var array<string, callable> $engineFunctions */
+        $engineFunctions = $this->engine->getFunctions();
+        return array_merge($engineFunctions, $this->functions);
     }
 
     protected function createDefaultEngine(): Engine

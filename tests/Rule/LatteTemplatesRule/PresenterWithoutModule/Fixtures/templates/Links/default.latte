@@ -2,9 +2,9 @@
 
 <h2>Create</h2>
 <a href="{link create}" n:attr="aa => xxx, bb => yyy">Only create</a>
-<a href="{link Links:create}" n:attr="aa, bb">Create with presenter</a>
+<a href="{link Links:create}" n:attr="aa: 1, bb: 1">Create with presenter</a>
 
-<a href="{link create, 'extra-argument'}" n:attr="[aa, bb]">Only create with extra argument</a>
+<a href="{link create, 'extra-argument'}" n:attr="aa => 1, bb => 1">Only create with extra argument</a>
 <a href="{link Links:create, 'extra-argument'}">Create with presenter with extra argument</a>
 
 <a href="{link create, ['extra' => 'argument']}">Only create with extra argument as array</a>
@@ -98,6 +98,6 @@
 <a href="{link delete!, 'my-id', 'extra param'}">Extra param in handle link</a>
 <a href="{link delete!, id: 'my-id', extra: 'extra param'}">Extra named param in handle link</a>
 
-<a n:href="Links:create" n:attr="aa, bb">Create with presenter via n:href</a>
+<a n:href="Links:create" n:attr="aa: 1, bb: 1">Create with presenter via n:href</a>
 {capture $linksCreate}Links:create{/capture}
-<a n:href="$linksCreate" n:attr="aa, bb">Create with presenter via n:href</a>
+<a n:href="$linksCreate" n:attr="aa: 1, bb: 1">Create with presenter via n:href</a>
