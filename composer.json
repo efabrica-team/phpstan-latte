@@ -5,7 +5,7 @@
         "static analysis"
     ],
     "require": {
-        "php": ">=7.4 <8.4",
+        "php": ">=7.4 <8.5",
         "ext-json": "*",
         "phpstan/phpstan": "^2.1.0",
         "phpstan/phpdoc-parser": "^2.1.0",
