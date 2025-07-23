@@ -1,4 +1,4 @@
-{$explicitParam}
+{$explicitParam} {* ERROR: Cannot convert Placeholder\VarParentCall to HTML string. *}
 {php \PHPStan\dumpType($myVar)} {* ERROR: Dumped type: Placeholder\VarParentCall *}
 {php \PHPStan\dumpType($callVar)} {* ERROR: Dumped type: Placeholder\VarParentCall *}
 {php \PHPStan\dumpType($classVar)} {* ERROR: Dumped type: Placeholder\VarParentClass *}

@@ -409,6 +409,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 14,
                 'default.latte',
             ],
+            [
+                'Cannot convert stdClass to HTML string.',
+                16,
+                'default.latte',
+            ],
         ]);
     }
 
@@ -523,6 +528,40 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
             [
                 'Dumped type: int',
                 3,
+                'default.latte',
+            ],
+        ]);
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnums(): void
+    {
+        $this->analyse([__DIR__ . '/Fixtures/Enums/SomeControl.php', __DIR__ . '/Source/EnumSomething.php'], [
+            [
+                'Cannot convert Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Source\EnumSomething::Foo to HTML string.',
+                1,
+                'default.latte',
+            ],
+            [
+                'Cannot convert Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Source\EnumSomething::Foo to HTML string.',
+                3,
+                'default.latte',
+            ],
+            [
+                'Access to undefined constant Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Source\EnumSomething::Bar.',
+                5,
+                'default.latte',
+            ],
+            [
+                'Access to undefined constant Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Source\EnumSomething::Bar.',
+                6,
+                'default.latte',
+            ],
+            [
+                'Cannot access property $value on mixed.',
+                6,
                 'default.latte',
             ],
         ]);

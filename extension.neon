@@ -241,6 +241,7 @@ services:
     - Efabrica\PHPStanLatte\Error\Transformer\CallActionWithParametersMissingCorrespondingMethodErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\BlockParameterErrorTransformer
     - Efabrica\PHPStanLatte\Error\Transformer\RemoveTipAboutPhpDocErrorTransformer
+    - Efabrica\PHPStanLatte\Error\Transformer\EscapeErrorTransformer
 
     errorFormatter.table!:
         class: Efabrica\PHPStanLatte\Error\TableErrorFormatter

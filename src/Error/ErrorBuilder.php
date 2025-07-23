@@ -65,6 +65,8 @@ final class ErrorBuilder
         '/PHPDoc tag @var for variable \$__variables__ contains unknown class .*/',
         '/Casting to .* something that\'s already .*/',
         '/Only booleans are allowed in .* condition.*/',
+        '/Parameter #1 \$s of static method Latte\\\\(Runtime|Essentials)\\\\Filters::escapeHtmlText\(\) expects .* mixed given\./',
+        '/Cannot convert mixed to .*\./',
     ];
 
     /** @var string[] */

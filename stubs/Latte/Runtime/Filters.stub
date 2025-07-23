@@ -21,6 +21,13 @@ class Filters
     /**
      * @param FilterString $s
      */
+    public static function escapeHtmlText($s): string
+    {
+    }
+
+    /**
+     * @param FilterString $s
+     */
     public static function escapeHtmlComment($s): string
     {
     }
