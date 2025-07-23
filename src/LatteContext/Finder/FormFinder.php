@@ -102,7 +102,7 @@ final class FormFinder
      * @param ?class-string $currentClassName
      * @return CollectedForm[]
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
+    private function findInMethodCalls(string $className, string $methodName, ?string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             $collectedForms = [];

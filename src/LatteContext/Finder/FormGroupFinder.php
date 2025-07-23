@@ -72,7 +72,7 @@ final class FormGroupFinder
      * @param ?class-string $currentClassName
      * @return Group[]
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
+    private function findInMethodCalls(string $className, string $methodName, ?string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName = null) {
             /** @var array<Group[]> $fromCalled */

@@ -63,7 +63,7 @@ final class MethodCallFinder
      * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
-    public function findCalled(string $className, string $methodName, string $currentClassName = null): array
+    public function findCalled(string $className, string $methodName, ?string $currentClassName = null): array
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -88,7 +88,7 @@ final class MethodCallFinder
      * @param ?class-string $currentClassName
      * @return T[]
      */
-    public function traverseCalled(callable $callback, string $className, string $methodName, string $currentClassName = null): array
+    public function traverseCalled(callable $callback, string $className, string $methodName, ?string $currentClassName = null): array
     {
         return $this->traverseInMethodCalls($callback, $className, $methodName, $currentClassName, false);
     }
@@ -101,7 +101,7 @@ final class MethodCallFinder
      * @param ?class-string $currentClassName
      * @return T[]
      */
-    public function traverseAlwaysCalled(callable $callback, string $className, string $methodName, string $currentClassName = null): array
+    public function traverseAlwaysCalled(callable $callback, string $className, string $methodName, ?string $currentClassName = null): array
     {
         return $this->traverseInMethodCalls($callback, $className, $methodName, $currentClassName, true);
     }
@@ -114,7 +114,7 @@ final class MethodCallFinder
      * @param array<string, array<string, true>> $alreadyFound
      * @return T[]
      */
-    private function traverseInMethodCalls(callable $callback, string $className, string $methodName, string $currentClassName = null, bool $onlyAlwaysCalled = false, array &$alreadyFound = []): array
+    private function traverseInMethodCalls(callable $callback, string $className, string $methodName, ?string $currentClassName = null, bool $onlyAlwaysCalled = false, array &$alreadyFound = []): array
     {
         $declaringClass = $this->getDeclaringClass($className, $methodName);
         if (!$declaringClass) {
@@ -155,7 +155,7 @@ final class MethodCallFinder
      * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
-    public function findCalledOfType(string $className, string $methodName, string $type, string $currentClassName = null): array
+    public function findCalledOfType(string $className, string $methodName, string $type, ?string $currentClassName = null): array
     {
         $calledByType = [];
         foreach ($this->findCalled($className, $methodName, $currentClassName) as $called) {
@@ -171,7 +171,7 @@ final class MethodCallFinder
      * @param ?class-string $currentClassName
      * @return CollectedMethodCall[]
      */
-    public function findAlwaysCalledOfType(string $className, string $methodName, string $type, string $currentClassName = null): array
+    public function findAlwaysCalledOfType(string $className, string $methodName, string $type, ?string $currentClassName = null): array
     {
         $calledByType = [];
         foreach ($this->findCalledOfType($className, $methodName, $type, $currentClassName) as $called) {

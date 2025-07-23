@@ -142,11 +142,11 @@ final class LatteTemplatesRule implements Rule
     /**
      * @param Template[] $templates
      * @param array<?IdentifierRuleError> $errors
-     * @param array<string, int> $alreadyAnalysedInParents
+     * @param array<string, int>|null $alreadyAnalysedInParents
      * @return array<string, Template> path of compiled template => Template
      * @throws ShouldNotHappenException
      */
-    private function compileTemplates(array $templates, array &$errors, array &$alreadyAnalysedInParents = null): array
+    private function compileTemplates(array $templates, array &$errors, ?array &$alreadyAnalysedInParents = null): array
     {
         $compiledTemplates = [];
         foreach ($templates as $template) {
