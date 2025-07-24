@@ -910,6 +910,11 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 10,
                 '@layout.latte',
             ],
+            [
+                'Cannot convert array<mixed>|string to HTML string.',
+                22,
+                'default.latte',
+            ],
         ];
 
         if (LatteVersion::isLatte3()) {

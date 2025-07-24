@@ -29,7 +29,7 @@ jobs:
           coverage: none # disable xdebug, pcov
 
       - name: Check syntax
-        run: find src tests -name "*.php" ! -name "engine.bootstrap-firstClassCallableFilter.php" -print0 | xargs -0 -n1 -P8 php -l
+        run: find src tests -name "*.php" ! -name "engine.bootstrap-firstClassCallableFilter.php" ! -name "EnumSomething.php" -print0 | xargs -0 -n1 -P8 php -l
 
   syntax_checker-81plus:
     runs-on: ubuntu-latest
@@ -51,4 +51,4 @@ jobs:
           coverage: none # disable xdebug, pcov
 
       - name: Check syntax
-        run: find src tests -name "engine.bootstrap-firstClassCallableFilter.php" -print0 | xargs -0 -n1 -P8 php -l
+        run: find src tests -name "engine.bootstrap-firstClassCallableFilter.php" ! -name "EnumSomething.php" -print0 | xargs -0 -n1 -P8 php -l

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl\Fixtures\Variables;
 
 use Nette\Application\UI\Control;
+use stdClass;
 
 final class SomeControl extends Control
 {
@@ -23,6 +24,8 @@ final class SomeControl extends Control
         $dynamic1 = 'e';
         $dynamic2 = 'f';
         [$this->template->{$dynamic1}, $this->template->{$dynamic2}] = [$dynamic1, $dynamic2];
+
+        $this->template->object = new stdClass();
 
         $this->template->render(__DIR__ . '/default.latte');
     }
