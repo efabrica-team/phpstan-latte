@@ -84,7 +84,7 @@ final class TemplatePathFinder
      * @param ?class-string $currentClassName
      * @return array<string>
      */
-    private function findInMethodCalls(string $className, string $methodName, string $currentClassName = null): array
+    private function findInMethodCalls(string $className, string $methodName, ?string $currentClassName = null): array
     {
         $callback = function (string $declaringClass, string $methodName, array $fromCalled) {
             /** @var array<array<string>> $fromCalled */

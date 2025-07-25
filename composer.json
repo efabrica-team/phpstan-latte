@@ -5,7 +5,7 @@
         "static analysis"
     ],
     "require": {
-        "php": ">=7.4 <8.4",
+        "php": ">=7.4 <8.5",
         "ext-json": "*",
         "phpstan/phpstan": "^2.1.0",
         "phpstan/phpdoc-parser": "^2.1.0",
@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "nette/application": "^3.1.6",
+        "nette/application": "^3.1.11",
         "nette/forms": "^3.1.12",
         "nikic/php-parser": "^5.5",
         "efabrica/coding-standard": "^0.7",
