@@ -15,7 +15,7 @@
         "nette/finder": "^2.5|^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^9.5|^12.2",
         "nette/application": "^3.1.6",
         "nette/forms": "^3.1.12",
         "nikic/php-parser": "^5.5",
