@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
 
-abstract class CollectorResultTest extends LatteTemplatesRuleTest
+abstract class CollectorResultTestCase extends LatteTemplatesRuleTestCase
 {
     protected function getRule(): Rule
     {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\SimpleControl;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 
-final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTest
+final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {

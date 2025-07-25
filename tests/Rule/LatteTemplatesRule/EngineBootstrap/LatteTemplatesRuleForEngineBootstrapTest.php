@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\EngineBootstrap;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 
-final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleTest
+final class LatteTemplatesRuleForEngineBootstrapTest extends LatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {

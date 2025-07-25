@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTestCase;
 use Nette\Utils\Finder;
 
-abstract class ScanCollectorResultTest extends CollectorResultTest
+abstract class ScanCollectorResultTestCase extends CollectorResultTestCase
 {
     private ExpectedErrorsScanner $expectedErrorsScanner;
 

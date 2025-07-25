@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 
-class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRuleTest
+class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {

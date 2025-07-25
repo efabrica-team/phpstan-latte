@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 use Nette\Utils\Finder;
 
-abstract class ScanLatteTemplatesRuleTest extends LatteTemplatesRuleTest
+abstract class ScanLatteTemplatesRuleTestCase extends LatteTemplatesRuleTestCase
 {
     private $expectedErrorsScanner;
 

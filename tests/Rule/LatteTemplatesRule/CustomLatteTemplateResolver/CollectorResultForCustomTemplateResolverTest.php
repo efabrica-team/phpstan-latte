@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CustomLatteTemplateResolver;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTestCase;
 
-final class CollectorResultForCustomTemplateResolverTest extends CollectorResultTest
+final class CollectorResultForCustomTemplateResolverTest extends CollectorResultTestCase
 {
     protected static function additionalConfigFiles(): array
     {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithModule;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 
-final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
+final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {

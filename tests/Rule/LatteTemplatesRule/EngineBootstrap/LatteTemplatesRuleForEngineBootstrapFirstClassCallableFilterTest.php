@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\EngineBootstrap;
 
-use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
+use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTestCase;
 
 /**
  * @requires PHP > 8.1
  */
-final class LatteTemplatesRuleForEngineBootstrapFirstClassCallableFilterTest extends LatteTemplatesRuleTest
+final class LatteTemplatesRuleForEngineBootstrapFirstClassCallableFilterTest extends LatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {

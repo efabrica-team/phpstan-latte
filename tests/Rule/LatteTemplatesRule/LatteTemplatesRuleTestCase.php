@@ -10,7 +10,7 @@ use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
-abstract class LatteTemplatesRuleTest extends RuleTestCase
+abstract class LatteTemplatesRuleTestCase extends RuleTestCase
 {
     final public static function getAdditionalConfigFiles(): array
     {
