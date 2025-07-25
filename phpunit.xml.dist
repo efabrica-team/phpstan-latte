@@ -5,6 +5,11 @@
             <directory suffix=".php">src/</directory>
         </include>
     </coverage>
+    <source>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+    </source>
     <testsuites>
         <testsuite name="Test suite">
             <directory>tests/</directory>
