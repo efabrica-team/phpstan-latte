@@ -1,5 +1,10 @@
 # Change Log
 
+## [unreleased]
+### Added
+- Check if value outputted in template (or escaped for output) can be converted to string
+- Support for PHP 8.4
+
 ## [0.18] - 2025-07-22
 ### Updated
 - Compatibility with PHPStan 2.x (**BC break**)
