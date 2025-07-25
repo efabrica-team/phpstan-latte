@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
 use Nette\Utils\Finder;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTest
+final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTestCase
 {
     protected static function additionalConfigFiles(): array
     {
@@ -20,6 +21,7 @@ final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTe
     /**
      * @dataProvider fixtures
      */
+    #[DataProvider('fixtures')]
     public function testFixture(string $fixtureName): void
     {
         $this->analyseFixture(
@@ -28,7 +30,7 @@ final class LatteTemplateRuleForAnnotationsTest extends ScanLatteTemplatesRuleTe
         );
     }
 
-    public function fixtures(): array
+    public static function fixtures(): array
     {
         $fixtures = [];
         foreach (Finder::findDirectories('*')->in(__DIR__ . '/Fixtures') as $path) {

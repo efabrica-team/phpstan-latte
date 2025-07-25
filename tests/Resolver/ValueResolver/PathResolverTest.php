@@ -13,6 +13,7 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class PathResolverTest extends PHPStanTestCase
 {
@@ -30,6 +31,7 @@ final class PathResolverTest extends PHPStanTestCase
     /**
      * @dataProvider fixtures
      */
+    #[DataProvider('fixtures')]
     public function testResolve(string $path): void
     {
         [$php, $output] = array_map('trim', explode('-----', file_get_contents($path)));
@@ -51,7 +53,7 @@ final class PathResolverTest extends PHPStanTestCase
         $this->assertEquals($output, $this->pathResolver->resolve($expression->expr, $scope));
     }
 
-    public function fixtures(): iterable
+    public static function fixtures(): iterable
     {
         foreach (Finder::findFiles('path.*.fixture')->in(__DIR__ . '/Fixtures') as $file) {
             yield [(string)$file];
