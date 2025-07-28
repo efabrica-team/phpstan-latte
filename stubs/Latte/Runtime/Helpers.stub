@@ -8,7 +8,7 @@ class Helpers implements HtmlStringable
     /**
      * @template A
      * @param A $value
-     * @return ?A
+     * @phpstan-return (A is string ? A|null : null)
      */
     public static function stringOrNull(mixed $value): ?string
     {

@@ -13,7 +13,6 @@ parameters:
         - stubs/Nette/Forms/Control.stub
         - stubs/Nette/Forms/Controls/BaseControl.stub
         - stubs/Nette/Bridges/FormsLatte/Runtime.stub
-        - stubs/Nette/Application/UI/Multiplier.stub
     usePathConstantsAsConstantString: true
     latte:
         strictMode: false
