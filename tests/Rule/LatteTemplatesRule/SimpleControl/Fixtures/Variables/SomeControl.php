@@ -9,6 +9,8 @@ use stdClass;
 
 final class SomeControl extends Control
 {
+    public bool $property;
+
     public function render(): void
     {
         $this->template->a = 'a';
@@ -26,6 +28,7 @@ final class SomeControl extends Control
         [$this->template->{$dynamic1}, $this->template->{$dynamic2}] = [$dynamic1, $dynamic2];
 
         $this->template->object = new stdClass();
+        $this->template->boolProperty = $this->property;
 
         $this->template->render(__DIR__ . '/default.latte');
     }
