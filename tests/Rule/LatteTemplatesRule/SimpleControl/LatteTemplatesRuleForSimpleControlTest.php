@@ -414,6 +414,11 @@ final class LatteTemplatesRuleForSimpleControlTest extends LatteTemplatesRuleTes
                 16,
                 'default.latte',
             ],
+            [
+                'Dumped type: bool',
+                18,
+                'default.latte',
+            ],
         ]);
     }
 

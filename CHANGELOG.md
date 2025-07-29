@@ -4,6 +4,8 @@
 ### Added
 - Check if value outputted in template (or escaped for output) can be converted to string
 - Support for PHP 8.4
+### Fixed
+- Fixed unwanted narrowing of template variable types
 
 ## [0.18] - 2025-07-22
 ### Updated

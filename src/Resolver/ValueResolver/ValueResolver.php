@@ -21,6 +21,7 @@ use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\UnionType;
 use ReflectionMethod;
+use function count;
 use function is_callable;
 use function method_exists;
 
@@ -38,7 +39,8 @@ final class ValueResolver
             $type = $scope->getType($expr);
 
             $constantScalarValues = $type->getConstantScalarValues();
-            if ($constantScalarValues !== []) {
+
+            if (count($constantScalarValues) === 1) {
                 return $constantScalarValues[0];
             }
 
@@ -158,7 +160,7 @@ final class ValueResolver
             $options = [];
             foreach ($type->getTypes() as $subType) {
                 $constantScalarValues = $subType->getConstantScalarValues();
-                if ($constantScalarValues === []) {
+                if (count($constantScalarValues) !== 1) {
                     return null;
                 }
                 $options[] = $constantScalarValues[0];
