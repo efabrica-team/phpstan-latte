@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
 use Efabrica\PHPStanLatte\Template\Filter;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedFilter extends CollectedLatteContextObject
 {
@@ -34,5 +36,23 @@ final class CollectedFilter extends CollectedLatteContextObject
     public function getFilter(): Filter
     {
         return $this->filter;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'filter' => $this->filter->jsonSerialize(),
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Filter::fromJson($data['filter'], $typeStringResolver)
+        );
     }
 }

@@ -1,4 +1,5 @@
 parameters:
+    debugMode: true
     latte:
         tmpDir: %rootDir%/../../../tmp/phpstan-latte
         resolveAllPossiblePaths: true

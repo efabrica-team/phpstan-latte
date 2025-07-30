@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Variable implements NameTypeItem, JsonSerializable
@@ -20,7 +23,7 @@ final class Variable implements NameTypeItem, JsonSerializable
     public function __construct(string $name, Type $type, bool $mightBeUndefined = false)
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
         $this->mightBeUndefined = $mightBeUndefined;
     }
 
@@ -36,7 +39,7 @@ final class Variable implements NameTypeItem, JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::precise());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     public function mightBeUndefined(): bool
@@ -47,7 +50,7 @@ final class Variable implements NameTypeItem, JsonSerializable
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
@@ -56,8 +59,19 @@ final class Variable implements NameTypeItem, JsonSerializable
     {
         return [
             'name' => $this->name,
-            'type' => $this->getTypeAsString(),
+            'type' => TypeHelper::serializeType($this->type),
             'undefined' => $this->mightBeUndefined,
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        $name = $data['name'];
+        $type = $typeStringResolver->resolve($data['type'] ?? 'mixed');
+        if($name === 'generic') {
+          print_r([$data['name'], \get_class($type), $data['type']]);
+        }
+        $mightBeUndefined = $data['undefined'] ?? false;
+        return new self($name, $type, $mightBeUndefined);
     }
 }

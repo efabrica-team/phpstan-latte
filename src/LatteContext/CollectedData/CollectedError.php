@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
 use PhpParser\Node;
+use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedError extends CollectedLatteContextObject
 {
@@ -43,6 +45,24 @@ final class CollectedError extends CollectedLatteContextObject
             $message,
             $scope->getFile(),
             $node->getStartLine()
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'message' => $this->message,
+            'file' => $this->file,
+            'line' => $this->line,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['message'],
+            $data['file'],
+            $data['line'] ?? null
         );
     }
 }

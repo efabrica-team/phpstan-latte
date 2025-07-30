@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Component implements NameTypeItem, JsonSerializable
@@ -21,7 +24,7 @@ final class Component implements NameTypeItem, JsonSerializable
     public function __construct(string $name, Type $type)
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
     }
 
     public function getName(): string
@@ -36,7 +39,7 @@ final class Component implements NameTypeItem, JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::typeOnly());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     /**
@@ -58,16 +61,30 @@ final class Component implements NameTypeItem, JsonSerializable
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
+       if($this->name === 'multiplier') {
+         print_r(['save', $this->name, \get_class($this->type), $this->getTypeAsString()]);
+       }
         return [
           'name' => $this->name,
-          'type' => $this->getTypeAsString(),
+          'type' => TypeHelper::serializeType($this->type)
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+       if($data['name'] === 'multiplier') {
+         print_r(['load', $data['name'], \get_class($typeStringResolver->resolve($data['type'])), $data['type']]);
+       }
+        return new self(
+            $data['name'],
+            $typeStringResolver->resolve($data['type'])
+        );
     }
 }

@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Form\Form;
-use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFinder
@@ -107,7 +107,7 @@ final class FormFinder
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             $collectedForms = [];
             foreach ($this->collectedForms[$declaringClass][$methodName] ?? [] as $collectedForm) {
-                $collectedForms[] = $collectedForm->withFormType(TemplateTypeHelper::resolveTemplateType(
+                $collectedForms[] = $collectedForm->withFormType(TypeHelper::resolveTemplateType(
                     $collectedForm->getForm()->getType(),
                     $declaringClass,
                     $currentClassName

@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 
 final class TemplateContext implements JsonSerializable
@@ -176,10 +178,33 @@ final class TemplateContext implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'variables' => $this->variables,
-            'components' => $this->components,
-            'forms' => $this->forms,
-            'filters' => $this->filters,
+            'variables' => array_map(fn(Variable $variable) => $variable->jsonSerialize(), $this->variables),
+            'components' => array_map(fn(Component $component) => $component->jsonSerialize(), $this->components),
+            'forms' => array_map(fn(Form $form) => $form->jsonSerialize(), $this->forms),
+            'filters' => array_map(fn(Filter $filter) => $filter->jsonSerialize(), $this->filters),
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        foreach ($data['variables'] as $key => $variableData) {
+            $data['variables'][$key] = Variable::fromJson($variableData, $typeStringResolver);
+        }
+        foreach ($data['components'] as $key => $componentData) {
+            $data['components'][$key] = Component::fromJson($componentData, $typeStringResolver);
+        }
+        foreach ($data['forms'] as $key => $formData) {
+            $data['forms'][$key] = Form::fromJson($formData, $typeStringResolver);
+        }
+        foreach ($data['filters'] as $key => $filterData) {
+            $data['filters'][$key] = Filter::fromJson($filterData, $typeStringResolver);
+        }
+
+        return new self(
+            $data['variables'],
+            $data['components'],
+            $data['forms'],
+            $data['filters']
+        );
     }
 }

@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
+use Efabrica\PHPStanLatte\Template\Form\Form;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedFormControl extends CollectedLatteContextObject
 {
@@ -39,5 +42,23 @@ final class CollectedFormControl extends CollectedLatteContextObject
     public function getFormControl(): ControlInterface
     {
         return $this->formControl;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'formControl' => $this->formControl->jsonSerialize(),
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Form::controlFromJson($data['formControl'], $typeStringResolver)
+        );
     }
 }

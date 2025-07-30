@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Analyser;
 
-use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
+use Composer\InstalledVersions;
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextCollector;
+use Exception;
+use InvalidArgumentException;
+use Nette\Utils\FileSystem;
+use Nette\Utils\Json;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\TraitUse;
 use PHPStan\Analyser\NodeScopeResolver;
@@ -14,8 +18,10 @@ use PHPStan\Analyser\ScopeContext;
 use PHPStan\Analyser\ScopeFactory;
 use PHPStan\File\FileHelper;
 use PHPStan\Parser\Parser;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\RuleErrorBuilder;
+use RuntimeException;
 use Throwable;
 
 final class LatteContextAnalyser
@@ -25,6 +31,8 @@ final class LatteContextAnalyser
     private NodeScopeResolver $nodeScopeResolver;
 
     private Parser $parser;
+
+    private TypeStringResolver $typeStringResolver;
 
     private ReflectionProvider $reflectionProvider;
 
@@ -41,7 +49,9 @@ final class LatteContextAnalyser
         ReflectionProvider $reflectionProvider,
         FileHelper $fileHelper,
         Parser $parser,
-        array $collectors
+        TypeStringResolver $typeStringResolver,
+        array $collectors,
+        string $tmpDir
     ) {
         $this->scopeFactory = $scopeFactory;
         $this->nodeScopeResolver = clone $nodeScopeResolver;
@@ -49,7 +59,10 @@ final class LatteContextAnalyser
         $this->fileHelper = $fileHelper;
         // $this->nodeScopeResolver->setAnalysedFiles(null); TODO when changes in PHPStan are merged
         $this->parser = $parser;
+        $this->typeStringResolver = $typeStringResolver;
         $this->collectorRegistry = new LatteContextCollectorRegistry($collectors);
+        $baseTmpDir = $tmpDir ? rtrim($tmpDir, '/') : sys_get_temp_dir() . '/phpstan-latte/';
+        $this->tmpDir = $baseTmpDir . '/latte-context-cache/';
     }
 
     /**
@@ -59,29 +72,36 @@ final class LatteContextAnalyser
     {
         $errors = [];
         $collectedData = [];
+        $processedFiles = [];
+        $counter = 0;
 
         $this->nodeScopeResolver->setAnalysedFiles($files); // TODO when changes in PHPStan are merged
 
-        $collectedRelatedFiles = [];
         do {
+            if ($counter++ > 100) {
+                throw new RuntimeException('Infinite loop detected in LatteContextAnalyser.');
+            }
+            $relatedFiles = [];
             foreach ($files as $file) {
-                $fileResult = $this->analyseFile($file);
+                $fileResult = $this->loadLatteContextDataFromCache($file);
+                if(!$fileResult) {
+					$fileResult = $this->analyseFile($file);
+					if ($fileResult->getErrors() === []) {
+                        $this->saveLatteContextDataToCache($file, $fileResult);
+                        $this->loadLatteContextDataFromCache($file);
+                    }
+				}
                 if ($fileResult->getErrors() !== []) {
                     $errors = array_merge($errors, $fileResult->getErrors());
                 }
                 if ($fileResult->getAllCollectedData() !== []) {
                     $collectedData = array_merge($collectedData, $fileResult->getAllCollectedData());
+                    $processedFiles = array_unique(array_merge($processedFiles, $fileResult->getProcessedFiles()));
+                    $relatedFiles = array_unique(array_merge($relatedFiles, $fileResult->getRelatedFiles()));
                 }
-                $collectedRelatedFiles = array_merge($collectedRelatedFiles, $fileResult->getCollectedData(CollectedRelatedFiles::class));
-            }
 
-            $processedFiles = [];
-            $relatedFiles = [];
-            foreach ($collectedRelatedFiles as $collectedRelatedFile) {
-                $processedFiles[] = $collectedRelatedFile->getProcessedFile();
-                $relatedFiles[] = $collectedRelatedFile->getRelatedFiles();
             }
-            $files = array_diff(array_unique(array_merge(...$relatedFiles)), array_unique($processedFiles));
+            $files = array_diff($relatedFiles, $processedFiles);
         } while (count($files) > 0);
 
         return new LatteContextData($collectedData, $errors);
@@ -168,5 +188,97 @@ final class LatteContextAnalyser
         $clone = clone $this;
         $clone->collectorRegistry = new LatteContextCollectorRegistry($collectors);
         return $clone;
+    }
+
+    private function cacheFilename(string $file): string
+    {
+        $cacheKey = md5(
+            $file .
+            PHP_VERSION_ID .
+            (class_exists(InstalledVersions::class) ? json_encode(InstalledVersions::getAllRawData()) : '')
+        );
+        return $this->tmpDir . '/' . basename($file) . '.' . $cacheKey . '.json';
+    }
+
+    private function saveLatteContextDataToCache(string $file, LatteContextData $fileResult)
+    {
+        if (!is_dir($this->tmpDir)) {
+            Filesystem::createDir($this->tmpDir, 0777);
+        }
+
+        $cacheFile = $this->cacheFilename($file);
+
+        try {
+			$data = $fileResult->jsonSerialize();
+		} catch (InvalidArgumentException $e) {
+			// Cannot serialize data, skip caching
+			if(is_file($cacheFile)) {
+				FileSystem::delete($cacheFile);
+			}
+			return;
+		}
+
+        $cacheData = [
+            'file' => $file,
+            'fileHash' => sha1(Filesystem::read($file)),
+            'data' => $data,
+        ];
+        foreach ($fileResult->getRelatedFiles() as $relatedFile) {
+            $cacheData['dependencies'][] = [
+                'file' => $relatedFile,
+                'fileHash' => sha1(Filesystem::read($relatedFile)),
+            ];
+        }
+        Filesystem::write(
+            $cacheFile,
+            Json::encode($cacheData, true)
+        );
+    }
+
+    private function loadLatteContextDataFromCache(string $file): ?LatteContextData
+    {
+        $cacheFile = $this->cacheFilename($file);
+        if (!is_file($cacheFile)) {
+            return null;
+        }
+
+        try {
+            $cacheData = Json::decode(Filesystem::read($cacheFile), true);
+        } catch (Exception) {
+			FileSystem::delete($cacheFile);
+			return null;
+		}
+
+        if (!is_array($cacheData) || !isset($cacheData['file'], $cacheData['fileHash'], $cacheData['data'])) {
+            FileSystem::delete($cacheFile);
+            return null;
+        }
+
+        // Check if the file has changed since the cache was created
+        if (sha1(Filesystem::read($cacheData['file'])) !== $cacheData['fileHash']) {
+            return null;
+        }
+
+        if (isset($cacheData['dependencies']) && is_array($cacheData['dependencies'])) {
+            foreach ($cacheData['dependencies'] as $dependency) {
+                if (!isset($dependency['file'], $dependency['fileHash'])) {
+                    return null;
+                }
+                if (!is_file($dependency['file'])) {
+                    return null;
+                }
+                // Check if the dependency file has changed since the cache was created
+                if (sha1(Filesystem::read($dependency['file'])) !== $dependency['fileHash']) {
+                    return null;
+                }
+            }
+        }
+
+        try {
+            return LatteContextData::fromJson($cacheData['data'], $this->typeStringResolver);
+		} catch (Exception) {
+		    FileSystem::delete($cacheFile);
+	        return null;
+        }
     }
 }

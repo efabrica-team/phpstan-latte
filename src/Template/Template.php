@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 
 final class Template implements JsonSerializable
@@ -115,8 +117,19 @@ final class Template implements JsonSerializable
             'path' => $this->path,
             'actualClass' => $this->actualClass,
             'actualAction' => $this->actualAction,
-            'templateContext' => $this->templateContext,
+            'templateContext' => $this->templateContext->jsonSerialize(),
             'parentTemplatePaths' => $this->parentTemplatePaths,
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['path'],
+            $data['actualClass'] ?? null,
+            $data['actualAction'] ?? null,
+            TemplateContext::fromJson($data['templateContext'], $typeStringResolver),
+            $data['parentTemplatePaths'] ?? []
+        );
     }
 }

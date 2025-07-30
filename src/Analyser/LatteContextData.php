@@ -6,10 +6,15 @@ namespace Efabrica\PHPStanLatte\Analyser;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
+use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
+use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use function get_class;
 
-final class LatteContextData
+final class LatteContextData implements JsonSerializable
 {
     /** @var list<IdentifierRuleError> */
     private array $errors;
@@ -74,5 +79,53 @@ final class LatteContextData
     {
         /** @var T[] */
         return $this->collectedDataByType[$type] ?? [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getProcessedFiles(): array
+    {
+        $processedFiles = [];
+        foreach ($this->getCollectedData(CollectedRelatedFiles::class) as $collectedRelatedFile) {
+            $processedFiles[] = $collectedRelatedFile->getProcessedFile();
+        }
+        return array_unique($processedFiles);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRelatedFiles(): array
+    {
+        $relatedFiles = [];
+        foreach ($this->getCollectedData(CollectedRelatedFiles::class) as $collectedRelatedFile) {
+            $relatedFiles = array_merge($relatedFiles, $collectedRelatedFile->getRelatedFiles());
+        }
+        return array_unique($relatedFiles);
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [];
+        foreach ($this->collectedData as $collectedItem) {
+            $data[] = [
+                'class' => get_class($collectedItem),
+                'data' => $collectedItem->jsonSerialize(),
+            ];
+        }
+        return [
+            'items' => $data,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        $collectedData = [];
+        foreach ($data['items'] as $item) {
+            $class = $item['class'];
+            $collectedData[] = $class::fromJson($item['data'], $typeStringResolver);
+        }
+        return new self($collectedData, []);
     }
 }

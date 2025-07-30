@@ -11,6 +11,7 @@ use Efabrica\PHPStanLatte\Template\Template;
 use InvalidArgumentException;
 use Latte\CompileException;
 use Latte\Engine;
+use Nette\Utils\FileSystem;
 
 final class LatteToPhpCompiler
 {
@@ -32,9 +33,14 @@ final class LatteToPhpCompiler
         bool $debugMode = false
     ) {
         $this->tmpDir = $compiledTemplateDirResolver->resolve();
+        if (file_exists($this->tmpDir) && $debugMode) {
+            FileSystem::delete($this->tmpDir);
+        }
         $this->cacheKey = $cacheKey . md5(
             Engine::VERSION_ID .
             PHP_VERSION_ID .
+            $compiler->getCacheKey() .
+            $postprocessor->getCacheKey() .
             (class_exists(InstalledVersions::class) ? json_encode(InstalledVersions::getAllRawData()) : '')
         );
         $this->compiler = $compiler;

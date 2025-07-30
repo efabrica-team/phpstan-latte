@@ -6,7 +6,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\ClassReflection;
 
 final class CollectedMethodCall extends CollectedLatteContextObject
@@ -177,6 +179,34 @@ final class CollectedMethodCall extends CollectedLatteContextObject
             !$grandparentNode instanceof ClassMethod,
             $type,
             $params
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'callerClassName' => $this->callerClassName,
+            'callerMethodName' => $this->callerMethodName,
+            'calledClassName' => $this->calledClassName,
+            'calledMethodName' => $this->calledMethodName,
+            'isCalledConditionally' => $this->isCalledConditionally,
+            'type' => $this->type,
+            'params' => $this->params,
+            'currentClassName' => $this->currentClassName,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['callerClassName'] ?? null,
+            $data['callerMethodName'] ?? '',
+            $data['calledClassName'] ?? null,
+            $data['calledMethodName'] ?? '',
+            $data['isCalledConditionally'] ?? false,
+            $data['type'] ?? self::CALL,
+            $data['params'] ?? [],
+            $data['currentClassName'] ?? null
         );
     }
 }

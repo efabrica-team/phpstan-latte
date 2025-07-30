@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
-abstract class CollectedLatteContextObject
+use JsonSerializable;
+
+abstract class CollectedLatteContextObject implements JsonSerializable
 {
+
 }

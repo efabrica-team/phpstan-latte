@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Template\Form\Group;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedFormGroup extends CollectedLatteContextObject
 {
@@ -39,5 +41,23 @@ final class CollectedFormGroup extends CollectedLatteContextObject
     public function getGroup(): Group
     {
         return $this->group;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'group' => $this->group->jsonSerialize(),
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Group::fromJson($data['group'], $typeStringResolver)
+        );
     }
 }

@@ -7,6 +7,8 @@ namespace Efabrica\PHPStanLatte\Template\Form;
 use Efabrica\PHPStanLatte\Template\Form\Behavior\ControlHolderBehavior;
 use Efabrica\PHPStanLatte\Template\NameItem;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 
 final class Group implements NameItem, ControlHolderInterface, JsonSerializable
@@ -34,7 +36,19 @@ final class Group implements NameItem, ControlHolderInterface, JsonSerializable
     {
         return [
             'name' => $this->name,
-            'controls' => $this->controls,
+            'controls' => array_map(fn(ControlInterface $control) => $control->jsonSerialize(), $this->controls),
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        $controls = [];
+        if (isset($data['controls']) && is_array($data['controls'])) {
+            foreach ($data['controls'] as $controlData) {
+                $controls[] = Form::controlFromJson($controlData, $typeStringResolver);
+            }
+        }
+
+        return new self($data['name'] ?? '', $controls);
     }
 }

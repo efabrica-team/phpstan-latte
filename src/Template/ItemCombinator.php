@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
-use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\Type\TypeCombinator;
 
 final class ItemCombinator
@@ -55,7 +55,7 @@ final class ItemCombinator
     {
         $resolvedItems = [];
         foreach ($items as $item) {
-            $resolvedItems[] = $item->withType(TemplateTypeHelper::resolveTemplateType($item->getType(), $declaringClass, $currentClass));
+            $resolvedItems[] = $item->withType(TypeHelper::resolveTemplateType($item->getType(), $declaringClass, $currentClass));
         }
 
         return $resolvedItems;

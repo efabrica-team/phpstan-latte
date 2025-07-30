@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Template\Form;
 
 use Efabrica\PHPStanLatte\Template\NameTypeItem;
-use JsonSerializable;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
-final class Field implements NameTypeItem, ControlInterface, JsonSerializable
+final class Field implements NameTypeItem, ControlInterface
 {
     private string $name;
 
@@ -27,7 +29,7 @@ final class Field implements NameTypeItem, ControlInterface, JsonSerializable
     public function __construct(string $name, Type $type, ?array $options = null)
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
         $this->options = $options;
     }
 
@@ -43,13 +45,13 @@ final class Field implements NameTypeItem, ControlInterface, JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::typeOnly());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
@@ -65,9 +67,19 @@ final class Field implements NameTypeItem, ControlInterface, JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'class' => self::class,
             'name' => $this->name,
-            'type' => $this->getTypeAsString(),
+            'type' => TypeHelper::serializeType($this->type),
             'options' => $this->options,
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['name'],
+            $typeStringResolver->resolve($data['type']),
+            $data['options'] ?? null
+        );
     }
 }

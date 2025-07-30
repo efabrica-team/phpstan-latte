@@ -10,6 +10,7 @@ use Latte\Essential\RawPhpExtension;
 use Latte\Extension;
 use Nette\Bridges\ApplicationLatte\UIExtension;
 use Nette\Bridges\FormsLatte\FormsExtension;
+use function get_class;
 
 final class Latte3Compiler extends AbstractCompiler
 {
@@ -26,6 +27,17 @@ final class Latte3Compiler extends AbstractCompiler
     ) {
         parent::__construct($engine, $strictMode, $filters, $functions);
         $this->installExtensions($extensions);
+    }
+
+    public function getCacheKey(): string
+    {
+        return md5(
+            implode('', array_keys($this->getFilters())) .
+            implode('', array_keys($this->getFunctions())) .
+            implode('', array_map(function ($extension) {
+                return get_class($extension);
+            }, $this->engine->getExtensions()))
+        );
     }
 
     public function getFilters(): array

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Filter implements NameTypeItem, JsonSerializable
@@ -18,7 +21,7 @@ final class Filter implements NameTypeItem, JsonSerializable
     public function __construct(string $name, Type $type)
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
     }
 
     public function getName(): string
@@ -33,13 +36,13 @@ final class Filter implements NameTypeItem, JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::precise());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
@@ -48,7 +51,15 @@ final class Filter implements NameTypeItem, JsonSerializable
     {
         return [
             'name' => $this->name,
-            'type' => $this->getTypeAsString(),
+            'type' => TypeHelper::serializeType($this->type)
         ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['name'],
+            $typeStringResolver->resolve($data['type'])
+        );
     }
 }

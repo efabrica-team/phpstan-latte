@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+
 final class CollectedTemplatePath extends CollectedLatteContextObject
 {
     private string $className;
@@ -32,5 +35,23 @@ final class CollectedTemplatePath extends CollectedLatteContextObject
     public function getTemplatePath(): string
     {
         return $this->templatePath;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'templatePath' => $this->templatePath,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            $data['templatePath']
+        );
     }
 }

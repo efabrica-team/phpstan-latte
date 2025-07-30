@@ -7,7 +7,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
 
 final class CollectedVariable extends CollectedLatteContextObject
@@ -84,5 +86,25 @@ final class CollectedVariable extends CollectedLatteContextObject
             $collectedVariables[] = self::build($node, $scope, $variable->getName(), $variable->getType(), $declared, $variable->mightBeUndefined());
         }
         return $collectedVariables;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'variable' => $this->variable->jsonSerialize(),
+            'declared' => $this->declared,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Variable::fromJson($data['variable'], $typeStringResolver),
+            $data['declared'] ?? false
+        );
     }
 }

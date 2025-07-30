@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
+use PHPStan\Analyser\NameScope;
+use PHPStan\PhpDoc\TypeStringResolver;
+
 final class CollectedRelatedFiles extends CollectedLatteContextObject
 {
     private string $processedFile;
@@ -31,5 +34,21 @@ final class CollectedRelatedFiles extends CollectedLatteContextObject
     public function getRelatedFiles(): array
     {
         return $this->relatedFiles;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'processedFile' => $this->processedFile,
+            'relatedFiles' => $this->relatedFiles,
+        ];
+    }
+
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['processedFile'],
+            $data['relatedFiles']
+        );
     }
 }

@@ -11,7 +11,7 @@ final class CompiledTemplateDirResolver
     public function __construct(?string $tmpDir)
     {
         $baseTmpDir = $tmpDir ? rtrim($tmpDir, '/') : sys_get_temp_dir() . '/phpstan-latte/';
-        $this->tmpDir = $baseTmpDir . '/' . uniqid(date('Ymd-His-'));
+        $this->tmpDir = $baseTmpDir . '/compiled-templates/';
     }
 
     public function resolve(): string

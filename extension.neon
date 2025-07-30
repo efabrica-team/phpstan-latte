@@ -124,6 +124,7 @@ services:
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
             parser: @latteCurrentPhpVersionRichParser
+            tmpDir: %latte.tmpDir%
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter
