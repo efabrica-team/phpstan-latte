@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Template\Form;
 
 use Efabrica\PHPStanLatte\Template\NameTypeItem;
 use Efabrica\PHPStanLatte\Type\TypeHelper;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;

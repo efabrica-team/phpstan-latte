@@ -84,22 +84,19 @@ final class LatteContextAnalyser
             $relatedFiles = [];
             foreach ($files as $file) {
                 $fileResult = $this->loadLatteContextDataFromCache($file);
-                if(!$fileResult) {
-					$fileResult = $this->analyseFile($file);
-					if ($fileResult->getErrors() === []) {
+                if (!$fileResult) {
+                    $fileResult = $this->analyseFile($file);
+                    if ($fileResult->getErrors() === []) {
                         $this->saveLatteContextDataToCache($file, $fileResult);
-                        $this->loadLatteContextDataFromCache($file);
+                    } else {
+                        $errors = array_merge($errors, $fileResult->getErrors());
                     }
-				}
-                if ($fileResult->getErrors() !== []) {
-                    $errors = array_merge($errors, $fileResult->getErrors());
                 }
                 if ($fileResult->getAllCollectedData() !== []) {
                     $collectedData = array_merge($collectedData, $fileResult->getAllCollectedData());
                     $processedFiles = array_unique(array_merge($processedFiles, $fileResult->getProcessedFiles()));
                     $relatedFiles = array_unique(array_merge($relatedFiles, $fileResult->getRelatedFiles()));
                 }
-
             }
             $files = array_diff($relatedFiles, $processedFiles);
         } while (count($files) > 0);
@@ -209,14 +206,14 @@ final class LatteContextAnalyser
         $cacheFile = $this->cacheFilename($file);
 
         try {
-			$data = $fileResult->jsonSerialize();
-		} catch (InvalidArgumentException $e) {
-			// Cannot serialize data, skip caching
-			if(is_file($cacheFile)) {
-				FileSystem::delete($cacheFile);
-			}
-			return;
-		}
+            $data = $fileResult->jsonSerialize();
+        } catch (InvalidArgumentException $e) {
+            // Cannot serialize data, skip caching
+            if (is_file($cacheFile)) {
+                FileSystem::delete($cacheFile);
+            }
+            return;
+        }
 
         $cacheData = [
             'file' => $file,
@@ -245,9 +242,9 @@ final class LatteContextAnalyser
         try {
             $cacheData = Json::decode(Filesystem::read($cacheFile), true);
         } catch (Exception) {
-			FileSystem::delete($cacheFile);
-			return null;
-		}
+            FileSystem::delete($cacheFile);
+            return null;
+        }
 
         if (!is_array($cacheData) || !isset($cacheData['file'], $cacheData['fileHash'], $cacheData['data'])) {
             FileSystem::delete($cacheFile);
@@ -276,9 +273,9 @@ final class LatteContextAnalyser
 
         try {
             return LatteContextData::fromJson($cacheData['data'], $this->typeStringResolver);
-		} catch (Exception) {
-		    FileSystem::delete($cacheFile);
-	        return null;
+        } catch (Exception) {
+            FileSystem::delete($cacheFile);
+            return null;
         }
     }
 }

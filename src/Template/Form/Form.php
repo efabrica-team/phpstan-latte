@@ -10,7 +10,6 @@ use Efabrica\PHPStanLatte\Template\NameTypeItem;
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use InvalidArgumentException;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;

@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
@@ -68,20 +67,14 @@ final class Component implements NameTypeItem, JsonSerializable
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
-       if($this->name === 'multiplier') {
-         print_r(['save', $this->name, \get_class($this->type), $this->getTypeAsString()]);
-       }
         return [
           'name' => $this->name,
-          'type' => TypeHelper::serializeType($this->type)
+          'type' => TypeHelper::serializeType($this->type),
         ];
     }
 
     public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
-       if($data['name'] === 'multiplier') {
-         print_r(['load', $data['name'], \get_class($typeStringResolver->resolve($data['type'])), $data['type']]);
-       }
         return new self(
             $data['name'],
             $typeStringResolver->resolve($data['type'])

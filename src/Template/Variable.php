@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
@@ -68,9 +67,6 @@ final class Variable implements NameTypeItem, JsonSerializable
     {
         $name = $data['name'];
         $type = $typeStringResolver->resolve($data['type'] ?? 'mixed');
-        if($name === 'generic') {
-          print_r([$data['name'], \get_class($type), $data['type']]);
-        }
         $mightBeUndefined = $data['undefined'] ?? false;
         return new self($name, $type, $mightBeUndefined);
     }

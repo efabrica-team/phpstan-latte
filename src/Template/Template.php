@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 

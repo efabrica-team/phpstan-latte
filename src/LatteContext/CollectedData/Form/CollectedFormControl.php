@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\Form\Form;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedFormControl extends CollectedLatteContextObject

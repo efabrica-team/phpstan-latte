@@ -6,7 +6,6 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
@@ -51,7 +50,7 @@ final class Filter implements NameTypeItem, JsonSerializable
     {
         return [
             'name' => $this->name,
-            'type' => TypeHelper::serializeType($this->type)
+            'type' => TypeHelper::serializeType($this->type),
         ];
     }
 

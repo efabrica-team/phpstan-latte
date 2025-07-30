@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
 use Efabrica\PHPStanLatte\Template\Filter;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 
 final class CollectedFilter extends CollectedLatteContextObject

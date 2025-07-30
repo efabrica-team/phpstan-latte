@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Type;
 
+use InvalidArgumentException;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
@@ -16,10 +18,10 @@ final class TypeHelper
 {
     public static function resolveType(Type $type): Type
     {
-		$type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
-			if ($type instanceof StaticType) {
-				return $traverse($type->getStaticObjectType());
-			}
+        $type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
+            if ($type instanceof StaticType) {
+                return $traverse($type->getStaticObjectType());
+            }
             return $traverse($type);
         });
 
@@ -69,21 +71,20 @@ final class TypeHelper
     }
 
     public static function serializeType(Type $type): string
-	{
-		$type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
-			if ($type instanceof StaticType) {
-				return $traverse($type->getStaticObjectType());
-			}
-			if ($type instanceof ErrorType) {
-				throw new \InvalidArgumentException('Cannot serialize ErrorType');
-			}
-
-			if ($type instanceof TemplateType) {
-				throw new \InvalidArgumentException('Cannot serialize TemplateType');
-			}
+    {
+        $type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
+            if ($type instanceof StaticType) {
+                return $traverse($type->getStaticObjectType());
+            }
+            if ($type instanceof ErrorType) {
+                throw new InvalidArgumentException('Cannot serialize ErrorType');
+            }
+            if ($type instanceof TemplateType) {
+                throw new InvalidArgumentException('Cannot serialize TemplateType');
+            }
             return $traverse($type);
         });
 
-		return (new Printer())->print($type->toPhpDocNode());
-	}
+        return (new Printer())->print($type->toPhpDocNode());
+    }
 }

@@ -168,6 +168,7 @@ final class ComponentCollector extends AbstractLatteContextCollector
      */
     private function buildComponents(Node $node, Scope $scope, ClassReflection $classReflection, Expr $componentNameArg, Expr $componentArg): ?array
     {
+    print_r(['buildcomp']);
         $lattePhpDoc = $this->lattePhpDocResolver->resolveForNode($node, $scope);
         if ($lattePhpDoc->isIgnored()) {
             return null;
@@ -219,8 +220,11 @@ final class ComponentCollector extends AbstractLatteContextCollector
      */
     public function addSubcomponents(array $components): array
     {
+     print_r(['subscomponents', count($components)]);
         foreach ($components as $component) {
+            print_r(['class', \get_class($component->getComponentType()), $component->getComponentType() instanceof ObjectType ? $component->getComponentType()->getClassName() : '---']);
             if ($component->getComponentType() instanceof ObjectType && (new ObjectType('Nette\Application\UI\Multiplier'))->isSuperTypeOf($component->getComponentType())->yes()) {
+                print_r(['multiplier']);
                 $multiplierType = $component->getComponentType()->getAncestorWithClassName('Nette\Application\UI\Multiplier');
                 if ($multiplierType instanceof GenericObjectType) {
                     $subComponentType = $multiplierType->getTypes()[0] ?? null;

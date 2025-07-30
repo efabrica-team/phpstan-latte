@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
-use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;

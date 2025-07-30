@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\Template\Form;
 use Efabrica\PHPStanLatte\Template\Form\Behavior\ControlHolderBehavior;
 use Efabrica\PHPStanLatte\Template\NameItem;
 use JsonSerializable;
-use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 
