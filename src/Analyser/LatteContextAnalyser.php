@@ -41,6 +41,8 @@ final class LatteContextAnalyser
 
     private LatteContextCollectorRegistry $collectorRegistry;
 
+    private string $tmpDir;
+
     /**
      * @param AbstractLatteContextCollector[] $collectors
      */

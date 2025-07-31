@@ -72,7 +72,7 @@ final class Postprocessor
         $signature = '';
         foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
             foreach ($nodeVisitors as $nodeVisitor) {
-                $signature .= $nodeVisitor::class;
+                $signature .= get_class($nodeVisitor);
             }
         }
         return md5($signature);
