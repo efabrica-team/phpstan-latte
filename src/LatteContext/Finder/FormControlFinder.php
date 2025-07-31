@@ -19,6 +19,9 @@ final class FormControlFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, ControlInterface[]> */
+    private array $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -43,14 +46,18 @@ final class FormControlFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundFormControls = [
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundFormControls[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundFormControls = [
+                $this->findInClasses($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundFormControls[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = ItemCombinator::merge(...$foundFormControls);
         }
-        return ItemCombinator::merge(...$foundFormControls);
+        return $this->findCache[$cacheKey];
     }
 
     /**

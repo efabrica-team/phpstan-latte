@@ -24,6 +24,10 @@ final class MethodCallFinder
     /** @var array<string, array<string, bool>> */
     private array $hasOutputCalls = [];
 
+    private $declaringClassCache = [];
+
+    private $findCalledCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, LattePhpDocResolver $lattePhpDocResolver)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -51,11 +55,15 @@ final class MethodCallFinder
      */
     public function getDeclaringClass(string $className, string $methodName): ?string
     {
-        $classReflection = $this->reflectionProvider->getClass($className);
-        if (!$classReflection->hasNativeMethod($methodName)) {
-            return null;
+        $cacheKey = $className . '::' . $methodName;
+        if (!isset($this->declaringClassCache[$cacheKey])) {
+            $classReflection = $this->reflectionProvider->getClass($className);
+            if (!$classReflection->hasNativeMethod($methodName)) {
+                return null;
+            }
+            $this->declaringClassCache[$cacheKey] = $classReflection->getNativeMethod($methodName)->getDeclaringClass()->getName();
         }
-        return $classReflection->getNativeMethod($methodName)->getDeclaringClass()->getName();
+        return $this->declaringClassCache[$cacheKey];
     }
 
     /**
@@ -65,20 +73,28 @@ final class MethodCallFinder
      */
     public function findCalled(string $className, string $methodName, ?string $currentClassName = null): array
     {
-        $declaringClass = $this->getDeclaringClass($className, $methodName);
-        if (!$declaringClass) {
-            return [];
-        }
-        $calledMethods = $this->collectedMethodCalled[$declaringClass][$methodName] ?? [];
-        $result = [];
-        foreach ($calledMethods as $calledMethod) {
-            $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($declaringClass), $currentClassName ?? $className);
-            if ($calledMethod->getCalledClassName() !== null && $this->lattePhpDocResolver->resolveForMethod($calledMethod->getCalledClassName(), $calledMethod->getCalledMethodName())->isIgnored()) {
-                continue;
+        $cacheKey = $className . '::' . $methodName . ' ' . ($currentClassName ?? 'null');
+        if (!isset($this->findCalledCache[$cacheKey])) {
+            $declaringClass = $this->getDeclaringClass($className, $methodName);
+            if (!$declaringClass) {
+                $this->findCalledCache[$cacheKey] = [];
+            } else {
+                $calledMethods = $this->collectedMethodCalled[$declaringClass][$methodName] ?? [];
+                $result = [];
+                foreach ($calledMethods as $calledMethod) {
+                    $calledMethod = $calledMethod->withCurrentClass($this->reflectionProvider->getClass($declaringClass), $currentClassName ?? $className);
+                    if ($calledMethod->getCalledClassName() !== null && $this->lattePhpDocResolver->resolveForMethod(
+                        $calledMethod->getCalledClassName(),
+                        $calledMethod->getCalledMethodName()
+                    )->isIgnored()) {
+                        continue;
+                    }
+                    $result[] = $calledMethod;
+                }
+                $this->findCalledCache[$cacheKey] = $result;
             }
-            $result[] = $calledMethod;
         }
-        return $result;
+        return $this->findCalledCache[$cacheKey];
     }
 
     /**

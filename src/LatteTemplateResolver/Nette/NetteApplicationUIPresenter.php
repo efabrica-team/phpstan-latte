@@ -199,11 +199,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             return null;
         }
 
-        $dir = is_dir("$dir/templates") ? $dir : dirname($dir);
+        $dir = is_dir($dir . DIRECTORY_SEPARATOR . 'templates') ? $dir : dirname($dir);
 
         $templateFileCandidates = [
-            $dir . '/templates/' . $presenterName . '/' . $actionName . '.latte',
-            $dir . '/templates/' . $presenterName . '.' . $actionName . '.latte',
+            $dir . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $presenterName . DIRECTORY_SEPARATOR . $actionName . '.latte',
+            $dir . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $presenterName . '.' . $actionName . '.latte',
         ];
 
         foreach ($templateFileCandidates as $templateFileCandidate) {

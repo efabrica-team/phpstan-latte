@@ -103,7 +103,7 @@ services:
     - Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry(@fileExcluderAnalyse, %analysedPaths%, %latte.reportUnanalysedTemplates%)
 
     -
-        factory: Efabrica\PHPStanLatte\Compiler\CompiledTemplateDirResolver
+        factory: Efabrica\PHPStanLatte\Temp\TempDirResolver
         arguments:
             tmpDir: %latte.tmpDir%
 
@@ -124,7 +124,7 @@ services:
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
             parser: @latteCurrentPhpVersionRichParser
-            tmpDir: %latte.tmpDir%
+            debugMode: %debugMode%
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter

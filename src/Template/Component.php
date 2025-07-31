@@ -20,10 +20,11 @@ final class Component implements NameTypeItem, JsonSerializable
     /** @var Component[] */
     private array $subcomponents = [];
 
-    public function __construct(string $name, Type $type)
+    public function __construct(string $name, Type $type, array $subcomponents = [])
     {
         $this->name = $name;
         $this->type = TypeHelper::resolveType($type);
+        $this->subcomponents = $subcomponents;
     }
 
     public function getName(): string
@@ -70,6 +71,10 @@ final class Component implements NameTypeItem, JsonSerializable
         return [
           'name' => $this->name,
           'type' => TypeHelper::serializeType($this->type),
+          'subcomponents' => array_map(
+              static fn(Component $component): array => $component->jsonSerialize(),
+              $this->subcomponents
+          ),
         ];
     }
 
@@ -77,7 +82,11 @@ final class Component implements NameTypeItem, JsonSerializable
     {
         return new self(
             $data['name'],
-            $typeStringResolver->resolve($data['type'])
+            $typeStringResolver->resolve($data['type']),
+            array_map(
+                static fn(array $componentData): Component => Component::fromJson($componentData, $typeStringResolver),
+                $data['subcomponents'] ?? []
+            )
         );
     }
 }

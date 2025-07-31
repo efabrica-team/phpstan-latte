@@ -7,7 +7,6 @@ namespace Efabrica\PHPStanLatte\Type;
 use InvalidArgumentException;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;

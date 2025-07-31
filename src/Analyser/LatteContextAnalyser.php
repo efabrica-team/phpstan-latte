@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Analyser;
 
 use Composer\InstalledVersions;
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextCollector;
+use Efabrica\PHPStanLatte\Temp\TempDirResolver;
 use Exception;
 use InvalidArgumentException;
 use Nette\Utils\FileSystem;
@@ -50,8 +51,9 @@ final class LatteContextAnalyser
         FileHelper $fileHelper,
         Parser $parser,
         TypeStringResolver $typeStringResolver,
+        TempDirResolver $tempDirResolver,
         array $collectors,
-        string $tmpDir
+        bool $debugMode = false
     ) {
         $this->scopeFactory = $scopeFactory;
         $this->nodeScopeResolver = clone $nodeScopeResolver;
@@ -61,8 +63,10 @@ final class LatteContextAnalyser
         $this->parser = $parser;
         $this->typeStringResolver = $typeStringResolver;
         $this->collectorRegistry = new LatteContextCollectorRegistry($collectors);
-        $baseTmpDir = $tmpDir ? rtrim($tmpDir, '/') : sys_get_temp_dir() . '/phpstan-latte/';
-        $this->tmpDir = $baseTmpDir . '/latte-context-cache/';
+        $this->tmpDir = $tempDirResolver->resolveCollectorDir();
+        if (file_exists($this->tmpDir) && $debugMode) {
+            FileSystem::delete($this->tmpDir);
+        }
     }
 
     /**
@@ -91,6 +95,7 @@ final class LatteContextAnalyser
                     } else {
                         $errors = array_merge($errors, $fileResult->getErrors());
                     }
+                } else {
                 }
                 if ($fileResult->getAllCollectedData() !== []) {
                     $collectedData = array_merge($collectedData, $fileResult->getAllCollectedData());
@@ -194,7 +199,7 @@ final class LatteContextAnalyser
             PHP_VERSION_ID .
             (class_exists(InstalledVersions::class) ? json_encode(InstalledVersions::getAllRawData()) : '')
         );
-        return $this->tmpDir . '/' . basename($file) . '.' . $cacheKey . '.json';
+        return $this->tmpDir . basename($file) . '.' . $cacheKey . '.json';
     }
 
     private function saveLatteContextDataToCache(string $file, LatteContextData $fileResult)

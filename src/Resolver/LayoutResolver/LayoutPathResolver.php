@@ -27,16 +27,16 @@ final class LayoutPathResolver
         preg_match('/{(layout|extend) (?<layout_name>.*?)}/', $templateContent, $match);
 
         if (isset($match['layout_name'])) {
-            $layoutFilePath = dirname($templatePath) . '/' . $match['layout_name'];
+            $layoutFilePath = dirname($templatePath) . DIRECTORY_SEPARATOR . $match['layout_name'];
             return $layoutFilePath;
         }
 
-        $layoutFilePath = realpath(dirname($templatePath) . '/@layout.latte') ?: null;
+        $layoutFilePath = realpath(dirname($templatePath) . DIRECTORY_SEPARATOR . '@layout.latte') ?: null;
         if ($layoutFilePath !== null) {
             return $layoutFilePath;
         }
 
-        $layoutFilePath = realpath(dirname($templatePath) . '/../@layout.latte') ?: null;
+        $layoutFilePath = realpath(dirname($templatePath) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '@layout.latte') ?: null;
         return $layoutFilePath;
     }
 }

@@ -4,6 +4,7 @@
 ### Added
 - Check if value outputted in template (or escaped for output) can be converted to string
 - Support for PHP 8.4
+- Caching of collected Latte context (variables, components, templates, ...) to improve performance
 ### Fixed
 - Fixed unwanted narrowing of template variable types
 
