@@ -203,7 +203,7 @@ final class CollectedMethodCall extends CollectedLatteContextObject
     /**
      * @param array{callerClassName?: ?class-string, callerMethodName?: string, calledClassName?: ?class-string, calledMethodName?: string, isCalledConditionally?: bool, type?: string, params?: array<string, string|int|float|bool>, currentClassName?: ?class-string} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['callerClassName'] ?? null,

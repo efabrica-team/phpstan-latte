@@ -127,7 +127,7 @@ final class LatteContextData implements JsonSerializable
     /**
      * @param array{items: array{class: class-string<CollectedLatteContextObject>, data: mixed}[]} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         $collectedData = [];
         foreach ($data['items'] as $item) {

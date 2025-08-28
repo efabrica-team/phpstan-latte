@@ -147,7 +147,7 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
     /**
      * @param array{templatePath?: ?string, variables?: array<array<string, mixed>>, components?: array<array<string, mixed>>, className?: string, methodName?: string, file?: string, line?: int} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['templatePath'] ?? null,

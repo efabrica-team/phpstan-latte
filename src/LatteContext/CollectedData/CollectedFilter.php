@@ -54,7 +54,7 @@ final class CollectedFilter extends CollectedLatteContextObject
     /**
      * @param array{className: string, methodName: string, filter: array<string, mixed>} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['className'],

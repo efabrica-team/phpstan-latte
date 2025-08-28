@@ -12,5 +12,5 @@ abstract class CollectedLatteContextObject implements JsonSerializable
     /**
      * @param array<mixed> $data
      */
-    abstract public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static;
+    abstract public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self;
 }

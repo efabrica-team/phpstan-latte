@@ -187,7 +187,7 @@ final class TemplateContext implements JsonSerializable
     /**
      * @param array{variables: array<array<string, mixed>>, components: array<array<string, mixed>>, forms: array<array<string, mixed>>, filters: array<array<string, mixed>>} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         foreach ($data['variables'] as $key => $variableData) {
             $variables[$key] = Variable::fromJson($variableData, $typeStringResolver);

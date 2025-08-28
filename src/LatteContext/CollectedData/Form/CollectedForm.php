@@ -90,7 +90,7 @@ final class CollectedForm extends CollectedLatteContextObject
     /**
      * @param array{className: class-string, methodName: string, createdClassName: class-string, createdMethodName: string, form: array<string, mixed>} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['className'],

@@ -124,7 +124,7 @@ final class Template implements JsonSerializable
     /**
      * @param array{path: string, actualClass?: ?class-string, actualAction?: ?string, templateContext: array<string, mixed>, parentTemplatePaths?: array<string>} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['path'],

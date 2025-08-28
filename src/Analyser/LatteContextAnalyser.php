@@ -235,7 +235,7 @@ final class LatteContextAnalyser
         }
         Filesystem::write(
             $cacheFile,
-            Json::encode($cacheData, true)
+            Json::encode($cacheData, JSON_PRETTY_PRINT)
         );
     }
 
@@ -247,8 +247,8 @@ final class LatteContextAnalyser
         }
 
         try {
-            $cacheData = Json::decode(Filesystem::read($cacheFile), true);
-        } catch (Exception) {
+            $cacheData = Json::decode(Filesystem::read($cacheFile), JSON_OBJECT_AS_ARRAY);
+        } catch (Exception $e) {
             FileSystem::delete($cacheFile);
             return null;
         }
@@ -299,7 +299,7 @@ final class LatteContextAnalyser
 
         try {
             return LatteContextData::fromJson($data, $this->typeStringResolver);
-        } catch (Exception) {
+        } catch (Exception $e) {
             FileSystem::delete($cacheFile);
             return null;
         }

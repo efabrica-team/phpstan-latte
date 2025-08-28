@@ -66,7 +66,7 @@ final class Variable implements NameTypeItem, JsonSerializable
     /**
      * @param array{name: string, type?: string, undefined?: bool} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         $name = $data['name'];
         $type = $typeStringResolver->resolve($data['type'] ?? 'mixed');

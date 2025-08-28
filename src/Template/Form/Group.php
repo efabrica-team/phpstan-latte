@@ -42,7 +42,7 @@ final class Group implements NameItem, ControlHolderInterface, JsonSerializable
     /**
      * @param array{name?: string, controls?: array<array<string, mixed>>} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         $controls = [];
         if (isset($data['controls'])) {

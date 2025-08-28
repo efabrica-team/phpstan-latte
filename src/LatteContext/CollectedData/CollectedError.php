@@ -64,7 +64,7 @@ final class CollectedError extends CollectedLatteContextObject
     /**
      * @param array{message: string, file: string, line?: int|null} $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['message'],

@@ -87,7 +87,7 @@ final class Component implements NameTypeItem, JsonSerializable
     /**
      * @param array{ name: string, type: string, subcomponents?: array<int, array<string, mixed>> } $data
      */
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {
         return new self(
             $data['name'],
