@@ -22,6 +22,7 @@ final class VariableFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Variable[]> */
     private $findCache = [];
 
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)

@@ -73,7 +73,10 @@ final class Field implements NameTypeItem, ControlInterface
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{class: string, name: string, type: string, options?: array<int|string, int|string>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['name'],

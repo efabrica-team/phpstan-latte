@@ -184,26 +184,29 @@ final class TemplateContext implements JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{variables: array<array<string, mixed>>, components: array<array<string, mixed>>, forms: array<array<string, mixed>>, filters: array<array<string, mixed>>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         foreach ($data['variables'] as $key => $variableData) {
-            $data['variables'][$key] = Variable::fromJson($variableData, $typeStringResolver);
+            $variables[$key] = Variable::fromJson($variableData, $typeStringResolver);
         }
         foreach ($data['components'] as $key => $componentData) {
-            $data['components'][$key] = Component::fromJson($componentData, $typeStringResolver);
+            $components[$key] = Component::fromJson($componentData, $typeStringResolver);
         }
         foreach ($data['forms'] as $key => $formData) {
-            $data['forms'][$key] = Form::fromJson($formData, $typeStringResolver);
+            $forms[$key] = Form::fromJson($formData, $typeStringResolver);
         }
         foreach ($data['filters'] as $key => $filterData) {
-            $data['filters'][$key] = Filter::fromJson($filterData, $typeStringResolver);
+            $filters[$key] = Filter::fromJson($filterData, $typeStringResolver);
         }
 
         return new self(
-            $data['variables'],
-            $data['components'],
-            $data['forms'],
-            $data['filters']
+            $variables ?? [],
+            $components ?? [],
+            $forms ?? [],
+            $filters ?? []
         );
     }
 }

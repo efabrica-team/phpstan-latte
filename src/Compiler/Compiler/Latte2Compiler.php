@@ -16,6 +16,7 @@ use function is_int;
 
 final class Latte2Compiler extends AbstractCompiler
 {
+    /** @var string[] */
     private array $macros = [];
 
     /**
@@ -30,7 +31,7 @@ final class Latte2Compiler extends AbstractCompiler
         array $macros = []
     ) {
         parent::__construct($engine, $strictMode, $filters, $functions);
-        $this->marcos = $macros;
+        $this->macros = $macros;
         $this->installMacros($macros);
     }
 

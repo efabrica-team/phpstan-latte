@@ -10,6 +10,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\TypeStringResolver;
+use ReturnTypeWillChange;
 
 final class CollectedTemplateRender extends CollectedLatteContextObject
 {
@@ -126,6 +127,10 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
         return $templateRenders;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
@@ -139,7 +144,10 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{templatePath?: ?string, variables?: array<array<string, mixed>>, components?: array<array<string, mixed>>, className?: string, methodName?: string, file?: string, line?: int} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['templatePath'] ?? null,

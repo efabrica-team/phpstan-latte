@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
 use PHPStan\PhpDoc\TypeStringResolver;
+use ReturnTypeWillChange;
 
 final class CollectedRelatedFiles extends CollectedLatteContextObject
 {
@@ -35,6 +36,10 @@ final class CollectedRelatedFiles extends CollectedLatteContextObject
         return $this->relatedFiles;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
@@ -43,7 +48,10 @@ final class CollectedRelatedFiles extends CollectedLatteContextObject
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{processedFile: string, relatedFiles: string[]} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['processedFile'],

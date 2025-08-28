@@ -62,7 +62,10 @@ final class Container implements ControlHolderInterface, ControlInterface
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{name: string, type: string, controls: array<array<string, mixed>>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         $controls = [];
         foreach ($data['controls'] as $controlData) {

@@ -14,6 +14,7 @@ final class MethodFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, CollectedMethod> */
     private $findCache = [];
 
     public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)

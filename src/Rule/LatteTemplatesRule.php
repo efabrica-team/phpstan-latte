@@ -261,7 +261,7 @@ final class LatteTemplatesRule implements Rule
             $analysedTemplatesDir = realpath($analysedTemplatesDir) ?: $analysedTemplatesDir;
             foreach ($templates as $compileFilePath => $template) {
                 $compileFilePath = realpath($compileFilePath) ?: $compileFilePath;
-                if ($compileFilePath === false || !is_file($compileFilePath)) {
+                if (!is_file($compileFilePath)) {
                     continue;
                 }
                 if (strpos($compileFilePath, $compiledTemplatesDir) === 0) {

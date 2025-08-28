@@ -8,6 +8,7 @@ use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
+use ReturnTypeWillChange;
 
 final class CollectedMethod extends CollectedLatteContextObject
 {
@@ -69,6 +70,10 @@ final class CollectedMethod extends CollectedLatteContextObject
         return new self($className, $methodName, $alwaysTerminated, $returnTypes ? TypeCombinator::union(...$returnTypes) : null);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
@@ -79,7 +84,10 @@ final class CollectedMethod extends CollectedLatteContextObject
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{className: string, methodName: string, alwaysTerminated?: bool, returnType?: string|null} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['className'],

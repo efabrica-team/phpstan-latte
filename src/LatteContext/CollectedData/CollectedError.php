@@ -7,6 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\TypeStringResolver;
+use ReturnTypeWillChange;
 
 final class CollectedError extends CollectedLatteContextObject
 {
@@ -47,6 +48,10 @@ final class CollectedError extends CollectedLatteContextObject
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
@@ -56,7 +61,10 @@ final class CollectedError extends CollectedLatteContextObject
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{message: string, file: string, line?: int|null} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['message'],

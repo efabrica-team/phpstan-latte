@@ -121,7 +121,10 @@ final class Template implements JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{path: string, actualClass?: ?class-string, actualAction?: ?string, templateContext: array<string, mixed>, parentTemplatePaths?: array<string>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['path'],

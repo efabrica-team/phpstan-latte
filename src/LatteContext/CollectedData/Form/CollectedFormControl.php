@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use PHPStan\PhpDoc\TypeStringResolver;
+use ReturnTypeWillChange;
 
 final class CollectedFormControl extends CollectedLatteContextObject
 {
@@ -43,6 +44,10 @@ final class CollectedFormControl extends CollectedLatteContextObject
         return $this->formControl;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
@@ -52,7 +57,10 @@ final class CollectedFormControl extends CollectedLatteContextObject
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{className: class-string, methodName: string, formControl: array<string, mixed>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['className'],

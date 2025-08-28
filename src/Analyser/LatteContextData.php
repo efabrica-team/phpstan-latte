@@ -7,10 +7,12 @@ namespace Efabrica\PHPStanLatte\Analyser;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedError;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedRelatedFiles;
+use InvalidArgumentException;
 use JsonSerializable;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use ReturnTypeWillChange;
 use function get_class;
 
 final class LatteContextData implements JsonSerializable
@@ -104,6 +106,10 @@ final class LatteContextData implements JsonSerializable
         return array_unique($relatedFiles);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         $data = [];
@@ -118,11 +124,17 @@ final class LatteContextData implements JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{items: array{class: class-string<CollectedLatteContextObject>, data: mixed}[]} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         $collectedData = [];
         foreach ($data['items'] as $item) {
             $class = $item['class'];
+            if (!class_exists($class) || !is_array($item['data'])) {
+                throw new InvalidArgumentException("Cannot deserialize collected data, class $class not found or data is not array");
+            }
             $collectedData[] = $class::fromJson($item['data'], $typeStringResolver);
         }
         return new self($collectedData, []);

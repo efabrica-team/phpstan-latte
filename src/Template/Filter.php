@@ -54,7 +54,10 @@ final class Filter implements NameTypeItem, JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{name: string, type: string} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['name'],

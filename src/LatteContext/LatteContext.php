@@ -50,8 +50,6 @@ final class LatteContext
 
     private TemplateRenderFinder $templateRenderFinder;
 
-    private string $tmpDir;
-
     public function __construct(LatteContextData $latteContextData, ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         $this->latteContextData = $latteContextData;

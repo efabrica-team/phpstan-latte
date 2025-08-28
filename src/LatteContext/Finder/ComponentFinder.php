@@ -24,6 +24,7 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Component[]> */
     private $findCache = [];
 
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)

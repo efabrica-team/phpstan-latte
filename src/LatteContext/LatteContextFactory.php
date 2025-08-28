@@ -17,8 +17,6 @@ final class LatteContextFactory
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    private string $tmpDir;
-
     public function __construct(ReflectionProvider $reflectionProvider, PathResolver $pathResolver, LattePhpDocResolver $lattePhpDocResolver)
     {
         $this->reflectionProvider = $reflectionProvider;

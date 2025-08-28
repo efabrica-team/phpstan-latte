@@ -20,6 +20,9 @@ final class Component implements NameTypeItem, JsonSerializable
     /** @var Component[] */
     private array $subcomponents = [];
 
+    /**
+     * @param Component[] $subcomponents
+     */
     public function __construct(string $name, Type $type, array $subcomponents = [])
     {
         $this->name = $name;
@@ -65,8 +68,11 @@ final class Component implements NameTypeItem, JsonSerializable
         return $clone;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
           'name' => $this->name,
@@ -78,7 +84,10 @@ final class Component implements NameTypeItem, JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{ name: string, type: string, subcomponents?: array<int, array<string, mixed>> } $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         return new self(
             $data['name'],

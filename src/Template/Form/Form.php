@@ -110,7 +110,10 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{controls: array<string, array<string, mixed>>, groups: array<string, array<string, mixed>>, name: string, type: string} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         $controls = [];
         foreach ($data['controls'] as $controlData) {
@@ -130,6 +133,9 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
         );
     }
 
+    /**
+     * @param array{class: class-string} $controlData
+     */
     public static function controlFromJson(array $controlData, TypeStringResolver $typeStringResolver): ControlInterface
     {
         switch ($controlData['class']) {

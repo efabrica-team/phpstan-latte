@@ -204,7 +204,7 @@ final class LatteContextAnalyser
         return $this->tmpDir . basename($file) . '.' . $cacheKey . '.json';
     }
 
-    private function saveLatteContextDataToCache(string $file, LatteContextData $fileResult)
+    private function saveLatteContextDataToCache(string $file, LatteContextData $fileResult): void
     {
         if (!is_dir($this->tmpDir)) {
             Filesystem::createDir($this->tmpDir, 0777);
@@ -258,28 +258,47 @@ final class LatteContextAnalyser
             return null;
         }
 
+        $file = $cacheData['file'];
+        $fileHash = $cacheData['fileHash'];
+
+        if (!is_string($file) || !is_string($fileHash)) {
+            FileSystem::delete($cacheFile);
+            return null;
+        }
+
         // Check if the file has changed since the cache was created
-        if (sha1(Filesystem::read($cacheData['file'])) !== $cacheData['fileHash']) {
+        if (sha1(Filesystem::read($file)) !== $fileHash) {
             return null;
         }
 
         if (isset($cacheData['dependencies']) && is_array($cacheData['dependencies'])) {
             foreach ($cacheData['dependencies'] as $dependency) {
-                if (!isset($dependency['file'], $dependency['fileHash'])) {
+                if (!is_array($dependency) || !isset($dependency['file'], $dependency['fileHash'])) {
                     return null;
                 }
-                if (!is_file($dependency['file'])) {
+                $dependencyFile = $dependency['file'];
+                $dependencyFileHash = $dependency['fileHash'];
+                if (!is_string($dependencyFile) || !is_string($dependencyFileHash)) {
+                    return null;
+                }
+                if (!is_file($dependencyFile)) {
                     return null;
                 }
                 // Check if the dependency file has changed since the cache was created
-                if (sha1(Filesystem::read($dependency['file'])) !== $dependency['fileHash']) {
+                if (sha1(Filesystem::read($dependencyFile)) !== $dependencyFileHash) {
                     return null;
                 }
             }
         }
 
+        $data = $cacheData['data'];
+        if (!is_array($data)) {
+            FileSystem::delete($cacheFile);
+            return null;
+        }
+
         try {
-            return LatteContextData::fromJson($cacheData['data'], $this->typeStringResolver);
+            return LatteContextData::fromJson($data, $this->typeStringResolver);
         } catch (Exception) {
             FileSystem::delete($cacheFile);
             return null;

@@ -39,10 +39,13 @@ final class Group implements NameItem, ControlHolderInterface, JsonSerializable
         ];
     }
 
-    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    /**
+     * @param array{name?: string, controls?: array<array<string, mixed>>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): static
     {
         $controls = [];
-        if (isset($data['controls']) && is_array($data['controls'])) {
+        if (isset($data['controls'])) {
             foreach ($data['controls'] as $controlData) {
                 $controls[] = Form::controlFromJson($controlData, $typeStringResolver);
             }

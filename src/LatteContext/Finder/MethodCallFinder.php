@@ -24,8 +24,10 @@ final class MethodCallFinder
     /** @var array<string, array<string, bool>> */
     private array $hasOutputCalls = [];
 
+    /** @var array<string, class-string|null> */
     private $declaringClassCache = [];
 
+    /** @var array<string, CollectedMethodCall[]> */
     private $findCalledCache = [];
 
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, LattePhpDocResolver $lattePhpDocResolver)
