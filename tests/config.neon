@@ -1,6 +1,5 @@
 parameters:
     latte:
-        tmpDir: %rootDir%/../../../tmp/phpstan-latte
         resolveAllPossiblePaths: true
         features:
             transformDynamicFormControlNamesToString: true

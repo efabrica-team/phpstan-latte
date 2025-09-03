@@ -4,13 +4,25 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Temp;
 
+use RuntimeException;
+
 final class TempDirResolver
 {
     private string $tmpDir;
 
     public function __construct(?string $tmpDir)
     {
-        $this->tmpDir = $tmpDir ? rtrim($tmpDir, DIRECTORY_SEPARATOR) : sys_get_temp_dir() . '/phpstan-latte';
+        $tmpDir = $tmpDir ? rtrim($tmpDir, DIRECTORY_SEPARATOR) : sys_get_temp_dir() . '/phpstan-latte';
+        if (!is_dir($tmpDir)) {
+            if (!@mkdir($tmpDir) && !is_dir($tmpDir)) {
+                throw new RuntimeException(sprintf('Cannot create temp dir "%s"', $tmpDir));
+            }
+        }
+        $tmpDir = realpath($tmpDir) ?: $tmpDir;
+        if (!is_writable($tmpDir)) {
+            throw new RuntimeException(sprintf('Temp dir "%s" is not writable', $tmpDir));
+        }
+        $this->tmpDir = $tmpDir;
     }
 
     public function resolveCompileDir(): string
