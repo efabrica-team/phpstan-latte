@@ -278,3 +278,22 @@ parameters:
     latte:
         strictMode: true
 ```
+
+### debugMode
+Type: `bool`
+
+Enables debugMode that disables cache usage
+
+Default:
+```neon
+parameters:
+    latte:
+        debugMode: false
+```
+
+Example:
+```neon
+parameters:
+    latte:
+        debugMode: true
+```

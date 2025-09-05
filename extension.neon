@@ -17,6 +17,7 @@ parameters:
     latte:
         strictMode: false
         tmpDir: null
+        debugMode: false
         globalVariables: []
         filters:
             translate: [Nette\Localization\Translator, translate]
@@ -48,6 +49,7 @@ parametersSchema:
     latte: structure([
         strictMode: bool()
         tmpDir: schema(string(), nullable())
+        debugMode: bool()
         globalVariables: arrayOf(string(), string())
         filters: arrayOf(anyOf(string(), arrayOf(string())), string())
         functions: arrayOf(anyOf(string(), arrayOf(string())), string())
@@ -111,7 +113,7 @@ services:
         class: Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler
         arguments:
             cacheKey: ::md5(::json_encode(%latte%))
-            debugMode: %debugMode%
+            debugMode: %latte.debugMode%
     -
         factory: Efabrica\PHPStanLatte\Compiler\Postprocessor
         arguments:
@@ -124,7 +126,7 @@ services:
         factory: Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser
         arguments:
             parser: @latteCurrentPhpVersionRichParser
-            debugMode: %debugMode%
+            debugMode: %latte.debugMode%
 
     # Latte template resolvers
     - Efabrica\PHPStanLatte\LatteTemplateResolver\Nette\NetteApplicationUIPresenter
@@ -232,7 +234,7 @@ services:
     - Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector\TemplateRenderCallsCollector
 
     # Error builder
-    - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%debugMode%)
+    - Efabrica\PHPStanLatte\Error\LineMapper\LineMapper(%latte.debugMode%)
     - Efabrica\PHPStanLatte\Error\ErrorBuilder(%latte.errorPatternsToIgnore%, %latte.warningPatterns%, %latte.strictMode%)
 
     # Error transformers
