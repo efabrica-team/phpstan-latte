@@ -1,5 +1,6 @@
 parameters:
     latte:
+        debugMode: true
         resolveAllPossiblePaths: true
         features:
             transformDynamicFormControlNamesToString: true
