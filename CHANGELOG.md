@@ -5,8 +5,12 @@
 - Check if value outputted in template (or escaped for output) can be converted to string
 - Support for PHP 8.4
 - Caching of collected Latte context (variables, components, templates, ...) to improve performance
+- Improved caching of compiled templates to improve performance
+- Memoizing of repeatedly called methods to improve performance
 ### Fixed
 - Fixed unwanted narrowing of template variable types
+
+This version should significantly improve performace of repeated runs.
 
 ## [0.18] - 2025-07-22
 ### Updated
