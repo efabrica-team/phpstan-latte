@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Template;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use JsonSerializable;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Component implements NameTypeItem, JsonSerializable
@@ -18,10 +20,14 @@ final class Component implements NameTypeItem, JsonSerializable
     /** @var Component[] */
     private array $subcomponents = [];
 
-    public function __construct(string $name, Type $type)
+    /**
+     * @param Component[] $subcomponents
+     */
+    public function __construct(string $name, Type $type, array $subcomponents = [])
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
+        $this->subcomponents = $subcomponents;
     }
 
     public function getName(): string
@@ -36,7 +42,7 @@ final class Component implements NameTypeItem, JsonSerializable
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::typeOnly());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     /**
@@ -58,16 +64,38 @@ final class Component implements NameTypeItem, JsonSerializable
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
           'name' => $this->name,
-          'type' => $this->getTypeAsString(),
+          'type' => TypeHelper::serializeType($this->type),
+          'subcomponents' => array_map(
+              static fn(Component $component): array => $component->jsonSerialize(),
+              $this->subcomponents
+          ),
         ];
+    }
+
+    /**
+     * @param array{ name: string, type: string, subcomponents?: array<int, array<string, mixed>> } $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['name'],
+            $typeStringResolver->resolve($data['type']),
+            array_map(
+                static fn(array $componentData): Component => Component::fromJson($componentData, $typeStringResolver),
+                $data['subcomponents'] ?? []
+            )
+        );
     }
 }

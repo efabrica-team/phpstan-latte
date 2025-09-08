@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Compiler;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\Generic\TemplateType;
-use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\VerbosityLevel;
 use Throwable;
 
@@ -24,17 +22,7 @@ final class TypeToPhpDoc
 
     public function toPhpDocString(Type $type): string
     {
-        if ($type instanceof StaticType) {
-            $type = $type->getStaticObjectType();
-        }
-
-        // replace unresolved template types with their bounds (T of stdClass -> stdClass)
-        $type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
-            if ($type instanceof TemplateType) {
-                return $traverse($type->getBound());
-            }
-            return $traverse($type);
-        });
+        $type = TypeHelper::resolveTypeBounds($type);
 
         $phpDoc = $type->describe(VerbosityLevel::precise());
         try {

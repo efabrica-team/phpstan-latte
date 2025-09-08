@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LatteContext\CollectedData;
 
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\VerbosityLevel;
+use ReturnTypeWillChange;
 
 final class CollectedMethod extends CollectedLatteContextObject
 {
@@ -65,5 +68,32 @@ final class CollectedMethod extends CollectedLatteContextObject
         $returnTypes = array_filter($returnTypes);
 
         return new self($className, $methodName, $alwaysTerminated, $returnTypes ? TypeCombinator::union(...$returnTypes) : null);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'alwaysTerminated' => $this->alwaysTerminated,
+            'returnType' => $this->returnType ? $this->returnType->describe(VerbosityLevel::precise()) : null,
+        ];
+    }
+
+    /**
+     * @param array{className: string, methodName: string, alwaysTerminated?: bool, returnType?: string|null} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            $data['alwaysTerminated'] ?? false,
+            isset($data['returnType']) ? $typeStringResolver->resolve($data['returnType']) : null
+        );
     }
 }

@@ -14,6 +14,9 @@ final class MethodFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, CollectedMethod> */
+    private $findCache = [];
+
     public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder)
     {
         $this->methodCallFinder = $methodCallFinder;
@@ -31,8 +34,12 @@ final class MethodFinder
 
     public function find(string $className, string $methodName): CollectedMethod
     {
-        $className = $this->methodCallFinder->getDeclaringClass($className, $methodName) ?? $className;
-        return CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
+        $cacheKey = $className . '::' . $methodName;
+        if (!isset($this->findCache[$cacheKey])) {
+            $className = $this->methodCallFinder->getDeclaringClass($className, $methodName) ?? $className;
+            $this->findCache[$cacheKey] = CollectedMethod::combine($className, $methodName, ...$this->collectedMethods[$className][$methodName] ?? []);
+        }
+        return $this->findCache[$cacheKey];
     }
 
     /**

@@ -19,6 +19,9 @@ final class FormGroupFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Group[]> */
+    private array $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -43,14 +46,18 @@ final class FormGroupFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundGroups = [
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundGroups[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundGroups = [
+                $this->findInClasses($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundGroups[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = ItemCombinator::merge(...$foundGroups);
         }
-        return ItemCombinator::merge(...$foundGroups);
+        return $this->findCache[$cacheKey];
     }
 
     /**

@@ -8,7 +8,9 @@ use Efabrica\PHPStanLatte\Template\Component;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
+use ReturnTypeWillChange;
 
 final class CollectedComponent extends CollectedLatteContextObject
 {
@@ -76,6 +78,35 @@ final class CollectedComponent extends CollectedLatteContextObject
             $methodName ?? '',
             new Component($name, $type),
             $declared
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+          'class' => self::class,
+          'className' => $this->getClassName(),
+          'methodName' => $this->getMethodName(),
+          'component' => $this->getComponent()->jsonSerialize(),
+          'declared' => $this->isDeclared(),
+        ];
+    }
+
+    /**
+     * @param array{class: string, className: string, methodName: string, component: array<string, mixed>, declared: bool} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Component::fromJson($data['component'], $typeStringResolver),
+            $data['declared']
         );
     }
 }

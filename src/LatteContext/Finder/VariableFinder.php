@@ -22,6 +22,9 @@ final class VariableFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Variable[]> */
+    private $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -45,14 +48,18 @@ final class VariableFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundVariables = [
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundVariables[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundVariables = [
+                $this->findInClasses($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundVariables[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = ItemCombinator::merge(...$foundVariables);
         }
-        return ItemCombinator::merge(...$foundVariables);
+        return $this->findCache[$cacheKey];
     }
 
     /**

@@ -15,6 +15,8 @@ interface CompilerInterface
      */
     public function compile(string $templateContent, ?string $actualClass, string $context = ''): string;
 
+    public function getCacheKey(): string;
+
     /**
      * @return array<string, string|array{string, string}|array{object, string}|callable>
      */

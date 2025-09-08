@@ -22,6 +22,9 @@ final class TemplatePathFinder
 
     private PathResolver $pathResolver;
 
+    /** @var array<string, array<string>> */
+    private array $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, PathResolver $pathResolver)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -51,15 +54,19 @@ final class TemplatePathFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundTemplatePaths = [
-            $this->collectedTemplatePaths[$className][''] ?? [],
-            $this->findInParents($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundTemplatePaths[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundTemplatePaths = [
+                $this->collectedTemplatePaths[$className][''] ?? [],
+                $this->findInParents($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundTemplatePaths[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = array_merge(...$foundTemplatePaths);
         }
-        return array_merge(...$foundTemplatePaths);
+        return $this->findCache[$cacheKey];
     }
 
     /**

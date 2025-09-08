@@ -67,6 +67,17 @@ final class Postprocessor
         $this->nameResolver = $nameResolver;
     }
 
+    public function getCacheKey(): string
+    {
+        $signature = '';
+        foreach ($this->nodeVisitorStorage->getNodeVisitors() as $nodeVisitors) {
+            foreach ($nodeVisitors as $nodeVisitor) {
+                $signature .= get_class($nodeVisitor);
+            }
+        }
+        return md5($signature);
+    }
+
     /**
      * @throws ParseException
      */

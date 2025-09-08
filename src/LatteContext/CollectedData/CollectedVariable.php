@@ -8,7 +8,9 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
+use ReturnTypeWillChange;
 
 final class CollectedVariable extends CollectedLatteContextObject
 {
@@ -84,5 +86,32 @@ final class CollectedVariable extends CollectedLatteContextObject
             $collectedVariables[] = self::build($node, $scope, $variable->getName(), $variable->getType(), $declared, $variable->mightBeUndefined());
         }
         return $collectedVariables;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'variable' => $this->variable->jsonSerialize(),
+            'declared' => $this->declared,
+        ];
+    }
+
+    /**
+     * @param array{className: class-string, methodName: string, variable: array<string, mixed>, declared?: bool} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            Variable::fromJson($data['variable'], $typeStringResolver),
+            $data['declared'] ?? false
+        );
     }
 }

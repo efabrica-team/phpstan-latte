@@ -8,7 +8,6 @@ use Efabrica\PHPStanLatte\Analyser\AnalysedTemplatesRegistry;
 use Efabrica\PHPStanLatte\Analyser\FileAnalyserFactory;
 use Efabrica\PHPStanLatte\Analyser\LatteContextAnalyser;
 use Efabrica\PHPStanLatte\Collector\Finder\ResolvedNodeFinder;
-use Efabrica\PHPStanLatte\Compiler\CompiledTemplateDirResolver;
 use Efabrica\PHPStanLatte\Compiler\Helper\TemplateContextHelper;
 use Efabrica\PHPStanLatte\Compiler\LatteToPhpCompiler;
 use Efabrica\PHPStanLatte\Error\ErrorBuilder;
@@ -17,8 +16,10 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\Collector\TemplateRenderCollector;
 use Efabrica\PHPStanLatte\LatteContext\LatteContextFactory;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\LatteTemplateResolverInterface;
+use Efabrica\PHPStanLatte\Temp\TempDirResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use Latte\CompileException;
+use Nette\Utils\FileSystem;
 use PhpParser\Node;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Scope;
@@ -57,7 +58,7 @@ final class LatteTemplatesRule implements Rule
 
     private TemplateContextHelper $templateContextHelper;
 
-    private CompiledTemplateDirResolver $compiledTemplateDirResolver;
+    private TempDirResolver $tempDirResolver;
 
     private ?string $phpstanCommand;
 
@@ -76,7 +77,7 @@ final class LatteTemplatesRule implements Rule
         LatteContextFactory $latteContextFactory,
         array $templateRenderCollectors,
         TemplateContextHelper $templateContextHelper,
-        CompiledTemplateDirResolver $compiledTemplateDirResolver,
+        TempDirResolver $tempDirResolver,
         ?string $phpstanCommand
     ) {
         $this->latteTemplateResolvers = $latteTemplateResolvers;
@@ -89,7 +90,7 @@ final class LatteTemplatesRule implements Rule
         $this->latteIncludeAnalyser = $latteContextAnalyser->withCollectors($templateRenderCollectors);
         $this->latteContextFactory = $latteContextFactory;
         $this->templateContextHelper = $templateContextHelper;
-        $this->compiledTemplateDirResolver = $compiledTemplateDirResolver;
+        $this->tempDirResolver = $tempDirResolver;
         $this->phpstanCommand = $phpstanCommand;
     }
 
@@ -196,8 +197,8 @@ final class LatteTemplatesRule implements Rule
             foreach ($collectedTemplateRenders as $collectedTemplateRender) {
                 $includedTemplatePath = $collectedTemplateRender->getTemplatePath();
                 if (is_string($includedTemplatePath) && $includedTemplatePath !== '') {
-                    if ($includedTemplatePath[0] !== '/') {
-                        $includedTemplatePath = $dir . '/' . $includedTemplatePath;
+                    if ($includedTemplatePath[0] !== DIRECTORY_SEPARATOR) {
+                        $includedTemplatePath = $dir . DIRECTORY_SEPARATOR . $includedTemplatePath;
                     }
                     if (!is_file($includedTemplatePath)) {
                         $errors[] = $this->errorBuilder->buildError(
@@ -246,17 +247,40 @@ final class LatteTemplatesRule implements Rule
     {
         $errors = [];
         if ($this->phpstanCommand) {
-            $compiledTemplatesDir = $this->compiledTemplateDirResolver->resolve();
+            $compiledTemplatesDir = $this->tempDirResolver->resolveCompileDir();
             if (!is_dir($compiledTemplatesDir)) {
                 return [];
             }
-            $phpstanCommand = str_replace('{dir}', $compiledTemplatesDir, $this->phpstanCommand) . ' --error-format json';
+            $analysedTemplatesDir = $this->tempDirResolver->resolveAnalyseDir();
+            if (is_dir($analysedTemplatesDir)) {
+                // delete old analysed templates
+                FileSystem::delete($analysedTemplatesDir);
+            }
+            $analysedToCompiledMap = [];
+            FileSystem::createDir($analysedTemplatesDir);
+            $analysedTemplatesDir = realpath($analysedTemplatesDir) ?: $analysedTemplatesDir;
+            foreach ($templates as $compileFilePath => $template) {
+                $compileFilePath = realpath($compileFilePath) ?: $compileFilePath;
+                if (!is_file($compileFilePath)) {
+                    continue;
+                }
+                if (strpos($compileFilePath, $compiledTemplatesDir) === 0) {
+                    $compileFileRelativePath = substr($compileFilePath, strlen($compiledTemplatesDir) + 1);
+                } else {
+                    $compileFileRelativePath = pathinfo($compileFilePath, PATHINFO_BASENAME);
+                }
+                $destFile = $analysedTemplatesDir . DIRECTORY_SEPARATOR . $compileFileRelativePath;
+                FileSystem::copy($compileFilePath, $destFile);
+                $analysedToCompiledMap[$destFile] = $compileFilePath;
+            }
+
+            $phpstanCommand = str_replace('{dir}', $analysedTemplatesDir, $this->phpstanCommand) . ' --error-format json';
             $phpstanOutput = shell_exec($phpstanCommand) ?: '{}';
 
             /** @var array{files?: array<string, array{messages: array<array{message: string, line: int, ignorable: bool, tip?: string}>}>} $originalErrors */
             $originalErrors = json_decode($phpstanOutput, true);
-
-            foreach ($originalErrors['files'] ?? [] as $compileFilePath => $originalFileErrors) {
+            foreach ($originalErrors['files'] ?? [] as $analysedFilePath => $originalFileErrors) {
+                $compileFilePath = $analysedToCompiledMap[$analysedFilePath] ?? $analysedFilePath;
                 $template = $templates[$compileFilePath] ?? null;
                 if ($template === null) {
                     continue;

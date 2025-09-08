@@ -162,6 +162,9 @@ parameters:
                 - '#^Call to an undefined method Latte\\Engine\:\:addExtension\(\)\.$#'
                 - '#^Parameter \#1 \$phpContent of method Efabrica\\PHPStanLatte\\Compiler\\Compiler\\Latte3Compiler::fixLines\(\) expects string, mixed given\.#'
                 - '#^PHPDoc tag @var with type array<string, callable> is not subtype of type array<string>\.#'
+                - '#^Parameter \#1 \$object of function get_class expects object, mixed given\.#'
+                - '#^Call to function is_array\(\) with array<Latte\\Extension> will always evaluate to true\.#'
+                - '#^Call to function is_object\(\) with Latte\\Extension will always evaluate to true\.#'
             path: src/Compiler/Compiler/Latte3Compiler.php
             reportUnmatched: false
 
@@ -198,3 +201,7 @@ parameters:
             # present only in nette/utils 4
             message: '#^PHPDoc tag @var with type SplFileInfo is not subtype of native type Nette\\Utils\\FileInfo\.$#'
             reportUnmatched: false
+        -
+            message: '#^Parameter \#1 .* of static method .*::fromJson\(\) expects array{.*}, array.* given\.$#'
+        -
+            message: '#^Parameter \#1 .* of static method .*::.*FromJson\(\) expects array{.*}, array.* given\.$#'

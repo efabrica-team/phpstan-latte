@@ -21,6 +21,9 @@ final class TemplateRenderFinder
 
     private PathResolver $pathResolver;
 
+    /** @var array<string, CollectedTemplateRender[]> */
+    private array $findCache = [];
+
     public function __construct(LatteContextData $latteContext, MethodCallFinder $methodCallFinder, MethodFinder $methodFinder, TemplatePathFinder $templatePathFinder, PathResolver $pathResolver)
     {
         $this->methodCallFinder = $methodCallFinder;
@@ -53,22 +56,26 @@ final class TemplateRenderFinder
      */
     public function find(string $className, string $methodName): array
     {
-        $templateRenders = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . $methodName;
+        if (!isset($this->findCache[$cacheKey])) {
+            $templateRenders = $this->findInMethodCalls($className, $methodName);
 
-        $defaultTemplatePaths = $this->templatePathFinder->find($className, $methodName);
+            $defaultTemplatePaths = $this->templatePathFinder->find($className, $methodName);
 
-        $templateRendersWithTemplatePaths = [];
-        foreach ($templateRenders as $templateRender) {
-            // when render call does not specify template directly use default template(s) collected from setFile() calls
-            if ($templateRender->getTemplatePath() === null && count($defaultTemplatePaths) > 0) {
-                foreach ($defaultTemplatePaths as $defaultTemplatePath) {
-                    $templateRendersWithTemplatePaths[] = $templateRender->withTemplatePath($defaultTemplatePath);
+            $templateRendersWithTemplatePaths = [];
+            foreach ($templateRenders as $templateRender) {
+                // when render call does not specify template directly use default template(s) collected from setFile() calls
+                if ($templateRender->getTemplatePath() === null && count($defaultTemplatePaths) > 0) {
+                    foreach ($defaultTemplatePaths as $defaultTemplatePath) {
+                        $templateRendersWithTemplatePaths[] = $templateRender->withTemplatePath($defaultTemplatePath);
+                    }
+                } else {
+                    $templateRendersWithTemplatePaths[] = $templateRender;
                 }
-            } else {
-                $templateRendersWithTemplatePaths[] = $templateRender;
             }
+            $this->findCache[$cacheKey] = $templateRendersWithTemplatePaths;
         }
-        return $templateRendersWithTemplatePaths;
+        return $this->findCache[$cacheKey];
     }
 
     /**

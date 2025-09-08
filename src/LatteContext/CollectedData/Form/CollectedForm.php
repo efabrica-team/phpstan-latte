@@ -6,7 +6,9 @@ namespace Efabrica\PHPStanLatte\LatteContext\CollectedData\Form;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedLatteContextObject;
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Type\Type;
+use ReturnTypeWillChange;
 
 final class CollectedForm extends CollectedLatteContextObject
 {
@@ -68,5 +70,34 @@ final class CollectedForm extends CollectedLatteContextObject
         $clone = clone $this;
         $clone->form = $this->form->withType($type);
         return $clone;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'createdClassName' => $this->createdClassName,
+            'createdMethodName' => $this->createdMethodName,
+            'form' => $this->form->jsonSerialize(),
+        ];
+    }
+
+    /**
+     * @param array{className: class-string, methodName: string, createdClassName: class-string, createdMethodName: string, form: array<string, mixed>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['className'],
+            $data['methodName'],
+            $data['createdClassName'],
+            $data['createdMethodName'],
+            Form::fromJson($data['form'], $typeStringResolver)
+        );
     }
 }

@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Form\Form;
-use Efabrica\PHPStanLatte\Type\TemplateTypeHelper;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\Reflection\ReflectionProvider;
 
 final class FormFinder
@@ -22,6 +22,9 @@ final class FormFinder
     private FormControlFinder $formControlFinder;
 
     private FormGroupFinder $formGroupFinder;
+
+    /** @var array<string, Form[]> */
+    private array $findCache = [];
 
     public function __construct(
         LatteContextData $latteContext,
@@ -52,35 +55,39 @@ final class FormFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundForms = [
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundForms[] = $this->findInMethodCalls($className, $methodName);
-        }
-        /** @var CollectedForm[] $collectedForms */
-        $collectedForms = array_merge(...$foundForms);
-
-        $forms = [];
-        foreach ($collectedForms as $collectedForm) {
-            $createdClassName = $collectedForm->getCreatedClassName();
-            $parentClassNames = $this->reflectionProvider->getClass($className)->getParentClassesNames();
-            if (in_array($createdClassName, $parentClassNames, true)) {
-                $createdClassName = $className;
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundForms = [
+                $this->findInClasses($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundForms[] = $this->findInMethodCalls($className, $methodName);
             }
-            $formControls = $this->formControlFinder->find(
-                $createdClassName,
-                $collectedForm->getCreatedMethodName()
-            );
-            $formGroups = $this->formGroupFinder->find(
-                $createdClassName,
-                $collectedForm->getCreatedMethodName()
-            );
-            $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withControls($formControls)->withGroups($formGroups);
-        }
+            /** @var CollectedForm[] $collectedForms */
+            $collectedForms = array_merge(...$foundForms);
 
-        return $forms;
+            $forms = [];
+            foreach ($collectedForms as $collectedForm) {
+                $createdClassName = $collectedForm->getCreatedClassName();
+                $parentClassNames = $this->reflectionProvider->getClass($className)->getParentClassesNames();
+                if (in_array($createdClassName, $parentClassNames, true)) {
+                    $createdClassName = $className;
+                }
+                $formControls = $this->formControlFinder->find(
+                    $createdClassName,
+                    $collectedForm->getCreatedMethodName()
+                );
+                $formGroups = $this->formGroupFinder->find(
+                    $createdClassName,
+                    $collectedForm->getCreatedMethodName()
+                );
+                $forms[$collectedForm->getForm()->getName()] = $collectedForm->getForm()->withControls($formControls)->withGroups($formGroups);
+            }
+
+            $this->findCache[$cacheKey] = $forms;
+        }
+        return $this->findCache[$cacheKey];
     }
 
     /**
@@ -107,7 +114,7 @@ final class FormFinder
         $callback = function (string $declaringClass, string $methodName, array $fromCalled, ?string $currentClassName) {
             $collectedForms = [];
             foreach ($this->collectedForms[$declaringClass][$methodName] ?? [] as $collectedForm) {
-                $collectedForms[] = $collectedForm->withFormType(TemplateTypeHelper::resolveTemplateType(
+                $collectedForms[] = $collectedForm->withFormType(TypeHelper::resolveTemplateType(
                     $collectedForm->getForm()->getType(),
                     $declaringClass,
                     $currentClassName

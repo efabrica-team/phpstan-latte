@@ -7,14 +7,18 @@ namespace Efabrica\PHPStanLatte\Compiler;
 use Composer\InstalledVersions;
 use Efabrica\PHPStanLatte\Compiler\Compiler\CompilerInterface;
 use Efabrica\PHPStanLatte\Exception\ParseException;
+use Efabrica\PHPStanLatte\Temp\TempDirResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use InvalidArgumentException;
 use Latte\CompileException;
 use Latte\Engine;
+use Nette\Utils\FileSystem;
 
 final class LatteToPhpCompiler
 {
-    private string $tmpDir;
+    private string $compileDir;
+
+    private string $analyseDir;
 
     private string $cacheKey;
 
@@ -26,15 +30,24 @@ final class LatteToPhpCompiler
 
     public function __construct(
         string $cacheKey,
-        CompiledTemplateDirResolver $compiledTemplateDirResolver,
+        TempDirResolver $tempDirResolver,
         CompilerInterface $compiler,
         Postprocessor $postprocessor,
         bool $debugMode = false
     ) {
-        $this->tmpDir = $compiledTemplateDirResolver->resolve();
+        $this->compileDir = $tempDirResolver->resolveCompileDir();
+        $this->analyseDir = $tempDirResolver->resolveAnalyseDir();
+        if (file_exists($this->compileDir) && $debugMode) {
+            FileSystem::delete($this->compileDir);
+        }
+        if (file_exists($this->analyseDir)) {
+            FileSystem::delete($this->analyseDir);
+        }
         $this->cacheKey = $cacheKey . md5(
             Engine::VERSION_ID .
             PHP_VERSION_ID .
+            $compiler->getCacheKey() .
+            $postprocessor->getCacheKey() .
             (class_exists(InstalledVersions::class) ? json_encode(InstalledVersions::getAllRawData()) : '')
         );
         $this->compiler = $compiler;
@@ -67,11 +80,13 @@ final class LatteToPhpCompiler
             $templateDir = substr($templateDir, strlen($replacedPath));
         }
 
-        $compileDir = $this->normalizeCompileDir($this->tmpDir . '/' . $templateDir);
+        $compileDir = $this->normalizeCompileDir($this->compileDir . DIRECTORY_SEPARATOR . $templateDir);
         if (!file_exists($compileDir)) {
             mkdir($compileDir, 0777, true);
         }
-        $compileFilePath = $compileDir . '/' . $templateFileName . '.' . $contextHash . '.php';
+
+        $fileName = $templateFileName . '.' . $contextHash . '.php';
+        $compileFilePath = $compileDir . DIRECTORY_SEPARATOR . $fileName;
 
         if (!$this->debugMode && file_exists($compileFilePath)) {
             require($compileFilePath); // load type definitions from compiled template
@@ -85,7 +100,7 @@ final class LatteToPhpCompiler
 
     private function normalizeCompileDir(string $compileDir): string
     {
-        $compileDirParts = array_filter(explode('/', $compileDir));
+        $compileDirParts = array_filter(explode(DIRECTORY_SEPARATOR, $compileDir));
         $newCompileDirParts = [];
         foreach ($compileDirParts as $compileDirPart) {
             if ($compileDirPart === '..') {
@@ -94,6 +109,6 @@ final class LatteToPhpCompiler
             }
             $newCompileDirParts[] = $compileDirPart;
         }
-        return '/' . implode('/', $newCompileDirParts);
+        return DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $newCompileDirParts);
     }
 }

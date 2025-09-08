@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
+use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
 
 final class TemplateContext implements JsonSerializable
@@ -176,10 +177,36 @@ final class TemplateContext implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'variables' => $this->variables,
-            'components' => $this->components,
-            'forms' => $this->forms,
-            'filters' => $this->filters,
+            'variables' => array_map(fn(Variable $variable) => $variable->jsonSerialize(), $this->variables),
+            'components' => array_map(fn(Component $component) => $component->jsonSerialize(), $this->components),
+            'forms' => array_map(fn(Form $form) => $form->jsonSerialize(), $this->forms),
+            'filters' => array_map(fn(Filter $filter) => $filter->jsonSerialize(), $this->filters),
         ];
+    }
+
+    /**
+     * @param array{variables: array<array<string, mixed>>, components: array<array<string, mixed>>, forms: array<array<string, mixed>>, filters: array<array<string, mixed>>} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        foreach ($data['variables'] as $key => $variableData) {
+            $variables[$key] = Variable::fromJson($variableData, $typeStringResolver);
+        }
+        foreach ($data['components'] as $key => $componentData) {
+            $components[$key] = Component::fromJson($componentData, $typeStringResolver);
+        }
+        foreach ($data['forms'] as $key => $formData) {
+            $forms[$key] = Form::fromJson($formData, $typeStringResolver);
+        }
+        foreach ($data['filters'] as $key => $filterData) {
+            $filters[$key] = Filter::fromJson($filterData, $typeStringResolver);
+        }
+
+        return new self(
+            $variables ?? [],
+            $components ?? [],
+            $forms ?? [],
+            $filters ?? []
+        );
     }
 }

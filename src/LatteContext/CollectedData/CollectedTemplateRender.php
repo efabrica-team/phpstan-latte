@@ -9,6 +9,8 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\PhpDoc\TypeStringResolver;
+use ReturnTypeWillChange;
 
 final class CollectedTemplateRender extends CollectedLatteContextObject
 {
@@ -123,5 +125,38 @@ final class CollectedTemplateRender extends CollectedLatteContextObject
             $templateRenders[] = CollectedTemplateRender::build($node, $scope, $path, $variables, $components);
         }
         return $templateRenders;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[ReturnTypeWillChange]
+    public function jsonSerialize(): array
+    {
+        return [
+            'templatePath' => $this->templatePath,
+            'variables' => array_map(fn(Variable $variable) => $variable->jsonSerialize(), $this->variables),
+            'components' => array_map(fn(Component $component) => $component->jsonSerialize(), $this->components),
+            'className' => $this->className,
+            'methodName' => $this->methodName,
+            'file' => $this->file,
+            'line' => $this->line,
+        ];
+    }
+
+    /**
+     * @param array{templatePath?: ?string, variables?: array<array<string, mixed>>, components?: array<array<string, mixed>>, className?: string, methodName?: string, file?: string, line?: int} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        return new self(
+            $data['templatePath'] ?? null,
+            array_map(fn(array $variable) => Variable::fromJson($variable, $typeStringResolver), $data['variables'] ?? []),
+            array_map(fn(array $component) => Component::fromJson($component, $typeStringResolver), $data['components'] ?? []),
+            $data['className'] ?? '',
+            $data['methodName'] ?? '',
+            $data['file'] ?? '',
+            $data['line'] ?? 0
+        );
     }
 }

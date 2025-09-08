@@ -7,9 +7,12 @@ namespace Efabrica\PHPStanLatte\Template\Form;
 use Efabrica\PHPStanLatte\Template\Form\Behavior\ControlHolderBehavior;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\NameTypeItem;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
+use InvalidArgumentException;
 use JsonSerializable;
+use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
-use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializable
@@ -30,7 +33,7 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
     public function __construct(string $name, Type $type, array $controls = [], array $groups = [])
     {
         $this->name = $name;
-        $this->type = $type;
+        $this->type = TypeHelper::resolveType($type);
         $this->addControls($controls);
         $this->groups = $groups;
     }
@@ -47,7 +50,7 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
 
     public function getTypeAsString(): string
     {
-        return $this->type->describe(VerbosityLevel::typeOnly());
+        return (new Printer())->print($this->type->toPhpDocNode());
     }
 
     /**
@@ -92,7 +95,7 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
     public function withType(Type $type): self
     {
         $clone = clone $this;
-        $clone->type = $type;
+        $clone->type = TypeHelper::resolveType($type);
         return $clone;
     }
 
@@ -101,9 +104,47 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
     {
         return [
             'name' => $this->name,
-            'type' => $this->getTypeAsString(),
-            'controls' => $this->controls,
-            'groups' => $this->groups,
+            'type' => TypeHelper::serializeType($this->type),
+            'controls' => array_map(fn(ControlInterface $control) => $control->jsonSerialize(), $this->controls),
+            'groups' => array_map(fn(Group $group) => $group->jsonSerialize(), $this->groups),
         ];
+    }
+
+    /**
+     * @param array{controls: array<string, array<string, mixed>>, groups: array<string, array<string, mixed>>, name: string, type: string} $data
+     */
+    public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
+    {
+        $controls = [];
+        foreach ($data['controls'] as $controlData) {
+            $controls[] = self::controlFromJson($controlData, $typeStringResolver);
+        }
+
+        $groups = [];
+        foreach ($data['groups'] as $groupData) {
+            $groups[] = Group::fromJson($groupData, $typeStringResolver);
+        }
+
+        return new self(
+            $data['name'],
+            $typeStringResolver->resolve($data['type']),
+            $controls,
+            $groups
+        );
+    }
+
+    /**
+     * @param array{class: class-string} $controlData
+     */
+    public static function controlFromJson(array $controlData, TypeStringResolver $typeStringResolver): ControlInterface
+    {
+        switch ($controlData['class']) {
+            case Container::class:
+                return Container::fromJson($controlData, $typeStringResolver);
+            case Field::class:
+                return Field::fromJson($controlData, $typeStringResolver);
+            default:
+                throw new InvalidArgumentException(sprintf('Unknown control type: %s', $controlData['class']));
+        }
     }
 }

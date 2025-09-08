@@ -19,6 +19,9 @@ final class FilterFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Filter[]> */
+    private array $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -41,16 +44,19 @@ final class FilterFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundFilters = [
-            $this->collectedFilters[$className][''] ?? [],
-            $this->findInParents($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundFilters[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundFilters = [
+                $this->collectedFilters[$className][''] ?? [],
+                $this->findInParents($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundFilters[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = array_merge(...$foundFilters);
         }
-
-        return array_merge(...$foundFilters);
+        return $this->findCache[$cacheKey];
     }
 
     /**

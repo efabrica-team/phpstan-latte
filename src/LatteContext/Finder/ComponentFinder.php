@@ -24,6 +24,9 @@ final class ComponentFinder
 
     private MethodCallFinder $methodCallFinder;
 
+    /** @var array<string, Component[]> */
+    private $findCache = [];
+
     public function __construct(LatteContextData $latteContext, ReflectionProvider $reflectionProvider, MethodCallFinder $methodCallFinder)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -83,14 +86,18 @@ final class ComponentFinder
      */
     public function find(string $className, string ...$methodNames): array
     {
-        $foundComponents = [
-            $this->findInClasses($className),
-            $this->findInMethodCalls($className, '__construct'),
-        ];
-        foreach ($methodNames as $methodName) {
-            $foundComponents[] = $this->findInMethodCalls($className, $methodName);
+        $cacheKey = $className . ' ' . implode(' ', $methodNames);
+        if (!isset($this->findCache[$cacheKey])) {
+            $foundComponents = [
+                $this->findInClasses($className),
+                $this->findInMethodCalls($className, '__construct'),
+            ];
+            foreach ($methodNames as $methodName) {
+                $foundComponents[] = $this->findInMethodCalls($className, $methodName);
+            }
+            $this->findCache[$cacheKey] = ItemCombinator::merge(...$foundComponents);
         }
-        return ItemCombinator::merge(...$foundComponents);
+        return $this->findCache[$cacheKey];
     }
 
     /**
