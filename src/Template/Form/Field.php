@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
+use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Field implements NameTypeItem, ControlInterface
@@ -60,6 +61,16 @@ final class Field implements NameTypeItem, ControlInterface
     public function getOptions(): ?array
     {
         return $this->options;
+    }
+
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+            'class' => self::class,
+            'name' => $this->name,
+            'type' => $this->type->describe(VerbosityLevel::precise()),
+            'options' => $this->options,
+        ]));
     }
 
     #[ReturnTypeWillChange]

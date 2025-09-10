@@ -99,6 +99,16 @@ final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializab
         return $clone;
     }
 
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+            'name' => $this->name,
+            'type' => TypeHelper::serializeType($this->type),
+            'controls' => array_map(fn(ControlInterface $control) => $control->getSignatureHash(), $this->controls),
+            'groups' => array_map(fn(Group $group) => $group->getSignatureHash(), $this->groups),
+        ]));
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {

@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
+use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Container implements ControlHolderInterface, ControlInterface
@@ -51,6 +52,16 @@ final class Container implements ControlHolderInterface, ControlInterface
         return $clone;
     }
 
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+            'class' => self::class,
+            'name' => $this->name,
+            'type' => $this->type->describe(VerbosityLevel::precise()),
+            'controls' => array_map(fn(ControlInterface $control) => $control->getSignatureHash(), $this->controls),
+        ]));
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
@@ -63,7 +74,7 @@ final class Container implements ControlHolderInterface, ControlInterface
     }
 
     /**
-     * @param array{name: string, type: string, controls: array<array<string, mixed>>} $data
+     * @param array{name: string, type: string, controls: array<array{name: string}>} $data
      */
     public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {

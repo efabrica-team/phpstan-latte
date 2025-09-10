@@ -173,6 +173,16 @@ final class TemplateContext implements JsonSerializable
         return $new;
     }
 
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+            'variables' => array_map(fn(Variable $variable) => $variable->getSignatureHash(), $this->variables),
+            'components' => array_map(fn(Component $component) => $component->getSignatureHash(), $this->components),
+            'forms' => array_map(fn(Form $form) => $form->getSignatureHash(), $this->forms),
+            'filters' => array_map(fn(Filter $filter) => $filter->getSignatureHash(), $this->filters),
+        ]));
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {
