@@ -205,3 +205,6 @@ parameters:
             message: '#^Parameter \#1 .* of static method .*::fromJson\(\) expects array{.*}, array.* given\.$#'
         -
             message: '#^Parameter \#1 .* of static method .*::.*FromJson\(\) expects array{.*}, array.* given\.$#'
+        -
+            message: '#^Method Efabrica\\PHPStanLatte\\Compiler\\LatteVersion::isLatte.\(\) never returns (true|false) so the return type can be changed to (true|false)\.$#'
+            reportUnmatched: false

@@ -9,4 +9,5 @@ use JsonSerializable;
 
 interface ControlInterface extends NameTypeItem, JsonSerializable
 {
+    public function getSignatureHash(): string;
 }

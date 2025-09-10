@@ -106,7 +106,13 @@ final class Template implements JsonSerializable
 
     public function getSignatureHash(): string
     {
-        return md5((string)json_encode($this));
+        return md5((string)json_encode([
+            'path' => $this->path,
+            'actualClass' => $this->actualClass,
+            'actualAction' => $this->actualAction,
+            'templateContext' => $this->templateContext->getSignatureHash(),
+            'parentTemplatePaths' => $this->parentTemplatePaths,
+        ]));
     }
 
     #[ReturnTypeWillChange]

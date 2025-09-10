@@ -30,6 +30,14 @@ final class Group implements NameItem, ControlHolderInterface, JsonSerializable
         return $this->name;
     }
 
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+            'name' => $this->name,
+            'controls' => array_map(fn(ControlInterface $control) => $control->getSignatureHash(), $this->controls),
+        ]));
+    }
+
     #[ReturnTypeWillChange]
     public function jsonSerialize()
     {

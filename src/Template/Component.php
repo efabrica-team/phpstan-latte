@@ -9,6 +9,7 @@ use JsonSerializable;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
+use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
 
 final class Component implements NameTypeItem, JsonSerializable
@@ -66,6 +67,18 @@ final class Component implements NameTypeItem, JsonSerializable
         $clone = clone $this;
         $clone->type = TypeHelper::resolveType($type);
         return $clone;
+    }
+
+    public function getSignatureHash(): string
+    {
+        return md5((string)json_encode([
+          'name' => $this->name,
+          'type' => $this->type->describe(VerbosityLevel::precise()),
+          'subcomponents' => array_map(
+              static fn(Component $component): string => $component->getSignatureHash(),
+              $this->subcomponents
+          ),
+        ]));
     }
 
     /**
