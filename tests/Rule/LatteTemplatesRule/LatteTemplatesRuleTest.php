@@ -9,6 +9,14 @@ use Efabrica\PHPStanLatte\Rule\LatteTemplatesRule;
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use function array_map;
+use function array_merge;
+use function implode;
+use function pathinfo;
+use function sort;
+use function sprintf;
+use function str_replace;
+use const PATHINFO_BASENAME;
 
 abstract class LatteTemplatesRuleTest extends RuleTestCase
 {

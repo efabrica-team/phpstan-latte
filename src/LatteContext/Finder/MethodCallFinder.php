@@ -8,6 +8,8 @@ use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethodCall;
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_merge;
+use function in_array;
 
 final class MethodCallFinder
 {

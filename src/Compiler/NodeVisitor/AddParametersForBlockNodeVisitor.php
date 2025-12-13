@@ -20,6 +20,14 @@ use PhpParser\Node\Stmt\Unset_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
+use function array_combine;
+use function preg_match;
+use function preg_match_all;
+use function preg_replace;
+use function str_contains;
+use function str_replace;
+use function str_starts_with;
+use function trim;
 
 final class AddParametersForBlockNodeVisitor extends NodeVisitorAbstract
 {

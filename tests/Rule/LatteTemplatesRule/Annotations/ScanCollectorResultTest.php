@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\CollectorResultTest;
 use Nette\Utils\Finder;
+use function array_merge;
+use function is_file;
 
 abstract class ScanCollectorResultTest extends CollectorResultTest
 {

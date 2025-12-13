@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Compiler\Helper;
 
 use Efabrica\PHPStanLatte\Template\Template;
 use PHPStan\File\RelativePathHelper;
+use function realpath;
 
 final class TemplateContextHelper
 {

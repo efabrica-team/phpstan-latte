@@ -13,7 +13,11 @@ use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use ReturnTypeWillChange;
+use function array_merge;
+use function array_unique;
+use function class_exists;
 use function get_class;
+use function is_array;
 
 final class LatteContextData implements JsonSerializable
 {

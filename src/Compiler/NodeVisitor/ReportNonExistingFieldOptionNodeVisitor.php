@@ -17,6 +17,8 @@ use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\Type\ObjectType;
+use function array_key_exists;
+use function in_array;
 
 final class ReportNonExistingFieldOptionNodeVisitor extends NodeVisitorAbstract
 {

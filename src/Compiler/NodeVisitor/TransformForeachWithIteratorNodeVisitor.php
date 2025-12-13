@@ -12,6 +12,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Foreach_;
 use PhpParser\NodeVisitorAbstract;
+use function in_array;
 
 /**
  * changed output from:

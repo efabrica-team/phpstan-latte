@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior;
 
 use Efabrica\PHPStanLatte\Template\Form\Form;
+use function md5;
+use function ucfirst;
+use function uniqid;
 
 trait FormsNodeVisitorBehavior
 {

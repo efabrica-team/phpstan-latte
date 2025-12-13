@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Error\LineMapper;
 
+use function ksort;
+
 final class LineMap
 {
     /** @var array<int, int> */

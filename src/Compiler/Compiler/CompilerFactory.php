@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Compiler\LatteVersion;
 use InvalidArgumentException;
 use Latte\Engine;
 use Latte\Extension;
+use function count;
 
 final class CompilerFactory
 {

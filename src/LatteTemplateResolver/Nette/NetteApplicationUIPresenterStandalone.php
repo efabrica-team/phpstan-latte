@@ -9,6 +9,12 @@ use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIPresenterLatteContextResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassStandaloneTemplateResolver;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use function count;
+use function dirname;
+use function is_dir;
+use function is_string;
+use function preg_quote;
+use function str_replace;
 
 final class NetteApplicationUIPresenterStandalone extends AbstractClassStandaloneTemplateResolver
 {

@@ -11,6 +11,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeVisitorAbstract;
+use function count;
+use function in_array;
 
 final class RemoveEmptyStringFromLabelAndControlPartNodeVisitor extends NodeVisitorAbstract implements ExprTypeNodeVisitorInterface
 {

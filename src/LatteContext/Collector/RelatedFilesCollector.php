@@ -16,6 +16,13 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_filter;
+use function array_unique;
+use function class_exists;
+use function file_exists;
+use function in_array;
+use function realpath;
+use function str_starts_with;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedRelatedFiles>

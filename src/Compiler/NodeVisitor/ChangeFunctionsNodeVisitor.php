@@ -53,7 +53,15 @@ use PHPStan\Type\ThisType;
 use ReflectionFunction;
 use ReflectionNamedType;
 use ReflectionParameter;
+use function array_merge;
+use function array_slice;
+use function explode;
+use function get_class;
+use function is_array;
 use function is_string;
+use function str_contains;
+use function str_starts_with;
+use function strtolower;
 
 final class ChangeFunctionsNodeVisitor extends NodeVisitorAbstract implements FunctionsNodeVisitorInterface, ExprTypeNodeVisitorInterface, ScopeNodeVisitorInterface
 {

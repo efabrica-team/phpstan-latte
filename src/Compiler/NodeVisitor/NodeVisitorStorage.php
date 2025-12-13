@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ExprTypeNodeVisitorInter
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use InvalidArgumentException;
 use PhpParser\NodeVisitor;
+use function ksort;
 
 final class NodeVisitorStorage
 {

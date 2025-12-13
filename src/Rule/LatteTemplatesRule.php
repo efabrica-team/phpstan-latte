@@ -31,6 +31,26 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use Throwable;
+use function array_filter;
+use function array_key_exists;
+use function array_merge;
+use function array_values;
+use function count;
+use function dirname;
+use function get_class;
+use function is_dir;
+use function is_file;
+use function is_string;
+use function json_decode;
+use function pathinfo;
+use function realpath;
+use function shell_exec;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_BASENAME;
 
 /**
  * @implements Rule<CollectedDataNode>

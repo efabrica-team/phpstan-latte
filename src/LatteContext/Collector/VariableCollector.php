@@ -13,6 +13,10 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\TypeCombinator;
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function array_values;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedVariable>

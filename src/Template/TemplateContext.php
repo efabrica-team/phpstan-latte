@@ -8,6 +8,9 @@ use Efabrica\PHPStanLatte\Template\Form\Form;
 use JsonSerializable;
 use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
+use function array_map;
+use function json_encode;
+use function md5;
 
 final class TemplateContext implements JsonSerializable
 {

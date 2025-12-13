@@ -22,6 +22,8 @@ use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\InClassNode;
 use PHPStan\Type\ObjectType;
+use function dirname;
+use function preg_match;
 
 abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolverInterface
 {

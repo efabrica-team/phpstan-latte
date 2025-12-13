@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\Print_;
 use PhpParser\Node\Stmt\Echo_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ObjectType;
+use function count;
 
 final class OutputCallResolver
 {

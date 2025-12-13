@@ -14,6 +14,12 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
+use function count;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_null;
+use function is_string;
 
 final class TypeResolver
 {

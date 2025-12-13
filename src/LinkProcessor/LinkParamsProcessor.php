@@ -12,6 +12,12 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\BetterReflection\BetterReflection;
+use function array_filter;
+use function array_flip;
+use function array_key_exists;
+use function array_replace;
+use function count;
+use function in_array;
 
 final class LinkParamsProcessor
 {

@@ -17,6 +17,16 @@ use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Rules\RuleErrorBuilder;
+use function array_merge;
+use function count;
+use function dirname;
+use function file_exists;
+use function is_dir;
+use function lcfirst;
+use function preg_replace;
+use function str_replace;
+use function ucfirst;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * @uses TemplateContext

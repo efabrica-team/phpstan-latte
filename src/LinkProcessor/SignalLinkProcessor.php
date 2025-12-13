@@ -9,6 +9,9 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Reflection\ReflectionProvider;
+use function strpos;
+use function substr;
+use function ucfirst;
 
 /**
  * not working as expected because in handle methods you don't have to pass parameters if they are same as in actual request

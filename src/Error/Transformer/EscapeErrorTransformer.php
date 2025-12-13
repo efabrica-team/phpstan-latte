@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Error\Transformer;
 
 use Efabrica\PHPStanLatte\Error\Error;
 use Nette\Utils\Strings;
+use function preg_match;
 
 final class EscapeErrorTransformer implements ErrorTransformerInterface
 {

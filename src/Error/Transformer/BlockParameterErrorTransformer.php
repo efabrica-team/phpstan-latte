@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Error\Transformer;
 
 use Efabrica\PHPStanLatte\Error\Error;
+use function lcfirst;
+use function preg_match;
+use function str_replace;
+use function ucfirst;
 
 final class BlockParameterErrorTransformer implements ErrorTransformerInterface
 {

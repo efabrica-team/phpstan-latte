@@ -9,6 +9,8 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
+use function array_filter;
+use function count;
 
 final class CollectedMethod extends CollectedLatteContextObject
 {

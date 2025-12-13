@@ -12,6 +12,8 @@ use Efabrica\PHPStanLatte\Resolver\NameResolver\NameResolver;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_merge;
+use function array_unique;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedTemplatePath|CollectedError>

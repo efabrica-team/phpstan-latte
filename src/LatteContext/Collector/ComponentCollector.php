@@ -23,6 +23,11 @@ use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\UnionType;
+use function array_values;
+use function count;
+use function lcfirst;
+use function str_replace;
+use function str_starts_with;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedComponent>

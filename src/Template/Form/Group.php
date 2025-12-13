@@ -9,6 +9,9 @@ use Efabrica\PHPStanLatte\Template\NameItem;
 use JsonSerializable;
 use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
+use function array_map;
+use function json_encode;
+use function md5;
 
 final class Group implements NameItem, ControlHolderInterface, JsonSerializable
 {

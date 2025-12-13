@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Collector\CollectedData;
 
 use PHPStan\ShouldNotHappenException;
+use function array_key_exists;
 
 /**
  * @phpstan-type CollectedResolvedNodeArray array{resolver: string, analysedFile: string, params: array<string, string>}

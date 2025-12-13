@@ -9,7 +9,7 @@ use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Type\ObjectType;
 
-class ClassLatteContextResolver implements LatteContextResolverInterface
+final class ClassLatteContextResolver implements LatteContextResolverInterface
 {
     protected ReflectionClass $reflectionClass;
 

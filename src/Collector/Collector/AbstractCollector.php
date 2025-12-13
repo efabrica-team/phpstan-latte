@@ -8,6 +8,10 @@ use Efabrica\PHPStanLatte\Collector\CollectedData\CollectedValueObject;
 use PhpParser\Node;
 use PHPStan\Collectors\Collector;
 use PHPStan\Node\CollectedDataNode;
+use function array_filter;
+use function array_merge;
+use function array_values;
+use function count;
 
 /**
  * @template N of Node

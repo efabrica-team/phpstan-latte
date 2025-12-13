@@ -15,6 +15,7 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use function in_array;
 
 /**
  * @extends AbstractLatteContextSubCollector<CollectedTemplateRender>

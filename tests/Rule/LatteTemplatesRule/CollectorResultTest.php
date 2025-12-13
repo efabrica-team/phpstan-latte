@@ -6,6 +6,10 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule;
 
 use PHPStan\Analyser\Error;
 use PHPStan\Rules\Rule;
+use function array_map;
+use function implode;
+use function sort;
+use function str_replace;
 
 abstract class CollectorResultTest extends LatteTemplatesRuleTest
 {

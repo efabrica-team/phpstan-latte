@@ -17,6 +17,7 @@ use PhpParser\Node\Expr\CallLike;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
+use function in_array;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedMethodCall|CollectedError>

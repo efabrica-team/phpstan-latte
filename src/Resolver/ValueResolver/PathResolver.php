@@ -18,6 +18,15 @@ use PHPStan\Analyser\Scope;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use SplFileInfo;
+use function array_merge;
+use function count;
+use function is_string;
+use function preg_match;
+use function preg_quote;
+use function preg_replace;
+use function strlen;
+use function strpos;
+use function substr;
 
 final class PathResolver
 {

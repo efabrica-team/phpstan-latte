@@ -14,6 +14,10 @@ use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
 use ReturnTypeWillChange;
+use function array_map;
+use function json_encode;
+use function md5;
+use function sprintf;
 
 final class Form implements NameTypeItem, ControlHolderInterface, JsonSerializable
 {
