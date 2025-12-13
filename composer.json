@@ -7,7 +7,7 @@
     "require": {
         "php": ">=7.4 <8.5",
         "ext-json": "*",
-        "phpstan/phpstan": "^2.1.0",
+        "phpstan/phpstan": "^2.1.33",
         "phpstan/phpdoc-parser": "^2.1.0",
         "phpstan/phpstan-nette": "^2.0",
         "latte/latte": "^2.11.6 | ~3.0.4",

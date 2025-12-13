@@ -19,7 +19,12 @@ jobs:
         include:
           - php: '7.4'
             outdated-args: '--ignore=nette/finder --ignore=phpunit/phpunit --ignore=nikic/php-parser'
-
+          - php: '8.2'
+            outdated-args: '--ignore=nette/finder --ignore=latte/latte --ignore=phpunit/phpunit --ignore=nikic/php-parser'
+          - php: '8.3'
+            outdated-args: '--ignore=nette/finder --ignore=latte/latte --ignore=phpunit/phpunit --ignore=nikic/php-parser'
+          - php: '8.4'
+            outdated-args: '--ignore=nette/finder --ignore=latte/latte --ignore=phpunit/phpunit --ignore=nikic/php-parser'
     name: Composer outdated - PHP ${{ matrix.php }}
 
     steps:
