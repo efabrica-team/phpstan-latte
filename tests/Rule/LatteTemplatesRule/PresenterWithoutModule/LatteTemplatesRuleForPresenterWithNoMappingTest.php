@@ -7,7 +7,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\LinksPresenter;
 
-final class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRuleTest
+class LatteTemplatesRuleForPresenterWithNoMappingTest extends LatteTemplatesRuleTest
 {
     protected static function additionalConfigFiles(): array
     {

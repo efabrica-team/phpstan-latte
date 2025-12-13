@@ -13,7 +13,7 @@ use Nette\Forms\Controls\TextInput;
  * @method CustomFormRenderer getRenderer()
  * @method TextInput|TextArea addCustomText(string $name = 'custom_default', ?string $label = null, ?int $cols = null, ?int $maxLength = null)
  */
-final class CustomForm extends Form
+class CustomForm extends Form
 {
     private string $someCustomParameter;
 
