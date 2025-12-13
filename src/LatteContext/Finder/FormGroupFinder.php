@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormGroup;
 use Efabrica\PHPStanLatte\Template\Form\Group;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
+use function implode;
 
 final class FormGroupFinder
 {

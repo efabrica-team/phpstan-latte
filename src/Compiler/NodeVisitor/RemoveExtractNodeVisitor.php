@@ -11,6 +11,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
+use function count;
+use function in_array;
 
 final class RemoveExtractNodeVisitor extends NodeVisitorAbstract
 {

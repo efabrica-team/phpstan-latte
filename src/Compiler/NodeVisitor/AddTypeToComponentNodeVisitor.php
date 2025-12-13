@@ -16,6 +16,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\NodeVisitorAbstract;
+use function str_replace;
+use function ucfirst;
 
 /**
  * changed output from:

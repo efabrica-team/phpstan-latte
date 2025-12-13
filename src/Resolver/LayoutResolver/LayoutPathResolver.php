@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\Resolver\LayoutResolver;
 
+use function dirname;
+use function file_get_contents;
+use function preg_match;
+use function realpath;
+use const DIRECTORY_SEPARATOR;
+
 final class LayoutPathResolver
 {
     private bool $featureAnalyseLayoutFiles;

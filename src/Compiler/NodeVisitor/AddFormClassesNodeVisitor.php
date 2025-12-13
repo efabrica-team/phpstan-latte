@@ -52,6 +52,13 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\VerbosityLevel;
+use function array_merge;
+use function array_reverse;
+use function end;
+use function explode;
+use function in_array;
+use function spl_object_hash;
+use function str_replace;
 
 final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements FormsNodeVisitorInterface
 {

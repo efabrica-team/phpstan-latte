@@ -24,6 +24,25 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\RuleErrorBuilder;
 use RuntimeException;
 use Throwable;
+use function array_diff;
+use function array_merge;
+use function array_unique;
+use function basename;
+use function class_exists;
+use function count;
+use function file_exists;
+use function get_class;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function is_string;
+use function json_encode;
+use function md5;
+use function sha1;
+use function sprintf;
+use const JSON_OBJECT_AS_ARRAY;
+use const JSON_PRETTY_PRINT;
+use const PHP_VERSION_ID;
 
 final class LatteContextAnalyser
 {

@@ -12,7 +12,13 @@ use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
 use PHPStan\File\RelativePathHelper;
 use PHPStan\File\SimpleRelativePathHelper;
+use function array_map;
+use function count;
+use function getenv;
 use function is_string;
+use function realpath;
+use function sprintf;
+use function str_replace;
 
 final class TableErrorFormatter implements ErrorFormatter
 {
@@ -53,7 +59,7 @@ final class TableErrorFormatter implements ErrorFormatter
             if ($this->showTipsOfTheDay) {
                 if ($analysisResult->isDefaultLevelUsed()) {
                     $output->writeLineFormatted('💡 Tip of the Day:');
-                    $output->writeLineFormatted(sprintf("PHPStan is performing only the most basic checks.\nYou can pass a higher rule level through the <fg=cyan>--%s</> option\n(the default and current level is %d) to analyse code more thoroughly.", AnalyseCommand::OPTION_LEVEL, AnalyseCommand::DEFAULT_LEVEL));
+                    $output->writeLineFormatted(sprintf("PHPStan is performing only the most basic checks.\nYou can pass a higher rule level through the <fg=cyan>--%s</> option\n(the default and current level is %s) to analyse code more thoroughly.", AnalyseCommand::OPTION_LEVEL, AnalyseCommand::DEFAULT_LEVEL));
                     $output->writeLineFormatted('');
                 }
             }

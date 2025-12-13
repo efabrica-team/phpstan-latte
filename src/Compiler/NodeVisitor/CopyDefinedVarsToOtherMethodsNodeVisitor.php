@@ -15,6 +15,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
+use function array_merge;
 
 final class CopyDefinedVarsToOtherMethodsNodeVisitor extends NodeVisitorAbstract
 {

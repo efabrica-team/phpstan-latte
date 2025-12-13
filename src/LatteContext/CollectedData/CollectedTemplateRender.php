@@ -11,6 +11,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\TypeStringResolver;
 use ReturnTypeWillChange;
+use function array_map;
 
 final class CollectedTemplateRender extends CollectedLatteContextObject
 {

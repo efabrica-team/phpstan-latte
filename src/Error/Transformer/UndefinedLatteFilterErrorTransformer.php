@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Error\Transformer;
 
 use Efabrica\PHPStanLatte\Error\Error;
+use function preg_match;
 
 final class UndefinedLatteFilterErrorTransformer implements ErrorTransformerInterface
 {

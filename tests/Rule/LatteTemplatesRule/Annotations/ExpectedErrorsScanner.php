@@ -5,6 +5,14 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
 use RuntimeException;
+use function explode;
+use function file_get_contents;
+use function pathinfo;
+use function preg_match_all;
+use function substr;
+use function trim;
+use const PATHINFO_BASENAME;
+use const PREG_OFFSET_CAPTURE;
 
 final class ExpectedErrorsScanner
 {

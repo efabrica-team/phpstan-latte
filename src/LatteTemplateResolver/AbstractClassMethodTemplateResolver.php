@@ -8,6 +8,8 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Rules\RuleErrorBuilder;
+use function array_filter;
+use function count;
 
 abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplateResolver
 {

@@ -32,6 +32,9 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
+use function array_merge;
+use function in_array;
+use function is_string;
 
 final class AddVarTypesNodeVisitor extends NodeVisitorAbstract implements VariablesNodeVisitorInterface
 {

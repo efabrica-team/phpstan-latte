@@ -13,6 +13,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use function count;
+use function strtolower;
 
 /**
  * @implements Rule<FuncCall>

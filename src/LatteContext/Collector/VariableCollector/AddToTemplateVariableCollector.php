@@ -12,6 +12,7 @@ use Efabrica\PHPStanLatte\Resolver\ValueResolver\ValueResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use function count;
 
 /**
  * @extends AbstractLatteContextSubCollector<CollectedVariable>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures;
 
 use stdClass;
+use function uniqid;
 
 final class VariablesPresenter extends ParentPresenter
 {

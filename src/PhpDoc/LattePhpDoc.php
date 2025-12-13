@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\PhpDoc;
 
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
+use function array_filter;
+use function array_merge;
+use function count;
 
 final class LattePhpDoc
 {

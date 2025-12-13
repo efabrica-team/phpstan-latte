@@ -15,6 +15,8 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
+use function in_array;
+use function is_array;
 
 final class LatteContextHelper
 {

@@ -11,6 +11,8 @@ use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use ReturnTypeWillChange;
+use function json_encode;
+use function md5;
 
 final class Variable implements NameTypeItem, JsonSerializable
 {

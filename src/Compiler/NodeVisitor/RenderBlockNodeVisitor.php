@@ -19,6 +19,10 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeVisitorAbstract;
+use function array_reverse;
+use function str_replace;
+use function str_starts_with;
+use function ucfirst;
 
 /**
  * changed output from:

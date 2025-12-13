@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\Annotations;
 
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\LatteTemplatesRuleTest;
 use Nette\Utils\Finder;
+use function array_merge;
+use function file_exists;
+use function is_file;
 
 abstract class ScanLatteTemplatesRuleTest extends LatteTemplatesRuleTest
 {

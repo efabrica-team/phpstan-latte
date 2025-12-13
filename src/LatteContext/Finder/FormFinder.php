@@ -9,6 +9,9 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedForm;
 use Efabrica\PHPStanLatte\Template\Form\Form;
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_merge;
+use function implode;
+use function in_array;
 
 final class FormFinder
 {

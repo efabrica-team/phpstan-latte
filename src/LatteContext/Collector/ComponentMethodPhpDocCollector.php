@@ -12,6 +12,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_values;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedComponent>

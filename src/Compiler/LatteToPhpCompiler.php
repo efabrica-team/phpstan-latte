@@ -13,6 +13,27 @@ use InvalidArgumentException;
 use Latte\CompileException;
 use Latte\Engine;
 use Nette\Utils\FileSystem;
+use function array_filter;
+use function array_pop;
+use function class_exists;
+use function explode;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function getcwd;
+use function implode;
+use function json_encode;
+use function md5;
+use function mkdir;
+use function pathinfo;
+use function realpath;
+use function strlen;
+use function strpos;
+use function substr;
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_BASENAME;
+use const PATHINFO_DIRNAME;
+use const PHP_VERSION_ID;
 
 final class LatteToPhpCompiler
 {

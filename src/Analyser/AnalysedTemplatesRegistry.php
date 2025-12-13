@@ -7,6 +7,12 @@ namespace Efabrica\PHPStanLatte\Analyser;
 use Nette\Utils\Finder;
 use PHPStan\File\FileExcluder;
 use SplFileInfo;
+use function array_filter;
+use function array_keys;
+use function array_unique;
+use function is_dir;
+use function realpath;
+use function sort;
 
 final class AnalysedTemplatesRegistry
 {

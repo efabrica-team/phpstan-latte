@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\Form\CollectedFormControl;
 use Efabrica\PHPStanLatte\Template\Form\ControlInterface;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
+use function implode;
 
 final class FormControlFinder
 {

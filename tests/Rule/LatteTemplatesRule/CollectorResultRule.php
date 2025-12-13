@@ -17,6 +17,16 @@ use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use function array_map;
+use function array_unique;
+use function array_values;
+use function get_class;
+use function json_encode;
+use function pathinfo;
+use function str_replace;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use const PATHINFO_BASENAME;
 
 /**
  * @implements Rule<CollectedDataNode>

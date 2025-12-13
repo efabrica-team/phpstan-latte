@@ -6,6 +6,9 @@ namespace Efabrica\PHPStanLatte\Analyser;
 
 use Efabrica\PHPStanLatte\LatteContext\Collector\AbstractLatteContextCollector;
 use PhpParser\Node;
+use function class_implements;
+use function class_parents;
+use function get_class;
 
 final class LatteContextCollectorRegistry
 {

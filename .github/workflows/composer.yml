@@ -14,12 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.0', '8.1', '8.2', '8.3', '8.4' ]
-        outdated-args: ['--ignore=phpunit/phpunit --ignore=nikic/php-parser']
-        include:
-          - php: '7.4'
-            outdated-args: '--ignore=nette/finder --ignore=phpunit/phpunit --ignore=nikic/php-parser'
-
+        php: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
     name: Composer outdated - PHP ${{ matrix.php }}
 
     steps:
@@ -35,4 +30,4 @@ jobs:
         run: composer update --no-progress --no-interaction
 
       - name: Composer outdated
-        run: composer outdated -D --strict ${{ matrix.outdated-args }}
+        run: composer outdated -D --strict --ignore=phpunit/phpunit --ignore=nikic/php-parser --ignore=nette/finder --ignore=nette/utils --ignore=latte/latte --ignore=nette/application --ignore=nette/forms

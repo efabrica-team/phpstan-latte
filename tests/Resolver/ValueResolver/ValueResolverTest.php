@@ -12,6 +12,11 @@ use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use PHPStan\Analyser\ScopeContext;
 use PHPStan\Testing\PHPStanTestCase;
+use function array_map;
+use function dirname;
+use function explode;
+use function file_get_contents;
+use function str_replace;
 
 final class ValueResolverTest extends PHPStanTestCase
 {

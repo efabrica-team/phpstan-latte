@@ -16,6 +16,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function in_array;
+use function trim;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedFormControl>

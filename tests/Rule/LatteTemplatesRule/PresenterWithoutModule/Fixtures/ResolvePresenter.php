@@ -8,6 +8,7 @@ use Exception;
 use Latte\Engine;
 use Nette\Application\UI\Presenter;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
+use function uniqid;
 
 final class ResolvePresenter extends Presenter
 {
