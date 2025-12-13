@@ -17,6 +17,7 @@ use PhpParser\Node\Expr\List_;
 use PhpParser\Node\Expr\PropertyFetch;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\MixedType;
+use function array_merge;
 
 /**
  * @extends AbstractLatteContextSubCollector<CollectedVariable>

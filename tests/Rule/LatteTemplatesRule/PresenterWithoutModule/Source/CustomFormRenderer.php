@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutMo
 
 use Nette\Forms\Control;
 use Nette\Forms\Rendering\DefaultFormRenderer;
+use function is_string;
 
 final class CustomFormRenderer extends DefaultFormRenderer
 {

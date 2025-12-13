@@ -10,6 +10,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\F
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Fixtures\VariablesPresenter;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\CustomFormRenderer;
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\SomeControl;
+use const PHP_VERSION_ID;
 
 final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
 {
@@ -944,7 +945,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ];
             $expectedErrors[] = [
-                'Unable to resolve the template type T in call to method static method Latte\Essential\Filters::slice()',
+                'Unable to resolve the template type T in call to static method Latte\Essential\Filters::slice()',
                 22,
                 'default.latte',
                 'See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type',
@@ -983,7 +984,7 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
                 'default.latte',
             ];
             $expectedErrors[] = [
-                'Unable to resolve the template type T in call to method static method Latte\Runtime\Filters::slice()',
+                'Unable to resolve the template type T in call to static method Latte\Runtime\Filters::slice()',
                 22,
                 'default.latte',
                 'See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type',
@@ -1368,12 +1369,12 @@ final class LatteTemplatesRuleForPresenterTest extends LatteTemplatesRuleTest
             ],
             [
                 'Cannot resolve rendered latte template.',
-                113,
+                114,
                 'ResolvePresenter.php',
             ],
             [
                 'Cannot automatically resolve template used by sendTemplate().',
-                119,
+                120,
                 'ResolvePresenter.php',
             ],
             [

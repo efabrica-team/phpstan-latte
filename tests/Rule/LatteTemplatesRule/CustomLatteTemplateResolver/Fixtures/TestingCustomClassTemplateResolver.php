@@ -13,6 +13,7 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Application\UI\Control;
 use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Type\StringType;
+use function dirname;
 
 final class TestingCustomClassTemplateResolver extends AbstractClassTemplateResolver
 {

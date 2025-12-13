@@ -6,6 +6,8 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedMethod;
+use function array_merge;
+use function in_array;
 
 final class MethodFinder
 {

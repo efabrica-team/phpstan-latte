@@ -26,6 +26,10 @@ use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use function array_shift;
+use function count;
+use function implode;
+use function in_array;
 
 final class CleanupNodeVisitor extends NodeVisitorAbstract
 {

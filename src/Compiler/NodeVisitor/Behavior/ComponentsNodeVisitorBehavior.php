@@ -12,6 +12,12 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\InterpolatedStringPart;
 use PhpParser\Node\Scalar\Encapsed;
+use function array_shift;
+use function constant;
+use function count;
+use function explode;
+use function implode;
+use function is_string;
 
 trait ComponentsNodeVisitorBehavior
 {

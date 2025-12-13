@@ -9,6 +9,8 @@ use Latte\Engine;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\ComponentModel\IComponent;
+use function print_r;
+use function var_dump;
 
 final class SomeControl extends Control
 {

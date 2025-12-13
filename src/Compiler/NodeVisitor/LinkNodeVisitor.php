@@ -25,6 +25,13 @@ use PhpParser\Node\Stmt\Echo_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\NodeVisitorAbstract;
 use Throwable;
+use function array_slice;
+use function count;
+use function in_array;
+use function is_string;
+use function ltrim;
+use function strpos;
+use function substr;
 
 /**
  * changed output from:

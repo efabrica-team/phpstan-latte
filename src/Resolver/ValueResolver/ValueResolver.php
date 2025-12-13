@@ -21,7 +21,13 @@ use PhpParser\Node\Scalar\MagicConst\File;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\UnionType;
 use ReflectionMethod;
+use function array_filter;
+use function call_user_func_array;
+use function constant;
 use function count;
+use function dirname;
+use function function_exists;
+use function implode;
 use function is_callable;
 use function method_exists;
 

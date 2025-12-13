@@ -9,6 +9,7 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 use stdClass;
+use function strlen;
 
 final class FormsPresenter extends ParentPresenter
 {

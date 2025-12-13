@@ -20,6 +20,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
+use function array_merge;
+use function count;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedTemplateRender|CollectedError>

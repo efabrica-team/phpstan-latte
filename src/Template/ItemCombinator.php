@@ -6,6 +6,7 @@ namespace Efabrica\PHPStanLatte\Template;
 
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use PHPStan\Type\TypeCombinator;
+use function array_values;
 
 final class ItemCombinator
 {

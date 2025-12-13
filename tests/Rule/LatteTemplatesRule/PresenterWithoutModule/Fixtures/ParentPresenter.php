@@ -8,6 +8,7 @@ use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\S
 use Efabrica\PHPStanLatte\Tests\Rule\LatteTemplatesRule\PresenterWithoutModule\Source\Header;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use function uniqid;
 
 abstract class ParentPresenter extends Presenter
 {

@@ -9,6 +9,8 @@ use Efabrica\PHPStanLatte\LatteTemplateResolver\NodeLatteTemplateResolverInterfa
 use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use function array_merge;
+use function count;
 
 /**
  * @phpstan-import-type CollectedResolvedNodeArray from CollectedResolvedNode

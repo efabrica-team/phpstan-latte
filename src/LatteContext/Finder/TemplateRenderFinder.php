@@ -7,6 +7,8 @@ namespace Efabrica\PHPStanLatte\LatteContext\Finder;
 use Efabrica\PHPStanLatte\Analyser\LatteContextData;
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\Resolver\ValueResolver\PathResolver;
+use function array_merge;
+use function count;
 
 final class TemplateRenderFinder
 {

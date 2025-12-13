@@ -10,6 +10,9 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\IntegerRangeType;
+use function array_filter;
+use function is_int;
+use function is_string;
 
 final class FormControlNameResolver
 {

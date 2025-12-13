@@ -16,7 +16,16 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_pop;
+use function count;
+use function explode;
+use function implode;
+use function is_callable;
 use function is_string;
+use function lcfirst;
+use function ltrim;
+use function strpos;
+use function ucfirst;
 
 final class PresenterActionLinkProcessor implements LinkProcessorInterface
 {

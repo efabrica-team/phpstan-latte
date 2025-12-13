@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use function is_file;
 
 final class LatteTemplateResolverResult
 {

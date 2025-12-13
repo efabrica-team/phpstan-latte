@@ -14,6 +14,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use function count;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedFilter>

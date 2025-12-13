@@ -12,7 +12,18 @@ use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
 use ReflectionClass;
 use ReflectionException;
+use function array_change_key_case;
+use function array_keys;
+use function array_merge;
+use function call_user_func;
+use function class_exists;
+use function explode;
+use function implode;
+use function is_callable;
 use function is_int;
+use function md5;
+use function preg_replace;
+use function strtolower;
 
 final class Latte2Compiler extends AbstractCompiler
 {

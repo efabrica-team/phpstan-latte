@@ -9,6 +9,8 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedFilter;
 use Efabrica\PHPStanLatte\Template\Filter;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
+use function array_merge;
+use function implode;
 
 final class FilterFinder
 {

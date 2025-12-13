@@ -9,6 +9,7 @@ use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedVariable;
 use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use Efabrica\PHPStanLatte\Template\Variable;
 use PHPStan\Reflection\ReflectionProvider;
+use function implode;
 
 final class VariableFinder
 {

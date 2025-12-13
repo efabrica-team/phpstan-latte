@@ -19,6 +19,15 @@ use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\Type;
+use function array_merge;
+use function count;
+use function dirname;
+use function pathinfo;
+use function spl_object_hash;
+use function str_replace;
+use function substr;
+use const PATHINFO_BASENAME;
+use const PATHINFO_FILENAME;
 
 final class LattePhpDocResolver
 {

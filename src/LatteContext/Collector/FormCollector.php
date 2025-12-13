@@ -14,6 +14,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
+use function lcfirst;
+use function str_replace;
+use function str_starts_with;
 
 /**
  * @extends AbstractLatteContextCollector<CollectedForm>

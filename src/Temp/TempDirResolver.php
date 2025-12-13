@@ -10,6 +10,15 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SplFileInfo;
+use function filemtime;
+use function is_dir;
+use function is_writable;
+use function realpath;
+use function rtrim;
+use function sprintf;
+use function sys_get_temp_dir;
+use function time;
+use const DIRECTORY_SEPARATOR;
 
 final class TempDirResolver
 {

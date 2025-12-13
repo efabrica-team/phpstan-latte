@@ -17,6 +17,10 @@ use PHPStan\Rules\MetadataRuleError;
 use PHPStan\Rules\NonIgnorableRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\TipRuleError;
+use function array_merge;
+use function json_encode;
+use function md5;
+use function preg_match;
 
 final class ErrorBuilder
 {

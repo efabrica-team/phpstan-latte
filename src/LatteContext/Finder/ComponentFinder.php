@@ -11,6 +11,8 @@ use Efabrica\PHPStanLatte\Template\ItemCombinator;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use function array_merge;
+use function implode;
 
 final class ComponentFinder
 {

@@ -32,6 +32,14 @@ use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Type\ObjectType;
+use function array_change_key_case;
+use function array_merge;
+use function file_put_contents;
+use function get_class;
+use function md5;
+use function preg_match;
+use function preg_replace;
+use function realpath;
 
 final class Postprocessor
 {

@@ -15,6 +15,10 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\NeverType;
+use function array_key_exists;
+use function array_merge;
+use function in_array;
+use function strtolower;
 
 final class TerminatingCallResolver
 {
