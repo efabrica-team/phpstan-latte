@@ -39,7 +39,7 @@ final class MethodCallFinder
 
         $collectedMethodCalls = $latteContext->getCollectedData(CollectedMethodCall::class);
         foreach ($collectedMethodCalls as $collectedMethodCall) {
-            $callerClassName = $collectedMethodCall->getCallerClassName();
+            $callerClassName = (string)$collectedMethodCall->getCallerClassName();
             $callerMethodName = $collectedMethodCall->getCallerMethodName();
             if ($collectedMethodCall->isTerminatingCall()) {
                 $this->hasTerminatingCalls[$callerClassName][$callerMethodName] = true;
