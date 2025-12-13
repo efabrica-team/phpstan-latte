@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+### Added
+- Support for PHP 8.5
+- use function to micro-optimize
+
 ## [0.19.0] - 2025-11-28
 ### Added
 - Check if value outputted in template (or escaped for output) can be converted to string
