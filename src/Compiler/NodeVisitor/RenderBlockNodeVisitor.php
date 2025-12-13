@@ -135,7 +135,7 @@ final class RenderBlockNodeVisitor extends NodeVisitorAbstract
                 continue;
             }
             $blockMethodParamDefaults[] = $blockMethodParam->default;
-            $variableName = $this->nameResolver->resolve($blockMethodParam->var->name);
+            $variableName = (string)$this->nameResolver->resolve($blockMethodParam->var->name);
             $methodCallArgs[] = new Arg($params[$pos] ?? $params[$variableName] ?? new New_(new Name('MissingBlockParameter')));
         }
 
