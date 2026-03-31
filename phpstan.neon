@@ -107,9 +107,10 @@ parameters:
 
         # Latte version conditions
         -
-            message: '#Comparison operation "(<|>|<=|>=)" between [0-9]{5} and [0-9]{5} is always (true|false).#'
+            messages:
+                - '#Comparison operation "(<|>|<=|>=)" between [0-9]{5} and [0-9]{5} is always (true|false).#'
+                - '#isLatte.*\(\) never returns (true|false) so the return type can be changed to (true|false).#'
             path: src/Compiler/LatteVersion.php
-
         # Errors cause by multiple latte compiler engines
         -
             messages:

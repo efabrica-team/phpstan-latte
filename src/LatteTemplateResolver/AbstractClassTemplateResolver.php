@@ -17,11 +17,12 @@ use Efabrica\PHPStanLatte\Template\Variable;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
 use PHPStan\Node\InClassNode;
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
+use ReflectionException;
 use function dirname;
 use function preg_match;
 
@@ -31,9 +32,12 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
 
     private LattePhpDocResolver $lattePhpDocResolver;
 
-    public function __construct(LattePhpDocResolver $lattePhpDocResolver)
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(LattePhpDocResolver $lattePhpDocResolver, ReflectionProvider $reflectionProvider)
     {
         $this->lattePhpDocResolver = $lattePhpDocResolver;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function collect(Node $node, Scope $scope): array
@@ -86,47 +90,57 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
     public function resolve(CollectedResolvedNode $resolvedNode, LatteContext $latteContext): LatteTemplateResolverResult
     {
         $className = $resolvedNode->getParam(self::PARAM_CLASS_NAME);
-        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
+        $classReflection = $this->reflectionProvider->getClass($className);
 
-        $fileName = $reflectionClass->getFileName();
+        $fileName = $classReflection->getFileName();
         if ($fileName === null) {
             return new LatteTemplateResolverResult();
         }
 
-        return $this->getClassResult($reflectionClass, $latteContext);
+        return $this->getClassResult($classReflection, $latteContext);
     }
 
     /**
-     * @return ReflectionMethod[]
+     * @return MethodReflection[]
      */
-    protected function getMethodsMatching(ReflectionClass $reflectionClass, string $pattern): array
+    protected function getMethodsMatching(ClassReflection $classReflection, string $pattern): array
     {
         $methods = [];
-        foreach ($this->getMethodsMatchingIncludingIgnored($reflectionClass, $pattern) as $reflectionMethod) {
-            if (!$this->lattePhpDocResolver->resolveForMethod($reflectionClass->getName(), $reflectionMethod->getName())->isIgnored()) {
-                $methods[] = $reflectionMethod;
+        foreach ($this->getMethodsMatchingIncludingIgnored($classReflection, $pattern) as $methodName) {
+            if (!$this->lattePhpDocResolver->resolveForMethod($classReflection->getName(), $methodName)->isIgnored()) {
+                $methods[] = $classReflection->getNativeMethod($methodName);
             }
         }
         return $methods;
     }
 
     /**
-     * @return ReflectionMethod[]
+     * @return string[]
      */
-    protected function getMethodsMatchingIncludingIgnored(ReflectionClass $reflectionClass, string $pattern): array
+    protected function getMethodsMatchingIncludingIgnored(ClassReflection $classReflection, string $pattern): array
     {
-        $methods = [];
-        foreach ($reflectionClass->getMethods() as $reflectionMethod) {
-            if (preg_match($pattern . 'i', $reflectionMethod->getName()) === 1) {
-                $methods[] = $reflectionMethod;
+        $methodNames = [];
+        foreach ($classReflection->getNativeReflection()->getMethods() as $nativeMethod) {
+            if (preg_match($pattern . 'i', $nativeMethod->getName()) === 1) {
+                $methodNames[] = $nativeMethod->getName();
             }
         }
-        return $methods;
+        return $methodNames;
     }
 
-    protected function getClassDir(ReflectionClass $reflectionClass): ?string
+    protected function getMethodStartLine(ClassReflection $classReflection, string $methodName): int
     {
-        $fileName = $reflectionClass->getFileName();
+        try {
+            $line = $classReflection->getNativeReflection()->getMethod($methodName)->getStartLine();
+            return $line !== false ? $line : -1;
+        } catch (ReflectionException $e) {
+            return -1;
+        }
+    }
+
+    protected function getClassDir(ClassReflection $classReflection): ?string
+    {
+        $fileName = $classReflection->getFileName();
         if ($fileName === null) {
             return null;
         }
@@ -146,50 +160,50 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
         return [];
     }
 
-    protected function getClassContextResolver(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteContextResolverInterface
+    protected function getClassContextResolver(ClassReflection $classReflection, LatteContext $latteContext): LatteContextResolverInterface
     {
-        return new ClassLatteContextResolver($reflectionClass, $latteContext);
+        return new ClassLatteContextResolver($classReflection, $latteContext);
     }
 
     /**
      * @return Variable[]
      */
-    protected function getClassGlobalVariables(ReflectionClass $reflectionClass, LatteContext $latteContext): array
+    protected function getClassGlobalVariables(ClassReflection $classReflection, LatteContext $latteContext): array
     {
-        return $this->getClassContextResolver($reflectionClass, $latteContext)->getVariables();
+        return $this->getClassContextResolver($classReflection, $latteContext)->getVariables();
     }
 
     /**
      * @return Component[]
      */
-    protected function getClassGlobalComponents(ReflectionClass $reflectionClass, LatteContext $latteContext): array
+    protected function getClassGlobalComponents(ClassReflection $classReflection, LatteContext $latteContext): array
     {
-        return $this->getClassContextResolver($reflectionClass, $latteContext)->getComponents();
+        return $this->getClassContextResolver($classReflection, $latteContext)->getComponents();
     }
 
     /**
      * @return Form[]
      */
-    protected function getClassGlobalForms(ReflectionClass $reflectionClass, LatteContext $latteContext): array
+    protected function getClassGlobalForms(ClassReflection $classReflection, LatteContext $latteContext): array
     {
-        return $this->getClassContextResolver($reflectionClass, $latteContext)->getForms();
+        return $this->getClassContextResolver($classReflection, $latteContext)->getForms();
     }
 
     /**
      * @return Filter[]
      */
-    protected function getClassGlobalFilters(ReflectionClass $reflectionClass, LatteContext $latteContext): array
+    protected function getClassGlobalFilters(ClassReflection $classReflection, LatteContext $latteContext): array
     {
-        return $this->getClassContextResolver($reflectionClass, $latteContext)->getFilters();
+        return $this->getClassContextResolver($classReflection, $latteContext)->getFilters();
     }
 
-    protected function getClassGlobalTemplateContext(ReflectionClass $reflectionClass, LatteContext $latteContext): TemplateContext
+    protected function getClassGlobalTemplateContext(ClassReflection $classReflection, LatteContext $latteContext): TemplateContext
     {
         return new TemplateContext(
-            $this->getClassGlobalVariables($reflectionClass, $latteContext),
-            $this->getClassGlobalComponents($reflectionClass, $latteContext),
-            $this->getClassGlobalForms($reflectionClass, $latteContext),
-            $this->getClassGlobalFilters($reflectionClass, $latteContext)
+            $this->getClassGlobalVariables($classReflection, $latteContext),
+            $this->getClassGlobalComponents($classReflection, $latteContext),
+            $this->getClassGlobalForms($classReflection, $latteContext),
+            $this->getClassGlobalFilters($classReflection, $latteContext)
         );
     }
 
@@ -198,5 +212,5 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
         return '/.*/';
     }
 
-    abstract protected function getClassResult(ReflectionClass $resolveClass, LatteContext $latteContext): LatteTemplateResolverResult;
+    abstract protected function getClassResult(ClassReflection $classReflection, LatteContext $latteContext): LatteTemplateResolverResult;
 }

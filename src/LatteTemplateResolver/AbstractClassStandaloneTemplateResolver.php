@@ -9,7 +9,8 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use Nette\Utils\Finder;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use SplFileInfo;
 use function preg_match;
 use function str_contains;
@@ -18,28 +19,28 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
 {
     private LayoutPathResolver $layoutPathResolver;
 
-    public function __construct(LattePhpDocResolver $lattePhpDocResolver, LayoutPathResolver $layoutPathResolver)
+    public function __construct(LattePhpDocResolver $lattePhpDocResolver, ReflectionProvider $reflectionProvider, LayoutPathResolver $layoutPathResolver)
     {
-        parent::__construct($lattePhpDocResolver);
+        parent::__construct($lattePhpDocResolver, $reflectionProvider);
         $this->layoutPathResolver = $layoutPathResolver;
     }
 
-    protected function getClassResult(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteTemplateResolverResult
+    protected function getClassResult(ClassReflection $classReflection, LatteContext $latteContext): LatteTemplateResolverResult
     {
         $result = new LatteTemplateResolverResult();
-        $standaloneTemplateFiles = $this->findStandaloneTemplates($reflectionClass);
+        $standaloneTemplateFiles = $this->findStandaloneTemplates($classReflection);
         foreach ($standaloneTemplateFiles as $standaloneTemplateFile) {
-            $templateContext = $this->getClassGlobalTemplateContext($reflectionClass, $latteContext);
+            $templateContext = $this->getClassGlobalTemplateContext($classReflection, $latteContext);
             $result->addTemplate(new Template(
                 $standaloneTemplateFile,
-                $reflectionClass->getName(),
+                $classReflection->getName(),
                 null,
                 $templateContext
             ));
 
             $layoutFilePath = $this->layoutPathResolver->resolve($standaloneTemplateFile);
             if ($layoutFilePath !== null) {
-                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), null, $templateContext));
+                $result->addTemplate(new Template($layoutFilePath, $classReflection->getName(), null, $templateContext));
             }
         }
         return $result;
@@ -48,15 +49,15 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
     /**
      * @return string[]
      */
-    protected function findStandaloneTemplates(ReflectionClass $reflectionClass): array
+    protected function findStandaloneTemplates(ClassReflection $classReflection): array
     {
-        $dir = $this->getClassDir($reflectionClass);
+        $dir = $this->getClassDir($classReflection);
         if ($dir === null) {
             return [];
         }
 
         $dir = $this->adjustDir($dir);
-        $patterns = $this->getTemplatePathPatterns($reflectionClass, $dir);
+        $patterns = $this->getTemplatePathPatterns($classReflection, $dir);
 
         $standaloneTemplates = [];
         /** @var SplFileInfo $file */
@@ -68,7 +69,7 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
             foreach ($patterns as $pattern) {
                 $matches = [];
                 if (preg_match("#$pattern#", $file, $matches)) {
-                    if (!$this->isStandaloneTemplate($reflectionClass, $file, $matches)) {
+                    if (!$this->isStandaloneTemplate($classReflection, $file, $matches)) {
                         continue;
                     }
                     $standaloneTemplates[] = $file;
@@ -87,15 +88,15 @@ abstract class AbstractClassStandaloneTemplateResolver extends AbstractClassTemp
     /**
      * @return string[]
      */
-    abstract protected function getTemplatePathPatterns(ReflectionClass $reflectionClass, string $dir): array;
+    abstract protected function getTemplatePathPatterns(ClassReflection $classReflection, string $dir): array;
 
     /**
-     * @param ReflectionClass $reflectionClass
+     * @param ClassReflection $classReflection
      * @param string $templateFile
      * @param array<string|string[]> $patternMatches
      * @return bool
      */
-    protected function isStandaloneTemplate(ReflectionClass $reflectionClass, string $templateFile, array $patternMatches): bool
+    protected function isStandaloneTemplate(ClassReflection $classReflection, string $templateFile, array $patternMatches): bool
     {
         return true;
     }

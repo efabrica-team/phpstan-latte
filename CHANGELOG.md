@@ -2,11 +2,15 @@
 
 ## [unreleased]
 
+### Updated
+- Internaly uses PHPStan reflections only (**BC break**)
+
 ### Added
 - Support for PHP 8.5
 - use function to micro-optimize
 
 ## [0.19.0] - 2025-11-28
+
 ### Added
 - Check if value outputted in template (or escaped for output) can be converted to string
 - Support for PHP 8.4
@@ -31,7 +35,6 @@ This version should significantly improve performace of repeated runs.
 ## [0.17.1] - 2024-07-18
 ### Updated
 - Coding standard
-
 ### Fixed
 - RelatedFilesCollector collecting classes that were not present in vendor
 
@@ -283,10 +286,7 @@ This version should significantly improve performace of repeated runs.
     - Transform components to explicit calls
 - Error mapper for better DX
 
-[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.19.0...HEAD
-[0.19.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.18.0...0.19.0
-[0.18.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.2...0.18.0
-[0.17.2]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.1...0.17.2
+[unreleased]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.1...HEAD
 [0.17.1]: https://github.com/efabrica-team/phpstan-latte/compare/0.17.0...0.17.1
 [0.17.0]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.3...0.17.0
 [0.16.3]: https://github.com/efabrica-team/phpstan-latte/compare/0.16.2...0.16.3

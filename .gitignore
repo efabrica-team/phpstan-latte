@@ -3,3 +3,17 @@
 /composer.lock
 /.phpunit.result.cache
 /tmp
+.agents/.aiagents
+.agents/bin
+.agents/skills
+.agents/tasks
+.agents/plan
+.agents/completed
+.codex/config.toml
+.claude/settings.json
+.claude/settings.local.json
+.claude/skills
+.playwright
+.playwright-cli
+CLAUDE.md
+AGENTS.md

@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Efabrica\PHPStanLatte\Type;
 
 use InvalidArgumentException;
+use LogicException;
+use PhpParser\BuilderHelpers;
+use PhpParser\Node\Expr;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\ObjectType;
@@ -69,6 +73,22 @@ final class TypeHelper
         });
     }
 
+    /**
+     * @param ParametersAcceptor[] $variants
+     */
+    public static function getFirstParamTypeName(array $variants): ?string
+    {
+        if ($variants === []) {
+            return null;
+        }
+        $params = $variants[0]->getParameters();
+        if ($params === []) {
+            return null;
+        }
+        $classNames = $params[0]->getType()->getObjectClassNames();
+        return $classNames[0] ?? null;
+    }
+
     public static function serializeType(Type $type): string
     {
         $type = TypeTraverser::map($type, static function (Type $type, callable $traverse): Type {
@@ -85,5 +105,29 @@ final class TypeHelper
         });
 
         return (new Printer())->print($type->toPhpDocNode());
+    }
+
+    public static function typeToValue(?Type $type): mixed
+    {
+        if ($type === null) {
+            return null;
+        }
+
+        try {
+            if ($type->isConstantScalarValue()->yes()) {
+                $values = $type->getConstantScalarValues();
+                if (count($values) === 1) {
+                    return $values[0];
+                }
+            }
+
+            $constantArrays = $type->getConstantArrays();
+            if (count($constantArrays) === 1 && $constantArrays[0]->getKeyTypes() === []) {
+                return [];
+            }
+        } catch (LogicException) {
+        }
+
+        return null;
     }
 }
