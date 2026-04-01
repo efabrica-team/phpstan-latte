@@ -93,6 +93,9 @@ final class ValueResolver
                     if ($options === null || count($options) !== 1) {
                         throw new ConstExprEvaluationException();
                     }
+                    if (!is_string($options[0])) {
+                        throw new ConstExprEvaluationException();
+                    }
                     $result[] = $options[0];
                 }
                 return implode('', $result);

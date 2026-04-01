@@ -6,14 +6,11 @@ namespace Efabrica\PHPStanLatte\LinkProcessor;
 
 use Efabrica\PHPStanLatte\Type\TypeHelper;
 use InvalidArgumentException;
-use LogicException;
 use PhpParser\BuilderHelpers;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
-use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use function array_filter;
 use function array_flip;
@@ -114,5 +111,4 @@ final class LinkParamsProcessor
             return $param instanceof Arg;
         });
     }
-
 }

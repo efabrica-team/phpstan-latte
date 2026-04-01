@@ -76,7 +76,11 @@ trait ComponentsNodeVisitorBehavior
                     if ($part instanceof InterpolatedStringPart) {
                         $result[] = $part->value;
                     } else {
-                        $result[] = $this->evaluateComponentName($part);
+                        $value = $this->evaluateComponentName($part);
+                        if (!is_string($value)) {
+                            throw new ConstExprEvaluationException();
+                        }
+                        $result[] = $value;
                     }
                 }
                 return implode('', $result);

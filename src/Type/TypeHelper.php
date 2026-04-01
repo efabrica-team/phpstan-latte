@@ -6,8 +6,6 @@ namespace Efabrica\PHPStanLatte\Type;
 
 use InvalidArgumentException;
 use LogicException;
-use PhpParser\BuilderHelpers;
-use PhpParser\Node\Expr;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Type\ErrorType;
@@ -16,6 +14,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
+use function count;
 
 final class TypeHelper
 {
@@ -125,7 +124,7 @@ final class TypeHelper
             if (count($constantArrays) === 1 && $constantArrays[0]->getKeyTypes() === []) {
                 return [];
             }
-        } catch (LogicException) {
+        } catch (LogicException $e) {
         }
 
         return null;

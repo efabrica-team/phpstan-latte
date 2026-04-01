@@ -58,7 +58,10 @@ abstract class LatteTemplatesRuleTest extends RuleTestCase
             if ($line === null) {
                 $line = -1;
             }
-            return $strictlyTypedSprintf($line, $error->getMessage(), pathinfo($error->getFile(), PATHINFO_BASENAME), $error->getTip());
+            $message = $error->getMessage();
+            // bug in PHPStan meessage
+            $message = str_replace('method static method', 'static method', $message);
+            return $strictlyTypedSprintf($line, $message, pathinfo($error->getFile(), PATHINFO_BASENAME), $error->getTip());
         }, $actualErrors);
         sort($actualErrors);
         sort($expectedErrors);
