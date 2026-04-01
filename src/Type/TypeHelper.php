@@ -106,7 +106,10 @@ final class TypeHelper
         return (new Printer())->print($type->toPhpDocNode());
     }
 
-    public static function typeToValue(?Type $type): mixed
+    /**
+     * @return mixed
+     */
+    public static function typeToValue(?Type $type)
     {
         if ($type === null) {
             return null;

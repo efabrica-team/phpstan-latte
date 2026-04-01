@@ -71,6 +71,8 @@ final class ErrorBuilder
         '/Only booleans are allowed in .* condition.*/',
         '/Parameter #1 \$s of static method Latte\\\\(Runtime|Essentials)\\\\Filters::escapeHtmlText\(\) expects .* mixed given\./',
         '/Cannot convert mixed to .*\./',
+        '/Call to function array_key_exists\(\) with .* will always evaluate to (true|false)\./',
+        '/Parameter #2 \$array of function implode expects array<string>, array<int, mixed> given\./', // n:class generates implode with mixed array
     ];
 
     /** @var string[] */

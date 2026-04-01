@@ -29,6 +29,7 @@ use function dirname;
 use function function_exists;
 use function implode;
 use function is_callable;
+use function is_string;
 use function method_exists;
 
 final class ValueResolver
