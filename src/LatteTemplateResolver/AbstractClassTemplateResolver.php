@@ -106,26 +106,26 @@ abstract class AbstractClassTemplateResolver implements NodeLatteTemplateResolve
     protected function getMethodsMatching(ClassReflection $classReflection, string $pattern): array
     {
         $methods = [];
-        foreach ($this->getMethodsMatchingIncludingIgnored($classReflection, $pattern) as $methodName) {
-            if (!$this->lattePhpDocResolver->resolveForMethod($classReflection->getName(), $methodName)->isIgnored()) {
-                $methods[] = $classReflection->getNativeMethod($methodName);
+        foreach ($this->getMethodsMatchingIncludingIgnored($classReflection, $pattern) as $method) {
+            if (!$this->lattePhpDocResolver->resolveForMethod($classReflection->getName(), $method->getName())->isIgnored()) {
+                $methods[] = $method;
             }
         }
         return $methods;
     }
 
     /**
-     * @return string[]
+     * @return MethodReflection[]
      */
     protected function getMethodsMatchingIncludingIgnored(ClassReflection $classReflection, string $pattern): array
     {
-        $methodNames = [];
+        $methods = [];
         foreach ($classReflection->getNativeReflection()->getMethods() as $nativeMethod) {
             if (preg_match($pattern . 'i', $nativeMethod->getName()) === 1) {
-                $methodNames[] = $nativeMethod->getName();
+                $methods[] = $classReflection->getNativeMethod($nativeMethod->getName());
             }
         }
-        return $methodNames;
+        return $methods;
     }
 
     protected function getMethodStartLine(ClassReflection $classReflection, string $methodName): int
