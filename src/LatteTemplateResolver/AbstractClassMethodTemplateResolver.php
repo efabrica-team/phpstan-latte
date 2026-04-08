@@ -6,44 +6,45 @@ namespace Efabrica\PHPStanLatte\LatteTemplateResolver;
 
 use Efabrica\PHPStanLatte\LatteContext\CollectedData\CollectedTemplateRender;
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\RuleErrorBuilder;
 use function array_filter;
 use function count;
 
 abstract class AbstractClassMethodTemplateResolver extends AbstractClassTemplateResolver
 {
-    protected function getClassResult(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteTemplateResolverResult
+    protected function getClassResult(ClassReflection $classReflection, LatteContext $latteContext): LatteTemplateResolverResult
     {
-        if ($reflectionClass->isAbstract() || $reflectionClass->isAnonymous()) {
+        if ($classReflection->isAbstract() || $classReflection->isAnonymous()) {
             return new LatteTemplateResolverResult();
         }
 
         $result = new LatteTemplateResolverResult();
-        foreach ($this->getMethodsMatching($reflectionClass, $this->getClassMethodPattern() . 'i') as $reflectionMethod) {
-            if (!$reflectionMethod->isPublic()) {
+        foreach ($this->getMethodsMatching($classReflection, $this->getClassMethodPattern() . 'i') as $methodReflection) {
+            if (!$methodReflection->isPublic()) {
                 continue;
             }
-            $templateContext = $this->getClassGlobalTemplateContext($reflectionClass, $latteContext)
-                ->merge($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
+            $methodName = $methodReflection->getName();
+            $templateContext = $this->getClassGlobalTemplateContext($classReflection, $latteContext)
+                ->merge($latteContext->getMethodTemplateContext($classReflection->getName(), $methodName));
 
-            $templateRenders = $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName());
+            $templateRenders = $latteContext->templateRenderFinder()->find($classReflection->getName(), $methodName);
             $validTemplateRenders = array_filter($templateRenders, function (CollectedTemplateRender $templateRender) {
                 return $templateRender->getTemplatePath() !== null;
             });
             if (count($validTemplateRenders) === 0) {
-                if (!$latteContext->methodCallFinder()->hasAnyOutputCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
-                    !$latteContext->methodCallFinder()->hasAnyTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName()) &&
-                    !$latteContext->methodFinder()->hasAnyAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName())
+                if (!$latteContext->methodCallFinder()->hasAnyOutputCalls($classReflection->getName(), $methodName) &&
+                    !$latteContext->methodCallFinder()->hasAnyTerminatingCalls($classReflection->getName(), $methodName) &&
+                    !$latteContext->methodFinder()->hasAnyAlwaysTerminated($classReflection->getName(), $methodName)
                 ) {
-                    $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$reflectionClass->getShortName()}::{$reflectionMethod->getName()}().")
+                    $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for {$classReflection->getNativeReflection()->getShortName()}::{$methodName}().")
                         ->identifier('latte.cannotResolve')
-                        ->file($reflectionClass->getFileName() ?? 'unknown')
-                        ->line($reflectionMethod->getStartLine()));
+                        ->file($classReflection->getFileName() ?? 'unknown')
+                        ->line($this->getMethodStartLine($classReflection, $methodName)));
                 }
             }
             foreach ($templateRenders as $templateRender) {
-                $result->addTemplateFromRender($templateRender, $templateContext, $reflectionClass->getName(), $reflectionMethod->getName());
+                $result->addTemplateFromRender($templateRender, $templateContext, $classReflection->getName(), $methodName);
             }
         }
         return $result;

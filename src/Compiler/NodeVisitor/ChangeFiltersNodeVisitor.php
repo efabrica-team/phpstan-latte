@@ -13,6 +13,7 @@ use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\FiltersNodeVisitorInterf
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorBehavior;
 use Efabrica\PHPStanLatte\Compiler\NodeVisitor\Behavior\ScopeNodeVisitorInterface;
 use Efabrica\PHPStanLatte\Template\Variable;
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use Latte\Runtime\FilterInfo;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
@@ -34,24 +35,17 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\BetterReflection\BetterReflection;
-use PHPStan\BetterReflection\Reflection\ReflectionFunction as BetterReflectionFunction;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
-use PHPStan\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNamedType;
-use PHPStan\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
 use PHPStan\Broker\ClassNotFoundException;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
-use ReflectionFunction;
-use ReflectionNamedType;
-use ReflectionParameter;
 use function array_merge;
 use function explode;
 use function get_class;
@@ -247,7 +241,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
 
         if ($filter instanceof Closure || $this->isCallableString($filter)) {
             if ($filter instanceof Closure) {
-                $args = $this->updateArgs(new ReflectionFunction($filter), $args);
+                $args = $this->updateArgs($this->closureTypeFactory->fromClosureObject($filter)->getCallableParametersAcceptors($this->getScope()), $args);
             }
             return new FuncCall(new VariableExpr($this->createFilterVariableName($filterName)), $args);
         }
@@ -256,7 +250,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             if (str_contains($filter, '::')) {
                 $filter = explode('::', $filter);
             } else {
-                $args = $this->updateArgs((new BetterReflection())->reflector()->reflectFunction($filter), $args);
+                $args = $this->updateArgs($this->reflectionProvider->getFunction(new FullyQualified($filter), null)->getVariants(), $args);
                 return new FuncCall(new FullyQualified($filter), $args);
             }
         }
@@ -270,15 +264,14 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
         /** @var non-empty-string $methodName */
         $methodName = $filter[1];
 
-        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($className);
-        $reflectionMethod = $reflectionClass->getMethod($methodName);
-
-        if ($reflectionMethod === null) {
+        $classReflection = $this->reflectionProvider->getClass($className);
+        if (!$classReflection->hasNativeMethod($methodName)) {
             return null;
         }
+        $methodReflection = $classReflection->getNativeMethod($methodName);
 
-        $args = $this->updateArgs($reflectionMethod, $args);
-        if ($reflectionMethod->isStatic()) {
+        $args = $this->updateArgs($methodReflection->getVariants(), $args);
+        if ($methodReflection->isStatic()) {
             return new StaticCall(
                 new FullyQualified($className),
                 new Identifier($methodName),
@@ -295,21 +288,14 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
     }
 
     /**
-     * @param BetterReflectionFunction|BetterReflectionMethod|ReflectionFunction $reflection
+     * @param ParametersAcceptor[] $parametersAcceptors
      * @param Arg[]|VariadicPlaceholder[] $args
      * @return Arg[]|VariadicPlaceholder[]
      */
-    private function updateArgs($reflection, array $args): array
+    private function updateArgs(array $parametersAcceptors, array $args): array
     {
-        $parameter = $reflection->getParameters()[0] ?? null;
-        if ($parameter instanceof BEtterReflectionParameter && $parameter->getType() instanceof BetterReflectionNamedType) {
-            $parameterType = $parameter->getType()->getName();
-        } elseif ($parameter instanceof ReflectionParameter && $parameter->getType() instanceof ReflectionNamedType) {
-            $parameterType = $parameter->getType()->getName();
-        } else {
-            $parameterType = null;
-        }
-        if ($parameterType === FilterInfo::class) {
+        $firstParameterTypeName = TypeHelper::getFirstParamTypeName($parametersAcceptors);
+        if ($firstParameterTypeName === FilterInfo::class) {
             $args = array_merge([
                 new Arg(new VariableExpr('ʟ_fi')),
             ], $args);

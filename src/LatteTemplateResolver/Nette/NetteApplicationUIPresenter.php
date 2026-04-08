@@ -14,8 +14,9 @@ use Efabrica\PHPStanLatte\PhpDoc\LattePhpDocResolver;
 use Efabrica\PHPStanLatte\Resolver\LayoutResolver\LayoutPathResolver;
 use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
-use PHPStan\BetterReflection\Reflection\ReflectionMethod;
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\RuleErrorBuilder;
 use function array_merge;
 use function count;
@@ -39,9 +40,9 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
 
     private LayoutPathResolver $layoutPathResolver;
 
-    public function __construct(LattePhpDocResolver $lattePhpDocResolver, LayoutPathResolver $layoutPathResolver)
+    public function __construct(LattePhpDocResolver $lattePhpDocResolver, ReflectionProvider $reflectionProvider, LayoutPathResolver $layoutPathResolver)
     {
-        parent::__construct($lattePhpDocResolver);
+        parent::__construct($lattePhpDocResolver, $reflectionProvider);
         $this->layoutPathResolver = $layoutPathResolver;
     }
 
@@ -50,14 +51,14 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         return ['Nette\Application\UI\Presenter'];
     }
 
-    protected function getClassContextResolver(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteContextResolverInterface
+    protected function getClassContextResolver(ClassReflection $classReflection, LatteContext $latteContext): LatteContextResolverInterface
     {
-        return new NetteApplicationUIPresenterLatteContextResolver($reflectionClass, $latteContext);
+        return new NetteApplicationUIPresenterLatteContextResolver($classReflection, $latteContext);
     }
 
-    protected function getClassResult(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteTemplateResolverResult
+    protected function getClassResult(ClassReflection $classReflection, LatteContext $latteContext): LatteTemplateResolverResult
     {
-        if ($reflectionClass->isAbstract() || $reflectionClass->isAnonymous()) {
+        if ($classReflection->isAbstract() || $classReflection->isAnonymous()) {
             return new LatteTemplateResolverResult();
         }
 
@@ -65,42 +66,44 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $actions = [];
 
         // action methods - including matching render methods
-        foreach ($this->getMethodsMatching($reflectionClass, '/^action.*/') as $reflectionMethod) {
-            if (!$reflectionMethod->isPublic()) {
+        foreach ($this->getMethodsMatching($classReflection, '/^action.*/') as $methodReflection) {
+            if (!$methodReflection->isPublic()) {
                 continue;
             }
-            $actionName = lcfirst((string)preg_replace('/^action/i', '', $reflectionMethod->getName()));
+            $actionName = lcfirst((string)preg_replace('/^action/i', '', $methodReflection->getName()));
 
             if (!isset($actions[$actionName])) {
-                $actions[$actionName] = $this->createActionDefinition($reflectionClass, $latteContext, $actionName);
+                $actions[$actionName] = $this->createActionDefinition($classReflection, $latteContext, $actionName);
             }
-            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $reflectionMethod, $latteContext);
+            $this->updateActionDefinitionByMethod($actions[$actionName], $classReflection, $methodReflection, $latteContext);
 
             // alternative renders (changed by setView in startup or action* method)
             $setViewCalls = array_merge(
-                $latteContext->methodCallFinder()->findAllCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
-                $latteContext->methodCallFinder()->findAllCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
+                $latteContext->methodCallFinder()->findAllCalledOfType($classReflection->getName(), $methodReflection->getName(), self::CALL_SET_VIEW),
+                $latteContext->methodCallFinder()->findAllCalledOfType($classReflection->getName(), 'startup', self::CALL_SET_VIEW)
             );
             foreach ($setViewCalls as $setViewCall) {
                 $view = (string)$setViewCall->getParams()['view'];
                 $actionViewName = $actionName . "($view)";
                 $actions[$actionViewName] = $actions[$actionName];
-                $actions[$actionViewName]['defaultTemplate'] = $this->findDefaultTemplateFilePath($reflectionClass, $view);
-                $renderMethod = $reflectionClass->getMethod('render' . ucfirst($view));
-                if ($renderMethod !== null) {
-                    $this->updateActionDefinitionByMethod($actions[$actionViewName], $reflectionClass, $renderMethod, $latteContext);
+                $actions[$actionViewName]['defaultTemplate'] = $this->findDefaultTemplateFilePath($classReflection, $view);
+                $renderMethodName = 'render' . ucfirst($view);
+                if ($classReflection->hasNativeMethod($renderMethodName)) {
+                    $renderMethod = $classReflection->getNativeMethod($renderMethodName);
+                    $this->updateActionDefinitionByMethod($actions[$actionViewName], $classReflection, $renderMethod, $latteContext);
                 }
             }
 
             $alwaysSetViewCalls = array_merge(
-                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($reflectionClass->getName(), $reflectionMethod->getName(), self::CALL_SET_VIEW),
-                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($reflectionClass->getName(), 'startup', self::CALL_SET_VIEW)
+                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($classReflection->getName(), $methodReflection->getName(), self::CALL_SET_VIEW),
+                $latteContext->methodCallFinder()->findAllAlwaysCalledOfType($classReflection->getName(), 'startup', self::CALL_SET_VIEW)
             );
 
             if (count($alwaysSetViewCalls) === 0) {
-                $renderMethod = $reflectionClass->getMethod('render' . ucfirst($actionName));
-                if ($renderMethod !== null) {
-                    $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $renderMethod, $latteContext);
+                $renderMethodName = 'render' . ucfirst($actionName);
+                if ($classReflection->hasNativeMethod($renderMethodName)) {
+                    $renderMethod = $classReflection->getNativeMethod($renderMethodName);
+                    $this->updateActionDefinitionByMethod($actions[$actionName], $classReflection, $renderMethod, $latteContext);
                 }
             } else {
                 unset($actions[$actionName]); // view is always changed
@@ -108,16 +111,16 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         }
 
         // render methods without matching action method
-        foreach ($this->getMethodsMatching($reflectionClass, '/^render.*/') as $reflectionMethod) {
-            if (!$reflectionMethod->isPublic()) {
+        foreach ($this->getMethodsMatching($classReflection, '/^render.*/') as $methodReflection) {
+            if (!$methodReflection->isPublic()) {
                 continue;
             }
-            $actionName = lcfirst((string)preg_replace('/^render/i', '', $reflectionMethod->getName()));
+            $actionName = lcfirst((string)preg_replace('/^render/i', '', $methodReflection->getName()));
 
             if (!isset($actions[$actionName])) {
-                $actions[$actionName] = $this->createActionDefinition($reflectionClass, $latteContext, $actionName);
+                $actions[$actionName] = $this->createActionDefinition($classReflection, $latteContext, $actionName);
             }
-            $this->updateActionDefinitionByMethod($actions[$actionName], $reflectionClass, $reflectionMethod, $latteContext);
+            $this->updateActionDefinitionByMethod($actions[$actionName], $classReflection, $methodReflection, $latteContext);
         }
 
         $result = new LatteTemplateResolverResult();
@@ -125,11 +128,11 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
             // explicit render calls
             /** @var CollectedTemplateRender $templateRender */
             foreach ($actionDefinition['renders'] as $templateRender) {
-                $result->addTemplateFromRender($templateRender, $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
+                $result->addTemplateFromRender($templateRender, $actionDefinition['templateContext'], $classReflection->getName(), $actionName);
 
                 $layoutFilePath = $this->layoutPathResolver->resolve($templateRender->getTemplatePath());
                 if ($layoutFilePath !== null) {
-                    $result->addTemplateFromRender($templateRender->withTemplatePath($layoutFilePath), $actionDefinition['templateContext'], $reflectionClass->getName(), $actionName);
+                    $result->addTemplateFromRender($templateRender->withTemplatePath($layoutFilePath), $actionDefinition['templateContext'], $classReflection->getName(), $actionName);
                 }
             }
 
@@ -138,15 +141,15 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 if ($template === null) {
                     $result->addErrorFromBuilder(RuleErrorBuilder::message('Cannot automatically resolve latte template from expression.')
                         ->identifier('latte.cannotResolve')
-                        ->file($reflectionClass->getFileName() ?? 'unknown')
+                        ->file($classReflection->getFileName() ?? 'unknown')
                         ->line($actionDefinition['line']));
                     continue;
                 }
-                $result->addTemplate(new Template($template, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                $result->addTemplate(new Template($template, $classReflection->getName(), $actionName, $actionDefinition['templateContext']));
 
                 $layoutFilePath = $this->layoutPathResolver->resolve($template);
                 if ($layoutFilePath !== null) {
-                    $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                    $result->addTemplate(new Template($layoutFilePath, $classReflection->getName(), $actionName, $actionDefinition['templateContext']));
                 }
             }
 
@@ -155,17 +158,17 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                 if (!$actionDefinition['terminated'] && $actionDefinition['templatePaths'] === []) { // might not be rendered at all (for example redirect or use set template path)
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for action $actionName")
                         ->identifier('latte.cannotResolve')
-                        ->file($reflectionClass->getFileName() ?? 'unknown')
+                        ->file($classReflection->getFileName() ?? 'unknown')
                         ->line($actionDefinition['line'])
                         ->identifier($actionName));
                 }
                 continue;
             }
-            $result->addTemplate(new Template($actionDefinition['defaultTemplate'], $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+            $result->addTemplate(new Template($actionDefinition['defaultTemplate'], $classReflection->getName(), $actionName, $actionDefinition['templateContext']));
 
             $layoutFilePath = $this->layoutPathResolver->resolve($actionDefinition['defaultTemplate']);
             if ($layoutFilePath !== null) {
-                $result->addTemplate(new Template($layoutFilePath, $reflectionClass->getName(), $actionName, $actionDefinition['templateContext']));
+                $result->addTemplate(new Template($layoutFilePath, $classReflection->getName(), $actionName, $actionDefinition['templateContext']));
             }
         }
 
@@ -175,13 +178,13 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
     /**
      * @phpstan-return ActionDefinition
      */
-    private function createActionDefinition(ReflectionClass $reflectionClass, LatteContext $latteContext, string $actionName): array
+    private function createActionDefinition(ClassReflection $classReflection, LatteContext $latteContext, string $actionName): array
     {
         return [
-            'templateContext' => $this->getClassGlobalTemplateContext($reflectionClass, $latteContext),
+            'templateContext' => $this->getClassGlobalTemplateContext($classReflection, $latteContext),
             'line' => -1,
             'renders' => [],
-            'defaultTemplate' => $this->findDefaultTemplateFilePath($reflectionClass, $actionName),
+            'defaultTemplate' => $this->findDefaultTemplateFilePath($classReflection, $actionName),
             'templatePaths' => [],
             'terminated' => false,
         ];
@@ -190,21 +193,22 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
     /**
      * @phpstan-param ActionDefinition $actionDefinition
      */
-    private function updateActionDefinitionByMethod(&$actionDefinition, ReflectionClass $reflectionClass, ReflectionMethod $reflectionMethod, LatteContext $latteContext): void
+    private function updateActionDefinitionByMethod(&$actionDefinition, ClassReflection $classReflection, MethodReflection $methodReflection, LatteContext $latteContext): void
     {
-        $actionDefinition['templateContext'] = $actionDefinition['templateContext']->union($latteContext->getMethodTemplateContext($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['line'] = $reflectionMethod->getStartLine();
-        $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $latteContext->templateRenderFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $latteContext->templatePathFinder()->find($reflectionClass->getName(), $reflectionMethod->getName()));
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodCallFinder()->hasAlwaysTerminatingCalls($reflectionClass->getName(), $reflectionMethod->getName());
-        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodFinder()->isAlwaysTerminated($reflectionClass->getName(), $reflectionMethod->getName());
+        $methodName = $methodReflection->getName();
+        $actionDefinition['templateContext'] = $actionDefinition['templateContext']->union($latteContext->getMethodTemplateContext($classReflection->getName(), $methodName));
+        $actionDefinition['line'] = $this->getMethodStartLine($classReflection, $methodName);
+        $actionDefinition['renders'] = array_merge($actionDefinition['renders'], $latteContext->templateRenderFinder()->find($classReflection->getName(), $methodName));
+        $actionDefinition['templatePaths'] = array_merge($actionDefinition['templatePaths'], $latteContext->templatePathFinder()->find($classReflection->getName(), $methodName));
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodCallFinder()->hasAlwaysTerminatingCalls($classReflection->getName(), $methodName);
+        $actionDefinition['terminated'] = $actionDefinition['terminated'] || $latteContext->methodFinder()->isAlwaysTerminated($classReflection->getName(), $methodName);
     }
 
-    private function findDefaultTemplateFilePath(ReflectionClass $reflectionClass, string $actionName): ?string
+    private function findDefaultTemplateFilePath(ClassReflection $classReflection, string $actionName): ?string
     {
-        $shortClassName = $reflectionClass->getShortName();
+        $shortClassName = $classReflection->getNativeReflection()->getShortName();
         $presenterName = str_replace('Presenter', '', $shortClassName);
-        $dir = $this->getClassDir($reflectionClass);
+        $dir = $this->getClassDir($classReflection);
         if ($dir === null) {
             return null;
         }

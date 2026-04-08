@@ -491,7 +491,7 @@ final class AddFormClassesNodeVisitor extends NodeVisitorAbstract implements For
         $offsetGetComment = $this->createOffsetGetConditionalReturnTypeComment($parentClassName, $controlHolder->getControls());
 
         $offsetGetMethod = clone $baseOffsetGetMethod;
-        $offsetGetMethod->setDocComment('/** ' . $offsetGetComment . ' */');
+        $offsetGetMethod->setDocComment('/** @param string $name' . "\n" . $offsetGetComment . ' */');
 
         $methods = [
             $offsetGetMethod,

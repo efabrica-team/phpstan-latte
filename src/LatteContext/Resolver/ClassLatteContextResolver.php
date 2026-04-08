@@ -6,18 +6,18 @@ namespace Efabrica\PHPStanLatte\LatteContext\Resolver;
 
 use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 
 class ClassLatteContextResolver implements LatteContextResolverInterface
 {
-    protected ReflectionClass $reflectionClass;
+    protected ClassReflection $classReflection;
 
     protected LatteContext $latteContext;
 
-    public function __construct(ReflectionClass $reflectionClass, LatteContext $latteContext)
+    public function __construct(ClassReflection $classReflection, LatteContext $latteContext)
     {
-        $this->reflectionClass = $reflectionClass;
+        $this->classReflection = $classReflection;
         $this->latteContext = $latteContext;
     }
 
@@ -56,7 +56,7 @@ class ClassLatteContextResolver implements LatteContextResolverInterface
      */
     protected function getClassName(): string
     {
-        return $this->reflectionClass->getName();
+        return $this->classReflection->getName();
     }
 
     protected function getClassType(): ObjectType

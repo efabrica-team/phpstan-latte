@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIControlLatteContextResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassMethodTemplateResolver;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
 
 final class NetteApplicationUIControl extends AbstractClassMethodTemplateResolver
 {
@@ -27,8 +27,8 @@ final class NetteApplicationUIControl extends AbstractClassMethodTemplateResolve
         return '/^render.*/';
     }
 
-    protected function getClassContextResolver(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteContextResolverInterface
+    protected function getClassContextResolver(ClassReflection $classReflection, LatteContext $latteContext): LatteContextResolverInterface
     {
-        return new NetteApplicationUIControlLatteContextResolver($reflectionClass, $latteContext);
+        return new NetteApplicationUIControlLatteContextResolver($classReflection, $latteContext);
     }
 }

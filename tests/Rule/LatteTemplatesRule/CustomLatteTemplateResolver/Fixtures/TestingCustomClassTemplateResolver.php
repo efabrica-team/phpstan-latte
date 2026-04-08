@@ -11,7 +11,7 @@ use Efabrica\PHPStanLatte\Template\Template;
 use Efabrica\PHPStanLatte\Template\TemplateContext;
 use Efabrica\PHPStanLatte\Template\Variable;
 use Nette\Application\UI\Control;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\StringType;
 use function dirname;
 
@@ -27,11 +27,11 @@ final class TestingCustomClassTemplateResolver extends AbstractClassTemplateReso
         return '/.*Control/';
     }
 
-    protected function getClassResult(ReflectionClass $resolveClass, LatteContext $latteContext): LatteTemplateResolverResult
+    protected function getClassResult(ClassReflection $classReflection, LatteContext $latteContext): LatteTemplateResolverResult
     {
         $result = new LatteTemplateResolverResult();
         $result->addTemplate(new Template(
-            dirname($resolveClass->getFileName()) . '/templates/default.latte',
+            dirname($classReflection->getFileName()) . '/templates/default.latte',
             Control::class,
             'resolved',
             new TemplateContext(

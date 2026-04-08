@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Efabrica\PHPStanLatte\LinkProcessor;
 
+use Efabrica\PHPStanLatte\Type\TypeHelper;
 use InvalidArgumentException;
-use LogicException;
 use PhpParser\BuilderHelpers;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
-use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use function array_filter;
 use function array_flip;
 use function array_key_exists;
@@ -21,6 +21,13 @@ use function in_array;
 
 final class LinkParamsProcessor
 {
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(ReflectionProvider $reflectionProvider)
+    {
+        $this->reflectionProvider = $reflectionProvider;
+    }
+
     /**
      * @param Arg[] $params
      * @return Arg[]
@@ -39,14 +46,21 @@ final class LinkParamsProcessor
             throw new InvalidArgumentException('Too many parameters');
         }
 
-        $reflectionClass = (new BetterReflection())->reflector()->reflectClass($class);
-        $reflectionMethod = $reflectionClass->getMethod($method);
-        if ($reflectionMethod === null) {
+        $classReflection = $this->reflectionProvider->getClass($class);
+        if (!$classReflection->hasNativeMethod($method)) {
             throw new InvalidArgumentException("Method $class::$method not found");
         }
 
+        $methodReflection = $classReflection->getNativeMethod($method);
+        $variants = $methodReflection->getVariants();
+        if ($variants === []) {
+            throw new InvalidArgumentException("Method $class::$method has no variants");
+        }
+
+        $parameters = $variants[0]->getParameters();
+
         $methodParameters = [];
-        foreach ($reflectionMethod->getParameters() as $param) {
+        foreach ($parameters as $param) {
             $methodParameters[] = $param->getName();
         }
 
@@ -74,21 +88,19 @@ final class LinkParamsProcessor
         }
 
         $i = 0;
-        foreach ($reflectionMethod->getParameters() as $param) {
+        foreach ($parameters as $param) {
             $name = $param->getName();
-            $type = (string) $param->getType();
+            $type = $param->getType();
+            $defaultValueType = $param->getDefaultValue();
             if (array_key_exists($i, $transferredParams)) {
                 $transferredParams[$name] = $transferredParams[$i];
                 unset($transferredParams[$i]);
                 $i++;
             } elseif (array_key_exists($name, $transferredParams)) {
                 continue;
-            } elseif ($param->isDefaultValueAvailable()) {
-                try {
-                    $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue($param->getDefaultValue()));
-                } catch (LogicException $e) {
-                }
-            } elseif ($type === 'array' || $type === 'iterable') {
+            } elseif ($defaultValueType !== null) {
+                $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue(TypeHelper::typeToValue($defaultValueType)));
+            } elseif ($type->isArray()->yes() || $type->isIterable()->yes()) {
                 $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue([]));
             } else {
                 $transferredParams[$name] = new Arg(BuilderHelpers::normalizeValue(null));

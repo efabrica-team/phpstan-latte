@@ -77,7 +77,7 @@ final class Container implements ControlHolderInterface, ControlInterface
     }
 
     /**
-     * @param array{name: string, type: string, controls: array<array{name: string}>} $data
+     * @param array{name: string, type: string, controls: array<array{name: string, class: class-string}>} $data
      */
     public static function fromJson(array $data, TypeStringResolver $typeStringResolver): self
     {

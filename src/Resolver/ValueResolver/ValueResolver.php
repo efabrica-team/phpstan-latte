@@ -29,6 +29,7 @@ use function dirname;
 use function function_exists;
 use function implode;
 use function is_callable;
+use function is_string;
 use function method_exists;
 
 final class ValueResolver
@@ -91,6 +92,9 @@ final class ValueResolver
                         $options = $this->resolve($part, $scope, $fallbackEvaluator);
                     }
                     if ($options === null || count($options) !== 1) {
+                        throw new ConstExprEvaluationException();
+                    }
+                    if (!is_string($options[0])) {
                         throw new ConstExprEvaluationException();
                     }
                     $result[] = $options[0];

@@ -8,7 +8,7 @@ use Efabrica\PHPStanLatte\LatteContext\LatteContext;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\LatteContextResolverInterface;
 use Efabrica\PHPStanLatte\LatteContext\Resolver\Nette\NetteApplicationUIPresenterLatteContextResolver;
 use Efabrica\PHPStanLatte\LatteTemplateResolver\AbstractClassStandaloneTemplateResolver;
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\Reflection\ClassReflection;
 use function count;
 use function dirname;
 use function is_dir;
@@ -23,14 +23,14 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
         return ['Nette\Application\UI\Presenter'];
     }
 
-    protected function getClassContextResolver(ReflectionClass $reflectionClass, LatteContext $latteContext): LatteContextResolverInterface
+    protected function getClassContextResolver(ClassReflection $classReflection, LatteContext $latteContext): LatteContextResolverInterface
     {
-        return new NetteApplicationUIPresenterLatteContextResolver($reflectionClass, $latteContext);
+        return new NetteApplicationUIPresenterLatteContextResolver($classReflection, $latteContext);
     }
 
-    protected function getTemplatePathPatterns(ReflectionClass $reflectionClass, string $dir): array
+    protected function getTemplatePathPatterns(ClassReflection $classReflection, string $dir): array
     {
-        $shortClassName = $reflectionClass->getShortName();
+        $shortClassName = $classReflection->getNativeReflection()->getShortName();
         $presenterName = str_replace('Presenter', '', $shortClassName);
 
         return [
@@ -44,12 +44,12 @@ final class NetteApplicationUIPresenterStandalone extends AbstractClassStandalon
         return is_dir("$dir/templates") ? $dir : dirname($dir);
     }
 
-    protected function isStandaloneTemplate(ReflectionClass $reflectionClass, string $templateFile, array $matches): bool
+    protected function isStandaloneTemplate(ClassReflection $classReflection, string $templateFile, array $matches): bool
     {
         if (!is_string($matches[1])) {
             return false;
         }
         $action = $matches[1];
-        return count($this->getMethodsMatchingIncludingIgnored($reflectionClass, '/^(action|render)' . preg_quote($action) . '/')) === 0;
+        return count($this->getMethodsMatchingIncludingIgnored($classReflection, '/^(action|render)' . preg_quote($action) . '/')) === 0;
     }
 }
