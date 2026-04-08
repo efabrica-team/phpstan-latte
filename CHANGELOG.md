@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [0.20.0] - 2026-04-08
 
 ### Updated
 - Internaly uses PHPStan reflections only (**BC break**)
