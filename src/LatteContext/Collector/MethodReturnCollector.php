@@ -21,7 +21,7 @@ final class MethodReturnCollector extends AbstractLatteContextCollector
 
     /**
      * @param Return_ $node
-     * @phpstan-return null|CollectedMethod[]
+     * @phpstan-return null|non-empty-array<CollectedMethod>
      */
     public function collectData(Node $node, Scope $scope): ?array
     {
