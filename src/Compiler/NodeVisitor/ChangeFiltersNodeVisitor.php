@@ -203,7 +203,7 @@ final class ChangeFiltersNodeVisitor extends NodeVisitorAbstract implements Filt
             $className = is_string($filter[0]) ? $filter[0] : get_class($filter[0]);
             $methodName = $filter[1];
 
-            if (!is_string($methodName) || $methodName === '') {
+            if ($methodName === '') {
                 continue;
             }
 
