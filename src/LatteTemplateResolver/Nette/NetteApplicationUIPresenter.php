@@ -159,8 +159,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
                     $result->addErrorFromBuilder(RuleErrorBuilder::message("Cannot resolve latte template for action $actionName")
                         ->identifier('latte.cannotResolve')
                         ->file($classReflection->getFileName() ?? 'unknown')
-                        ->line($actionDefinition['line'])
-                        ->identifier($actionName));
+                        ->line($actionDefinition['line']));
                 }
                 continue;
             }
