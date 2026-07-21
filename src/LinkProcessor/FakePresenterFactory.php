@@ -26,7 +26,7 @@ final class FakePresenterFactory extends PresenterFactory
         parent::setMapping($mapping);
         foreach ($mapping as $module => $mask) {
             if (is_string($mask)) {
-                if (!preg_match('#^\\\\?([\w\\\\]*\\\\)?(\w*\*\w*?\\\\)?([\w\\\\]*\*\w*)$#D', $mask, $m)) {
+                if (!preg_match('#^\\\\?([\w\\\\]*\\\\)?(\w*\*\w*?\\\\)?([\w\\\\]*\*\*?\w*)$#D', $mask, $m)) {
                     throw new InvalidStateException("Invalid mapping mask '$mask'.");
                 }
 

@@ -216,6 +216,7 @@ final class NetteApplicationUIPresenter extends AbstractClassTemplateResolver
         $dir = is_dir($dir . DIRECTORY_SEPARATOR . 'templates') ? $dir : dirname($dir);
 
         $templateFileCandidates = [
+            $dir . DIRECTORY_SEPARATOR . $presenterName . DIRECTORY_SEPARATOR . $actionName . '.latte',
             $dir . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $presenterName . DIRECTORY_SEPARATOR . $actionName . '.latte',
             $dir . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $presenterName . '.' . $actionName . '.latte',
         ];
